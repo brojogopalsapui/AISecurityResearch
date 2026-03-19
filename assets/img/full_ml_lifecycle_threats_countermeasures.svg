@@ -29,12 +29,12 @@
      id="namedview4953"
      showgrid="false"
      inkscape:zoom="0.84"
-     inkscape:cx="375.19925"
+     inkscape:cx="199.60276"
      inkscape:cy="489.60002"
      inkscape:window-x="-11"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
-     inkscape:current-layer="axes_1" />
+     inkscape:current-layer="g4675" />
   <metadata
      id="metadata2">
     <rdf:RDF>
@@ -17878,7 +17878,7 @@
       <g
          id="text_87"
          style="stroke-linecap:butt;stroke-linejoin:round"
-         transform="translate(-141.60167,-6)">
+         transform="translate(-75.320053,-6)">
         <!-- Cross-layer interpretation -->
         <g
            style="fill:#17375e;stroke-linecap:butt;stroke-linejoin:round"
@@ -18150,71 +18150,9 @@
                style="stroke-linecap:butt;stroke-linejoin:round" />
           </defs>
           <use
-             xlink:href="#DejaVuSans-54"
-             id="use4179"
-             style="stroke-linecap:butt;stroke-linejoin:round"
-             x="0"
-             y="0"
-             width="100%"
-             height="100%" />
-          <use
-             xlink:href="#DejaVuSans-68"
-             transform="translate(61.083984)"
-             id="use4181"
-             style="stroke-linecap:butt;stroke-linejoin:round"
-             x="0"
-             y="0"
-             width="100%"
-             height="100%" />
-          <use
-             xlink:href="#DejaVuSans-65"
-             transform="translate(124.46289)"
-             id="use4183"
-             style="stroke-linecap:butt;stroke-linejoin:round"
-             x="0"
-             y="0"
-             width="100%"
-             height="100%" />
-          <use
              xlink:href="#DejaVuSans-20"
              transform="translate(185.98633)"
              id="use4185"
-             style="stroke-linecap:butt;stroke-linejoin:round"
-             x="0"
-             y="0"
-             width="100%"
-             height="100%" />
-          <use
-             xlink:href="#DejaVuSans-73"
-             transform="translate(217.77344)"
-             id="use4187"
-             style="stroke-linecap:butt;stroke-linejoin:round"
-             x="0"
-             y="0"
-             width="100%"
-             height="100%" />
-          <use
-             xlink:href="#DejaVuSans-61"
-             transform="translate(269.87305)"
-             id="use4189"
-             style="stroke-linecap:butt;stroke-linejoin:round"
-             x="0"
-             y="0"
-             width="100%"
-             height="100%" />
-          <use
-             xlink:href="#DejaVuSans-6d"
-             transform="translate(331.15234)"
-             id="use4191"
-             style="stroke-linecap:butt;stroke-linejoin:round"
-             x="0"
-             y="0"
-             width="100%"
-             height="100%" />
-          <use
-             xlink:href="#DejaVuSans-65"
-             transform="translate(428.56445)"
-             id="use4193"
              style="stroke-linecap:butt;stroke-linejoin:round"
              x="0"
              y="0"
