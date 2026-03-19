@@ -578,6 +578,10 @@ td {
 }
 
 .post-card img {
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
+  max-height: 260px;
+  object-fit: contain;
+  aspect-ratio: auto;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 0.25rem;
 }
