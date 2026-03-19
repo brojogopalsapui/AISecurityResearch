@@ -569,3 +569,15 @@ td {
     font-size: 1.02rem;
   }
 }
+.post-card img,
+.content-card img,
+.hero-visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.post-card img {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
