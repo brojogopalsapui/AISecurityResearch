@@ -237,42 +237,50 @@
     </section>
 
     <section class="section alt">
-      <div class="container">
-        <div class="section-head">
-          <span class="eyebrow">Research Watch</span>
-          <h2>Highlighted ongoing directions</h2>
-          <p>
-            These shorter note-style pages are ideal for commenting on new papers, industry trends, benchmarks, and emerging challenges.
-          </p>
-        </div>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Research Watch</span>
+      <h2>Highlighted ongoing directions</h2>
+      <p>
+        These short research-watch notes capture the themes I am actively tracking beyond the static section pages:
+        emerging attack surfaces, evolving defense strategies, system-level deployment gaps, and open problems that are becoming important in real AI systems.
+      </p>
+    </div>
 
-        <div class="post-list">
-          <a class="post-card" href="posts/research-watch-agentic.html">
-            <span class="tag">Research Watch</span>
-            <h3>Why agentic AI changes the security problem</h3>
-            <p>
-              Security is no longer only about a single model output. It now involves autonomy boundaries, memory, tools, and action sequences.
-            </p>
-          </a>
+    <div class="post-list">
+      <a class="post-card" href="ongoing-work.html#agentic-watch">
+        <span class="tag">Research Watch</span>
+        <h3>Why agentic AI changes the security problem</h3>
+        <p>
+          Once AI systems can plan, remember, call tools, and act over time, security is no longer only about model outputs.
+          The key challenge becomes how to bound autonomy, protect memory, and prevent prompt-level manipulation from turning into real actions.
+        </p>
+      </a>
 
-          <a class="post-card" href="posts/research-watch-edge.html">
-            <span class="tag">Research Watch</span>
-            <h3>Edge AI makes implementation details matter</h3>
-            <p>
-              On-device deployment shifts the problem from purely software trust to physical, architectural, and side-channel aware trust.
-            </p>
-          </a>
+      <a class="post-card" href="ongoing-work.html#edge-watch">
+        <span class="tag">Research Watch</span>
+        <h3>Edge AI makes implementation details matter</h3>
+        <p>
+          On-device deployment changes the attacker model completely. Secure boot, firmware trust, model extraction risk,
+          side-channel leakage, sensor validation, and update integrity all become part of whether the AI system is actually trustworthy.
+        </p>
+      </a>
 
-          <a class="post-card" href="posts/research-watch-physical-ai.html">
-            <span class="tag">Research Watch</span>
-            <h3>Physical AI needs security and safety together</h3>
-            <p>
-              When AI senses and acts in the world, latency, reliability, and security become tightly coupled design goals.
-            </p>
-          </a>
-        </div>
-      </div>
-    </section>
+      <a class="post-card" href="ongoing-work.html#physical-watch">
+        <span class="tag">Research Watch</span>
+        <h3>Physical AI needs security and safety together</h3>
+        <p>
+          In embodied and real-time systems, perception errors, communication delay, control instability, and cyber attacks cannot be studied separately.
+          The real challenge is securing the full perception-to-action loop under realistic operating conditions.
+        </p>
+      </a>
+    </div>
+
+    <div style="margin-top:1.4rem; text-align:center;">
+      <a class="btn secondary" href="ongoing-work.html">Read all ongoing notes</a>
+    </div>
+  </div>
+</section>
 
     <section class="section">
       <div class="container">
