@@ -9,6 +9,54 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css" />
+  <style>
+    .page-figure {
+      margin: 1.5rem 0 2rem 0;
+      padding: 1rem;
+      border: 1px solid rgba(20, 40, 80, 0.10);
+      border-radius: 16px;
+      background: #ffffff;
+      text-align: center;
+    }
+
+    .page-figure img {
+      display: block;
+      width: 100%;
+      max-width: 1100px;
+      height: auto;
+      margin: 0 auto;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .page-figure figcaption {
+      margin-top: 0.85rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #5b6472;
+    }
+
+    .diagram-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0 2rem 0;
+    }
+
+    .compact-figure {
+      margin: 0;
+      height: 100%;
+      padding: 0.9rem;
+    }
+
+    .compact-figure img {
+      max-width: none;
+    }
+
+    .compact-figure figcaption {
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -45,6 +93,7 @@
         <aside class="toc">
           <h3>Navigate this section</h3>
           <a href="#overview">Overview</a>
+          <a href="#atlas">Visual atlas</a>
           <a href="#threats">Threat model</a>
           <a href="#defenses">Countermeasures</a>
           <a href="#gaps">Open challenges</a>
@@ -100,6 +149,64 @@
               <strong>Key idea:</strong> a useful countermeasure is not only one that blocks an attack in a benchmark.
               It is one that remains useful after model updates, under adaptive pressure, within operational constraints,
               and inside a larger system that includes retrieval, tools, identities, storage, hardware, and people.
+            </div>
+          </section>
+
+          <section id="atlas">
+            <span class="kicker">Visual atlas</span>
+            <h2>Countermeasure atlas across AI security layers</h2>
+            <p>
+              The diagrams below summarize the main countermeasure families for each security domain discussed in this website.
+              They are intended as visual anchors for reviewers: not exhaustive, but structured enough to show how defensive thinking
+              changes from software and cloud systems to agents, hardware, edge devices, and physical AI.
+            </p>
+
+            <div class="diagram-grid">
+              <figure class="page-figure compact-figure">
+                <img src="../assets/images/diagrams/software_security_countermeasures.svg" loading="lazy" alt="Diagram summarizing software AI security countermeasures across data-centric defenses, model hardening, API security, prompt controls, workflow safeguards, and runtime monitoring." />
+                <figcaption>Software security countermeasures focused on data, models, interfaces, prompts, workflows, and monitoring.</figcaption>
+              </figure>
+
+              <figure class="page-figure compact-figure">
+                <img src="../assets/images/diagrams/generative_ai_security_countermeasures.svg" loading="lazy" alt="Diagram summarizing generative AI security countermeasures across prompt isolation, output validation, tool scoping, governance, media provenance, and red teaming." />
+                <figcaption>Generative AI countermeasures centered on prompt/context isolation, output control, provenance, and abuse monitoring.</figcaption>
+              </figure>
+
+              <figure class="page-figure compact-figure">
+                <img src="../assets/images/diagrams/cloud_ai_security_countermeasures.svg" loading="lazy" alt="Diagram summarizing cloud AI security countermeasures across zero-trust IAM, tenant isolation, API protection, secure MLOps, data governance, and confidential computing." />
+                <figcaption>Cloud AI countermeasures spanning identity, isolation, MLOps integrity, data governance, and attested execution.</figcaption>
+              </figure>
+
+              <figure class="page-figure compact-figure">
+                <img src="../assets/images/diagrams/predictive_ai_security_countermeasures.svg" loading="lazy" alt="Diagram summarizing predictive AI countermeasures across robust training, poison screening, calibration, drift monitoring, privacy, and hybrid decision logic." />
+                <figcaption>Predictive AI countermeasures focused on robustness, calibration, drift awareness, privacy, and safe decisions.</figcaption>
+              </figure>
+
+              <figure class="page-figure compact-figure">
+                <img src="../assets/images/diagrams/agentic_ai_security_countermeasures.svg" loading="lazy" alt="Diagram summarizing agentic AI countermeasures across capability bounding, approval gates, memory hygiene, sandboxing, identity control, and runtime tracing." />
+                <figcaption>Agentic AI countermeasures built around containment, permission scoping, memory governance, and runtime oversight.</figcaption>
+              </figure>
+
+              <figure class="page-figure compact-figure">
+                <img src="../assets/images/diagrams/hardware_security_countermeasures.svg" loading="lazy" alt="Diagram summarizing hardware AI security countermeasures across side-channel hardening, fault protection, secure memory, attestation, redundancy, and hardware-software co-design." />
+                <figcaption>Hardware AI countermeasures against leakage, faults, memory exposure, and implementation-level compromise.</figcaption>
+              </figure>
+
+              <figure class="page-figure compact-figure">
+                <img src="../assets/images/diagrams/edge_ai_security_countermeasures.svg" loading="lazy" alt="Diagram summarizing edge AI security countermeasures across secure boot, device identity, protected model storage, sensor validation, secure updates, and runtime monitoring." />
+                <figcaption>Edge AI countermeasures grounded in device trust, OTA integrity, protected model handling, and lightweight monitoring.</figcaption>
+              </figure>
+
+              <figure class="page-figure compact-figure">
+                <img src="../assets/images/diagrams/physical_ai_security_countermeasures.svg" loading="lazy" alt="Diagram summarizing physical AI security countermeasures across secure sensing, trusted compute, control guardrails, resilient communication, anomaly detection, and fail-safe operation." />
+                <figcaption>Physical AI countermeasures across sensing, control, communication, runtime anomaly checks, and fail-safe behavior.</figcaption>
+              </figure>
+            </div>
+
+            <div class="callout">
+              <strong>How to use this atlas:</strong> the same defensive term can mean very different things at different layers.
+              “Monitoring,” for example, could mean API abuse detection in cloud AI, drift detection in predictive AI,
+              runtime tool tracing in agents, or tamper sensing in edge and hardware systems.
             </div>
           </section>
 
@@ -435,9 +542,9 @@
             </ul>
 
             <div class="callout">
-              <strong>Best next step for this page:</strong> add one custom comparison diagram that maps the defense families against deployment layers:
-              data/training → model → interface → retrieval/agent → cloud/platform → edge/hardware → physical control loop.
-              That single figure would make the whole website feel much more coherent for reviewers.
+              <strong>Best next step for this page:</strong> the visual atlas already organizes the countermeasure space by category.
+              Later, you can add one more matrix-style figure that maps each defense family against lifecycle stage:
+              training, serving, retrieval, agent execution, cloud platform, edge device, and physical control loop.
             </div>
           </section>
         </div>
