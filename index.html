@@ -128,39 +128,85 @@
       </div>
     </section>
 
-    <section class="section">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow">Research Identity</span>
-          <h2>What this website is meant to do</h2>
-          <p>
-            This is not only a personal homepage. It is a structured knowledge hub for AI security where each major theme is broken into readable sections, subsections, open problems, and practical countermeasure discussions.
-          </p>
+    <section class="section alt">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Featured Highlights</span>
+      <h2>Selected focus areas with technical context</h2>
+      <p>
+        These highlighted directions give a quick visual and conceptual overview of how the field is evolving across different AI paradigms and deployment settings.
+      </p>
+    </div>
+
+    <div class="card-grid three reveal">
+      <a class="post-card" href="ai-security/generative-ai.html">
+        <div class="img-container">
+          <img
+            src="assets/img/highlight-generative.png"
+            alt="Illustration for generative AI security"
+            class="zoomable-thumb"
+          />
+          <button
+            class="img-expand-btn"
+            type="button"
+            aria-label="Expand generative AI image"
+            data-full="assets/img/highlight-generative.png"
+            data-alt="Illustration for generative AI security"
+          >
+            ⤢
+          </button>
         </div>
+        <span class="tag">Generative AI</span>
+        <h3>Prompt-layer security and containment</h3>
+        <p>Generative AI security includes prompt injection, jailbreaks, model misuse, watermarking, alignment, and secure system integration.</p>
+      </a>
 
-        <div class="card-grid four reveal">
-          <a class="topic-card" href="ai-security/software-security.html">
-            <h3>Software Security</h3>
-            <p>Adversarial manipulation, poisoning, privacy leakage, prompt-layer threats, model extraction, and secure training.</p>
-          </a>
-
-          <a class="topic-card" href="ai-security/hardware-security.html">
-            <h3>Hardware Security</h3>
-            <p>Side-channel analysis, fault injection, accelerator leakage, implementation gaps, and hardware-aware defenses.</p>
-          </a>
-
-          <a class="topic-card" href="ai-security/generative-ai.html">
-            <h3>Generative AI</h3>
-            <p>Prompt injection, jailbreaks, misuse, alignment, watermarking, and system-level containment.</p>
-          </a>
-
-          <a class="topic-card" href="ai-security/physical-ai.html">
-            <h3>Physical AI</h3>
-            <p>Security of embodied systems where sensing, computation, timing, and control are tightly coupled.</p>
-          </a>
+      <a class="post-card" href="ai-security/edge-security.html">
+        <div class="img-container">
+          <img
+            src="assets/img/highlight-edge.png"
+            alt="Illustration for edge AI security"
+            class="zoomable-thumb"
+          />
+          <button
+            class="img-expand-btn"
+            type="button"
+            aria-label="Expand edge AI image"
+            data-full="assets/img/highlight-edge.png"
+            data-alt="Illustration for edge AI security"
+          >
+            ⤢
+          </button>
         </div>
-      </div>
-    </section>
+        <span class="tag">Edge AI</span>
+        <h3>Why implementation details matter at the edge</h3>
+        <p>Edge AI brings physical exposure, hardware leakage, timing effects, constrained resources, and system-level attack realism into focus.</p>
+      </a>
+
+      <a class="post-card" href="ai-security/physical-ai.html">
+        <div class="img-container">
+          <img
+            src="assets/img/highlight-physical.png"
+            alt="Illustration for physical AI security"
+            class="zoomable-thumb"
+          />
+          <button
+            class="img-expand-btn"
+            type="button"
+            aria-label="Expand physical AI image"
+            data-full="assets/img/highlight-physical.png"
+            data-alt="Illustration for physical AI security"
+          >
+            ⤢
+          </button>
+        </div>
+        <span class="tag">Physical AI</span>
+        <h3>Security, safety, latency, and control together</h3>
+        <p>In physical AI, sensing, decision-making, timing, and actuation interact directly with the real world, making trust a cross-layer design challenge.</p>
+      </a>
+    </div>
+  </div>
+</section>
 
     <section class="section alt">
       <div class="container split reveal">
