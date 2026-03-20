@@ -7,8 +7,9 @@ if (btn && nav) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const expandButtons = document.querySelectorAll('.img-expand-btn');
+  const zoomableImages = document.querySelectorAll('.zoom-img');
 
-  if (!expandButtons.length) return;
+  if (!expandButtons.length && !zoomableImages.length) return;
 
   const overlay = document.createElement('div');
   overlay.className = 'image-lightbox';
@@ -23,6 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const overlayImg = overlay.querySelector('.image-lightbox__img');
   const closeBtn = overlay.querySelector('.image-lightbox__close');
+
+  const openLightbox = (src, alt = '') => {
+    overlayImg.src = src;
+    overlayImg.alt = alt;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
 
   const closeLightbox = () => {
     overlay.classList.remove('open');
@@ -39,10 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const fullSrc = button.getAttribute('data-full');
       const altText = button.getAttribute('data-alt') || '';
 
-      overlayImg.src = fullSrc;
-      overlayImg.alt = altText;
-      overlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
+      openLightbox(fullSrc, altText);
+    });
+  });
+
+  zoomableImages.forEach((img) => {
+    img.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const fullSrc = img.currentSrc || img.src;
+      const altText = img.alt || '';
+
+      openLightbox(fullSrc, altText);
     });
   });
 
