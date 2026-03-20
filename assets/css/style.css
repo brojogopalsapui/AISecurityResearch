@@ -111,7 +111,7 @@ select {
   min-width: 120px;
   padding: 0 0.9rem;
   border-radius: 16px;
-  font-size: 0.82rem;
+  font-size: 0.80rem;
   font-weight: 800;
   color: white;
   background: linear-gradient(135deg, var(--primary), var(--violet));
