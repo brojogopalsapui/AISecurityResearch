@@ -248,7 +248,8 @@ h2 { font-size: clamp(2rem, 3.5vw, 2.8rem); font-weight: 800; margin-bottom: 1re
 
 /* DIAGRAM FIX */
 .landscape-card,
-.lifecycle-fig {
+.lifecycle-fig,
+.page-figure {
   width: 100%;
   max-width: 100%;
   margin: 3rem auto 0;
@@ -257,14 +258,36 @@ h2 { font-size: clamp(2rem, 3.5vw, 2.8rem); font-weight: 800; margin-bottom: 1re
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 4px);
   box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
 .landscape-card img,
-.lifecycle-fig img {
+.lifecycle-fig img,
+.page-figure img,
+.page-figure svg,
+.page-figure object {
   display: block;
   width: 100%;
+  max-width: 100%;
   height: auto;
+  margin: 0 auto;
   border-radius: 14px;
+  object-fit: contain;
+}
+
+.img-frame {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.card-caption,
+.lifecycle-fig figcaption,
+.page-figure figcaption {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
 }
 
 .img-frame {
