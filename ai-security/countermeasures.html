@@ -56,6 +56,106 @@
     .compact-figure figcaption {
       font-size: 0.9rem;
     }
+
+    .diagram-grid .page-figure {
+      position: relative;
+    }
+
+    .diagram-grid .page-figure img {
+      cursor: zoom-in;
+    }
+
+    .figure-expand-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.82);
+      color: #ffffff;
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .figure-expand-btn:hover {
+      transform: scale(1.08);
+      background: rgba(37, 99, 235, 0.95);
+    }
+
+    .counter-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: rgba(15, 23, 42, 0.84);
+      backdrop-filter: blur(10px);
+    }
+
+    .counter-lightbox.open {
+      display: flex;
+    }
+
+    .counter-lightbox__dialog {
+      position: relative;
+      width: min(1500px, calc(100vw - 2.5rem));
+      max-height: calc(100vh - 2.5rem);
+      padding: 1rem;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+    }
+
+    .counter-lightbox__img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      max-height: calc(100vh - 6rem);
+      object-fit: contain;
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .counter-lightbox__close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 640px) {
+      .counter-lightbox {
+        padding: 1rem;
+      }
+
+      .counter-lightbox__dialog {
+        width: 100%;
+        border-radius: 18px;
+      }
+
+      .counter-lightbox__img {
+        max-height: calc(100vh - 5rem);
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -572,5 +672,78 @@
   </footer>
 
   <script src="../assets/js/main.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const figures = document.querySelectorAll('.diagram-grid .page-figure');
+
+      if (!figures.length) return;
+
+      const lightbox = document.createElement('div');
+      lightbox.className = 'counter-lightbox';
+      lightbox.innerHTML = `
+        <div class="counter-lightbox__dialog" role="dialog" aria-modal="true" aria-label="Expanded diagram view">
+          <button class="counter-lightbox__close" type="button" aria-label="Close expanded image">×</button>
+          <img class="counter-lightbox__img" src="" alt="" />
+        </div>
+      `;
+
+      document.body.appendChild(lightbox);
+
+      const lightboxImg = lightbox.querySelector('.counter-lightbox__img');
+      const closeBtn = lightbox.querySelector('.counter-lightbox__close');
+
+      const openLightbox = (src, alt = '') => {
+        lightboxImg.src = src;
+        lightboxImg.alt = alt;
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeLightbox = () => {
+        lightbox.classList.remove('open');
+        lightboxImg.src = '';
+        lightboxImg.alt = '';
+        document.body.style.overflow = '';
+      };
+
+      figures.forEach((figure) => {
+        const img = figure.querySelector('img');
+        if (!img) return;
+
+        const expandBtn = document.createElement('button');
+        expandBtn.className = 'figure-expand-btn';
+        expandBtn.type = 'button';
+        expandBtn.setAttribute('aria-label', 'Expand image');
+        expandBtn.innerHTML = '⤢';
+
+        figure.appendChild(expandBtn);
+
+        expandBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          openLightbox(img.currentSrc || img.src, img.alt || '');
+        });
+
+        img.addEventListener('click', () => {
+          openLightbox(img.currentSrc || img.src, img.alt || '');
+        });
+      });
+
+      closeBtn.addEventListener('click', closeLightbox);
+
+      lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) {
+          closeLightbox();
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && lightbox.classList.contains('open')) {
+          closeLightbox();
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>
