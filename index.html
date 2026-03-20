@@ -4,200 +4,167 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Brojogopal Sapui | AI Security Research</title>
-  <meta name="description" content="Personal research portal for AI security across software, hardware, cloud, edge, generative, agentic, predictive, and physical AI." />
+  <meta name="description" content="Technical research portal for Trustworthy AI security." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  
-  <div class="floating-breakthrough">
-    <div class="breakthrough-tag">Live Research Watch</div>
-    <p><strong>Recent:</strong> Agentic AI autonomy requires cross-layer memory protection. <a href="ongoing-work.html#agentic-watch">View Note →</a></p>
+
+  <div class="floating-notif">
+    <div class="notif-content">
+      <span class="pulse-icon"></span>
+      <p><strong>Recent:</strong> Agentic AI Security & Control Loops. <a href="ongoing-work.html">Read Note →</a></p>
+    </div>
   </div>
 
   <header class="site-header">
     <div class="container nav-wrap">
-      <a class="brand" href="index.html">B<span>S</span></a>
+      <a class="brand" href="index.html">B<span>S</span>_RESEARCH</a>
       <nav class="nav">
         <a href="index.html" class="active">Home</a>
         <a href="about.html">About</a>
         <a href="research.html">Research</a>
-        <a href="ongoing-work.html">Ongoing Work</a>
+        <a href="ongoing-work.html">Work</a>
         <a href="publications.html">Resources</a>
         <a href="contact.html">Contact</a>
       </nav>
-      <button class="menu-btn" aria-label="Toggle menu">☰</button>
     </div>
   </header>
 
   <main>
     <section class="hero">
       <div class="container hero-grid">
-        <div>
-          <span class="eyebrow">Cross-layer AI Security • Hardware-Aware Trust</span>
-          <h1>Trustworthy AI Security from Models to Physical Intelligence</h1>
+        <div class="hero-text">
+          <span class="eyebrow">// CROSS-LAYER TRUSTED INTELLIGENCE</span>
+          <h1>Securing the Full AI Stack</h1>
           <p class="lead">
-            I am Brojogopal Sapui. This portal combines survey-style explanations and cross-layer perspectives on AI security across software, hardware, cloud, edge, and generative systems.
+            Exploring the intersection of <strong>Model Robustness</strong>, <strong>Hardware Security</strong>, and <strong>Physical AI</strong>. A technical portal for the next generation of trustworthy agents and accelerators.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="research.html">Explore Research</a>
-            <a class="btn btn-secondary" href="ongoing-work.html">Ongoing Notes</a>
-          </div>
-          <div class="metric-strip">
-            <div><strong>Cloud to Edge</strong><span>Deployment security</span></div>
-            <div><strong>SW + HW</strong><span>Attack surfaces</span></div>
-            <div><strong>Models to Systems</strong><span>Predictive to Physical</span></div>
+            <a class="btn btn-primary" href="research.html">View Landscape</a>
+            <a class="btn btn-outline" href="ongoing-work.html">Ongoing Notes</a>
           </div>
         </div>
-
-        <div class="hero-visual card">
-          <img src="assets/img/hero-diagram.png" alt="AI security layers overview" />
+        <div class="hero-visual">
+          <div class="visual-inner">
+            <img src="assets/img/hero-diagram.png" alt="AI Security Layers">
+          </div>
         </div>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
-        <div class="section-head">
-          <span class="eyebrow">Research Landscape</span>
-          <h2>AI Security Landscape</h2>
-          <p class="lead">Spanning software threats, hardware implementation risks, and emerging agentic challenges.</p>
+        <div class="section-header">
+          <h2>Research Pillars</h2>
+          <p>Click to expand technical specifics of the security layers.</p>
         </div>
 
-        <div class="content-card">
-          <img src="assets/img/01_ai_security_landscape.png" alt="Full Landscape Diagram" style="width:100%; border-radius:16px; margin-bottom:1rem;" />
-          <p>A high-level technical map of model-level vulnerabilities and hardware implementation risks.</p>
+        <div class="interactive-container">
+          <details class="pillar-card">
+            <summary>
+              <div class="pillar-title">
+                <span class="pillar-num">01</span>
+                <h3>Software & Model Security</h3>
+              </div>
+              <span class="plus-minus"></span>
+            </summary>
+            <div class="pillar-content">
+              <p>Adversarial manipulation, poisoning, privacy leakage, prompt-layer threats, model extraction, and secure training protocols for large-scale deployments.</p>
+              <a href="ai-security/software-security.html" class="link-btn">Explore Section →</a>
+            </div>
+          </details>
+
+          <details class="pillar-card">
+            <summary>
+              <div class="pillar-title">
+                <span class="pillar-num">02</span>
+                <h3>Hardware & Implementation</h3>
+              </div>
+              <span class="plus-minus"></span>
+            </summary>
+            <div class="pillar-content">
+              <p>Side-channel analysis, fault injection, accelerator leakage, and hardware-aware defenses. Focusing on the security of AI chips and edge accelerators.</p>
+              <a href="ai-security/hardware-security.html" class="link-btn">Explore Section →</a>
+            </div>
+          </details>
+
+          <details class="pillar-card">
+            <summary>
+              <div class="pillar-title">
+                <span class="pillar-num">03</span>
+                <h3>Generative & Agentic AI</h3>
+              </div>
+              <span class="plus-minus"></span>
+            </summary>
+            <div class="pillar-content">
+              <p>Prompt injection, jailbreaks, and the security of autonomous agent loops where AI interacts with memory and external tools.</p>
+              <a href="ai-security/generative-ai.html" class="link-btn">Explore Section →</a>
+            </div>
+          </details>
+
+          <details class="pillar-card">
+            <summary>
+              <div class="pillar-title">
+                <span class="pillar-num">04</span>
+                <h3>Physical & Embodied AI</h3>
+              </div>
+              <span class="plus-minus"></span>
+            </summary>
+            <div class="pillar-content">
+              <p>Security of systems where sensing, computation, and control are coupled. Addressing safety, latency, and real-world adversarial inputs.</p>
+              <a href="ai-security/physical-ai.html" class="link-btn">Explore Section →</a>
+            </div>
+          </details>
         </div>
       </div>
     </section>
 
-    <section class="section alt">
+    <section class="section landscape-bg">
       <div class="container">
-        <div class="section-head">
-          <span class="eyebrow">Research Identity</span>
-          <h2>Explore Core Research Pillars</h2>
-          <p>Click a category below to view technical focus areas and challenges.</p>
+        <div class="section-header center">
+          <h2>End-to-End AI Lifecycle</h2>
+          <p>Mapping threat models from training and cloud serving to hardware execution.</p>
         </div>
-
-        <div class="accordion-grid">
-          <details class="styled-details">
-            <summary><h3>Software Security</h3></summary>
-            <div class="details-content">
-              <p>Adversarial manipulation, poisoning, privacy leakage, prompt-layer threats, model extraction, and secure training.</p>
-              <a href="ai-security/software-security.html" class="text-link">Deep Dive →</a>
-            </div>
-          </details>
-
-          <details class="styled-details">
-            <summary><h3>Hardware Security</h3></summary>
-            <div class="details-content">
-              <p>Side-channel analysis, fault injection, accelerator leakage, implementation gaps, and hardware-aware defenses.</p>
-              <a href="ai-security/hardware-security.html" class="text-link">Deep Dive →</a>
-            </div>
-          </details>
-
-          <details class="styled-details">
-            <summary><h3>Generative AI</h3></summary>
-            <div class="details-content">
-              <p>Prompt injection, jailbreaks, misuse, alignment, watermarking, and system-level containment.</p>
-              <a href="ai-security/generative-ai.html" class="text-link">Deep Dive →</a>
-            </div>
-          </details>
-
-          <details class="styled-details">
-            <summary><h3>Physical AI</h3></summary>
-            <div class="details-content">
-              <p>Security of embodied systems where sensing, computation, timing, and control are tightly coupled.</p>
-              <a href="ai-security/physical-ai.html" class="text-link">Deep Dive →</a>
-            </div>
-          </details>
+        
+        <div class="diagram-wrapper">
+          <img src="assets/img/full_ml_lifecycle_threats_countermeasures.png" alt="AI Lifecycle Security Map">
+          <div class="diagram-caption">
+            Technical mapping of vulnerabilities across data, training, and deployment stages.
+          </div>
         </div>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
-        <div class="section-head">
-          <span class="eyebrow">Security Categories</span>
-          <h2>Technical Survey Hub</h2>
-        </div>
-
-        <figure class="page-figure">
-          <img src="assets/img/full_ml_lifecycle_threats_countermeasures.png" alt="Lifecycle Diagram" />
-          <figcaption>End-to-end AI/ML lifecycle threat models.</figcaption>
-        </figure>
-
-        <div class="accordion-grid">
-          <details class="styled-details">
-            <summary><h3>Predictive AI Security</h3></summary>
-            <div class="details-content">
-              <p>Classifiers, detectors, ranking systems, forecasting models, and their attack/defense landscape.</p>
-              <a href="ai-security/predictive-ai.html" class="text-link">View Details</a>
-            </div>
-          </details>
-
-          <details class="styled-details">
-            <summary><h3>Agentic AI Security</h3></summary>
-            <div class="details-content">
-              <p>Autonomous planning loops, tools, memory, permissions, orchestration, and operational containment.</p>
-              <a href="ai-security/agentic-ai.html" class="text-link">View Details</a>
-            </div>
-          </details>
-
-          <details class="styled-details">
-            <summary><h3>Countermeasures</h3></summary>
-            <div class="details-content">
-              <p>Cross-layer defenses spanning robust learning, runtime monitoring, hardware hardening, and co-design.</p>
-              <a href="ai-security/countermeasures.html" class="text-link">View Details</a>
-            </div>
-          </details>
-
-          <details class="styled-details">
-            <summary><h3>Edge AI Security</h3></summary>
-            <div class="details-content">
-              <p>Physical exposure, constrained devices, accelerator implementations, and deployment realism.</p>
-              <a href="ai-security/edge-security.html" class="text-link">View Details</a>
-            </div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <section class="section alt">
-      <div class="container">
-        <div class="cta">
-          <div>
-            <span class="eyebrow">Collaboration</span>
-            <h2>Ready to discuss AI Security?</h2>
-            <p>I am open to research discussions regarding hardware trust and edge intelligence.</p>
+        <div class="cta-box">
+          <h2>Let's build Trustworthy AI.</h2>
+          <p>Interested in collaboration or exploring my specific research notes?</p>
+          <div class="btn-group">
+            <a href="contact.html" class="btn btn-primary">Contact Me</a>
+            <a href="publications.html" class="btn btn-outline">Publications</a>
           </div>
-          <a class="btn btn-primary" href="contact.html">Get in Touch</a>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
+    <div class="container footer-content">
+      <div class="footer-info">
         <h3>Brojogopal Sapui</h3>
-        <p>AI Security • Hardware Trust • Edge AI</p>
+        <p>Researching the security of modern AI systems across the full stack.</p>
       </div>
-      <div>
-        <h4>Main Pages</h4>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
         <a href="research.html">Research</a>
-        <a href="ongoing-work.html">Ongoing Work</a>
-        <a href="publications.html">Resources</a>
-      </div>
-      <div>
-        <h4>Experience</h4>
-        <p>NXP (Austria), NaMLab, KIT (Germany), IIT Kharagpur, ISI Kolkata.</p>
+        <a href="contact.html">Contact</a>
       </div>
     </div>
   </footer>
 
-  <script src="assets/js/main.js"></script>
 </body>
 </html>
