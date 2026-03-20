@@ -11,6 +11,15 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
+
+  <div class="floating-notif">
+    <div class="notif-badge">NEW</div>
+    <div class="notif-text">
+      <strong>Research Watch:</strong> Agentic AI autonomy requires cross-layer protection.
+      <a href="ongoing-work.html">View Note →</a>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container nav-wrap">
       <a class="brand" href="index.html">B<span>S</span></a>
@@ -29,7 +38,7 @@
   <main>
     <section class="hero">
       <div class="container hero-grid">
-        <div>
+        <div class="reveal">
           <span class="eyebrow">Cross-layer AI Security • Hardware-Aware Trust • Cloud-to-Edge Intelligence</span>
           <h1>Trustworthy AI Security from Models and Accelerators to Agents and Physical Intelligence</h1>
           <p class="lead">
@@ -46,7 +55,7 @@
           </div>
         </div>
 
-        <div class="hero-visual card">
+        <div class="hero-visual card reveal">
           <img src="assets/img/hero-diagram.png" alt="Overview illustration of AI security across models, systems, and deployment layers" />
         </div>
       </div>
@@ -54,7 +63,7 @@
 
     <section class="section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <span class="eyebrow">Research Landscape</span>
           <h2>AI Security Landscape</h2>
           <p class="lead">
@@ -62,22 +71,24 @@
           </p>
         </div>
 
-        <div class="content-card">
+        <div class="content-card landscape-card reveal">
           <img
             src="assets/img/01_ai_security_landscape.png"
             alt="AI Security Landscape diagram showing software and hardware security, cloud and edge AI, predictive, generative, agentic, and physical AI, along with countermeasures and future challenges"
-            style="width:100%; border-radius:16px; margin-bottom:1rem;"
+            class="zoom-img"
           />
-          <p>
-            This diagram provides a high-level technical map of how modern AI security spans model-level vulnerabilities, hardware implementation risks, deployment contexts, and emerging system-level countermeasure needs.
-          </p>
+          <div class="card-caption">
+            <p>
+              This diagram provides a high-level technical map of how modern AI security spans model-level vulnerabilities, hardware implementation risks, deployment contexts, and emerging system-level countermeasure needs.
+            </p>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="section alt">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <span class="eyebrow">Featured Highlights</span>
           <h2>Selected focus areas with technical context</h2>
           <p>
@@ -85,44 +96,32 @@
           </p>
         </div>
 
-        <div class="card-grid three">
+        <div class="card-grid three reveal">
           <a class="post-card" href="ai-security/generative-ai.html">
-            <img
-              src="assets/img/highlight-generative.png"
-              alt="Illustration for generative AI security"
-              style="width:100%; border-radius:14px; margin-bottom:1rem;"
-            />
+            <div class="img-container">
+              <img src="assets/img/highlight-generative.png" alt="Illustration for generative AI security" />
+            </div>
             <span class="tag">Generative AI</span>
             <h3>Prompt-layer security and containment</h3>
-            <p>
-              Generative AI security includes prompt injection, jailbreaks, model misuse, watermarking, alignment, and secure system integration.
-            </p>
+            <p>Generative AI security includes prompt injection, jailbreaks, model misuse, watermarking, alignment, and secure system integration.</p>
           </a>
 
           <a class="post-card" href="ai-security/edge-security.html">
-            <img
-              src="assets/img/highlight-edge.png"
-              alt="Illustration for edge AI security"
-              style="width:100%; border-radius:14px; margin-bottom:1rem;"
-            />
+            <div class="img-container">
+              <img src="assets/img/highlight-edge.png" alt="Illustration for edge AI security" />
+            </div>
             <span class="tag">Edge AI</span>
             <h3>Why implementation details matter at the edge</h3>
-            <p>
-              Edge AI brings physical exposure, hardware leakage, timing effects, constrained resources, and system-level attack realism into focus.
-            </p>
+            <p>Edge AI brings physical exposure, hardware leakage, timing effects, constrained resources, and system-level attack realism into focus.</p>
           </a>
 
           <a class="post-card" href="ai-security/physical-ai.html">
-            <img
-              src="assets/img/highlight-physical.png"
-              alt="Illustration for physical AI security"
-              style="width:100%; border-radius:14px; margin-bottom:1rem;"
-            />
+            <div class="img-container">
+              <img src="assets/img/highlight-physical.png" alt="Illustration for physical AI security" />
+            </div>
             <span class="tag">Physical AI</span>
             <h3>Security, safety, latency, and control together</h3>
-            <p>
-              In physical AI, sensing, decision-making, timing, and actuation interact directly with the real world, making trust a cross-layer design challenge.
-            </p>
+            <p>In physical AI, sensing, decision-making, timing, and actuation interact directly with the real world, making trust a cross-layer design challenge.</p>
           </a>
         </div>
       </div>
@@ -130,7 +129,7 @@
 
     <section class="section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <span class="eyebrow">Research Identity</span>
           <h2>What this website is meant to do</h2>
           <p>
@@ -138,7 +137,7 @@
           </p>
         </div>
 
-        <div class="card-grid four">
+        <div class="card-grid four reveal">
           <a class="topic-card" href="ai-security/software-security.html">
             <h3>Software Security</h3>
             <p>Adversarial manipulation, poisoning, privacy leakage, prompt-layer threats, model extraction, and secure training.</p>
@@ -163,7 +162,7 @@
     </section>
 
     <section class="section alt">
-      <div class="container split">
+      <div class="container split reveal">
         <div class="content-card">
           <span class="kicker">Background</span>
           <h2>Cross-layer security with a hardware-aware lens</h2>
@@ -194,7 +193,7 @@
 
     <section class="section">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <span class="eyebrow">Research Themes</span>
           <h2>Security categories covered on this website</h2>
           <p>
@@ -202,12 +201,14 @@
           </p>
         </div>
 
-        <figure class="page-figure">
-          <img src="assets/img/full_ml_lifecycle_threats_countermeasures.png" alt="End-to-end AI and machine learning lifecycle diagram showing stages, threat models, and countermeasures from data collection and training to cloud serving, edge deployment, hardware execution, and physical operation." />
+        <figure class="page-figure lifecycle-fig reveal">
+          <div class="img-frame">
+            <img src="assets/img/full_ml_lifecycle_threats_countermeasures.png" alt="End-to-end AI lifecycle diagram" />
+          </div>
           <figcaption>End-to-end AI/ML lifecycle showing how threat models and countermeasures evolve from software and cloud stages to edge, hardware, and physical-world deployment.</figcaption>
         </figure>
 
-        <div class="card-grid three">
+        <div class="card-grid three reveal">
           <a class="section-card" href="ai-security/predictive-ai.html">
             <h3>Predictive AI Security</h3>
             <p>Classifiers, detectors, ranking systems, forecasting models, and their attack/defense landscape.</p>
@@ -243,7 +244,7 @@
 
     <section class="section alt">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head reveal">
       <span class="eyebrow">Research Watch</span>
       <h2>Highlighted ongoing directions</h2>
       <p>
@@ -252,7 +253,7 @@
       </p>
     </div>
 
-    <div class="post-list">
+    <div class="post-list reveal">
       <a class="post-card" href="ongoing-work.html#agentic-watch">
         <span class="tag">Research Watch</span>
         <h3>Why agentic AI changes the security problem</h3>
@@ -281,15 +282,15 @@
       </a>
     </div>
 
-    <div style="margin-top:1.4rem; text-align:center;">
-      <a class="btn secondary" href="ongoing-work.html">Read all ongoing notes</a>
+    <div style="margin-top:2rem; text-align:center;" class="reveal">
+      <a class="btn btn-secondary" href="ongoing-work.html">Read all ongoing notes</a>
     </div>
   </div>
 </section>
 
     <section class="section">
       <div class="container">
-        <div class="cta">
+        <div class="cta reveal">
           <div>
             <span class="eyebrow">Next step</span>
             <h2>Turn this into your real public research portal</h2>
@@ -315,10 +316,10 @@
         <a href="ongoing-work.html">Ongoing Work</a>
         <a href="publications.html">Resources</a>
       </div>
-        <div>
-          <h4>Experience</h4>
-          <p>NXP Semiconductors (Austria), NaMLab, KIT (Germany), IIT Kharagpur, ISI Kolkata.</p>
-        </div>
+      <div>
+        <h4>Experience</h4>
+        <p>NXP Semiconductors (Austria), NaMLab, KIT (Germany), IIT Kharagpur, ISI Kolkata.</p>
+      </div>
     </div>
   </footer>
 
