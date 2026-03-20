@@ -107,15 +107,16 @@ select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  min-height: 52px;
+  padding: 0 1rem;
   border-radius: 16px;
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: white;
   background: linear-gradient(135deg, var(--primary), var(--violet));
   box-shadow: 0 14px 34px rgba(37, 99, 235, 0.24);
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .brand span {
