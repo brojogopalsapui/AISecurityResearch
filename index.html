@@ -49,6 +49,13 @@
   backdrop-filter: blur(14px);
   animation: floatCard 4.5s ease-in-out infinite;
   box-sizing: border-box;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.floating-notif.hide-notif {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
 }
 
 .notif-badge {
@@ -75,6 +82,20 @@
   color: #2563eb;
   text-decoration: none;
   margin-left: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .floating-notif {
+    width: auto;
+    max-width: calc(100vw - 1rem);
+    right: 0.5rem;
+    bottom: 0.5rem;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .notif-text {
+    white-space: normal;
+  }
 }
 
 @media (max-width: 768px) {
