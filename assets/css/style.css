@@ -132,9 +132,9 @@ select {
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 800;
-  color: #dc2626;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(220, 38, 38, 0.16);
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.16);
   white-space: nowrap;
   text-decoration: underline;
   text-decoration-thickness: 2px;
@@ -143,11 +143,10 @@ select {
 }
 
 .brand-hint:hover {
-  color: #b91c1c;
-  background: rgba(254, 242, 242, 0.96);
-  border-color: rgba(220, 38, 38, 0.28);
+  color: #1e40af;
+  background: rgba(37, 99, 235, 0.14);
+  border-color: rgba(37, 99, 235, 0.28);
 }
-
 
 .nav {
   display: flex;
