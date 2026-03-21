@@ -536,6 +536,10 @@ h3 {
   align-items: stretch;
 }
 
+.section.alt .split > .accordion {
+  align-self: start;
+}
+
 .post-card,
 .topic-card,
 .section-card,
