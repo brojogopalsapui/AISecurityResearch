@@ -103,101 +103,232 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initResearchWatchSlider() {
-    const slider = document.getElementById("researchWatchSlider");
-    const track = document.getElementById("watchTrack");
-    const dotsWrap = document.getElementById("watchDots");
+  const slider = document.getElementById("researchWatchSlider");
+  const viewport = slider?.querySelector(".watch-viewport");
+  const track = document.getElementById("watchTrack");
+  const dotsWrap = document.getElementById("watchDots");
+  const progressFill = document.getElementById("watchProgressFill");
+  const progressText = document.getElementById("watchProgressText");
 
-    if (!slider || !track || !dotsWrap) return;
+  if (!slider || !viewport || !track || !dotsWrap) return;
 
-    const cards = Array.from(track.querySelectorAll(".watch-card"));
-    const prevBtn = slider.querySelector(".watch-prev");
-    const nextBtn = slider.querySelector(".watch-next");
-    let index = 0;
-    let autoSlide = null;
+  const cards = Array.from(track.querySelectorAll(".watch-card"));
+  const prevBtn = slider.querySelector(".watch-prev");
+  const nextBtn = slider.querySelector(".watch-next");
 
-    const visibleCards = () => (window.innerWidth <= 1100 ? 1 : 2);
-    const maxIndex = () => Math.max(0, cards.length - visibleCards());
+  let index = 0;
+  let autoSlide = null;
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragOffset = 0;
+  let suppressClick = false;
 
-    const getStepWidth = () => {
-      if (!cards.length) return 0;
-      const cardWidth = cards[0].getBoundingClientRect().width;
-      const gap = parseFloat(window.getComputedStyle(track).columnGap || window.getComputedStyle(track).gap || "0") || 0;
-      return cardWidth + gap;
-    };
+  const visibleCards = () => (window.innerWidth <= 1100 ? 1 : 2);
+  const slideCount = () => Math.max(1, cards.length - visibleCards() + 1);
+  const maxIndex = () => slideCount() - 1;
 
-    const buildDots = () => {
-      const total = maxIndex() + 1;
-      dotsWrap.innerHTML = "";
+  const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
 
-      for (let i = 0; i < total; i += 1) {
-        const dot = document.createElement("button");
-        dot.type = "button";
-        dot.className = `watch-dot${i === index ? " active" : ""}`;
-        dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
-        dot.addEventListener("click", () => {
-          update(i);
-          startAuto();
-        });
-        dotsWrap.appendChild(dot);
-      }
-    };
+  const getStepWidth = () => {
+    if (!cards.length) return 0;
+    const cardWidth = cards[0].getBoundingClientRect().width;
+    const styles = window.getComputedStyle(track);
+    const gap = parseFloat(styles.columnGap || styles.gap || "0") || 0;
+    return cardWidth + gap;
+  };
 
-    const update = (nextIndex) => {
-      index = Math.max(0, Math.min(nextIndex, maxIndex()));
-      const offset = index * getStepWidth();
-      track.style.transform = `translateX(-${offset}px)`;
-      Array.from(dotsWrap.children).forEach((dot, dotIndex) => {
-        dot.classList.toggle("active", dotIndex === index);
+  const setTrackOffset = (offset, animate = true) => {
+    track.style.transition = animate ? "transform 0.55s ease" : "none";
+    track.style.transform = `translateX(-${offset}px)`;
+  };
+
+  const syncDots = () => {
+    Array.from(dotsWrap.children).forEach((dot, dotIndex) => {
+      dot.classList.toggle("active", dotIndex === index);
+    });
+  };
+
+  const syncProgress = () => {
+    const total = slideCount();
+    const percent = ((index + 1) / total) * 100;
+
+    if (progressFill) {
+      progressFill.style.width = `${percent}%`;
+    }
+
+    if (progressText) {
+      const currentText = String(index + 1).padStart(2, "0");
+      const totalText = String(total).padStart(2, "0");
+      progressText.textContent = `${currentText} / ${totalText}`;
+    }
+  };
+
+  const buildDots = () => {
+    const total = slideCount();
+    dotsWrap.innerHTML = "";
+
+    for (let i = 0; i < total; i += 1) {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = `watch-dot${i === index ? " active" : ""}`;
+      dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      dot.addEventListener("click", () => {
+        update(i);
+        startAuto();
       });
-    };
+      dotsWrap.appendChild(dot);
+    }
+  };
 
-    const next = () => {
-      index = index >= maxIndex() ? 0 : index + 1;
-      update(index);
-    };
+  const update = (nextIndex, animate = true) => {
+    index = clamp(nextIndex, 0, maxIndex());
+    const offset = index * getStepWidth();
+    setTrackOffset(offset, animate);
+    syncDots();
+    syncProgress();
+  };
 
-    const prev = () => {
-      index = index <= 0 ? maxIndex() : index - 1;
-      update(index);
-    };
+  const next = () => {
+    const nextIndex = index >= maxIndex() ? 0 : index + 1;
+    update(nextIndex);
+  };
 
-    const stopAuto = () => {
-      if (autoSlide) {
-        window.clearInterval(autoSlide);
-        autoSlide = null;
+  const prev = () => {
+    const prevIndex = index <= 0 ? maxIndex() : index - 1;
+    update(prevIndex);
+  };
+
+  const stopAuto = () => {
+    if (autoSlide) {
+      window.clearInterval(autoSlide);
+      autoSlide = null;
+    }
+  };
+
+  const startAuto = () => {
+    stopAuto();
+    if (slideCount() <= 1) return;
+    autoSlide = window.setInterval(next, 4200);
+  };
+
+  const onPointerDown = (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    isDragging = true;
+    dragStartX = event.clientX;
+    dragOffset = 0;
+    suppressClick = false;
+
+    viewport.classList.add("is-dragging");
+    track.style.transition = "none";
+
+    if (viewport.setPointerCapture) {
+      viewport.setPointerCapture(event.pointerId);
+    }
+
+    stopAuto();
+  };
+
+  const onPointerMove = (event) => {
+    if (!isDragging) return;
+
+    dragOffset = event.clientX - dragStartX;
+
+    if (Math.abs(dragOffset) > 8) {
+      suppressClick = true;
+    }
+
+    const baseOffset = index * getStepWidth();
+    let liveOffset = baseOffset - dragOffset;
+
+    const minOffset = 0;
+    const maxOffset = maxIndex() * getStepWidth();
+
+    if (liveOffset < minOffset) {
+      liveOffset = minOffset - (minOffset - liveOffset) * 0.18;
+    }
+
+    if (liveOffset > maxOffset) {
+      liveOffset = maxOffset + (liveOffset - maxOffset) * 0.18;
+    }
+
+    setTrackOffset(liveOffset, false);
+  };
+
+  const onPointerEnd = (event) => {
+    if (!isDragging) return;
+
+    isDragging = false;
+    viewport.classList.remove("is-dragging");
+
+    if (viewport.releasePointerCapture) {
+      try {
+        viewport.releasePointerCapture(event.pointerId);
+      } catch (error) {
+        // ignore safe release errors
       }
-    };
+    }
 
-    const startAuto = () => {
-      stopAuto();
-      if (cards.length <= visibleCards()) return;
-      autoSlide = window.setInterval(next, 4200);
-    };
+    const threshold = getStepWidth() * 0.18;
 
-    prevBtn?.addEventListener("click", () => {
-      prev();
-      startAuto();
-    });
-
-    nextBtn?.addEventListener("click", () => {
+    if (dragOffset <= -threshold) {
       next();
-      startAuto();
-    });
+    } else if (dragOffset >= threshold) {
+      prev();
+    } else {
+      update(index);
+    }
 
-    slider.addEventListener("mouseenter", stopAuto);
-    slider.addEventListener("mouseleave", startAuto);
+    window.setTimeout(() => {
+      suppressClick = false;
+    }, 0);
 
-    window.addEventListener("resize", () => {
-      buildDots();
-      update(Math.min(index, maxIndex()));
-      startAuto();
-    });
-
-    buildDots();
-    update(0);
     startAuto();
-  }
+  };
 
+  cards.forEach((card) => {
+    card.addEventListener("click", (event) => {
+      if (suppressClick) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    });
+  });
+
+  prevBtn?.addEventListener("click", () => {
+    prev();
+    startAuto();
+  });
+
+  nextBtn?.addEventListener("click", () => {
+    next();
+    startAuto();
+  });
+
+  slider.addEventListener("mouseenter", stopAuto);
+  slider.addEventListener("mouseleave", startAuto);
+
+  viewport.addEventListener("pointerdown", onPointerDown);
+  viewport.addEventListener("pointermove", onPointerMove);
+  viewport.addEventListener("pointerup", onPointerEnd);
+  viewport.addEventListener("pointercancel", onPointerEnd);
+
+  viewport.addEventListener("pointerleave", (event) => {
+    if (isDragging && event.pointerType === "mouse") {
+      onPointerEnd(event);
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    buildDots();
+    update(Math.min(index, maxIndex()), false);
+    startAuto();
+  });
+
+  buildDots();
+  update(0, false);
+  startAuto();
+}
   initResearchWatchSlider();
 
   const accordions = document.querySelectorAll(".accordion");

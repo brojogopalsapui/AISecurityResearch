@@ -1367,11 +1367,20 @@ li {
 .watch-viewport {
   overflow: hidden;
   width: 100%;
+  border-radius: 24px;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.watch-viewport.is-dragging {
+  cursor: grabbing;
 }
 
 .watch-track {
   display: flex;
   gap: 1.25rem;
+  align-items: stretch;
   transition: transform 0.55s ease;
   will-change: transform;
 }
@@ -1379,6 +1388,11 @@ li {
 .watch-card {
   flex: 0 0 calc((100% - 1.25rem) / 2);
   min-height: 100%;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.watch-card:hover {
+  transform: translateY(-4px);
 }
 
 .watch-nav {
@@ -1386,7 +1400,8 @@ li {
   height: 54px;
   border: 1px solid rgba(37, 99, 235, 0.14);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(14px);
   color: #1d4ed8;
   font-size: 1.3rem;
   font-weight: 800;
@@ -1424,6 +1439,40 @@ li {
 .watch-dot.active {
   width: 30px;
   background: linear-gradient(135deg, var(--primary), var(--violet));
+}
+
+.watch-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.watch-progress-track {
+  position: relative;
+  width: min(220px, 42vw);
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+}
+
+.watch-progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--primary), var(--violet));
+  transition: width 0.4s ease;
+}
+
+.watch-progress-text {
+  min-width: 58px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
 }
 
 /* Ongoing Work page */
@@ -1630,5 +1679,17 @@ li {
 
   .watch-nav {
     display: none;
+  }
+
+  .watch-progress {
+    gap: 0.65rem;
+  }
+
+  .watch-progress-track {
+    width: min(170px, 58vw);
+  }
+
+  .watch-progress-text {
+    font-size: 0.82rem;
   }
 }
