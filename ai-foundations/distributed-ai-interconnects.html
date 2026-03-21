@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!-- FOUNDATION PAGE: DISTRIBUTED AI AND INTERCONNECTS -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Distributed AI and Interconnects | Brojogopal Sapui</title>
+  <meta name="description" content="A foundation page on multi-accelerator AI systems, communication fabrics, collective operations, and why distributed execution must be part of the security model." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="../index.html" aria-label="Brojogopal Sapui Home">B<span>S</span></a>
+      <nav class="nav" id="siteNav">
+        <a href="../index.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="../research.html">Research</a>
+        <a href="../ongoing-work.html">Ongoing Work</a>
+        <a href="../publications.html">Resources</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+      <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="siteNav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" style="padding: 4.5rem 0 3rem;">
+      <div class="container">
+        <span class="eyebrow">AI Foundations • Distributed AI</span>
+        <h1 style="max-width: 14ch;">Distributed AI and Interconnects</h1>
+        <p class="lead" style="max-width: 82ch;">As model size and serving scale increase, the AI system extends beyond a single chip or even a single server. Scale-up and scale-out execution rely on high-speed links, switches, collective operations, synchronization, and software libraries that make communication part of the computation itself. Security analysis must therefore include the fabric, not just the accelerator.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container split">
+        <div class="content-card">
+          <span class="kicker">Overview</span>
+          <h2>What this topic covers</h2>
+          <p>Distributed AI systems move tensors, gradients, optimizer state, activations, and cache fragments across interconnect fabrics. They rely on collective communication, topology-aware scheduling, and synchronization to keep many devices working together. In large deployments, communication costs can rival or dominate parts of the computation.</p>
+          <p>From a security perspective, interconnects matter because they add new observability and control surfaces. Traffic patterns, synchronization stalls, topology placement, and orchestration metadata can reveal workload structure or create new denial, leakage, and integrity concerns. A modern AI threat model is incomplete if it treats distributed communication as invisible plumbing.</p>
+        </div>
+
+        <div class="content-card">
+          <span class="kicker">Why it matters</span>
+          <h2>Research significance</h2>
+          <ul class="check-list">
+            <li>Communication fabrics are increasingly part of the critical path for both training and large-scale inference.</li>
+            <li>Distributed execution creates new visibility into workload structure through collective traffic and synchronization behavior.</li>
+            <li>Security assumptions must extend across devices, links, switches, and orchestration layers.</li>
+            <li>Scale-out realism is essential for evaluating confidentiality, isolation, and availability in modern AI infrastructure.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <div class="content-card landscape-card">
+          <img src="../assets/img/highlight-physical.png" alt="Systems placeholder visual" class="zoom-img" />
+          <div class="card-caption">
+            <p>A future figure could show multi-accelerator training or inference across servers and racks, including collective communication, topology awareness, switch fabric, and where monitoring or manipulation might occur.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Discussion</span>
+          <h2>Key technical questions</h2>
+          <p>A distributed system view becomes necessary whenever models, batches, or services are too large for a single-device interpretation.</p>
+        </div>
+
+        <div class="card-grid three">
+          <div class="section-card">
+            <h3>Threat model</h3>
+            <p>Is the attacker observing traffic, occupying a co-tenant position, manipulating scheduling, or targeting the integrity of collective operations and synchronization?</p>
+          </div>
+          <div class="section-card">
+            <h3>System constraints</h3>
+            <p>The relevant constraints include topology, bandwidth, latency, synchronization cost, fault tolerance, and the operational complexity of large AI clusters.</p>
+          </div>
+          <div class="section-card">
+            <h3>Open direction</h3>
+            <p>A key open challenge is to develop security models that can capture distributed AI behavior without collapsing into implementation-specific details, especially as rack-scale and fabric-centric designs become more common.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <div class="cta">
+          <div>
+            <span class="eyebrow">Next Step</span>
+            <h2>Back to research map</h2>
+            <p>Return to the structured research map and browse other AI security and foundation topics.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="../research.html">Research Map</a>
+            <a class="btn btn-secondary" href="../publications.html">Resources</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h3>Brojogopal Sapui</h3>
+        <p>AI Security Research • Hardware Trust • Edge and Physical AI</p>
+      </div>
+      <div>
+        <h4>Main Pages</h4>
+        <a href="../research.html">Research</a>
+        <a href="../ongoing-work.html">Ongoing Work</a>
+        <a href="../publications.html">Resources</a>
+      </div>
+      <div>
+        <h4>Focus</h4>
+        <p>Cross-layer AI security, trustworthy deployment, hardware-aware defense, and physical intelligence.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="../assets/js/main.js"></script>
+
+</body>
+</html>

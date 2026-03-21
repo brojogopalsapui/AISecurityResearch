@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!-- FOUNDATION PAGE: MEMORY HIERARCHY FOR AI -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Hierarchy for AI | Brojogopal Sapui</title>
+  <meta name="description" content="A foundation page on registers, SRAM, caches, HBM, host memory, and why data movement dominates both AI performance and hardware-aware security analysis." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="../index.html" aria-label="Brojogopal Sapui Home">B<span>S</span></a>
+      <nav class="nav" id="siteNav">
+        <a href="../index.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="../research.html">Research</a>
+        <a href="../ongoing-work.html">Ongoing Work</a>
+        <a href="../publications.html">Resources</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+      <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="siteNav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" style="padding: 4.5rem 0 3rem;">
+      <div class="container">
+        <span class="eyebrow">AI Foundations • Memory Hierarchy</span>
+        <h1 style="max-width: 14ch;">Memory Hierarchy for AI</h1>
+        <p class="lead" style="max-width: 82ch;">Many AI workloads are limited less by raw arithmetic than by moving data efficiently. Weights, activations, partial sums, KV caches, optimizer states, and communication buffers all compete for limited bandwidth and locality. A serious security analysis therefore needs to understand the memory hierarchy as a first-class design dimension.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container split">
+        <div class="content-card">
+          <span class="kicker">Overview</span>
+          <h2>What this topic covers</h2>
+          <p>Modern AI execution spans registers, local SRAM or shared memory, on-chip caches, off-chip HBM or DRAM, host memory, and sometimes storage-backed staging. The goal of the accelerator stack is to keep data as close to compute as possible for as long as possible.</p>
+          <p>This matters for security because memory movement creates observable structure. Burst patterns, cache residency, reuse distance, bandwidth pressure, allocation size, and spill behavior can reveal information about model shape, sequence length, batch size, sparsity, and runtime phase. Memory is therefore both a performance bottleneck and a leakage surface.</p>
+        </div>
+
+        <div class="content-card">
+          <span class="kicker">Why it matters</span>
+          <h2>Research significance</h2>
+          <ul class="check-list">
+            <li>Data movement often dominates energy, latency, and throughput in modern AI pipelines.</li>
+            <li>Off-chip traffic can expose model structure and workload phase more clearly than arithmetic utilization alone.</li>
+            <li>Security assumptions break when sensitive states such as weights, activations, or KV caches move across trust boundaries.</li>
+            <li>Memory-aware analysis is essential for side-channel evaluation, co-tenant leakage studies, and fault targeting.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <div class="content-card landscape-card">
+          <img src="../assets/img/full_ml_lifecycle_threats_countermeasures.svg" alt="End-to-end lifecycle placeholder visual" class="zoom-img" />
+          <div class="card-caption">
+            <p>Later you can replace this with a memory-stack diagram showing registers, local SRAM, cache, HBM, host DRAM, storage, and the points where AI workloads stall, spill, synchronize, or leak information.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Discussion</span>
+          <h2>Key technical questions</h2>
+          <p>A memory-centric view often changes how one interprets both performance and security in AI systems.</p>
+        </div>
+
+        <div class="card-grid three">
+          <div class="section-card">
+            <h3>Threat model</h3>
+            <p>Can an attacker observe memory traffic, cache contention, allocation patterns, DMA bursts, or reuse behavior? If yes, the memory hierarchy itself becomes part of the attack interface.</p>
+          </div>
+          <div class="section-card">
+            <h3>System constraints</h3>
+            <p>Different workloads stress memory differently. Training stores optimizer state and activations, while LLM inference stresses KV-cache growth, batching, and long-context behavior.</p>
+          </div>
+          <div class="section-card">
+            <h3>Open direction</h3>
+            <p>An important research direction is to design abstractions that map model operations to memory signatures in a way that is accurate enough for security analysis but general enough to remain useful across hardware generations.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="container">
+        <div class="cta">
+          <div>
+            <span class="eyebrow">Next Step</span>
+            <h2>Back to research map</h2>
+            <p>Return to the structured research map and browse other AI security and foundation topics.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="../research.html">Research Map</a>
+            <a class="btn btn-secondary" href="../publications.html">Resources</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h3>Brojogopal Sapui</h3>
+        <p>AI Security Research • Hardware Trust • Edge and Physical AI</p>
+      </div>
+      <div>
+        <h4>Main Pages</h4>
+        <a href="../research.html">Research</a>
+        <a href="../ongoing-work.html">Ongoing Work</a>
+        <a href="../publications.html">Resources</a>
+      </div>
+      <div>
+        <h4>Focus</h4>
+        <p>Cross-layer AI security, trustworthy deployment, hardware-aware defense, and physical intelligence.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="../assets/js/main.js"></script>
+
+</body>
+</html>
