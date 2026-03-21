@@ -10,129 +10,7 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="assets/css/style.css" rel="stylesheet"/>
-<style>
-    .watch-stack {
-      display: grid;
-      gap: 1.4rem;
-      margin-top: 1.25rem;
-    }
 
-    .watch-note {
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid rgba(20, 40, 80, 0.08);
-      border-radius: 24px;
-      padding: 1.25rem 1.25rem 1.3rem 1.25rem;
-      box-shadow: 0 14px 34px rgba(18, 38, 63, 0.06);
-      scroll-margin-top: 110px;
-    }
-
-    .watch-badge-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 0.7rem;
-      flex-wrap: wrap;
-    }
-
-    .watch-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.38rem 0.8rem;
-      border-radius: 999px;
-      background: rgba(27, 167, 173, 0.09);
-      color: #0b7a7d;
-      font-size: 0.86rem;
-      font-weight: 700;
-    }
-
-    .watch-tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.34rem 0.72rem;
-      border-radius: 999px;
-      background: rgba(31, 54, 92, 0.07);
-      color: #27456f;
-      font-size: 0.82rem;
-      font-weight: 600;
-    }
-
-    .watch-note h3 {
-      margin: 0 0 0.75rem 0;
-      font-size: clamp(1.45rem, 2vw, 2rem);
-      line-height: 1.2;
-    }
-
-    .watch-lead {
-      font-size: 1.06rem;
-      line-height: 1.72;
-      color: #2f425d;
-      margin-bottom: 0.9rem;
-    }
-
-    .watch-note p {
-      line-height: 1.74;
-      color: #43536a;
-      margin: 0 0 0.8rem 0;
-    }
-
-    .watch-columns {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .watch-block {
-      background: rgba(245, 248, 252, 0.92);
-      border: 1px solid rgba(31, 54, 92, 0.08);
-      border-radius: 18px;
-      padding: 0.95rem 1rem 0.95rem 1rem;
-    }
-
-    .watch-block h4 {
-      margin: 0 0 0.55rem 0;
-      font-size: 1rem;
-      color: #18375d;
-    }
-
-    .watch-block ul {
-      margin: 0;
-      padding-left: 1.1rem;
-      color: #41526a;
-      line-height: 1.65;
-    }
-
-    .watch-inline-links {
-      margin-top: 1rem;
-      padding-top: 0.95rem;
-      border-top: 1px solid rgba(20, 40, 80, 0.08);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem 1rem;
-    }
-
-    .watch-inline-links a {
-      font-size: 0.95rem;
-      font-weight: 600;
-    }
-
-    .watch-bottom-note {
-      margin-top: 0.95rem;
-      padding: 0.95rem 1rem;
-      border-radius: 16px;
-      background: rgba(74, 120, 181, 0.08);
-      border: 1px solid rgba(74, 120, 181, 0.12);
-      color: #334861;
-      line-height: 1.68;
-    }
-
-    @media (max-width: 900px) {
-      .watch-columns {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
 </head>
 <body class="subpage"><header class="site-header">
 <div class="container nav-wrap">
@@ -167,7 +45,7 @@
 <div class="container">
 <span class="kicker">Research Watch</span>
 <h2>Highlighted ongoing directions</h2>
-<p class="lead" style="max-width: 920px;">
+<p class="lead lead-measure">
           These shorter research-watch notes are ideal for commenting on new papers, industry movement, benchmark gaps,
           and emerging design tensions. The goal is not to summarize everything, but to make the key shift in the field clear
           and explain why it matters for how AI systems are actually being built.
