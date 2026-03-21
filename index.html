@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -9,15 +10,11 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="assets/css/style.css" rel="stylesheet"/>
-
 </head>
 <body>
 <div class="floating-notif" id="floatingNotif">
 <div class="notif-badge">NEW</div>
-<div class="notif-text">
-<strong>Research Watch:</strong> Agentic and physical AI are rapidly expanding the security boundary.
-      <a href="ongoing-work.html">Read note →</a>
-</div>
+<div class="notif-text"><strong>Research Watch:</strong> STACK shows why layered LLM safeguards still need adaptive pipeline-level evaluation. <a href="ongoing-work.html#2026-03-stack-safeguard-pipelines">Read note →</a></div>
 </div>
 <header class="site-header">
 <div class="container nav-wrap">
@@ -267,13 +264,18 @@
             emerging attack surfaces, new defense directions, and system-level gaps becoming important in real AI deployment.
           </p>
 </div>
-
-
-
 <div class="research-watch-slider reveal" id="researchWatchSlider">
 <button aria-label="Previous research watch" class="watch-nav watch-prev" type="button">❮</button>
 <div class="watch-viewport">
 <div class="watch-track" id="watchTrack">
+
+<a class="post-card watch-card" href="ongoing-work.html#2026-03-stack-safeguard-pipelines">
+<span class="tag">Research Watch</span>
+<h3>STACK shows why layered LLM safeguards still need adaptive pipeline-level evaluation</h3>
+<p>
+    This paper matters because it shifts evaluation from single jailbreak-resistant models to full safeguard pipelines. It shows that layered input/output classifier defenses can look strong under standard testing, yet still fail badly once the attacker is optimized against the pipeline as a system.
+  </p>
+</a>
 <a class="post-card watch-card" href="ongoing-work.html#agentic-watch">
 <span class="tag">Research Watch</span>
 <h3>Why agentic AI changes the security problem</h3>
@@ -302,11 +304,11 @@
 </div>
 <button aria-label="Next research watch" class="watch-nav watch-next" type="button">❯</button>
 </div>
-<div class="watch-progress reveal" aria-hidden="true">
-  <span class="watch-progress-track">
-    <span class="watch-progress-fill" id="watchProgressFill"></span>
-  </span>
-  <span class="watch-progress-text" id="watchProgressText">01 / 02</span>
+<div aria-hidden="true" class="watch-progress reveal">
+<span class="watch-progress-track">
+<span class="watch-progress-fill" id="watchProgressFill"></span>
+</span>
+<span class="watch-progress-text" id="watchProgressText">01 / 02</span>
 </div>
 <div class="watch-dots reveal" id="watchDots"></div>
 <div class="section-actions-center reveal">
@@ -351,7 +353,5 @@
 </div>
 </div>
 </footer>
-
-
 <script src="assets/js/main.js"></script></body>
 </html>
