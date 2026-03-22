@@ -1544,6 +1544,23 @@ li {
   line-height: 1.68;
 }
 
+
+.trending-link {
+  color: #fff !important;
+  background: linear-gradient(135deg, #2563eb, #7c3aed, #ec4899);
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  animation: trendingBlink 1.8s ease-in-out infinite;
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.28);
+}
+
+@keyframes trendingBlink {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.18); }
+}
+
 /* Resources page */
 .resource-card {
   background: rgba(255, 255, 255, 0.94);
