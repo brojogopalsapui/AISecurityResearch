@@ -1547,18 +1547,18 @@ li {
 
 .trending-link {
   color: #fff !important;
-  background: linear-gradient(135deg, #2563eb, #7c3aed, #ec4899);
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
   padding: 0.55rem 0.95rem;
   border-radius: 999px;
   font-weight: 700;
   text-decoration: none;
-  animation: trendingBlink 1.8s ease-in-out infinite;
-  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.28);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-@keyframes trendingBlink {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.18); }
+.trending-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.28);
 }
 
 /* Resources page */
