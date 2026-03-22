@@ -71,7 +71,7 @@ FULL HTML TEMPLATE FOR A NEW POST
         <a href="../index.html">Home</a>
         <a href="../about.html">About</a>
         <a href="../research.html">Research</a>
-        <a href="../ongoing-work.html">Ongoing Work</a>
+        <a href="../ongoing-work.html">Trending Topics</a>
         <a href="../publications.html">Resources</a>
         <a href="../contact.html">Contact</a>
       </nav>
@@ -181,13 +181,13 @@ FULL HTML TEMPLATE FOR A NEW POST
         <div class="cta">
           <div>
             <span class="eyebrow">Next Step</span>
-            <h2>Back to ongoing work</h2>
+            <h2>Back to Trending Topics</h2>
             <p>
               Return to the running list of research-watch notes and evolving technical directions.
             </p>
           </div>
           <div class="cta-actions">
-            <a class="btn btn-primary" href="../ongoing-work.html">Ongoing Work</a>
+            <a class="btn btn-primary" href="../ongoing-work.html">Trending Topics</a>
             <a class="btn btn-secondary" href="../research.html">Research</a>
           </div>
         </div>
@@ -204,7 +204,7 @@ FULL HTML TEMPLATE FOR A NEW POST
       <div>
         <h4>Main Pages</h4>
         <a href="../research.html">Research</a>
-        <a href="../ongoing-work.html">Ongoing Work</a>
+        <a href="../ongoing-work.html">Trending Topics</a>
         <a href="../publications.html">Resources</a>
       </div>
       <div>
