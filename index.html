@@ -81,11 +81,12 @@
             <div class="portal-copy">
               <span class="mini-kicker">Portal overview</span>
               <p>
-                This homepage is designed as a guided entry point: start with the research map, move into direct topic pages, strengthen the needed systems background, and then follow the living research notes for current directions.
+                This homepage is designed as a guided entry point: start with the research map, move into direct topic pages,
+                strengthen the needed systems background in dedicated foundation sections, and follow the living research notes for current directions.
               </p>
               <div class="metric-grid">
                 <div class="metric-card"><strong>8</strong><span>Security domains</span></div>
-                <div class="metric-card"><strong>6</strong><span>Foundational modules</span></div>
+                <div class="metric-card"><strong>Core</strong><span>Learning tracks</span></div>
                 <div class="metric-card"><strong>Live</strong><span>Trending notes</span></div>
               </div>
             </div>
@@ -135,38 +136,52 @@
           <div>
             <span class="eyebrow">Featured learning tracks</span>
             <h2>Three strong entry points into current AI security</h2>
-            <p>These highlighted tracks are useful starting points for visitors who want to understand where current AI-security attention is moving most quickly.</p>
+            <p>These are the three core entry sections highlighted on the homepage. Open the section directly, or enlarge the figure for a quick visual overview before diving in.</p>
           </div>
-          <a class="view-all" href="research.html">View full research map →</a>
         </div>
 
         <div class="grid-3">
-          <a class="feature-card" href="ai-security/generative-ai.html">
-            <div class="feature-media"><img src="assets/img/highlight-generative.png" alt="Illustration for generative AI security" /></div>
+          <article class="feature-card">
+            <div class="feature-media">
+              <img class="zoom-img" src="assets/img/highlight-generative.png" alt="Illustration for generative AI security" style="object-fit:contain;background:#f7fbff;cursor:zoom-in;" />
+            </div>
             <div class="feature-body">
               <span class="tag">Generative AI</span>
               <h3>Prompt-layer security and containment</h3>
               <p>Prompt injection, jailbreaks, model misuse, watermarking, alignment, and safe integration remain central challenges.</p>
+              <div class="btn-row" style="margin-top:1rem">
+                <a class="btn btn-secondary" href="ai-security/generative-ai.html">Open section</a>
+              </div>
             </div>
-          </a>
+          </article>
 
-          <a class="feature-card" href="ai-security/edge-security.html">
-            <div class="feature-media"><img src="assets/img/highlight-edge.png" alt="Illustration for edge AI security" /></div>
+          <article class="feature-card">
+            <div class="feature-media">
+              <img class="zoom-img" src="assets/img/highlight-edge.png" alt="Illustration for edge AI security" style="object-fit:contain;background:#f7fbff;cursor:zoom-in;" />
+            </div>
             <div class="feature-body">
               <span class="tag">Edge AI</span>
               <h3>Implementation realism at the device boundary</h3>
               <p>Edge deployment makes physical exposure, firmware trust, side-channel leakage, and constrained-system design highly relevant.</p>
+              <div class="btn-row" style="margin-top:1rem">
+                <a class="btn btn-secondary" href="ai-security/edge-security.html">Open section</a>
+              </div>
             </div>
-          </a>
+          </article>
 
-          <a class="feature-card" href="ai-security/physical-ai.html">
-            <div class="feature-media"><img src="assets/img/highlight-physical.png" alt="Illustration for physical AI security" /></div>
+          <article class="feature-card">
+            <div class="feature-media">
+              <img class="zoom-img" src="assets/img/highlight-physical.png" alt="Illustration for physical AI security" style="object-fit:contain;background:#f7fbff;cursor:zoom-in;" />
+            </div>
             <div class="feature-body">
               <span class="tag">Physical AI</span>
               <h3>Security, safety, timing, and control together</h3>
               <p>In embodied systems, sensing, actuation, latency, and cyber risk interact, so trust becomes a full-system design question.</p>
+              <div class="btn-row" style="margin-top:1rem">
+                <a class="btn btn-secondary" href="ai-security/physical-ai.html">Open section</a>
+              </div>
             </div>
-          </a>
+          </article>
         </div>
       </div>
     </section>
@@ -192,14 +207,22 @@
           </div>
         </div>
 
-        <div class="panel visual-panel">
-          <img class="zoom-img" src="assets/img/01_ai_security_landscape.png" alt="AI security landscape diagram across software, hardware, deployment, and emerging AI modes" />
-          <div class="visual-copy">
-            <span class="mini-kicker">Cross-layer view</span>
-            <h3>AI security landscape</h3>
-            <p>This visual summary connects model-level vulnerabilities, hardware risks, deployment realities, and countermeasure design into one compact landscape.</p>
-            <div class="btn-row" style="margin-top:1rem">
-              <a class="btn btn-secondary" href="research.html">Open structured map</a>
+        <div style="display:grid;gap:1rem;align-self:stretch;">
+          <div class="panel visual-panel">
+            <img class="zoom-img" src="assets/img/01_ai_security_landscape.png" alt="AI security landscape diagram across software, hardware, deployment, and emerging AI modes" />
+            <div class="visual-copy">
+              <span class="mini-kicker">Cross-layer view</span>
+              <h3>AI security landscape</h3>
+              <p>This visual summary connects model-level vulnerabilities, hardware risks, deployment realities, and countermeasure design into one compact landscape.</p>
+            </div>
+          </div>
+
+          <div class="panel visual-panel">
+            <img class="zoom-img" src="assets/img/full_ml_lifecycle_threats_countermeasures.svg" alt="End-to-end AI lifecycle diagram with threats and countermeasures" style="background:#f7fbff;object-fit:contain;" />
+            <div class="visual-copy">
+              <span class="mini-kicker">Lifecycle perspective</span>
+              <h3>Threats and countermeasures across the AI pipeline</h3>
+              <p>This broader system view complements the landscape above and helps connect software, cloud, edge, hardware, and physical deployment stages into one coherent learning path.</p>
             </div>
           </div>
         </div>
@@ -208,61 +231,18 @@
 
     <section class="section">
       <div class="container">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">Technical foundations</span>
-            <h2>Foundational modules for rigorous AI security analysis</h2>
-            <p>The portal is not limited to threat pages. It also includes hardware and systems foundations needed to reason carefully about AI deployment and security.</p>
+        <div class="panel" style="padding:1.5rem 1.6rem; background:linear-gradient(180deg,#ffffff,#f8fbff);">
+          <span class="eyebrow">Foundational background</span>
+          <h2 style="margin-top:.35rem;">Technical foundations are developed in dedicated background sections</h2>
+          <p style="max-width:920px; margin:.55rem 0 0;">
+            Detailed foundational modules on AI hardware, memory hierarchy, accelerators, inference systems, heterogeneous execution,
+            and distributed infrastructure are organized under the Research section. This keeps the homepage focused while making the
+            deeper technical background easy to access whenever it is needed.
+          </p>
+          <div class="btn-row" style="margin-top:1rem;">
+            <a class="btn btn-secondary" href="research.html#foundations">Open foundational sections</a>
+            <a class="btn btn-secondary" href="research.html">Open research page</a>
           </div>
-          <a class="view-all" href="research.html#foundations">See all foundations →</a>
-        </div>
-
-        <div class="foundation-grid">
-          <a class="foundation-card" href="ai-foundations/modern-ai-hardware-knowledge.html">
-            <span class="tag">Foundation</span>
-            <h3>Modern AI hardware knowledge</h3>
-            <p>Understand the platform stack beneath AI workloads before studying implementation-level threats.</p>
-          </a>
-          <a class="foundation-card" href="ai-foundations/memory-hierarchy-for-ai.html">
-            <span class="tag">Foundation</span>
-            <h3>Memory hierarchy for AI</h3>
-            <p>Learn how data movement, bandwidth limits, and storage structure affect performance, leakage, and system design.</p>
-          </a>
-          <a class="foundation-card" href="ai-foundations/ai-accelerator-basics.html">
-            <span class="tag">Foundation</span>
-            <h3>AI accelerator basics</h3>
-            <p>Build intuition for accelerator building blocks and how they shape attack surfaces and defenses.</p>
-          </a>
-          <a class="foundation-card" href="ai-foundations/llm-inference-systems.html">
-            <span class="tag">Foundation</span>
-            <h3>LLM inference systems</h3>
-            <p>Study how serving pipelines, batching, caching, and orchestration matter for modern AI systems.</p>
-          </a>
-          <a class="foundation-card" href="ai-foundations/cpu-gpu-npu-partitioning.html">
-            <span class="tag">Foundation</span>
-            <h3>CPU–GPU–NPU partitioning</h3>
-            <p>See how heterogeneous execution influences trust boundaries, efficiency, and integration risk.</p>
-          </a>
-          <a class="foundation-card" href="ai-foundations/distributed-ai-interconnects.html">
-            <span class="tag">Foundation</span>
-            <h3>Distributed AI and interconnects</h3>
-            <p>Connect system-level communication structure with scalability, exposure, and deployment behavior.</p>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container grid-2">
-        <div class="info-card accent-card">
-          <span class="eyebrow">Research focus</span>
-          <h2>Cross-layer security with a hardware-aware lens</h2>
-          <p>My work sits at the intersection of AI security, hardware trust, edge intelligence, and trustworthy deployment. A recurring theme is that meaningful security cannot stop at algorithmic robustness; it must also account for implementation, accelerators, system integration, physical access, and real deployment constraints.</p>
-        </div>
-        <div class="info-card mint-card">
-          <span class="eyebrow">Portal structure</span>
-          <h2>A clear path from overview to depth</h2>
-          <p>Start with the research map for structure, move into a domain page for focused reading, open the foundations pages when you need systems context, and use Trending Topics to follow what is changing now.</p>
         </div>
       </div>
     </section>
@@ -318,12 +298,13 @@
           </div>
         </div>
 
-        <div class="panel visual-panel">
-          <img class="zoom-img" src="assets/img/full_ml_lifecycle_threats_countermeasures.svg" alt="End-to-end AI lifecycle diagram with threats and countermeasures" />
-          <div class="visual-copy">
-            <span class="mini-kicker">Lifecycle perspective</span>
-            <h3>Threats and countermeasures across the AI pipeline</h3>
-            <p>This broader system view helps visitors connect software, cloud, edge, hardware, and physical deployment stages into one coherent learning path.</p>
+        <div class="panel" style="padding:1.35rem; background:linear-gradient(180deg,#ffffff,#f8fbff);">
+          <span class="eyebrow">How to use this portal</span>
+          <h3 style="margin-top:.35rem;">Move from overview to depth at your own pace</h3>
+          <p>Start with the research map for structure, open a domain page for focused reading, use the foundations when you want more technical context, and return to Trending Topics for the newest shifts and open problems.</p>
+          <div class="btn-row" style="margin-top:1rem">
+            <a class="btn btn-secondary" href="research.html">Research sections</a>
+            <a class="btn btn-secondary" href="ongoing-work.html">Trending Topics</a>
           </div>
         </div>
       </div>
@@ -346,7 +327,7 @@
           </details>
           <details class="faq-card">
             <summary>Where should I start if I am new to AI security?</summary>
-            <div class="answer">Begin with the research map, then move through software security, hardware security, and edge AI. After that, open the foundations pages to strengthen systems intuition.</div>
+            <div class="answer">Begin with the research map, then move through software security, hardware security, and edge AI. After that, open the foundations pages whenever you want stronger systems intuition.</div>
           </details>
           <details class="faq-card">
             <summary>What makes this different from a normal personal webpage?</summary>
