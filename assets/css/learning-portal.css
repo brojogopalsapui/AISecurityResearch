@@ -415,4 +415,5 @@ details .answer{margin-top:.8rem}
   .metric-grid,.quick-grid,.grid-3,.grid-2,.topic-grid,.foundation-grid,.watch-grid,.faq-grid,.footer-grid{grid-template-columns:1fr}
   .hero-copy h1{max-width:none}
   .hero,.section-top{padding-top:2rem}
+
 }

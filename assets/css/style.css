@@ -1942,3 +1942,24 @@ footer a.trending-link {
     box-shadow: 0 24px 48px rgba(28,39,51,0.10);
   }
 }
+
+.latest-note-blink {
+  color: #d90429;
+  font-weight: 700;
+  animation: latestNoteBlink 1.2s ease-in-out infinite;
+}
+
+.latest-note-blink strong {
+  color: #b00020;
+}
+
+@keyframes latestNoteBlink {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 0 rgba(217, 4, 41, 0);
+  }
+  50% {
+    opacity: 0.35;
+    text-shadow: 0 0 8px rgba(217, 4, 41, 0.45);
+  }
+}
