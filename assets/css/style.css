@@ -1969,3 +1969,139 @@ footer a.trending-link {
     text-shadow: 0 0 8px rgba(217, 4, 41, 0.35);
   }
 }
+
+/* === Final clickable-link and text-contrast fixes === */
+
+/* all normal clickable links */
+a,
+main a,
+.watch-inline-links a,
+.resource-card a,
+.resource-mini a,
+.post-card a,
+.topic-card a,
+.section-card a,
+.footer-grid a,
+.toc a {
+  color: #1f54cf !important;
+  font-weight: 700;
+}
+
+a:hover,
+main a:hover,
+.watch-inline-links a:hover,
+.resource-card a:hover,
+.resource-mini a:hover,
+.post-card a:hover,
+.topic-card a:hover,
+.section-card a:hover,
+.footer-grid a:hover,
+.toc a:hover {
+  color: #163ea3 !important;
+}
+
+/* keep buttons and glossy trending button unchanged */
+.btn,
+.btn:hover,
+a.trending-link,
+a.trending-link:hover,
+.nav a.trending-link,
+.nav a.trending-link:hover {
+  color: inherit !important;
+}
+
+/* fix white text on off-white cards/pages */
+.post-card h3,
+.topic-card h3,
+.section-card h3,
+.resource-card h2,
+.resource-card h3,
+.watch-note h3,
+.watch-block h4,
+.accordion-title,
+.accordion-preview,
+.figure-caption,
+.page-figure figcaption,
+.card-caption,
+.resource-table th,
+.resource-table td,
+.resource-list li,
+.check-list li,
+.callout,
+.resource-note,
+.watch-bottom-note {
+  color: #14202b !important;
+}
+
+/* paragraph text on light cards */
+.post-card p,
+.topic-card p,
+.section-card p,
+.resource-card p,
+.watch-note p,
+.watch-block p,
+.resource-mini p,
+.accordion-panel p,
+.accordion-panel li,
+.resource-table td,
+.figure-caption,
+.page-figure figcaption,
+.card-caption {
+  color: #4f5f6f !important;
+}
+
+/* special clickable CTA pills inside cards */
+.accordion-cta,
+.resource-pill,
+.tag,
+.meta-chip,
+.snapshot-chip,
+.watch-tag,
+.accordion-meta {
+  color: #1849b9 !important;
+}
+
+/* latest floating research alert */
+.floating-research-alert {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  max-width: 680px;
+  padding: 0.72rem 0.95rem;
+  border-radius: 16px;
+  background: rgba(255, 248, 248, 0.96);
+  border: 1px solid rgba(217, 4, 41, 0.18);
+  box-shadow: 0 14px 34px rgba(28,39,51,0.10);
+  backdrop-filter: blur(10px);
+}
+
+.floating-research-alert .alert-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.32rem 0.6rem;
+  border-radius: 999px;
+  background: #d90429;
+  color: #ffffff !important;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.floating-research-alert .alert-text {
+  color: #7a1020 !important;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+@media (max-width: 768px) {
+  .floating-research-alert {
+    position: static;
+    margin: 0.9rem auto 0;
+    width: calc(100% - 1rem);
+  }
+}
