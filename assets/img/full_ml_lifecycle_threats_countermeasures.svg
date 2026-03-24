@@ -28,13 +28,13 @@
      inkscape:window-height="1106"
      id="namedview4953"
      showgrid="false"
-     inkscape:zoom="0.84"
-     inkscape:cx="199.60276"
+     inkscape:zoom="0.63"
+     inkscape:cx="957.59896"
      inkscape:cy="489.60002"
      inkscape:window-x="-11"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g4675" />
+     inkscape:current-layer="svg4951" />
   <metadata
      id="metadata2">
     <rdf:RDF>
@@ -58,14 +58,9 @@
        id="style4">*{stroke-linejoin: round; stroke-linecap: butt}</style>
   </defs>
   <g
-     id="figure_1">
-    <g
-       id="patch_1">
-      <path
-         d="M 0 734.4  L 1368.296813 734.4  L 1368.296813 0  L 0 0  z "
-         style="fill: #ffffff"
-         id="path8" />
-    </g>
+     id="figure_1"
+     transform="translate(91.5)"
+     style="stroke-linecap:butt;stroke-linejoin:round">
     <g
        id="axes_1"
        transform="matrix(0.99575056,0,0,1,5.1632534,0)"
@@ -731,7 +726,8 @@
                id="DejaVuSans-Bold-20"
                transform="scale(0.015625)"
                inkscape:connector-curvature="0"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
+               style="stroke-linecap:butt;stroke-linejoin:round"
+               d="" />
             <path
                id="DejaVuSans-Bold-41"
                d="M 3419,850 H 1538 L 1241,0 H 31 L 1759,4666 H 3194 L 4922,0 H 3713 Z m -1581,866 h 1278 l -638,1856 z"
@@ -1423,7 +1419,8 @@
                id="DejaVuSans-20"
                transform="scale(0.015625)"
                inkscape:connector-curvature="0"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
+               style="stroke-linecap:butt;stroke-linejoin:round"
+               d="" />
             <path
                id="DejaVuSans-63"
                d="m 3122,3366 v -538 q -244,135 -489,202 -245,67 -495,67 -560,0 -870,-355 -309,-354 -309,-995 0,-641 309,-996 310,-354 870,-354 250,0 495,67 245,67 489,202 V 134 Q 2881,22 2623,-34 2366,-91 2075,-91 1284,-91 818,406 353,903 353,1747 q 0,856 470,1346 471,491 1290,491 265,0 518,-55 253,-54 491,-163 z"
