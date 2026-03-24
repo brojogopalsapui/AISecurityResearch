@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<!-- FOUNDATION PAGE: CPU GPU NPU PARTITIONING -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CPU–GPU–NPU Partitioning | Brojogopal Sapui</title>
-  <meta name="description" content="A foundation page on heterogeneous execution across CPUs, GPUs, and NPUs in edge and client AI systems, and why partitioning matters for security." />
+  <meta name="description" content="Technical foundation page on heterogeneous AI execution across CPU, GPU, and NPU domains and the resulting trust boundaries in edge and client systems." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -19,7 +18,7 @@
         <a href="../index.html">Home</a>
         <a href="../about.html">About</a>
         <a href="../research.html">Research</a>
-        <a href="../ongoing-work.html">Trending Topics</a>
+        <a href="../ongoing-work.html" class="trending-link">Trending Topics</a>
         <a href="../publications.html">Resources</a>
         <a href="../contact.html">Contact</a>
       </nav>
@@ -32,9 +31,9 @@
   <main>
     <section class="hero" style="padding: 4.5rem 0 3rem;">
       <div class="container">
-        <span class="eyebrow">AI Foundations • Heterogeneous Partitioning</span>
+        <span class="eyebrow">AI Foundations • CPU–GPU–NPU Partitioning</span>
         <h1 style="max-width: 14ch;">CPU–GPU–NPU Partitioning</h1>
-        <p class="lead" style="max-width: 82ch;">Modern edge devices and AI PCs increasingly divide work across CPU, GPU, and NPU blocks. This is not only a performance choice; it also defines where data lives, which processor sees which intermediate state, where firmware or driver control is concentrated, and how trust boundaries are distributed across the platform.</p>
+        <p class="lead" style="max-width: 86ch;">Client and edge AI systems rarely run end-to-end on one homogeneous processor. Real deployments partition work across CPUs, GPUs, and NPUs, and that partitioning defines where tensors move, where permissions change, and where trust boundaries become visible.</p>
       </div>
     </section>
 
@@ -43,18 +42,18 @@
         <div class="content-card">
           <span class="kicker">Overview</span>
           <h2>What this topic covers</h2>
-          <p>CPUs handle control-heavy orchestration, preprocessing, and general software tasks. GPUs often absorb throughput-oriented vector and graphics-adjacent workloads. NPUs aim to run AI workloads efficiently under tighter power and thermal envelopes, especially for sustained local inference. The exact split depends on latency targets, model type, software stack maturity, and device policy.</p>
-          <p>For security analysis, partitioning changes the observation points. A model that appears to run locally may actually move tensors between multiple subsystems. Inputs, outputs, metadata, or intermediate states can cross drivers, memory domains, and execution engines. Understanding who handles what is therefore essential for realistic threat models on client and edge platforms.</p>
+          <p>CPUs usually handle control-heavy orchestration, preprocessing, post-processing, and operating-system integration. GPUs absorb throughput-oriented parallel workloads. NPUs target efficient local AI inference under tighter power and thermal budgets. The actual split depends on model type, latency goals, toolchain support, and vendor runtime capabilities.</p>
+          <p>For security analysis, heterogeneous partitioning changes the observation points. A model that appears “local” may actually move tensors through shared memory, drivers, runtime translation layers, and fallback paths. Those movements can expose data, expand telemetry, or create silent policy gaps when unsupported operators leave the protected execution path.</p>
         </div>
 
         <div class="content-card">
           <span class="kicker">Why it matters</span>
-          <h2>Research significance</h2>
+          <h2>Security significance</h2>
           <ul class="check-list">
-            <li>Heterogeneous execution changes where sensitive data resides and which processor can observe it.</li>
-            <li>Partitioning decisions affect power, thermal behavior, latency, and sustained local inference characteristics.</li>
-            <li>Drivers, runtimes, and firmware across CPU, GPU, and NPU boundaries become part of the security surface.</li>
-            <li>Edge and AI PC deployments require trust models that match how work is actually divided on-device.</li>
+            <li>Heterogeneous execution introduces multiple memory domains and driver boundaries.</li>
+            <li>Operator fallback paths can move sensitive tensors into less trusted software stacks.</li>
+            <li>Security controls must follow the data as it crosses CPU, GPU, and NPU ownership.</li>
+            <li>Edge AI trust models are incomplete without an execution-partition view.</li>
           </ul>
         </div>
       </div>
@@ -62,47 +61,54 @@
 
     <section class="section alt">
       <div class="container">
-        <div class="content-card landscape-card">
-          <img src="../assets/img/highlight-edge.png" alt="Edge AI placeholder visual" class="zoom-img" />
-          <div class="card-caption">
-            <p>Later you can replace this with a custom diagram showing how a client AI pipeline is split across CPU, GPU, and NPU, including memory domains, drivers, and the points where data crosses trust boundaries.</p>
+        <figure class="page-figure compact-figure foundation-figure">
+          <div class="img-frame">
+            <img src="../assets/img/foundations/cpu-gpu-npu-partitioning.svg" alt="Diagram of CPU, GPU, and NPU domains with transfers and security checkpoints." class="zoom-img" />
           </div>
-        </div>
+          <figcaption>Heterogeneous client-AI execution across CPU, GPU, and NPU domains, emphasizing transfers, shared memory, and trust-boundary crossings.</figcaption>
+        </figure>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <span class="eyebrow">Discussion</span>
-          <h2>Key technical questions</h2>
-          <p>Heterogeneous systems are valuable because they are flexible, but that flexibility also complicates security interpretation.</p>
+          <span class="eyebrow">Key concepts</span>
+          <h2>Functional roles in heterogeneous systems</h2>
+          <p>Different processors are chosen for different operational reasons, and those reasons affect the security story.</p>
         </div>
 
         <div class="card-grid three">
-          <div class="section-card">
-            <h3>Threat model</h3>
-            <p>Can the attacker observe CPU-side orchestration, GPU-side execution, NPU telemetry, shared memory, or inter-processor traffic? The answer changes the realistic attack surface.</p>
-          </div>
-          <div class="section-card">
-            <h3>System constraints</h3>
-            <p>Client and edge systems are constrained by battery, thermals, sustained performance, and software availability, so work partitioning is often dynamic rather than fixed.</p>
-          </div>
-          <div class="section-card">
-            <h3>Open direction</h3>
-            <p>A strong open direction is to create methods for tracing sensitive AI data across heterogeneous subsystems without relying on vendor-specific tools that are hard to generalize.</p>
-          </div>
+          <div class="section-card"><h3>CPU domain</h3><p>The CPU runs orchestration logic, model loading, preprocessing, runtime control, fallback handling, and many security-critical software checks. It is often the richest control point and the broadest attack surface.</p></div>
+          <div class="section-card"><h3>GPU domain</h3><p>The GPU provides flexible parallel execution and often handles large tensor kernels or graphics-adjacent compute. It may expose more tooling and visibility than an NPU, but also higher complexity and larger shared resource surfaces.</p></div>
+          <div class="section-card"><h3>NPU domain</h3><p>The NPU aims for efficient AI execution with tight energy and thermal control. Its runtimes may be more opaque, making operator coverage, model partitioning, and telemetry handling especially important for security reasoning.</p></div>
         </div>
       </div>
     </section>
 
     <section class="section alt">
       <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Security lens</span>
+          <h2>Partition-aware security checks</h2>
+          <p>To secure a client or edge pipeline, the partition itself must be part of the threat model.</p>
+        </div>
+
+        <div class="card-grid three">
+          <div class="section-card"><h3>Memory and copy policy</h3><p>Who owns the tensor buffer before and after each stage? Shared-memory mapping, DMA, and zeroization policy determine whether intermediate state remains exposed longer than intended.</p></div>
+          <div class="section-card"><h3>Driver and runtime permissions</h3><p>Execution stacks often include vendor runtimes, kernel drivers, and user-space APIs. Each layer may collect telemetry, retain model metadata, or define privileged control paths.</p></div>
+          <div class="section-card"><h3>Fallback and unsupported operators</h3><p>If the NPU cannot run an operator, the runtime may silently move execution elsewhere. That fallback path can invalidate assumptions about locality, confidentiality, or real-time behavior.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
         <div class="cta">
           <div>
             <span class="eyebrow">Next Step</span>
-            <h2>Back to research map</h2>
-            <p>Return to the structured research map and browse other AI security and foundation topics.</p>
+            <h2>Back to the research map</h2>
+            <p>Return to the structured research overview or continue browsing the other AI foundations and AI security themes.</p>
           </div>
           <div class="cta-actions">
             <a class="btn btn-primary" href="../research.html">Research Map</a>

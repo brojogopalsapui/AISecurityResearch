@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<!-- FOUNDATION PAGE: MEMORY HIERARCHY FOR AI -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Memory Hierarchy for AI | Brojogopal Sapui</title>
-  <meta name="description" content="A foundation page on registers, SRAM, caches, HBM, host memory, and why data movement dominates both AI performance and hardware-aware security analysis." />
+  <meta name="description" content="Technical foundation page on registers, SRAM, cache, HBM, host memory, data movement, and memory-centric security questions in AI hardware." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -19,7 +18,7 @@
         <a href="../index.html">Home</a>
         <a href="../about.html">About</a>
         <a href="../research.html">Research</a>
-        <a href="../ongoing-work.html">Trending Topics</a>
+        <a href="../ongoing-work.html" class="trending-link">Trending Topics</a>
         <a href="../publications.html">Resources</a>
         <a href="../contact.html">Contact</a>
       </nav>
@@ -34,7 +33,7 @@
       <div class="container">
         <span class="eyebrow">AI Foundations • Memory Hierarchy</span>
         <h1 style="max-width: 14ch;">Memory Hierarchy for AI</h1>
-        <p class="lead" style="max-width: 82ch;">Many AI workloads are limited less by raw arithmetic than by moving data efficiently. Weights, activations, partial sums, KV caches, optimizer states, and communication buffers all compete for limited bandwidth and locality. A serious security analysis therefore needs to understand the memory hierarchy as a first-class design dimension.</p>
+        <p class="lead" style="max-width: 86ch;">AI performance and AI security are both shaped by where tensors live and how often they move. Registers, SRAM, on-chip caches, HBM or DRAM, and host memory do not merely differ in speed; they define observability, contention, spill behavior, and trust boundaries.</p>
       </div>
     </section>
 
@@ -43,18 +42,18 @@
         <div class="content-card">
           <span class="kicker">Overview</span>
           <h2>What this topic covers</h2>
-          <p>Modern AI execution spans registers, local SRAM or shared memory, on-chip caches, off-chip HBM or DRAM, host memory, and sometimes storage-backed staging. The goal of the accelerator stack is to keep data as close to compute as possible for as long as possible.</p>
-          <p>This matters for security because memory movement creates observable structure. Burst patterns, cache residency, reuse distance, bandwidth pressure, allocation size, and spill behavior can reveal information about model shape, sequence length, batch size, sparsity, and runtime phase. Memory is therefore both a performance bottleneck and a leakage surface.</p>
+          <p>Modern AI execution spans several memory tiers. Small local structures near compute provide low latency and high reuse, while larger off-chip tiers hold model weights, activations, KV-cache state, and intermediate tensors that cannot stay close to the compute array. The entire stack tries to maximize reuse near the compute blocks and minimize expensive movement.</p>
+          <p>From a security perspective, memory movement is often more revealing than arithmetic itself. Cache residency, burst length, reuse distance, bank conflicts, bandwidth saturation, paging, and host-device copies can expose model structure, sequence length, batch size, runtime phase, or multi-tenant interference. A memory-aware threat model is therefore central to hardware-aware AI security.</p>
         </div>
 
         <div class="content-card">
           <span class="kicker">Why it matters</span>
-          <h2>Research significance</h2>
+          <h2>Security significance</h2>
           <ul class="check-list">
-            <li>Data movement often dominates energy, latency, and throughput in modern AI pipelines.</li>
-            <li>Off-chip traffic can expose model structure and workload phase more clearly than arithmetic utilization alone.</li>
-            <li>Security assumptions break when sensitive states such as weights, activations, or KV caches move across trust boundaries.</li>
-            <li>Memory-aware analysis is essential for side-channel evaluation, co-tenant leakage studies, and fault targeting.</li>
+            <li>Data movement often dominates energy and latency, making it a natural measurement surface.</li>
+            <li>Spill behavior and cache pressure can expose model size, sequence length, and execution phase.</li>
+            <li>HBM, DRAM, and host-memory transfers broaden the attack surface beyond on-chip arithmetic.</li>
+            <li>Understanding memory tiers is essential for both performance analysis and leakage interpretation.</li>
           </ul>
         </div>
       </div>
@@ -62,47 +61,54 @@
 
     <section class="section alt">
       <div class="container">
-        <div class="content-card landscape-card">
-          <img src="../assets/img/full_ml_lifecycle_threats_countermeasures.svg" alt="End-to-end lifecycle placeholder visual" class="zoom-img" />
-          <div class="card-caption">
-            <p>Later you can replace this with a memory-stack diagram showing registers, local SRAM, cache, HBM, host DRAM, storage, and the points where AI workloads stall, spill, synchronize, or leak information.</p>
+        <figure class="page-figure compact-figure foundation-figure">
+          <div class="img-frame">
+            <img src="../assets/img/foundations/memory-hierarchy-ai.svg" alt="Diagram of the AI memory hierarchy from registers to host memory and its security observation points." class="zoom-img" />
           </div>
-        </div>
+          <figcaption>Memory hierarchy for AI execution, emphasizing that placement and movement together shape both performance bottlenecks and leakage opportunities.</figcaption>
+        </figure>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <span class="eyebrow">Discussion</span>
-          <h2>Key technical questions</h2>
-          <p>A memory-centric view often changes how one interprets both performance and security in AI systems.</p>
+          <span class="eyebrow">Key concepts</span>
+          <h2>Key memory tiers</h2>
+          <p>Each tier contributes differently to throughput, latency hiding, and the visibility of an AI workload.</p>
         </div>
 
         <div class="card-grid three">
-          <div class="section-card">
-            <h3>Threat model</h3>
-            <p>Can an attacker observe memory traffic, cache contention, allocation patterns, DMA bursts, or reuse behavior? If yes, the memory hierarchy itself becomes part of the attack interface.</p>
-          </div>
-          <div class="section-card">
-            <h3>System constraints</h3>
-            <p>Different workloads stress memory differently. Training stores optimizer state and activations, while LLM inference stresses KV-cache growth, batching, and long-context behavior.</p>
-          </div>
-          <div class="section-card">
-            <h3>Open direction</h3>
-            <p>An important research direction is to design abstractions that map model operations to memory signatures in a way that is accurate enough for security analysis but general enough to remain useful across hardware generations.</p>
-          </div>
+          <div class="section-card"><h3>Registers and local SRAM</h3><p>These structures sit closest to the MAC or tensor units and support tile-level reuse. They are difficult to observe directly from software, but their occupancy and refill behavior strongly influence cycle-level timing.</p></div>
+          <div class="section-card"><h3>On-chip cache and shared fabric buffers</h3><p>Caches and shared buffers mediate access among compute engines, DMA, and coherence or fabric logic. They create contention points where co-scheduled tasks or tenants can indirectly influence one another.</p></div>
+          <div class="section-card"><h3>HBM, DRAM, and host memory</h3><p>Large memory tiers hold bulk model state and overflow tensors. They often dominate off-chip bandwidth, reveal burst structure, and become visible to system software, memory controllers, or interconnect monitors.</p></div>
         </div>
       </div>
     </section>
 
     <section class="section alt">
       <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Security lens</span>
+          <h2>Memory-centric security observations</h2>
+          <p>A good AI threat model should be able to explain what memory effects an attacker might observe or manipulate.</p>
+        </div>
+
+        <div class="card-grid three">
+          <div class="section-card"><h3>Leakage through movement</h3><p>Repeated transfers can reveal prompt length, batch size, sequence growth, or operator mix. Even when arithmetic stays constant, the movement profile may change enough to identify the workload phase.</p></div>
+          <div class="section-card"><h3>Faults through stress and placement</h3><p>Timing stress, row disturbances, buffer corruption, or voltage faults can have very different impact depending on whether the target state resides in SRAM, cache, HBM, or host memory.</p></div>
+          <div class="section-card"><h3>Isolation through residency control</h3><p>Defensive design must consider buffer ownership, zeroization, memory partitioning, cache flushing, and what happens when unsupported operators force data into new memory domains.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
         <div class="cta">
           <div>
             <span class="eyebrow">Next Step</span>
-            <h2>Back to research map</h2>
-            <p>Return to the structured research map and browse other AI security and foundation topics.</p>
+            <h2>Back to the research map</h2>
+            <p>Return to the structured research overview or continue browsing the other AI foundations and AI security themes.</p>
           </div>
           <div class="cta-actions">
             <a class="btn btn-primary" href="../research.html">Research Map</a>

@@ -1,42 +1,29 @@
 <!DOCTYPE html>
-<!-- RESEARCH PAGE: MODERN AI HARDWARE KNOWLEDGE FOR SECURITY ANALYSIS -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Modern AI Hardware Knowledge for Security Analysis | Brojogopal Sapui</title>
-  <meta
-    name="description"
-    content="A technical and intuitive research page on modern AI hardware fundamentals required for meaningful AI hardware security analysis."
-  />
-
+  <title>Modern AI Hardware Knowledge Required for Security Analysis | Brojogopal Sapui</title>
+  <meta name="description" content="Technical foundation page on modern AI hardware stacks, memory residency, tensor engines, runtimes, and security observation points needed for rigorous AI security analysis." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/style.css" />
 </head>
 <body>
-
   <header class="site-header">
     <div class="container nav-wrap">
       <a class="brand" href="../index.html" aria-label="Brojogopal Sapui Home">B<span>S</span></a>
-
       <nav class="nav" id="siteNav">
         <a href="../index.html">Home</a>
         <a href="../about.html">About</a>
         <a href="../research.html">Research</a>
-        <a href="../ongoing-work.html">Trending Topics</a>
+        <a href="../ongoing-work.html" class="trending-link">Trending Topics</a>
         <a href="../publications.html">Resources</a>
         <a href="../contact.html">Contact</a>
       </nav>
-
       <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="siteNav">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
     </div>
   </header>
@@ -44,15 +31,9 @@
   <main>
     <section class="hero" style="padding: 4.5rem 0 3rem;">
       <div class="container">
-        <span class="eyebrow">Research Update • Modern AI Hardware</span>
-        <h1 style="max-width: 14ch;">Modern AI Hardware Knowledge Required for Security Analysis</h1>
-        <p class="lead" style="max-width: 82ch;">
-          Security analysis of modern AI systems cannot stop at the model level. It requires a practical understanding
-          of how today’s workloads actually execute on accelerators, how data moves between compute and memory,
-          how precision and scheduling are chosen, and where the trust boundary lies between software, firmware,
-          runtime, interconnect, and silicon. This page builds an intuitive but technically strong foundation for
-          analyzing AI hardware from a security perspective.
-        </p>
+        <span class="eyebrow">AI Foundations • Modern Hardware Knowledge</span>
+        <h1 style="max-width: 14ch;">Modern AI Hardware Knowledge</h1>
+        <p class="lead" style="max-width: 86ch;">Rigorous AI security analysis requires more than knowing the model architecture. It requires understanding how host software, runtimes, memory hierarchies, tensor engines, interconnects, numeric precision, and scheduling policies shape actual execution on modern AI hardware.</p>
       </div>
     </section>
 
@@ -60,31 +41,19 @@
       <div class="container split">
         <div class="content-card">
           <span class="kicker">Overview</span>
-          <h2>Why modern AI hardware looks different from classical computing</h2>
-          <p>
-            Traditional computing platforms were designed to execute a wide variety of control-heavy tasks efficiently.
-            Modern AI workloads, in contrast, are dominated by large volumes of structured linear algebra:
-            matrix multiplication, tensor contraction, vector accumulation, activation processing, normalization,
-            attention, and memory-intensive data movement. As a result, AI hardware is built not just for general-purpose
-            programmability, but for throughput-oriented tensor execution.
-          </p>
-          <p>
-            This shift changes the hardware-security problem. The important question is no longer only whether a processor
-            computes correctly, but also how the model is mapped, where weights and activations reside, how intermediate
-            states are scheduled, which numeric precision is used, how host software controls the device, and how much
-            information leaks through memory access, timing, power, faults, or communication fabrics.
-          </p>
+          <h2>What this topic covers</h2>
+          <p>Traditional platforms were designed for control-centric software, while modern AI hardware is built to sustain large volumes of structured tensor computation. That shift brings specialized matrix engines, deep memory hierarchies, compiler-driven kernel lowering, and heterogeneous execution across CPUs, GPUs, NPUs, or accelerators in the cloud.</p>
+          <p>For security researchers, this changes the questions worth asking. It is no longer sufficient to ask whether the processor computes correctly. One must also ask where weights and activations live, how kernels are mapped, which firmware and drivers control the device, where trust boundaries lie, and what timing, memory, power, or communication artifacts become observable outside the ideal model graph.</p>
         </div>
 
         <div class="content-card">
           <span class="kicker">Why it matters</span>
-          <h2>Research significance for AI security</h2>
+          <h2>Security significance</h2>
           <ul class="check-list">
-            <li>Security claims about AI systems are weak if they ignore the execution substrate.</li>
-            <li>Model confidentiality often depends on memory hierarchy, runtime orchestration, and accelerator exposure.</li>
-            <li>Side-channel and fault attacks become meaningful only when mapped to real dataflow and compute behavior.</li>
-            <li>Edge AI and AI PCs introduce new power, latency, thermal, and physical-access constraints.</li>
-            <li>Training and inference have different hardware bottlenecks and therefore different attack surfaces.</li>
+            <li>It connects model semantics to physical execution, which is essential for side-channel, fault, and isolation analysis.</li>
+            <li>It clarifies where host/runtime control ends and where device-local state becomes security-relevant.</li>
+            <li>It helps identify observation points such as DMA, memory traffic, firmware control paths, and on-die compute blocks.</li>
+            <li>It turns abstract AI security concerns into measurable system and hardware questions.</li>
           </ul>
         </div>
       </div>
@@ -92,315 +61,63 @@
 
     <section class="section alt">
       <div class="container">
-        <div class="content-card landscape-card">
-          <img
-            src="../assets/img/01_ai_security_landscape.png"
-            alt="AI security landscape used as a placeholder visual"
-            class="zoom-img"
-          />
-          <div class="card-caption">
-            <p>
-              You can later replace this placeholder figure with a dedicated accelerator-stack diagram showing host CPU,
-              runtime, device memory, tensor cores or matrix engines, on-chip interconnect, off-chip links, and the main
-              security observation points such as firmware, DMA, memory traffic, side-channel surfaces, and fault targets.
-            </p>
+        <figure class="page-figure compact-figure foundation-figure">
+          <div class="img-frame">
+            <img src="../assets/img/foundations/modern-ai-hardware-stack.svg" alt="Diagram of the AI hardware stack spanning host runtime, device memory, tensor compute, and security surfaces." class="zoom-img" />
           </div>
-        </div>
+          <figcaption>A concise stack view showing how runtime control, memory placement, compute engines, and security observation points interact on modern AI hardware.</figcaption>
+        </figure>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <span class="eyebrow">Core Foundation</span>
-          <h2>The hardware concepts a security researcher must understand</h2>
-          <p>
-            Before discussing attacks or defenses, it helps to separate AI hardware into a few core technical layers.
-            These layers interact strongly, and many security misunderstandings happen when one layer is studied in isolation.
-          </p>
+          <span class="eyebrow">Key concepts</span>
+          <h2>Core technical layers</h2>
+          <p>These layers are repeatedly involved when an AI workload is compiled, launched, executed, and measured on real hardware.</p>
         </div>
 
         <div class="card-grid three">
-          <div class="section-card">
-            <h3>Compute fabric</h3>
-            <p>
-              This is the tensor or matrix-centric execution engine: CUDA cores, tensor cores, systolic or matrix
-              multiplication units, SIMD or vector engines, reduction trees, and supporting arithmetic datapaths.
-              It determines how quickly multiply-accumulate style operations can be sustained and what precision modes
-              are available.
-            </p>
-          </div>
-
-          <div class="section-card">
-            <h3>Memory hierarchy</h3>
-            <p>
-              AI performance is often limited not by arithmetic alone but by moving weights, activations, partial sums,
-              and key-value caches. Registers, local SRAM, shared memory, L2 cache, HBM, host DRAM, and storage all
-              contribute to latency, bandwidth pressure, and leakage opportunity.
-            </p>
-          </div>
-
-          <div class="section-card">
-            <h3>System software stack</h3>
-            <p>
-              Real execution depends on compilers, graph lowering, kernel libraries, runtimes, drivers, firmware, memory
-              allocators, stream schedulers, and communication frameworks. Security analysis must account for the fact
-              that the software stack decides when and how the hardware is exercised.
-            </p>
-          </div>
+          <div class="section-card"><h3>Host and runtime control</h3><p>The host CPU, drivers, compiler, and runtime decide kernel launch order, buffer ownership, DMA setup, synchronization, and fallback behavior. These layers often define the first trust boundary around the accelerator.</p></div>
+          <div class="section-card"><h3>Device memory and data residency</h3><p>Weights, activations, optimizer state, and KV-cache do not simply “exist on the chip.” They occupy specific memory tiers with different visibility, latency, and protection guarantees. Placement strongly affects leakage and integrity exposure.</p></div>
+          <div class="section-card"><h3>Tensor compute and dataflow</h3><p>Matrix engines, tensor cores, vector units, and reduction paths implement AI kernels through tiling, blocking, reuse, and precision-aware scheduling. These choices shape the device behavior seen through timing, bandwidth, power, or faults.</p></div>
         </div>
       </div>
     </section>
 
     <section class="section alt">
-      <div class="container split">
-        <div class="content-card">
-          <span class="kicker">Compute</span>
-          <h2>Tensor-centric execution and dataflow</h2>
-          <p>
-            Modern AI accelerators are optimized for dense and increasingly structured forms of tensor computation.
-            At a high level, the device attempts to keep matrix engines busy while hiding memory latency and maximizing
-            reuse of operands close to the compute units. This leads to tiling, blocking, pipelining, double-buffering,
-            and carefully scheduled data reuse.
-          </p>
-          <p>
-            For security, this matters because observable behavior often depends on how kernels are tiled and launched.
-            Two mathematically similar model layers may exhibit very different leakage characteristics once lowered into
-            hardware-specific kernels. Attention, convolution, MLP blocks, and embedding lookups stress the hardware in
-            different ways, and therefore expose different timing, bandwidth, and side-channel behavior.
-          </p>
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Security lens</span>
+          <h2>Security questions that follow</h2>
+          <p>Once the hardware stack is visible, AI security analysis becomes more concrete and implementation-aware.</p>
         </div>
 
-        <div class="content-card">
-          <span class="kicker">Memory</span>
-          <h2>The memory wall is not a side issue</h2>
-          <p>
-            In AI systems, off-chip data movement is frequently the dominant cost. Even when peak arithmetic throughput
-            is extremely high, effective performance collapses if weights and activations cannot be supplied to the compute
-            engines fast enough. This is why HBM, large on-chip SRAM, caching strategies, rematerialization, activation
-            checkpointing, KV-cache management, and communication overlap are so important.
-          </p>
-          <p>
-            From a security viewpoint, the memory wall is also an observation wall. Memory accesses, transfer bursts,
-            scheduling stalls, and reuse patterns can reveal model structure, batch behavior, sequence length, sparsity,
-            or workload phase. This is one reason why memory-aware threat modeling is essential for accelerator security.
-          </p>
+        <div class="card-grid three">
+          <div class="section-card"><h3>Observation surface</h3><p>Which signals leave the ideal mathematical abstraction? Examples include memory bursts, service latency, scheduler activity, power traces, telemetry counters, or interconnect traffic.</p></div>
+          <div class="section-card"><h3>Fault and integrity surface</h3><p>Where can disturbances change execution? Practical targets include firmware-controlled state, DMA descriptors, local memories, arithmetic datapaths, voltage rails, or timing assumptions in host-device coordination.</p></div>
+          <div class="section-card"><h3>Isolation and trust boundaries</h3><p>Who controls buffers, firmware, and runtime policy? Multi-tenant accelerators, cloud deployment, or edge platforms often blur the boundary between user-visible software and hidden device-local mechanisms.</p></div>
         </div>
       </div>
     </section>
 
     <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <span class="eyebrow">Architecture View</span>
-          <h2>How to think about the modern AI hardware stack</h2>
-          <p>
-            A useful security-oriented view is to treat the AI platform as a layered execution pipeline rather than a
-            single device.
-          </p>
-        </div>
-
-        <div class="card-grid three">
-          <div class="section-card">
-            <h3>Host side</h3>
-            <p>
-              The host CPU prepares input batches, launches kernels, manages memory, controls DMA, coordinates device
-              synchronization, and often handles preprocessing or postprocessing. On shared systems, the host is also
-              where multi-tenant isolation and software trust begin.
-            </p>
-          </div>
-
-          <div class="section-card">
-            <h3>Accelerator side</h3>
-            <p>
-              The accelerator executes kernels, stores tensors in local or off-chip memory, performs communication with
-              peers, and exposes a real hardware footprint through power, timing, utilization, temperature, and interconnect
-              activity. This is the main arena for side-channel, fault, and availability analysis.
-            </p>
-          </div>
-
-          <div class="section-card">
-            <h3>Fabric side</h3>
-            <p>
-              As models grow, scale-out interconnect becomes part of the computation itself. Multi-GPU or multi-accelerator
-              training and inference rely on links, switches, collectives, and communication libraries. Therefore, trust
-              assumptions about interconnect and synchronization are increasingly part of AI security.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section alt">
-      <div class="container split">
-        <div class="content-card">
-          <span class="kicker">Precision</span>
-          <h2>Why reduced precision changes both efficiency and security</h2>
-          <p>
-            Modern AI hardware rarely relies on only one numeric format. Instead, it uses mixtures of FP32, FP16, BF16,
-            INT8, lower-bit quantization, and hardware-supported accumulation strategies depending on the workload phase.
-            Reduced precision improves throughput, memory footprint, and energy efficiency, but it also changes numerical
-            robustness and fault sensitivity.
-          </p>
-          <p>
-            For security analysis, precision is important because perturbation tolerance, quantization boundaries,
-            saturation effects, and accumulator behavior influence whether an injected fault becomes visible, masked,
-            amplified, or silently absorbed. The same model can therefore have different robustness properties on
-            different hardware mappings.
-          </p>
-        </div>
-
-        <div class="content-card">
-          <span class="kicker">Software-Hardware Boundary</span>
-          <h2>Compiler and runtime are part of the attack surface</h2>
-          <p>
-            AI execution is heavily shaped by graph compilers and runtimes that fuse operations, reorder schedules,
-            select kernels, allocate memory regions, and dispatch communication. These layers are often overlooked
-            in security discussions, even though they strongly determine the physical behavior of the device.
-          </p>
-          <p>
-            This means the true security boundary is cross-layer: model graph, framework, compiler, driver, runtime,
-            firmware, and silicon. For a hardware-security researcher, it is often not enough to ask which attack exists;
-            the better question is which exact compiled execution pattern the attacker can observe or influence.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <span class="eyebrow">Deployment Modes</span>
-          <h2>Datacenter accelerators, TPUs, and edge NPUs are not the same problem</h2>
-          <p>
-            Security analysis becomes much stronger when hardware is studied in its deployment context rather than as an
-            abstract accelerator.
-          </p>
-        </div>
-
-        <div class="card-grid three">
-          <div class="section-card">
-            <h3>Datacenter GPU systems</h3>
-            <p>
-              These platforms emphasize massive throughput, high-bandwidth memory, scale-out communication, multi-GPU
-              collectives, and software-rich orchestration. Their attack surface includes host-device boundaries,
-              virtualization, model confidentiality, shared infrastructure, and interconnect-level observability.
-            </p>
-          </div>
-
-          <div class="section-card">
-            <h3>TPU-style matrix systems</h3>
-            <p>
-              These systems highlight structured matrix execution, HBM-fed tensor processing, and tightly integrated
-              software stacks. Security questions often focus on isolation, job scheduling, memory traffic patterns,
-              inference scaling, and cloud trust assumptions.
-            </p>
-          </div>
-
-          <div class="section-card">
-            <h3>Client and edge NPUs</h3>
-            <p>
-              Edge devices and AI PCs prioritize energy efficiency, sustained local inference, and heterogeneous execution
-              between CPU, GPU, and NPU. Here the attacker may have stronger physical access, while the platform faces
-              tighter power, latency, thermal, and update constraints.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section alt">
-      <div class="container split">
-        <div class="content-card">
-          <span class="kicker">Security Lens</span>
-          <h2>What to inspect when evaluating AI hardware security</h2>
-          <ul class="check-list">
-            <li>Where are weights, activations, caches, and intermediate states stored during execution?</li>
-            <li>Which components are shared across users, jobs, models, or processes?</li>
-            <li>Can memory traffic, utilization, timing, or power reveal model or input information?</li>
-            <li>Which control points exist in firmware, drivers, runtimes, or communication libraries?</li>
-            <li>How do quantization, kernel fusion, or scheduling change fault sensitivity?</li>
-            <li>What assumptions are made about DMA, device resets, telemetry, and privileged host control?</li>
-          </ul>
-        </div>
-
-        <div class="content-card">
-          <span class="kicker">Practical Takeaway</span>
-          <h2>Why this knowledge is essential before attacking or defending</h2>
-          <p>
-            A useful security experiment on AI hardware begins with architectural realism. One needs to know whether the
-            target workload is compute-bound or memory-bound, whether execution is local or distributed, whether reduced
-            precision is used, whether the workload is latency-oriented or throughput-oriented, and whether the sensitive
-            information lives in weights, activations, scheduling state, or communication traffic.
-          </p>
-          <p>
-            Without this grounding, side-channel analysis becomes noisy, fault attacks become guesswork, and defenses risk
-            protecting the wrong layer. With it, security studies become more reproducible, more interpretable, and far
-            more relevant to actual deployed AI systems.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <span class="eyebrow">Discussion</span>
-          <h2>Key technical questions for future research</h2>
-          <p>
-            These questions matter if the goal is to build rigorous, deployment-aware security analysis for modern AI hardware.
-          </p>
-        </div>
-
-        <div class="card-grid three">
-          <div class="section-card">
-            <h3>Threat model</h3>
-            <p>
-              Is the attacker local, remote, co-tenant, physical, firmware-level, or runtime-level? Are they observing
-              timing, memory traffic, power, telemetry, or inter-device communication? The answer determines whether the
-              right unit of analysis is the model, the kernel, the accelerator, or the cluster.
-            </p>
-          </div>
-
-          <div class="section-card">
-            <h3>System constraints</h3>
-            <p>
-              Are we studying training, cloud inference, edge inference, AI PCs, robotics, or physical AI deployment?
-              Each setting changes the balance between throughput, latency, power, trust boundary, and attacker capability.
-            </p>
-          </div>
-
-          <div class="section-card">
-            <h3>Open direction</h3>
-            <p>
-              A major open challenge is building security evaluation methods that remain hardware-aware without becoming
-              vendor-specific and brittle. The research opportunity is to connect model semantics with accelerator behavior
-              through measurement, abstraction, and cross-layer threat modeling.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section alt">
       <div class="container">
         <div class="cta">
           <div>
             <span class="eyebrow">Next Step</span>
-            <h2>Back to ongoing research updates</h2>
-            <p>
-              Return to the running list of research-watch topics and cross-layer AI security notes.
-            </p>
+            <h2>Back to the research map</h2>
+            <p>Return to the structured research overview or continue browsing the other AI foundations and AI security themes.</p>
           </div>
           <div class="cta-actions">
-            <a class="btn btn-primary" href="../ongoing-work.html">Trending Topics</a>
-            <a class="btn btn-secondary" href="../research.html">Research Map</a>
+            <a class="btn btn-primary" href="../research.html">Research Map</a>
+            <a class="btn btn-secondary" href="../publications.html">Resources</a>
           </div>
         </div>
       </div>
     </section>
   </main>
-
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
@@ -419,7 +136,7 @@
       </div>
     </div>
   </footer>
-
   <script src="../assets/js/main.js"></script>
+
 </body>
 </html>

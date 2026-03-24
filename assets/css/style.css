@@ -2154,3 +2154,39 @@ a.trending-link {
     box-shadow: 0 20px 44px rgba(0, 0, 0, 0.34) !important;
   }
 }
+
+
+/* ===== Final content completion helpers ===== */
+.foundation-grid .post-card {
+  height: 100%;
+}
+
+.foundation-grid .img-container {
+  margin-bottom: 1rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(239,245,255,0.78));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.foundation-grid .zoomable-thumb {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  width: 100%;
+}
+
+.foundation-figure .img-frame {
+  padding: 0.5rem;
+}
+
+.foundation-figure img {
+  border-radius: 18px;
+}
+
+.contact-list p strong {
+  color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .foundation-grid .zoomable-thumb {
+    aspect-ratio: auto;
+  }
+}

@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<!-- FOUNDATION PAGE: AI ACCELERATOR BASICS -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Accelerator Basics | Brojogopal Sapui</title>
-  <meta name="description" content="A foundation page on tensor engines, matrix units, dataflow, quantization, and workload mapping on modern AI accelerators." />
+  <meta name="description" content="Technical foundation page on matrix engines, dataflow, tiling, quantization, buffering, and workload mapping in AI accelerators." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -19,7 +18,7 @@
         <a href="../index.html">Home</a>
         <a href="../about.html">About</a>
         <a href="../research.html">Research</a>
-        <a href="../ongoing-work.html">Trending Topics</a>
+        <a href="../ongoing-work.html" class="trending-link">Trending Topics</a>
         <a href="../publications.html">Resources</a>
         <a href="../contact.html">Contact</a>
       </nav>
@@ -34,7 +33,7 @@
       <div class="container">
         <span class="eyebrow">AI Foundations • Accelerator Basics</span>
         <h1 style="max-width: 14ch;">AI Accelerator Basics</h1>
-        <p class="lead" style="max-width: 82ch;">AI accelerators are built to sustain large volumes of structured linear algebra efficiently. To analyze them well, one needs an intuitive understanding of matrix engines, dataflow, kernel mapping, quantization, buffering, and how model operators are lowered to hardware-specific execution patterns.</p>
+        <p class="lead" style="max-width: 86ch;">AI accelerators are built to keep structured linear algebra running efficiently under strict bandwidth and energy constraints. Understanding matrix engines, dataflow, quantization, buffering, and workload mapping is essential for connecting model-level behavior to measurable hardware activity.</p>
       </div>
     </section>
 
@@ -43,18 +42,18 @@
         <div class="content-card">
           <span class="kicker">Overview</span>
           <h2>What this topic covers</h2>
-          <p>At a high level, AI accelerators try to keep matrix engines continuously fed with useful work. This leads to tiling, blocking, pipelining, double buffering, and reuse-oriented dataflow choices. Compute units alone do not define performance; the full arrangement of arithmetic, memory, and scheduling determines whether the chip reaches useful throughput.</p>
-          <p>Security relevance appears once these mappings become observable. Two models with similar mathematical structure may trigger very different hardware behavior depending on kernel fusion, dataflow strategy, operand reuse, sparsity handling, and precision choice. A hardware-aware security researcher therefore needs to see beyond model graphs and into workload mapping.</p>
+          <p>At a high level, AI accelerators try to keep compute arrays busy while hiding memory latency. This leads to tiling, blocking, pipelining, operand reuse, and double-buffering. The arithmetic unit alone does not determine useful throughput; the balance of data movement, mapping, and scheduling does.</p>
+          <p>Security relevance appears once those mapping decisions become observable. Two models with similar mathematical graphs may trigger different timing, memory, power, or fault signatures because their kernels are fused differently, run at different precision, exploit sparsity differently, or stress the memory hierarchy in different ways.</p>
         </div>
 
         <div class="content-card">
           <span class="kicker">Why it matters</span>
-          <h2>Research significance</h2>
+          <h2>Security significance</h2>
           <ul class="check-list">
-            <li>Matrix engines, tensor cores, or systolic-style units define how neural computation is physically realized.</li>
-            <li>Tiling and dataflow determine both efficiency and the shape of observable device behavior.</li>
-            <li>Reduced precision and quantization can change robustness, fault sensitivity, and leakage characteristics.</li>
-            <li>Accelerator-aware reasoning helps connect model semantics with measurable system behavior.</li>
+            <li>Accelerator microarchitecture explains how AI kernels are physically realized on hardware.</li>
+            <li>Dataflow and tiling choices shape observable behavior beyond the high-level model graph.</li>
+            <li>Quantization and reduced precision alter both efficiency and fault sensitivity.</li>
+            <li>Hardware-aware accelerator reasoning is necessary to interpret physical measurements correctly.</li>
           </ul>
         </div>
       </div>
@@ -62,47 +61,54 @@
 
     <section class="section alt">
       <div class="container">
-        <div class="content-card landscape-card">
-          <img src="../assets/img/hero-diagram.png" alt="AI hardware illustration placeholder" class="zoom-img" />
-          <div class="card-caption">
-            <p>You can later replace this placeholder with a custom accelerator block diagram showing host interface, DMA, matrix engines, vector units, on-chip buffers, and the main dataflow between them.</p>
+        <figure class="page-figure compact-figure foundation-figure">
+          <div class="img-frame">
+            <img src="../assets/img/foundations/ai-accelerator-basics.svg" alt="Diagram showing input DMA, buffers, tensor compute, vector units, write-back, and key execution concepts of an AI accelerator." class="zoom-img" />
           </div>
-        </div>
+          <figcaption>Accelerator pipeline view showing how movement, buffering, tensor compute, and kernel mapping interact in practical AI execution.</figcaption>
+        </figure>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
         <div class="section-head">
-          <span class="eyebrow">Discussion</span>
-          <h2>Key technical questions</h2>
-          <p>These questions are useful when translating model-level intuition into accelerator-level reasoning.</p>
+          <span class="eyebrow">Key concepts</span>
+          <h2>Execution building blocks</h2>
+          <p>Most modern AI accelerators are variations on a few recurring implementation ideas.</p>
         </div>
 
         <div class="card-grid three">
-          <div class="section-card">
-            <h3>Threat model</h3>
-            <p>Is the attacker targeting arithmetic units directly, or are they inferring behavior indirectly through utilization, timing, thermal activity, or memory pressure?</p>
-          </div>
-          <div class="section-card">
-            <h3>System constraints</h3>
-            <p>Inference and training stress accelerator datapaths differently. Dense compute, sparse kernels, attention, and reduction-heavy layers can all expose different operating signatures.</p>
-          </div>
-          <div class="section-card">
-            <h3>Open direction</h3>
-            <p>A strong direction is to create benchmark suites that connect accelerator mapping choices—such as tiling or kernel fusion—to security metrics like leakage stability, fault susceptibility, and interpretability.</p>
-          </div>
+          <div class="section-card"><h3>Tensor or MAC arrays</h3><p>Systolic arrays, tensor cores, and vector-MAC fabrics provide high-throughput linear algebra. They are efficient only when tiled data arrives in the right order and with sufficient reuse.</p></div>
+          <div class="section-card"><h3>On-chip buffers and reuse windows</h3><p>Local SRAM, accumulation buffers, and staging queues allow the accelerator to reuse weights, activations, or partial sums before spilling to slower memory. This is critical for both efficiency and side-channel interpretation.</p></div>
+          <div class="section-card"><h3>Dataflow and kernel mapping</h3><p>Weight-stationary, output-stationary, or row/column reuse patterns affect traffic volume, latency, and physical footprint. Mapping decisions often explain why one operator is much easier to identify than another.</p></div>
         </div>
       </div>
     </section>
 
     <section class="section alt">
       <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Security lens</span>
+          <h2>Questions for security analysis</h2>
+          <p>These questions help translate model intuition into implementation-aware analysis.</p>
+        </div>
+
+        <div class="card-grid three">
+          <div class="section-card"><h3>What is externally visible?</h3><p>Can the attacker see service latency, memory traffic, thermal behavior, power traces, or hardware counters that correlate with tiling, fusion, sparsity, or precision?</p></div>
+          <div class="section-card"><h3>Where are the fault targets?</h3><p>Different components tolerate faults differently. MAC datapaths, accumulation buffers, DMA control, and post-processing units may each expose different failure modes.</p></div>
+          <div class="section-card"><h3>How stable is the mapping?</h3><p>A strong benchmark or defense must ask whether the same model maps consistently across runtimes, precisions, and firmware versions, or whether the observable signature shifts with the deployment stack.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
         <div class="cta">
           <div>
             <span class="eyebrow">Next Step</span>
-            <h2>Back to research map</h2>
-            <p>Return to the structured research map and browse other AI security and foundation topics.</p>
+            <h2>Back to the research map</h2>
+            <p>Return to the structured research overview or continue browsing the other AI foundations and AI security themes.</p>
           </div>
           <div class="cta-actions">
             <a class="btn btn-primary" href="../research.html">Research Map</a>
