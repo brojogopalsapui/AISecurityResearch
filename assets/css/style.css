@@ -1595,8 +1595,13 @@ footer a.trending-link { color: #203a57; }
 
 .hero,
 .page-hero {
-  padding-top: 4.2rem;
-  padding-bottom: 3rem;
+  padding: 4.6rem 0 3.3rem;
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,0.10), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(14,165,233,0.08), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  border-top: 1px solid rgba(37, 99, 235, 0.08);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.10);
 }
 .hero::before,
 .page-hero::before {
