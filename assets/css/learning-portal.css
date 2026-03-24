@@ -113,6 +113,45 @@ button,input,textarea,select{font:inherit}
   background:#fff;
   box-shadow:0 10px 24px rgba(32,58,87,.08);
 }
+
+.nav a.trending-link,
+.footer-links a.trending-link{
+  position:relative;
+  color:var(--navy);
+  background:linear-gradient(135deg,#ffe4a1 0%, #ffc86f 42%, #fff3c9 100%);
+  border:1px solid rgba(255,190,92,.32);
+  box-shadow:0 12px 26px rgba(255,166,57,.18), inset 0 1px 0 rgba(255,255,255,.85);
+  overflow:hidden;
+  animation:trendingPulse 1.7s ease-in-out infinite;
+}
+.nav a.trending-link::before,
+.footer-links a.trending-link::before{
+  content:"";
+  position:absolute;
+  top:-25%;
+  left:-42%;
+  width:44%;
+  height:150%;
+  background:linear-gradient(90deg,rgba(255,255,255,0) 0%, rgba(255,255,255,.2) 20%, rgba(255,255,255,.78) 50%, rgba(255,255,255,.2) 80%, rgba(255,255,255,0) 100%);
+  transform:rotate(18deg);
+  animation:glossySweep 2.5s linear infinite;
+  pointer-events:none;
+}
+.nav a.trending-link:hover,
+.nav a.trending-link.active,
+.footer-links a.trending-link:hover{
+  color:#13263c;
+  background:linear-gradient(135deg,#ffe7aa 0%, #ffc86f 42%, #fff6d7 100%);
+  box-shadow:0 0 24px rgba(255,182,72,.28), 0 14px 30px rgba(255,166,57,.22), inset 0 1px 0 rgba(255,255,255,.95);
+}
+@keyframes trendingPulse{
+  0%,100%{transform:translateY(0) scale(1);filter:brightness(1)}
+  50%{transform:translateY(-1px) scale(1.035);filter:brightness(1.06)}
+}
+@keyframes glossySweep{
+  0%{left:-42%}
+  100%{left:118%}
+}
 .menu-btn{
   display:none;
   width:52px;
