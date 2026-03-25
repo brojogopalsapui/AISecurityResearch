@@ -54,7 +54,7 @@
        x2="720"
        y2="480"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(0,-8)">
+       gradientTransform="matrix(0.73880597,0,0,0.59792872,172.38806,92.517819)">
       <stop
          stop-color="#8CC4FF"
          id="stop3" />
@@ -77,6 +77,18 @@
      style="fill:#800000;stroke-width:0.809864"
      x="0"
      y="117.79141" />
+  <rect
+     x="120.97111"
+     y="159.63162"
+     width="991.71185"
+     height="293.31641"
+     rx="30.302307"
+     fill="#1F314E"
+     stroke="#8cc4ff"
+     stroke-opacity="0.35"
+     id="rect7-8"
+     style="fill:#d7efd7;fill-opacity:1;stroke-width:1.22324"
+     transform="matrix(0.99998939,0.00460597,0,1,0,0)" />
   <g
      opacity="0.16"
      id="g6"
@@ -111,16 +123,16 @@
      id="rect7"
      style="stroke-width:0.877942" />
   <rect
-     x="480.80786"
-     y="182.01031"
-     width="229.18184"
-     height="359.97937"
-     rx="31.252068"
+     x="480.7265"
+     y="181.92896"
+     width="229.34454"
+     height="254.17192"
+     rx="31.274256"
      fill="#20324e"
      stroke="#9b8cff"
      stroke-opacity="0.35"
      id="rect8"
-     style="stroke-width:1.02062" />
+     style="stroke-width:0.857913" />
   <rect
      x="809.96436"
      y="184.47964"
@@ -133,13 +145,13 @@
      id="rect9"
      style="stroke-width:0.928639" />
   <path
-     d="m 600,242 60,30 v 80 c 0,70 -32,116 -60,135 -28,-19 -60,-65 -60,-135 v -80 z"
+     d="M 615.67164,242 660,259.93786 v 47.8343 c 0,41.85501 -23.64179,69.35973 -44.32836,80.72038 -20.68657,-11.36065 -44.32836,-38.86537 -44.32836,-80.72038 v -47.8343 z"
      fill="url(#shield)"
      opacity="0.9"
      id="path9"
-     style="fill:url(#shield)" />
+     style="fill:url(#shield);stroke-width:0.664645" />
   <path
-     d="m 580,343 15,17 31,-48"
+     d="m 592,309 15,17 31,-48"
      stroke="#ffffff"
      stroke-width="10"
      stroke-linecap="round"
