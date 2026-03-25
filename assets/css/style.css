@@ -2455,3 +2455,53 @@ a.trending-link:hover,
   object-fit: contain;
   cursor: zoom-out;
 }
+
+/* Safe hero SVG handling: keep the homepage diagram fully visible without altering other zoomable images */
+.portal-media.hero-figure-media {
+  overflow: visible;
+}
+
+.hero-figure-img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  transform: none !important;
+  filter: none !important;
+  cursor: default;
+  background: #ffffff;
+}
+
+.hero-figure-img:hover {
+  transform: none !important;
+  filter: none !important;
+}
+
+.portal-figure-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: .95rem;
+}
+
+.portal-figure-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 .95rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(28,39,51,.10);
+  color: var(--primary) !important;
+  font-weight: 800;
+  box-shadow: 0 10px 22px rgba(28,39,51,.06);
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.portal-figure-link:hover {
+  transform: translateY(-1px);
+  background: #f7fbff;
+  box-shadow: 0 14px 28px rgba(28,39,51,.10);
+}
