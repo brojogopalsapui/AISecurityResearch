@@ -553,7 +553,7 @@
               A realistic deployment rarely needs every control at maximum strength. What it needs is a stack matched to the risk profile.
               For a predictive cloud API, strong data governance, adversarial hardening, calibrated outputs, and API abuse controls may be the core.
               For a RAG assistant, retrieval hygiene, output validation, tenant-aware authorization, and logging dominate. For an agent, capability bounding,
-              tool containment, approval gates, and memory governance are central. For edge and physical AI, secure boot, attestation, model protection,
+              tool containment, approval gates, and memory governance are central. For Edge/Physical AI, secure boot, attestation, model protection,
               sensor validation, and side-channel/FI-aware design become far more important. The goal is not uniformity; it is alignment between controls and deployment reality.
             </p>
 <div class="callout">
@@ -590,7 +590,7 @@
               Many strong defenses impose friction: more human review, slower iteration, reduced model openness, stricter interfaces, and more conservative outputs.
               The open challenge is to design controls that are security meaningful without simply making the system unusable or pushing operators to weaken policy for convenience.
             </p>
-<h3>5. Edge and physical AI still lack mature defense frameworks</h3>
+<h3>5. Edge/Physical AI still lack mature defense frameworks</h3>
 <p>
               Hardware roots of trust, attestation, sensor validation, runtime anomaly detection, and side-channel/FI hardening all exist,
               but they are not yet integrated into mature assurance stacks for AI accelerators, edge fleets, and embodied systems. Stronger frameworks are needed to connect reliability,
@@ -654,7 +654,7 @@
 <div class="container footer-grid">
 <div>
 <h3>Brojogopal Sapui</h3>
-<p>AI Security• Hardware Trust • Edge and Physical AI</p>
+<p>AI Security• Hardware Trust • Edge/Physical AI</p>
 </div>
 <div>
 <h4>Main Pages</h4>
