@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1600"
+   height="900"
+   viewBox="0 0 1600 900"
+   preserveAspectRatio="xMidYMid meet"
+   version="1.1"
+   id="svg39"
+   sodipodi:docname="highlight-edge_AB_clear2.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview39"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.79"
+     inkscape:cx="800.63291"
+     inkscape:cy="450"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="5752"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg39" />
+  <defs
+     id="defs2">
+    <style
+       id="style1">
+.bg{fill:#fff;}
+.frame{fill:none;stroke:#7f8b99;stroke-width:2;stroke-dasharray:6 6;}
+.box{fill:#fff;stroke:#394652;stroke-width:2.2;}
+.soft{fill:#eef2f7;stroke:#a9b4c0;stroke-width:1.7;}
+.accent{fill:#e9f1ed;stroke:#a9b4c0;stroke-width:1.7;}
+.orch{fill:#fff;stroke:#394652;stroke-width:2.4;}
+.orchAccent{fill:#edf3f8;stroke:#a9b4c0;stroke-width:1.7;}
+.nodeTitle{font-family:Arial,Helvetica,sans-serif;font-size:34px;font-weight:700;fill:#1f2a36;}
+.header{font-family:Arial,Helvetica,sans-serif;font-size:31px;font-weight:700;fill:#1f2a36;}
+.body{font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:400;fill:#1f2a36;}
+.small{font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:400;fill:#1f2a36;}
+.label{font-family:Arial,Helvetica,sans-serif;font-size:21px;font-weight:600;fill:#2d556f;}
+.caption{font-family:Georgia,'Times New Roman',serif;font-size:28px;fill:#1f2a36;}
+.line{stroke:#394652;stroke-width:2.2;fill:none;}
+.arrowBlue{stroke:#517a93;stroke-width:2.3;fill:none;}
+</style>
+    <marker
+       id="arrow"
+       markerWidth="10"
+       markerHeight="10"
+       refX="8"
+       refY="5"
+       orient="auto">
+      <path
+         d="M0,0 L10,5 L0,10 z"
+         fill="#394652"
+         id="path1" />
+    </marker>
+    <marker
+       id="arrowBlue"
+       markerWidth="10"
+       markerHeight="10"
+       refX="8"
+       refY="5"
+       orient="auto">
+      <path
+         d="M0,0 L10,5 L0,10 z"
+         fill="#517a93"
+         id="path2" />
+    </marker>
+  </defs>
+  <rect
+     class="bg"
+     x="0"
+     y="0"
+     width="1600"
+     height="900"
+     id="rect2" />
+  <rect
+     class="frame"
+     x="35"
+     y="35"
+     width="1530"
+     height="730"
+     rx="16"
+     id="rect3" />
+  <text
+     x="800.0"
+     y="78"
+     text-anchor="middle"
+     class="nodeTitle"
+     id="text3">Edge-Native Adversarial AI Defense Architecture</text>
+  <text
+     x="216"
+     y="127"
+     text-anchor="middle"
+     class="header"
+     id="text4">Edge Device A</text>
+  <rect
+     class="box"
+     x="70"
+     y="145"
+     width="380"
+     height="390"
+     rx="18"
+     id="rect4" />
+  <rect
+     class="soft"
+     x="88"
+     y="175"
+     width="344"
+     height="88"
+     rx="10"
+     id="rect5" />
+  <text
+     x="260.0"
+     y="213"
+     text-anchor="middle"
+     class="body"
+     id="text5">Local Attack</text>
+  <text
+     x="260.0"
+     y="243"
+     text-anchor="middle"
+     class="body"
+     id="text6">Detection (LAD)</text>
+  <rect
+     class="accent"
+     x="88"
+     y="281"
+     width="344"
+     height="106"
+     rx="10"
+     id="rect6" />
+  <text
+     x="260.0"
+     y="315"
+     text-anchor="middle"
+     class="body"
+     id="text7">Lightweight Model</text>
+  <text
+     x="260.0"
+     y="343"
+     text-anchor="middle"
+     class="body"
+     id="text8">Integrity Checks</text>
+  <text
+     x="260.0"
+     y="371"
+     text-anchor="middle"
+     class="body"
+     id="text9">(LMIC)</text>
+  <rect
+     class="soft"
+     x="88"
+     y="405"
+     width="344"
+     height="88"
+     rx="10"
+     id="rect9" />
+  <text
+     x="260.0"
+     y="443"
+     text-anchor="middle"
+     class="body"
+     id="text10">Anomalous Sensor</text>
+  <text
+     x="260.0"
+     y="473"
+     text-anchor="middle"
+     class="body"
+     id="text11">Data Analysis</text>
+  <text
+     x="260.0"
+     y="517"
+     text-anchor="middle"
+     class="label"
+     id="text12">Local analysis before uplink</text>
+  <text
+     x="1362"
+     y="127"
+     text-anchor="middle"
+     class="header"
+     id="text13">Edge Device B</text>
+  <rect
+     class="box"
+     x="1150"
+     y="145"
+     width="380"
+     height="390"
+     rx="18"
+     id="rect13" />
+  <rect
+     class="soft"
+     x="1168"
+     y="175"
+     width="344"
+     height="88"
+     rx="10"
+     id="rect14" />
+  <text
+     x="1340.0"
+     y="213"
+     text-anchor="middle"
+     class="body"
+     id="text14">Local Attack</text>
+  <text
+     x="1340.0"
+     y="243"
+     text-anchor="middle"
+     class="body"
+     id="text15">Detection (LAD)</text>
+  <rect
+     class="accent"
+     x="1168"
+     y="281"
+     width="344"
+     height="106"
+     rx="10"
+     id="rect15" />
+  <text
+     x="1340.0"
+     y="315"
+     text-anchor="middle"
+     class="body"
+     id="text16">Lightweight Model</text>
+  <text
+     x="1340.0"
+     y="343"
+     text-anchor="middle"
+     class="body"
+     id="text17">Integrity Checks</text>
+  <text
+     x="1340.0"
+     y="371"
+     text-anchor="middle"
+     class="body"
+     id="text18">(LMIC)</text>
+  <rect
+     class="soft"
+     x="1168"
+     y="405"
+     width="344"
+     height="88"
+     rx="10"
+     id="rect18" />
+  <text
+     x="1340.0"
+     y="443"
+     text-anchor="middle"
+     class="body"
+     id="text19">Anomalous Sensor</text>
+  <text
+     x="1340.0"
+     y="473"
+     text-anchor="middle"
+     class="body"
+     id="text20">Data Analysis</text>
+  <text
+     x="1340.0"
+     y="517"
+     text-anchor="middle"
+     class="label"
+     id="text21">Local analysis before uplink</text>
+  <rect
+     class="orch"
+     x="500"
+     y="240"
+     width="600"
+     height="320"
+     rx="18"
+     id="rect21" />
+  <text
+     x="800.0"
+     y="222"
+     text-anchor="middle"
+     class="header"
+     id="text22">Defense Orchestrator</text>
+  <rect
+     class="orchAccent"
+     x="524"
+     y="274"
+     width="552"
+     height="104"
+     rx="12"
+     id="rect22" />
+  <text
+     x="800.0"
+     y="312"
+     text-anchor="middle"
+     class="body"
+     id="text23">Federated adversarial learning</text>
+  <text
+     x="800.0"
+     y="344"
+     text-anchor="middle"
+     class="body"
+     id="text24">and federated averaging</text>
+  <rect
+     class="soft"
+     x="524"
+     y="402"
+     width="552"
+     height="104"
+     rx="12"
+     id="rect24" />
+  <text
+     x="800.0"
+     y="440"
+     text-anchor="middle"
+     class="body"
+     id="text25">Secure OTA model and policy updates</text>
+  <text
+     x="800.0"
+     y="472"
+     text-anchor="middle"
+     class="body"
+     id="text26">to deployed edge devices</text>
+  <rect
+     x="522"
+     y="504"
+     width="556"
+     height="34"
+     rx="8"
+     fill="#f6f9fc"
+     stroke="#c1cad3"
+     stroke-width="1.4"
+     id="rect26" />
+  <text
+     x="800.0"
+     y="528"
+     text-anchor="middle"
+     class="small"
+     id="text27">Secure control plane: MQTT over TLS 1.3</text>
+  <line
+     x1="362.39999"
+     y1="118"
+     x2="1229.6"
+     y2="118"
+     class="arrowBlue"
+     marker-start="url(#arrowBlue)"
+     marker-end="url(#arrowBlue)"
+     id="line27" />
+  <text
+     x="800.0"
+     y="102"
+     text-anchor="middle"
+     class="label"
+     id="text29">Cross-device model-hash verification (SHA-256)</text>
+  <line
+     x1="450"
+     y1="365"
+     x2="500"
+     y2="365"
+     class="line"
+     marker-end="url(#arrow)"
+     id="line30" />
+  <line
+     x1="500"
+     y1="445"
+     x2="450"
+     y2="445"
+     class="line"
+     marker-end="url(#arrow)"
+     id="line31" />
+  <rect
+     class="soft"
+     x="353"
+     y="321"
+     width="260"
+     height="40"
+     rx="8"
+     id="rect31" />
+  <text
+     x="485"
+     y="346"
+     text-anchor="middle"
+     class="label"
+     id="text31">Integrity reports / alerts</text>
+  <rect
+     class="soft"
+     x="355.0"
+     y="457"
+     width="240"
+     height="40"
+     rx="8"
+     id="rect32" />
+  <text
+     x="475.0"
+     y="484"
+     text-anchor="middle"
+     class="label"
+     id="text32">OTA updates</text>
+  <line
+     x1="1100"
+     y1="365"
+     x2="1150"
+     y2="365"
+     class="line"
+     marker-end="url(#arrow)"
+     id="line32" />
+  <line
+     x1="1150"
+     y1="445"
+     x2="1100"
+     y2="445"
+     class="line"
+     marker-end="url(#arrow)"
+     id="line33" />
+  <rect
+     class="soft"
+     x="977"
+     y="307"
+     width="260"
+     height="40"
+     rx="8"
+     id="rect33" />
+  <text
+     x="1109"
+     y="334"
+     text-anchor="middle"
+     class="label"
+     id="text33">Integrity reports / alerts</text>
+  <rect
+     class="soft"
+     x="1005.0"
+     y="457"
+     width="240"
+     height="40"
+     rx="8"
+     id="rect34" />
+  <text
+     x="1125.0"
+     y="484"
+     text-anchor="middle"
+     class="label"
+     id="text34">OTA updates</text>
+  <rect
+     class="soft"
+     x="67.196434"
+     y="630.04456"
+     width="554.34131"
+     height="85.910927"
+     rx="13.304192"
+     id="rect35" />
+  <text
+     x="345.0"
+     y="664"
+     text-anchor="middle"
+     class="small"
+     id="text35">Each device analyzes attacks, verifies model integrity,</text>
+  <text
+     x="345.0"
+     y="692"
+     text-anchor="middle"
+     class="small"
+     id="text36">and uploads only summarized evidence.</text>
+  <rect
+     class="soft"
+     x="1005"
+     y="630"
+     width="500"
+     height="86"
+     rx="12"
+     id="rect36" />
+  <text
+     x="1255.0"
+     y="664"
+     text-anchor="middle"
+     class="small"
+     id="text37">The orchestrator learns from fleet-wide evidence</text>
+  <text
+     x="1255.0"
+     y="692"
+     text-anchor="middle"
+     class="small"
+     id="text38">and sends back secure updates.</text>
+  <text
+     x="373"
+     y="825"
+     class="caption"
+     id="text39">Figure: Edge-Native Adversarial AI Defense Architecture</text>
+</svg>
