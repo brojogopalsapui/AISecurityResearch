@@ -1,4 +1,4 @@
- @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap");
 
 :root {
   --bg: #20304a;
@@ -1654,15 +1654,16 @@ footer a.trending-link {
   background: #14202b;
 }
 
-/* softer homepage hero */
+/* homepage hero now matches subpage theme */
 .hero {
-  padding: 4.6rem 0 3.3rem;
+  padding: 4.8rem 0 3.6rem;
   background:
-    radial-gradient(circle at top left, rgba(77,134,255,0.05), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(240,178,77,0.06), transparent 24%),
-    linear-gradient(180deg, #fffdfa 0%, #faf6f1 100%);
-  border-top: 1px solid rgba(28,39,51,0.05);
-  border-bottom: 1px solid rgba(28,39,51,0.06);
+    radial-gradient(circle at 0% 0%, rgba(45,103,246,0.09), transparent 28%),
+    radial-gradient(circle at 100% 18%, rgba(240,178,77,0.10), transparent 24%),
+    linear-gradient(180deg, #f7f0e8 0%, #fbf7f2 54%, #fffdfa 100%);
+  border-top: 1px solid rgba(28,39,51,0.06);
+  border-bottom: 1px solid rgba(28,39,51,0.08);
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.75);
 }
 
 /* warmer and more visible subpage hero */
@@ -1678,11 +1679,11 @@ footer a.trending-link {
 }
 
 .hero::before {
-  background: radial-gradient(circle, rgba(77,134,255,0.06), transparent 68%);
+  background: radial-gradient(circle, rgba(45,103,246,0.10), transparent 68%);
 }
 
 .hero::after {
-  background: radial-gradient(circle, rgba(240,178,77,0.07), transparent 68%);
+  background: radial-gradient(circle, rgba(240,178,77,0.12), transparent 68%);
 }
 
 .page-hero::before {
@@ -1970,9 +1971,7 @@ footer a.trending-link {
   }
 }
 
-/* === Final clickable-link and text-contrast fixes === */
-
-/* all normal clickable links */
+/* clickable-link and text-contrast fixes */
 a,
 main a,
 .watch-inline-links a,
@@ -2000,7 +1999,6 @@ main a:hover,
   color: #163ea3 !important;
 }
 
-/* keep buttons and glossy trending button unchanged */
 .btn,
 .btn:hover,
 a.trending-link,
@@ -2010,7 +2008,6 @@ a.trending-link:hover,
   color: inherit !important;
 }
 
-/* fix white text on off-white cards/pages */
 .post-card h3,
 .topic-card h3,
 .section-card h3,
@@ -2033,7 +2030,6 @@ a.trending-link:hover,
   color: #14202b !important;
 }
 
-/* paragraph text on light cards */
 .post-card p,
 .topic-card p,
 .section-card p,
@@ -2050,7 +2046,6 @@ a.trending-link:hover,
   color: #4f5f6f !important;
 }
 
-/* special clickable CTA pills inside cards */
 .accordion-cta,
 .resource-pill,
 .tag,
@@ -2059,6 +2054,69 @@ a.trending-link:hover,
 .watch-tag,
 .accordion-meta {
   color: #1849b9 !important;
+}
+
+/* final hard fixes for light theme contrast */
+.hero .lead,
+.watch-lead,
+.notif-text,
+.watch-progress-text {
+  color: #465666 !important;
+}
+
+.hero h1,
+.hero h2,
+.hero h3,
+.hero h4,
+.page-hero h1,
+.page-hero h2,
+.page-hero h3,
+.page-hero h4,
+.post-card h3,
+.topic-card h3,
+.section-card h3,
+.resource-card h2,
+.resource-card h3,
+.watch-note h3,
+.watch-block h4,
+.accordion-title {
+  color: #14202b !important;
+}
+
+.post-card p,
+.topic-card p,
+.section-card p,
+.resource-card p,
+.watch-note p,
+.watch-block p,
+.resource-mini p,
+.accordion-preview,
+.accordion-panel p,
+.accordion-panel li,
+.figure-caption,
+.page-figure figcaption,
+.card-caption,
+.resource-list li,
+.check-list li,
+.callout,
+.resource-note,
+.watch-bottom-note {
+  color: #4f5f6f !important;
+}
+
+main a:not(.btn):not(.nav a):not(.brand):not(.brand-hint):not(.trending-link),
+.watch-inline-links a,
+.footer-grid a,
+.toc a {
+  color: #1f54cf !important;
+  font-weight: 700;
+}
+
+main a:not(.btn):not(.nav a):not(.brand):not(.brand-hint):not(.trending-link):hover,
+.watch-inline-links a:hover,
+.footer-grid a:hover,
+.toc a:hover {
+  color: #163ea3 !important;
 }
 
 /* latest floating research alert */
