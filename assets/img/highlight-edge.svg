@@ -6,7 +6,7 @@
    preserveAspectRatio="xMidYMid meet"
    version="1.1"
    id="svg39"
-   sodipodi:docname="highlight-edge_AB_clear3.svg"
+   sodipodi:docname="highlight-edge.svg"
    inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -22,7 +22,7 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="0.79"
-     inkscape:cx="800.63291"
+     inkscape:cx="799.36709"
      inkscape:cy="450"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
@@ -90,12 +90,6 @@
      height="742.64099"
      rx="15.99982"
      id="rect3" />
-  <text
-     x="800.0"
-     y="78"
-     text-anchor="middle"
-     class="nodeTitle"
-     id="text3">Edge-Native Adversarial AI Defense Architecture</text>
   <text
      x="202"
      y="160"
@@ -363,10 +357,11 @@
      id="line29" />
   <text
      x="800"
-     y="106"
+     y="134"
      text-anchor="middle"
      class="label"
-     id="text29">Cross-device model-hash verification (SHA-256)</text>
+     id="text29"
+     style="font-size:26.6667px">Cross-device model-hash verification (SHA-256)</text>
   <line
      x1="450"
      y1="351"
