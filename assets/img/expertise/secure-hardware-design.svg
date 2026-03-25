@@ -54,7 +54,7 @@
        x2="720"
        y2="480"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.73880597,0,0,0.59792872,172.38806,128.51782)">
+       gradientTransform="matrix(0.73880597,0,0,0.59792872,162.38806,128.51782)">
       <stop
          stop-color="#8CC4FF"
          id="stop3" />
@@ -69,17 +69,17 @@
     </linearGradient>
   </defs>
   <rect
-     width="1200"
+     width="1113.4329"
      height="491.91013"
-     rx="40"
+     rx="37.114426"
      fill="url(#bg)"
      id="rect5"
-     style="fill:#800000;stroke-width:0.809864"
-     x="0"
+     style="fill:#800000;stroke-width:0.780106"
+     x="48.208954"
      y="117.79141" />
   <rect
-     x="120.97111"
-     y="195.63162"
+     x="110.97098"
+     y="195.6777"
      width="991.71185"
      height="293.31641"
      rx="30.302307"
@@ -90,8 +90,8 @@
      style="fill:#d7efd7;fill-opacity:1;stroke-width:1.22324"
      transform="matrix(0.99998939,0.00460597,0,1,0,0)" />
   <rect
-     x="290.21237"
-     y="518.9632"
+     x="280.21237"
+     y="518.9809"
      width="592.4718"
      height="67.536911"
      rx="18.103306"
@@ -106,17 +106,17 @@
      id="g6"
      style="fill:#ff0000;fill-opacity:1" />
   <text
-     x="600"
+     x="590"
      y="95"
      fill="#F7FBFF"
-     font-size="40"
+     font-size="40px"
      font-family="Inter, Arial, sans-serif"
      font-weight="700"
      text-anchor="middle"
      id="text6"
      style="fill:#ff0000">Secure Hardware Design</text>
   <text
-     x="600"
+     x="590"
      y="171"
      fill="#d7e2f1"
      font-size="25px"
@@ -124,7 +124,7 @@
      text-anchor="middle"
      id="text7">Cross-layer protection from circuit primitives to deployment trust</text>
   <rect
-     x="151.53406"
+     x="141.53406"
      y="223.93896"
      width="238.52698"
      height="234.59967"
@@ -135,7 +135,7 @@
      id="rect7"
      style="stroke-width:0.877942" />
   <rect
-     x="480.7265"
+     x="470.7265"
      y="217.92896"
      width="229.34454"
      height="254.17192"
@@ -146,7 +146,7 @@
      id="rect8"
      style="stroke-width:0.857913" />
   <rect
-     x="809.96436"
+     x="799.96436"
      y="220.47964"
      width="262.40265"
      height="238.6008"
@@ -157,20 +157,20 @@
      id="rect9"
      style="stroke-width:0.928639" />
   <path
-     d="M 615.67164,278 660,295.93786 v 47.8343 c 0,41.85501 -23.64179,69.35973 -44.32836,80.72038 -20.68657,-11.36065 -44.32836,-38.86537 -44.32836,-80.72038 v -47.8343 z"
+     d="M 605.67164,278 650,295.93786 v 47.8343 c 0,41.85501 -23.64179,69.35973 -44.32836,80.72038 -20.68657,-11.36065 -44.32836,-38.86537 -44.32836,-80.72038 v -47.8343 z"
      fill="url(#shield)"
      opacity="0.9"
      id="path9"
      style="fill:url(#shield);stroke-width:0.664645" />
   <path
-     d="m 592,345 15,17 31,-48"
+     d="m 582,345 15,17 31,-48"
      stroke="#ffffff"
      stroke-width="10"
      stroke-linecap="round"
      stroke-linejoin="round"
      id="path10" />
   <text
-     x="280"
+     x="270"
      y="263"
      fill="#f7fbff"
      font-size="24px"
@@ -179,7 +179,7 @@
      text-anchor="middle"
      id="text10">Device / Circuit</text>
   <text
-     x="596"
+     x="586"
      y="257"
      fill="#f7fbff"
      font-size="24px"
@@ -188,7 +188,7 @@
      text-anchor="middle"
      id="text11">Architecture / Logic</text>
   <text
-     x="942"
+     x="932"
      y="253"
      fill="#f7fbff"
      font-size="24px"
@@ -197,7 +197,7 @@
      text-anchor="middle"
      id="text12">Deployment / Runtime</text>
   <text
-     x="272"
+     x="262"
      y="354"
      fill="#d7e2f1"
      font-size="23px"
@@ -205,7 +205,7 @@
      text-anchor="middle"
      id="text13">Cell-level hardening</text>
   <text
-     x="272"
+     x="262"
      y="389"
      fill="#d7e2f1"
      font-size="23px"
@@ -213,7 +213,7 @@
      text-anchor="middle"
      id="text14">Masking • Obfuscation</text>
   <text
-     x="599.07977"
+     x="589.07977"
      y="562.36194"
      fill="#d7e2f1"
      font-size="22px"
@@ -221,7 +221,7 @@
      text-anchor="middle"
      id="text15">Secure dataflow • Isolation • Trusted interfaces</text>
   <text
-     x="920"
+     x="910"
      y="354"
      fill="#d7e2f1"
      font-size="23px"
@@ -229,7 +229,7 @@
      text-anchor="middle"
      id="text16">Provisioning</text>
   <text
-     x="926"
+     x="916"
      y="389"
      fill="#d7e2f1"
      font-size="23px"
@@ -237,13 +237,13 @@
      text-anchor="middle"
      id="text17">Monitoring • Policy</text>
   <path
-     d="m 395.69635,369 h 82.16559"
+     d="m 385.69635,369 h 82.16559"
      stroke="#8cc4ff"
      stroke-width="7.72714"
      stroke-linecap="round"
      id="path17" />
   <path
-     d="M 710,371 H 810"
+     d="M 700,371 H 800"
      stroke="#54d9ca"
      stroke-width="8"
      stroke-linecap="round"
