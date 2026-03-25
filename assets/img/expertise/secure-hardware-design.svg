@@ -22,14 +22,14 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="0.67"
-     inkscape:cx="600.74627"
+     inkscape:cx="602.23881"
      inkscape:cy="375.37313"
-     inkscape:window-width="1536"
-     inkscape:window-height="801"
-     inkscape:window-x="1912"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="5752"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g6" />
+     inkscape:current-layer="svg19" />
   <defs
      id="defs5">
     <linearGradient
@@ -53,7 +53,8 @@
        y1="200"
        x2="720"
        y2="480"
-       gradientUnits="userSpaceOnUse">
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,-8)">
       <stop
          stop-color="#8CC4FF"
          id="stop3" />
@@ -69,11 +70,11 @@
   </defs>
   <rect
      width="1200"
-     height="632.20862"
+     height="491.91013"
      rx="40"
      fill="url(#bg)"
      id="rect5"
-     style="fill:#800000;stroke-width:0.91812"
+     style="fill:#800000;stroke-width:0.809864"
      x="0"
      y="117.79141" />
   <g
@@ -99,19 +100,19 @@
      text-anchor="middle"
      id="text7">Cross-layer protection from circuit primitives to deployment trust</text>
   <rect
-     x="151.61551"
-     y="210.02042"
-     width="238.36407"
-     height="329.95917"
-     rx="26.003353"
+     x="151.53406"
+     y="187.93896"
+     width="238.52698"
+     height="234.59967"
+     rx="26.021124"
      fill="#20324e"
      stroke="#8cc4ff"
      stroke-opacity="0.35"
      id="rect7"
-     style="stroke-width:1.04084" />
+     style="stroke-width:0.877942" />
   <rect
      x="480.80786"
-     y="190.01031"
+     y="182.01031"
      width="229.18184"
      height="359.97937"
      rx="31.252068"
@@ -121,31 +122,32 @@
      id="rect8"
      style="stroke-width:1.02062" />
   <rect
-     x="810.06006"
-     y="192.57536"
-     width="262.21121"
-     height="347.36459"
-     rx="28.604858"
+     x="809.96436"
+     y="184.47964"
+     width="262.40265"
+     height="238.6008"
+     rx="28.625742"
      fill="#20324e"
      stroke="#54d9ca"
      stroke-opacity="0.35"
      id="rect9"
-     style="stroke-width:1.12007" />
+     style="stroke-width:0.928639" />
   <path
-     d="M600 250L660 280V360C660 430 628 476 600 495C572 476 540 430 540 360V280L600 250Z"
+     d="m 600,242 60,30 v 80 c 0,70 -32,116 -60,135 -28,-19 -60,-65 -60,-135 v -80 z"
      fill="url(#shield)"
      opacity="0.9"
-     id="path9" />
+     id="path9"
+     style="fill:url(#shield)" />
   <path
-     d="M580 365L595 382L626 334"
-     stroke="#FFFFFF"
+     d="m 580,343 15,17 31,-48"
+     stroke="#ffffff"
      stroke-width="10"
      stroke-linecap="round"
      stroke-linejoin="round"
      id="path10" />
   <text
      x="280"
-     y="235"
+     y="227"
      fill="#f7fbff"
      font-size="24px"
      font-family="Inter, Arial, sans-serif"
@@ -154,7 +156,7 @@
      id="text10">Device / Circuit</text>
   <text
      x="596"
-     y="229"
+     y="221"
      fill="#f7fbff"
      font-size="24px"
      font-family="Inter, Arial, sans-serif"
@@ -163,7 +165,7 @@
      id="text11">Architecture / Logic</text>
   <text
      x="942"
-     y="225"
+     y="217"
      fill="#f7fbff"
      font-size="24px"
      font-family="Inter, Arial, sans-serif"
@@ -172,7 +174,7 @@
      id="text12">Deployment / Runtime</text>
   <text
      x="272"
-     y="340"
+     y="318"
      fill="#d7e2f1"
      font-size="23px"
      font-family="Inter, Arial, sans-serif"
@@ -180,7 +182,7 @@
      id="text13">Cell-level hardening</text>
   <text
      x="272"
-     y="375"
+     y="353"
      fill="#d7e2f1"
      font-size="23px"
      font-family="Inter, Arial, sans-serif"
@@ -196,29 +198,29 @@
      id="text15">Secure dataflow • Isolation • Trusted interfaces</text>
   <text
      x="920"
-     y="340"
-     fill="#D7E2F1"
-     font-size="23"
+     y="318"
+     fill="#d7e2f1"
+     font-size="23px"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
      id="text16">Provisioning</text>
   <text
      x="926"
-     y="375"
+     y="353"
      fill="#d7e2f1"
      font-size="23px"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
      id="text17">Monitoring • Policy</text>
   <path
-     d="m 395.69635,375 h 82.16559"
+     d="m 395.69635,333 h 82.16559"
      stroke="#8cc4ff"
      stroke-width="7.72714"
      stroke-linecap="round"
      id="path17" />
   <path
-     d="M710 375H810"
-     stroke="#54D9CA"
+     d="M 710,335 H 810"
+     stroke="#54d9ca"
      stroke-width="8"
      stroke-linecap="round"
      id="path18" />
