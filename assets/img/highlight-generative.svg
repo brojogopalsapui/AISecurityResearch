@@ -14,7 +14,7 @@
    aria-labelledby="title desc"
    version="1.1"
    id="svg353"
-   sodipodi:docname="generative_ai_prompt_security_cross_layer_controls.svg"
+   sodipodi:docname="highlight-generative.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)">
   <metadata
      id="metadata357">
@@ -41,7 +41,7 @@
      id="namedview355"
      showgrid="false"
      inkscape:zoom="1.03"
-     inkscape:cx="914.56311"
+     inkscape:cx="751.85917"
      inkscape:cy="550"
      inkscape:window-x="5749"
      inkscape:window-y="177"
@@ -136,26 +136,31 @@
      y="108"
      class="header"
      text-anchor="middle"
-     id="text25">
+     id="text25"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="320.0"
        dy="0"
-       id="tspan23">Prompt-Level Filtering</tspan>
+       id="tspan23"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Prompt-Level Filtering</tspan>
   </text>
   <text
      x="320.0"
      y="170"
      class="body"
      text-anchor="middle"
-     id="text31">
+     id="text31"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="320.0"
        dy="0"
-       id="tspan27">Prompt-level</tspan>
+       id="tspan27"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Prompt-level</tspan>
     <tspan
        x="320.0"
        dy="24"
-       id="tspan29">prompt injection</tspan>
+       id="tspan29"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">prompt injection</tspan>
   </text>
   <rect
      x="1230"
@@ -195,30 +200,35 @@
      y="104"
      class="header"
      id="text45"
-     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:21px;line-height:normal;font-family:Arial, Helvetica, sans-serif;text-anchor:middle;fill:#1f2937">
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.33333333px;line-height:normal;font-family:Arial, Helvetica, sans-serif;text-anchor:middle;fill:#1f2937;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="1460"
        dy="0"
-       id="tspan41">Semantic Latency</tspan>
+       id="tspan41"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Semantic Latency</tspan>
     <tspan
        x="1460"
        dy="26"
-       id="tspan43">Analysis</tspan>
+       id="tspan43"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Analysis</tspan>
   </text>
   <text
      x="1460.0"
      y="176"
      class="body"
+     id="text51"
      text-anchor="middle"
-     id="text51">
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="1460.0"
        dy="0"
-       id="tspan47">BLEU-score</tspan>
+       id="tspan47"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">BLEU-score</tspan>
     <tspan
        x="1460.0"
        dy="24"
-       id="tspan49">degradation detection</tspan>
+       id="tspan49"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">degradation detection</tspan>
   </text>
   <line
      x1="530"
@@ -521,11 +531,13 @@
      y="412.0"
      class="section"
      text-anchor="middle"
-     id="text131">
+     id="text131"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="890"
        dy="0"
-       id="tspan129">Latent space</tspan>
+       id="tspan129"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Latent space</tspan>
   </text>
   <line
      x1="973"
@@ -581,15 +593,18 @@
      y="270"
      class="section"
      text-anchor="middle"
-     id="text151">
+     id="text151"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="1535"
        dy="0"
-       id="tspan147">Output</tspan>
+       id="tspan147"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Output</tspan>
     <tspan
        x="1535"
        dy="28"
-       id="tspan149">response</tspan>
+       id="tspan149"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">response</tspan>
   </text>
   <line
      x1="320"
@@ -637,19 +652,21 @@
      class="line"
      id="line167" />
   <text
-     x="1210"
+     x="1186"
      y="488"
      class="section"
-     text-anchor="middle"
-     id="text173">
+     id="text173"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:24px;line-height:normal;font-family:Arial, Helvetica, sans-serif;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#1f2937">
     <tspan
-       x="1210"
+       x="1186"
        dy="0"
-       id="tspan169">Signed Model</tspan>
+       id="tspan169"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:26.66666603px;font-family:Arial, Helvetica, sans-serif;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">Signed Model</tspan>
     <tspan
-       x="1210"
+       x="1186"
        dy="28"
-       id="tspan171">Steganography</tspan>
+       id="tspan171"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:26.66666603px;font-family:Arial, Helvetica, sans-serif;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">Steganography</tspan>
   </text>
   <rect
      x="140"
@@ -665,15 +682,18 @@
      y="622"
      class="section"
      text-anchor="middle"
-     id="text181">
+     id="text181"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="355"
        dy="0"
-       id="tspan177">BLEU-score</tspan>
+       id="tspan177"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">BLEU-score</tspan>
     <tspan
        x="355"
        dy="28"
-       id="tspan179">degradation detection</tspan>
+       id="tspan179"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">degradation detection</tspan>
   </text>
   <line
      x1="819.5"
@@ -907,11 +927,13 @@
      y="734.0"
      class="section"
      text-anchor="middle"
-     id="text241">
+     id="text241"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="905"
        dy="0"
-       id="tspan239">Neural network</tspan>
+       id="tspan239"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Neural network</tspan>
   </text>
   <rect
      x="1160"
@@ -951,11 +973,13 @@
      y="587"
      class="header"
      text-anchor="middle"
-     id="text253">
+     id="text253"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="1340"
        dy="0"
-       id="tspan251">Signed Model Metadata</tspan>
+       id="tspan251"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Signed Model Metadata</tspan>
   </text>
   <line
      x1="1215"
@@ -1033,11 +1057,13 @@
      y="835"
      class="title"
      text-anchor="middle"
-     id="text275">
+     id="text275"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="900"
        dy="0"
-       id="tspan273">Deepfake Detection &amp; Provenance Metadata</tspan>
+       id="tspan273"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Deepfake Detection &amp; Provenance Metadata</tspan>
   </text>
   <ellipse
      cx="236.0"
@@ -1195,23 +1221,27 @@
      y="898"
      class="section"
      id="text329"
-     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:24px;line-height:normal;font-family:Arial, Helvetica, sans-serif;text-anchor:middle;fill:#1f2937">
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:26.66666667px;line-height:normal;font-family:Arial, Helvetica, sans-serif;text-anchor:middle;fill:#1f2937;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="800"
        dy="0"
-       id="tspan321">Deepfake</tspan>
+       id="tspan321"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Deepfake</tspan>
     <tspan
        x="800"
        dy="30"
-       id="tspan323">Detection &amp;</tspan>
+       id="tspan323"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Detection &amp;</tspan>
     <tspan
        x="800"
        dy="30"
-       id="tspan325">Provenance</tspan>
+       id="tspan325"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Provenance</tspan>
     <tspan
        x="800"
        dy="30"
-       id="tspan327">Metadata</tspan>
+       id="tspan327"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Metadata</tspan>
   </text>
   <rect
      x="1258"
@@ -1225,19 +1255,23 @@
      y="930"
      class="section"
      text-anchor="middle"
-     id="text339">
+     id="text339"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="1483"
        dy="0"
-       id="tspan333">Deepfake Detection</tspan>
+       id="tspan333"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Deepfake Detection</tspan>
     <tspan
        x="1483"
        dy="28"
-       id="tspan335">&amp; Provenance</tspan>
+       id="tspan335"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">&amp; Provenance</tspan>
     <tspan
        x="1483"
        dy="28"
-       id="tspan337">Metadata</tspan>
+       id="tspan337"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Metadata</tspan>
   </text>
   <line
      x1="940"
@@ -1276,10 +1310,12 @@
      y="1080"
      class="caption"
      text-anchor="middle"
-     id="text351">
+     id="text351"
+     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
     <tspan
        x="900.0"
        dy="0"
-       id="tspan349">Figure 1. Cross-Layer Security Controls</tspan>
+       id="tspan349"
+       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Figure 1. Cross-Layer Security Controls</tspan>
   </text>
 </svg>
