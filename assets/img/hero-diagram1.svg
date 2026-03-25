@@ -37,17 +37,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="2880"
-     inkscape:window-height="1526"
+     inkscape:window-width="1920"
+     inkscape:window-height="1106"
      id="namedview250"
      showgrid="false"
      inkscape:zoom="0.84"
-     inkscape:cx="800"
-     inkscape:cy="550"
-     inkscape:window-x="2869"
-     inkscape:window-y="30"
+     inkscape:cx="1056.7575"
+     inkscape:cy="645.2381"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g112" />
+     inkscape:current-layer="svg248" />
   <defs
      id="defs8">
     <linearGradient
@@ -221,42 +221,6 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient2541"
-       id="linearGradient2543"
-       x1="761.13672"
-       y1="18.410156"
-       x2="949.85842"
-       y2="18.410156"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient2558"
-       id="linearGradient2560"
-       x1="761.13672"
-       y1="18.410156"
-       x2="949.85842"
-       y2="18.410156"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient2564"
-       id="linearGradient2566"
-       x1="728.80469"
-       y1="17.174805"
-       x2="749.07812"
-       y2="17.174805"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient2570"
-       id="linearGradient2572"
-       x1="28.804688"
-       y1="144.1748"
-       x2="49.078125"
-       y2="144.1748"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
        xlink:href="#linearGradient2570"
        id="linearGradient2578"
        x1="-23.195312"
@@ -336,6 +300,46 @@
        x2="300"
        y2="53"
        gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2570"
+       id="linearGradient2694"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-12)"
+       x1="28.804688"
+       y1="144.1748"
+       x2="49.078125"
+       y2="144.1748" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2541"
+       id="linearGradient6540"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(526,118)"
+       x1="761.13672"
+       y1="18.410156"
+       x2="949.85842"
+       y2="18.410156" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2558"
+       id="linearGradient6542"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(526,118)"
+       x1="761.13672"
+       y1="18.410156"
+       x2="949.85842"
+       y2="18.410156" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2564"
+       id="linearGradient6546"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(526,118)"
+       x1="728.80469"
+       y1="17.174805"
+       x2="749.07812"
+       y2="17.174805" />
   </defs>
   <rect
      width="107.81252%"
@@ -346,30 +350,30 @@
      style="fill:#ffffff;stroke-width:1.08342183" />
   <!-- Legend -->
   <circle
-     cx="574"
-     cy="22"
+     cx="1100"
+     cy="140"
      r="13"
      class="attack"
      id="circle12"
      style="fill:#d9534f" />
   <text
-     x="599"
-     y="31"
+     x="1125"
+     y="149"
      class="legend"
      id="text14"
-     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:24px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#bc064f;fill-opacity:1;">Attack</text>
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:24px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#bc064f;fill-opacity:1">Attack</text>
   <text
-     x="724"
-     y="28"
+     x="1250"
+     y="146"
      class="counter"
      id="text16"
-     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#2b6cb0;stroke:url(#linearGradient2566)">✓</text>
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#2b6cb0;stroke:url(#linearGradient6546)">✓</text>
   <text
-     x="760"
-     y="27"
+     x="1286"
+     y="145"
      class="legend"
      id="text18"
-     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:24px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:url(#linearGradient2543);fill-opacity:1;stroke:url(#linearGradient2560)">Countermeasure</text>
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:24px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:url(#linearGradient6540);fill-opacity:1;stroke:url(#linearGradient6542)">Countermeasure</text>
   <!-- Curved flow arrows -->
   <path
      d="m 342.85714,274.28571 c 90,-70 115,-95 195,-120"
@@ -399,13 +403,14 @@
      inkscape:connector-curvature="0"
      style="fill:none;stroke:#111111;stroke-width:4;stroke-linecap:round;marker-end:url(#arrowhead)" />
   <path
-     d="M 315 605 C 300 548, 300 502, 314 445"
+     d="m 279.28571,594.28571 c -15,-57 -15,-103 -1,-160"
      class="arrow"
-     marker-end="url(#arrowhead)"
-     id="path30" />
+     id="path30"
+     inkscape:connector-curvature="0"
+     style="fill:none;stroke:#111111;stroke-width:4;stroke-linecap:round;marker-end:url(#arrowhead)" />
   <!-- Data Collection -->
   <g
-     transform="translate(661,105)"
+     transform="translate(645,107)"
      id="g56">
     <text
        x="10"
@@ -454,14 +459,14 @@
          style="fill:none;stroke:#111111;stroke-width:3.20000005;stroke-linecap:round;stroke-linejoin:round" />
     </g>
     <circle
-       cx="35"
+       cx="19"
        cy="87"
        r="8"
        class="attack"
        id="circle46"
        style="fill:#d9534f" />
     <text
-       x="58"
+       x="40"
        y="101"
        class="label"
        id="text48"
@@ -475,13 +480,13 @@
        id="line50"
        style="stroke:url(#linearGradient2614);stroke-width:2.42486167" />
     <text
-       x="24"
+       x="12"
        y="155"
        class="counter"
        id="text52"
-       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#2b6cb0;stroke:url(#linearGradient2572)">✓</text>
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#2b6cb0;stroke:url(#linearGradient2694)">✓</text>
     <text
-       x="65"
+       x="51"
        y="155"
        class="cm"
        id="text54"
@@ -654,7 +659,19 @@
        x="10"
        y="96"
        class="cm"
-       id="text110">Adversarial Training, Robust Optimization</text>
+       id="text110"
+       style="font-style:italic;font-variant:normal;font-weight:400;font-stretch:normal;font-size:26px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#111111">Adversarial Training, Robust</text>
+    <text
+       xml:space="preserve"
+       style="font-style:italic;font-weight:normal;font-size:24px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;-inkscape-font-specification:'sans-serif, Italic';font-stretch:normal;font-variant:normal;text-anchor:start;text-align:start;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;"
+       x="71.428589"
+       y="133.80951"
+       id="text2632"><tspan
+         sodipodi:role="line"
+         id="tspan2630"
+         x="71.428589"
+         y="133.80951"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr;text-anchor:start;">Optimization</tspan></text>
   </g>
   <!-- Model Evaluation -->
   <g
@@ -743,7 +760,7 @@
        id="text138"
        style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:38px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#111111">Deployment</text>
     <g
-       transform="translate(-146,-39)"
+       transform="matrix(0.68462239,0,0,0.6815092,-105.1956,-28.740239)"
        id="g146">
       <path
          d="M 40,55 H 94 C 111,55 124,42 124,26 124,13 113,2 99,2 94,-15 78,-26 59,-26 c -25,0 -45,16 -49,39 -17,0 -30,13 -30,29 0,14 13,26 30,26 h 30"
@@ -878,195 +895,9 @@
        style="font-style:italic;font-variant:normal;font-weight:400;font-stretch:normal;font-size:26px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#111111">Input Sanitization, Monitoring</text>
   </g>
   <!-- Center diagram -->
-  <g
-     transform="translate(530,415)"
-     id="g246"
-     filter="url(#shadow)">
-    <ellipse
-       cx="280"
-       cy="130"
-       rx="280"
-       ry="82"
-       class="platform"
-       id="ellipse184" />
-    <ellipse
-       cx="280"
-       cy="130"
-       rx="245"
-       ry="60"
-       id="ellipse186"
-       stroke-width="2"
-       stroke="#cfcfcf"
-       fill="none" />
-    <path
-       d="M90 154 C130 126 170 124 205 152"
-       class="thin"
-       id="path188"
-       opacity="0.28" />
-    <path
-       d="M215 155 C255 128 300 127 340 155"
-       class="thin"
-       id="path190"
-       opacity="0.28" />
-    <path
-       d="M350 155 C390 126 435 126 475 154"
-       class="thin"
-       id="path192"
-       opacity="0.28" />
-    <!-- Cloud -->
-    <g
-       transform="translate(60,45)"
-       id="g204">
-      <path
-         d="M55 85 H160 C181 85 197 69 197 49 C197 32 183 18 166 18 C159 -4 139 -20 114 -20 C82 -20 56 2 50 30 C28 30 10 47 10 67 C10 86 27 100 48 100 H55"
-         class="icon"
-         id="path194"
-         fill="#fff" />
-      <rect
-         x="72"
-         y="35"
-         width="38"
-         height="18"
-         rx="3"
-         class="icon"
-         id="rect196" />
-      <rect
-         x="116"
-         y="35"
-         width="38"
-         height="18"
-         rx="3"
-         class="icon"
-         id="rect198" />
-      <rect
-         x="72"
-         y="58"
-         width="38"
-         height="18"
-         rx="3"
-         class="icon"
-         id="rect200" />
-      <rect
-         x="116"
-         y="58"
-         width="38"
-         height="18"
-         rx="3"
-         class="icon"
-         id="rect202" />
-    </g>
-    <!-- Edge -->
-    <g
-       transform="translate(300,62)"
-       id="g220">
-      <rect
-         x="0"
-         y="28"
-         width="120"
-         height="62"
-         rx="6"
-         class="icon"
-         id="rect206"
-         fill="#fff" />
-      <path
-         d="M18 28 V0 M98 28 V0"
-         class="icon"
-         id="path208" />
-      <circle
-         cx="30"
-         cy="59"
-         r="3"
-         id="circle210"
-         fill="#111" />
-      <circle
-         cx="42"
-         cy="59"
-         r="3"
-         id="circle212"
-         fill="#111" />
-      <circle
-         cx="54"
-         cy="59"
-         r="3"
-         id="circle214"
-         fill="#111" />
-      <circle
-         cx="66"
-         cy="59"
-         r="3"
-         id="circle216"
-         fill="#111" />
-      <circle
-         cx="78"
-         cy="59"
-         r="3"
-         id="circle218"
-         fill="#111" />
-    </g>
-    <!-- Physical -->
-    <g
-       transform="translate(450,52)"
-       id="g234">
-      <path
-         d="M0 78 C10 52 36 42 61 48 C86 54 95 78 88 95 C82 111 63 118 43 113 C18 108 -5 101 0 78 Z"
-         class="icon"
-         id="path222" />
-      <path
-         d="M57 54 L82 27 C89 20 100 21 106 28 C112 35 111 47 104 53 L79 78"
-         class="icon"
-         id="path224" />
-      <circle
-         cx="84"
-         cy="25"
-         r="11"
-         class="icon"
-         id="circle226" />
-      <path
-         d="M96 78 L120 78"
-         class="icon"
-         id="path228" />
-      <rect
-         x="128"
-         y="48"
-         width="20"
-         height="48"
-         rx="4"
-         class="icon"
-         id="rect230" />
-      <path
-         d="M138 48 V28 M130 28 H146"
-         class="icon"
-         id="path232" />
-    </g>
-    <text
-       x="70"
-       y="225"
-       class="centerlab"
-       id="text236">Cloud</text>
-    <text
-       x="235"
-       y="225"
-       class="centerlab"
-       id="text238">|</text>
-    <text
-       x="265"
-       y="225"
-       class="centerlab"
-       id="text240">Edge</text>
-    <text
-       x="420"
-       y="225"
-       class="centerlab"
-       id="text242">|</text>
-    <text
-       x="450"
-       y="225"
-       class="centerlab"
-       id="text244">Physical</text>
-  </g>
   <image
-     y="461.64288"
-     x="550.5238"
+     y="447.35718"
+     x="579.09528"
      id="image2553"
      xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAjgAAADxCAIAAABJb1r0AAAAA3NCSVQICAjb4U/gAAAgAElEQVR4
 nNy9efxtR1EvWtW91t6/4fzOnHNOJpKQxAAJGRhkvnB9MsqkT0YBFQHRp6iAqFcBfe86XAYVQZkR
