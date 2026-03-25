@@ -42,12 +42,12 @@
      id="namedview250"
      showgrid="false"
      inkscape:zoom="0.84"
-     inkscape:cx="577.23917"
+     inkscape:cx="595.09632"
      inkscape:cy="515.52246"
      inkscape:window-x="2869"
      inkscape:window-y="30"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg248"
+     inkscape:current-layer="g78"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -321,15 +321,6 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient2570"
-       id="linearGradient969"
-       gradientUnits="userSpaceOnUse"
-       x1="-23.195312"
-       y1="86.174805"
-       x2="-2.921875"
-       y2="86.174805" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient2570"
        id="linearGradient971"
        gradientUnits="userSpaceOnUse"
        x1="-23.195312"
@@ -339,12 +330,21 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient2594"
-       id="linearGradient973"
+       id="linearGradient1039"
        gradientUnits="userSpaceOnUse"
        x1="-23.195312"
        y1="84.174805"
        x2="-2.921875"
        y2="84.174805" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2570"
+       id="linearGradient1072"
+       gradientUnits="userSpaceOnUse"
+       x1="-23.195312"
+       y1="86.174805"
+       x2="-2.921875"
+       y2="86.174805" />
   </defs>
   <!-- Legend -->
   <circle
@@ -504,7 +504,7 @@
        id="text58"
        style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:38px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#111111">Data Preprocessing</text>
     <g
-       transform="translate(-112,-34)"
+       transform="translate(-116,-34)"
        id="g66">
       <path
          d="M 10,24 H 34 L 44,8 H 56 L 48,24 62,38 52,48 38,34 24,42 V 26 Z"
@@ -558,11 +558,22 @@
        y="97"
        class="cm"
        id="text76"
-       style="font-style:italic;font-variant:normal;font-weight:400;font-stretch:normal;font-size:26px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#111111">Integrity Checks, Anomaly Detection</text>
+       style="font-style:italic;font-variant:normal;font-weight:400;font-stretch:normal;font-size:26px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#111111">Integrity Checks, Anomaly</text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       x="209.4928"
+       y="128.30028"
+       id="text1043"><tspan
+         sodipodi:role="line"
+         id="tspan1041"
+         x="209.4928"
+         y="128.30028"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Detection</tspan></text>
   </g>
   <!-- Model Training -->
   <g
-     transform="translate(1147.9834,585.69524)"
+     transform="translate(1123.9834,585.69524)"
      id="g112">
     <text
        x="0"
@@ -662,7 +673,7 @@
        y="97"
        class="counter"
        id="text108"
-       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#2b6cb0;stroke:url(#linearGradient969)">✓</text>
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#2b6cb0;stroke:url(#linearGradient1072)">✓</text>
     <text
        x="10"
        y="96"
@@ -759,7 +770,7 @@
   </g>
   <!-- Deployment -->
   <g
-     transform="translate(119.98344,531.69524)"
+     transform="translate(179.98344,531.69524)"
      id="g158">
     <text
        x="0"
@@ -768,7 +779,7 @@
        id="text138"
        style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:38px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#111111">Deployment</text>
     <g
-       transform="matrix(0.68462239,0,0,0.6815092,-105.1956,-28.740239)"
+       transform="matrix(0.53131011,0,0,0.49728049,-85.913837,-15.94285)"
        id="g146">
       <path
          d="M 40,55 H 94 C 111,55 124,42 124,26 124,13 113,2 99,2 94,-15 78,-26 59,-26 c -25,0 -45,16 -49,39 -17,0 -30,13 -30,29 0,14 13,26 30,26 h 30"
@@ -818,7 +829,7 @@
        y="95"
        class="counter"
        id="text154"
-       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#2b6cb0;stroke:url(#linearGradient973)">✓</text>
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#2b6cb0;stroke:url(#linearGradient1039)">✓</text>
     <text
        x="10"
        y="95"
