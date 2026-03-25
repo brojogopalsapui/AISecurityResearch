@@ -104,11 +104,11 @@
      id="text4">Edge Device A</text>
   <rect
      class="box"
-     x="60"
-     y="177"
-     width="400"
-     height="400"
-     rx="18"
+     x="60.015469"
+     y="177.01547"
+     width="399.96906"
+     height="411.36148"
+     rx="17.998608"
      id="rect4" />
   <rect
      class="soft"
@@ -190,11 +190,11 @@
      id="text13">Edge Device B</text>
   <rect
      class="box"
-     x="1140"
-     y="177"
-     width="400"
-     height="400"
-     rx="18"
+     x="1140.0239"
+     y="177.02397"
+     width="399.95206"
+     height="417.67358"
+     rx="17.997843"
      id="rect13" />
   <rect
      class="soft"
@@ -270,11 +270,11 @@
      id="text21">Local analysis before uplink</text>
   <rect
      class="orch"
-     x="470"
-     y="258"
-     width="660"
-     height="350"
-     rx="18"
+     x="470.02774"
+     y="258.02774"
+     width="659.94452"
+     height="366.40021"
+     rx="17.998487"
      id="rect21" />
   <text
      x="800"
