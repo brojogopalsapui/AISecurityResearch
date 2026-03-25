@@ -2416,3 +2416,42 @@ a.trending-link:hover,
     box-shadow: 0 20px 40px rgba(24, 35, 47, 0.10) !important;
   }
 }
+
+.portal-media {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.portal-media img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  cursor: zoom-in;
+}
+
+.image-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  z-index: 9999;
+  overflow: auto;
+}
+
+.image-zoom-overlay img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  cursor: zoom-out;
+}
