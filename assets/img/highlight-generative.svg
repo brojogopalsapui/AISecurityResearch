@@ -1,77 +1,82 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="1800"
-   height="1100"
-   viewBox="0 0 1800 1100"
+   height="1040"
+   viewBox="0 0 1800 1040"
    role="img"
    aria-labelledby="title desc"
    version="1.1"
-   id="svg353"
-   sodipodi:docname="highlight-generative.svg"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)">
-  <metadata
-     id="metadata357">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
+   id="svg113"
+   sodipodi:docname="highlight-generative_updated.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
+     id="namedview113"
      pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="2880"
-     inkscape:window-height="1526"
-     id="namedview355"
-     showgrid="false"
-     inkscape:zoom="1.03"
-     inkscape:cx="751.85917"
-     inkscape:cy="550"
-     inkscape:window-x="5749"
-     inkscape:window-y="177"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.51"
+     inkscape:cx="900.98039"
+     inkscape:cy="520.58824"
+     inkscape:window-width="1536"
+     inkscape:window-height="801"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg353" />
+     inkscape:current-layer="svg113" />
   <title
      id="title">Cross-Layer Security Controls</title>
   <desc
-     id="desc">Publication-style diagram showing prompt-level filtering and semantic latency analysis feeding a latent-space language model, model-parameter watermarking and signed model metadata, and downstream deepfake detection with provenance metadata.</desc>
-  <style
-     id="style4">
-    .title { font: 700 28px Arial, Helvetica, sans-serif; fill: #1F2937; }
-    .section { font: 700 24px Arial, Helvetica, sans-serif; fill: #1F2937; }
-    .header { font: 700 21px Arial, Helvetica, sans-serif; fill: #1F2937; }
-    .body { font: 400 18px Arial, Helvetica, sans-serif; fill: #1F2937; }
-    .small { font: 400 16px Arial, Helvetica, sans-serif; fill: #1F2937; }
-    .caption { font: 600 20px Arial, Helvetica, sans-serif; fill: #1F2937; }
-    .box { fill: white; stroke: #5E6B7A; stroke-width: 1.8; rx: 16; ry: 16; }
-    .dashbox { fill: white; stroke: #5E6B7A; stroke-width: 1.8; rx: 18; ry: 18; stroke-dasharray: 7 6; }
-    .hdrfill { fill: #EAF2FB; stroke: #5E6B7A; stroke-width: 1.8; rx: 16; ry: 16; }
-    .line { stroke: #5E6B7A; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-    .dline { stroke: #5E6B7A; stroke-width: 1.6; fill: none; stroke-dasharray: 7 6; stroke-linecap: round; stroke-linejoin: round; }
-    .accent { fill: #3B6EA8; stroke: #5E6B7A; stroke-width: 1.6; }
-    .soft { fill: #EAF2FB; stroke: #5E6B7A; stroke-width: 1.6; }
-    .node { fill: white; stroke: #5E6B7A; stroke-width: 1.8; }
-</style>
+     id="desc">Cross-layer security controls for generative AI showing prompt-level filtering, semantic latency analysis, model watermarking and steganography, signed model metadata, and deepfake detection with provenance metadata.</desc>
   <defs
-     id="defs9">
+     id="defs1">
+    <rect
+       x="-139.21569"
+       y="686.27451"
+       width="105.88235"
+       height="96.078431"
+       id="rect114" />
     <marker
        id="arrow"
+       markerWidth="12"
+       markerHeight="12"
+       refX="10"
+       refY="6"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M0,0 L10,6 L0,12 z"
+         fill="#5E6B7A"
+         id="path1" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="marker1"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path1-1" />
+    </marker>
+    <marker
+       id="arrow-6"
        markerWidth="10"
        markerHeight="10"
        refX="8"
@@ -79,1243 +84,1288 @@
        orient="auto"
        markerUnits="strokeWidth">
       <path
-         d="M0,0 L8,3.5 L0,7 z"
-         fill="#5E6B7A"
+         d="M 0,0 8,3.5 0,7 Z"
+         fill="#5e6b7a"
          id="path6" />
     </marker>
+    <marker
+       style="overflow:visible"
+       id="RoundedArrow"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Rounded arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="m -0.21114562,-4.1055728 6.42229122,3.21114561 a 1,1 90 0 1 0,1.78885438 L -0.21114562,4.1055728 A 1.236068,1.236068 31.717474 0 1 -2,3 v -6 a 1.236068,1.236068 148.28253 0 1 1.78885438,-1.1055728 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path8" />
+    </marker>
+    <marker
+       id="marker2"
+       markerWidth="10"
+       markerHeight="10"
+       refX="8"
+       refY="3.5"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M 0,0 8,3.5 0,7 Z"
+         fill="#5e6b7a"
+         id="path2" />
+    </marker>
+    <marker
+       id="marker3"
+       markerWidth="10"
+       markerHeight="10"
+       refX="8"
+       refY="3.5"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M 0,0 8,3.5 0,7 Z"
+         fill="#5e6b7a"
+         id="path3" />
+    </marker>
+    <marker
+       id="marker4"
+       markerWidth="10"
+       markerHeight="10"
+       refX="8"
+       refY="3.5"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M 0,0 8,3.5 0,7 Z"
+         fill="#5e6b7a"
+         id="path4" />
+    </marker>
+    <marker
+       id="arrow-4"
+       markerWidth="10"
+       markerHeight="10"
+       refX="8"
+       refY="3.5"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M 0,0 8,3.5 0,7 Z"
+         fill="#5e6b7a"
+         id="path6-2" />
+    </marker>
+    <marker
+       id="arrow-5"
+       markerWidth="12"
+       markerHeight="12"
+       refX="10"
+       refY="6"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M 0,0 10,6 0,12 Z"
+         fill="#5e6b7a"
+         id="path1-7" />
+    </marker>
   </defs>
+  <style
+     id="style1"><![CDATA[
+
+.section { font: 700 30px Arial, Helvetica, sans-serif; fill: #1F2937; }
+.header { font: 700 38px Arial, Helvetica, sans-serif; fill: #1F2937; }
+.body { font: 400 30px Arial, Helvetica, sans-serif; fill: #1F2937; }
+.label { font: 700 32px Arial, Helvetica, sans-serif; fill: #1F2937; }
+.bodysmall { font: 400 26px Arial, Helvetica, sans-serif; fill: #1F2937; }
+.box { fill: #fff; stroke: #5E6B7A; stroke-width: 2.2; rx: 20; ry: 20; }
+.dash { fill: #fff; stroke: #5E6B7A; stroke-width: 2.1; rx: 22; ry: 22; stroke-dasharray: 8 8; }
+.line { stroke: #5E6B7A; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+.sline { stroke: #5E6B7A; stroke-width: 2.1; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.dline { stroke: #5E6B7A; stroke-width: 1.9; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 8 8; }
+.node { fill: #fff; stroke: #5E6B7A; stroke-width: 2.1; }
+.naccent { fill: #B9D8C1; stroke: #5E6B7A; stroke-width: 2.1; }
+
+]]></style>
   <rect
      x="0"
      y="0"
      width="1800"
-     height="1100"
-     fill="white"
-     id="rect11" />
-  <rect
-     x="70"
-     y="35"
-     width="1660"
-     height="355"
-     class="dashbox"
-     id="rect13" />
-  <rect
-     x="110"
-     y="80"
-     width="420"
-     height="150"
-     class="box"
-     id="rect15" />
-  <rect
-     x="110"
-     y="80"
-     width="420"
-     height="50"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     rx="16"
-     ry="16"
-     id="rect17" />
-  <rect
-     x="110"
-     y="114"
-     width="420"
-     height="16"
-     fill="#EAF2FB"
-     stroke="none"
-     id="rect19" />
-  <line
-     x1="110"
-     y1="130"
-     x2="530"
-     y2="130"
-     class="line"
-     id="line21" />
+     height="1040"
+     fill="#fff"
+     id="rect1" />
   <text
-     x="320.0"
-     y="108"
-     class="header"
-     text-anchor="middle"
-     id="text25"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="320.0"
-       dy="0"
-       id="tspan23"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Prompt-Level Filtering</tspan>
-  </text>
-  <text
-     x="320.0"
-     y="170"
-     class="body"
-     text-anchor="middle"
-     id="text31"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="320.0"
-       dy="0"
-       id="tspan27"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Prompt-level</tspan>
-    <tspan
-       x="320.0"
-       dy="24"
-       id="tspan29"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">prompt injection</tspan>
-  </text>
-  <rect
-     x="1230"
-     y="82"
-     width="460"
-     height="150"
-     class="box"
-     id="rect33" />
-  <rect
-     x="1230"
-     y="82"
-     width="460"
-     height="54"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     rx="16"
-     ry="16"
-     id="rect35" />
-  <rect
-     x="1230"
-     y="120"
-     width="460"
-     height="16"
-     fill="#EAF2FB"
-     stroke="none"
-     id="rect37" />
-  <line
-     x1="1230"
-     y1="136"
-     x2="1690"
-     y2="136"
-     class="line"
-     id="line39" />
-  <text
-     x="1460"
-     y="104"
-     class="header"
-     id="text45"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:29.33333333px;line-height:normal;font-family:Arial, Helvetica, sans-serif;text-anchor:middle;fill:#1f2937;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="1460"
-       dy="0"
-       id="tspan41"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Semantic Latency</tspan>
-    <tspan
-       x="1460"
-       dy="26"
-       id="tspan43"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Analysis</tspan>
-  </text>
-  <text
-     x="1460.0"
-     y="176"
-     class="body"
-     id="text51"
-     text-anchor="middle"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="1460.0"
-       dy="0"
-       id="tspan47"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">BLEU-score</tspan>
-    <tspan
-       x="1460.0"
-       dy="24"
-       id="tspan49"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Normal';font-family:Arial, Helvetica, sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">degradation detection</tspan>
-  </text>
-  <line
-     x1="530"
-     y1="157"
-     x2="1200"
-     y2="157"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line53" />
-  <text
-     x="145"
-     y="270"
-     class="section"
-     text-anchor="middle"
-     id="text59">
-    <tspan
-       x="145"
-       dy="0"
-       id="tspan55">Input</tspan>
-    <tspan
-       x="145"
-       dy="28"
-       id="tspan57">prompt</tspan>
-  </text>
-  <line
-     x1="205"
-     y1="290"
-     x2="235"
-     y2="290"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line61" />
-  <rect
-     x="290"
-     y="245"
-     width="86"
-     height="94"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="rect63" />
-  <line
-     x1="306"
-     y1="269"
-     x2="360"
-     y2="269"
-     class="line"
-     id="line65" />
-  <line
-     x1="306"
-     y1="287"
-     x2="360"
-     y2="287"
-     class="line"
-     id="line67" />
-  <line
-     x1="306"
-     y1="305"
-     x2="360"
-     y2="305"
-     class="line"
-     id="line69" />
-  <line
-     x1="376"
-     y1="292"
-     x2="455"
-     y2="292"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line71" />
-  <line
-     x1="800.0"
-     y1="252.0"
-     x2="870.0"
-     y2="232.0"
-     class="line"
-     opacity="0.95"
-     id="line73" />
-  <line
-     x1="800.0"
-     y1="252.0"
-     x2="870.0"
-     y2="297.0"
-     class="line"
-     opacity="0.95"
-     id="line75" />
-  <line
-     x1="800.0"
-     y1="252.0"
-     x2="870.0"
-     y2="362.0"
-     class="line"
-     opacity="0.95"
-     id="line77" />
-  <line
-     x1="800.0"
-     y1="282.0"
-     x2="870.0"
-     y2="232.0"
-     class="line"
-     opacity="0.95"
-     id="line79" />
-  <line
-     x1="800.0"
-     y1="282.0"
-     x2="870.0"
-     y2="297.0"
-     class="line"
-     opacity="0.95"
-     id="line81" />
-  <line
-     x1="800.0"
-     y1="282.0"
-     x2="870.0"
-     y2="362.0"
-     class="line"
-     opacity="0.95"
-     id="line83" />
-  <line
-     x1="800.0"
-     y1="312.0"
-     x2="870.0"
-     y2="232.0"
-     class="line"
-     opacity="0.95"
-     id="line85" />
-  <line
-     x1="800.0"
-     y1="312.0"
-     x2="870.0"
-     y2="297.0"
-     class="line"
-     opacity="0.95"
-     id="line87" />
-  <line
-     x1="800.0"
-     y1="312.0"
-     x2="870.0"
-     y2="362.0"
-     class="line"
-     opacity="0.95"
-     id="line89" />
-  <line
-     x1="800.0"
-     y1="342.0"
-     x2="870.0"
-     y2="232.0"
-     class="line"
-     opacity="0.95"
-     id="line91" />
-  <line
-     x1="800.0"
-     y1="342.0"
-     x2="870.0"
-     y2="297.0"
-     class="line"
-     opacity="0.95"
-     id="line93" />
-  <line
-     x1="800.0"
-     y1="342.0"
-     x2="870.0"
-     y2="362.0"
-     class="line"
-     opacity="0.95"
-     id="line95" />
-  <line
-     x1="870.0"
-     y1="232.0"
-     x2="970.0"
-     y2="272.0"
-     class="line"
-     opacity="0.95"
-     id="line97" />
-  <line
-     x1="870.0"
-     y1="232.0"
-     x2="970.0"
-     y2="327.0"
-     class="line"
-     opacity="0.95"
-     id="line99" />
-  <line
-     x1="870.0"
-     y1="297.0"
-     x2="970.0"
-     y2="272.0"
-     class="line"
-     opacity="0.95"
-     id="line101" />
-  <line
-     x1="870.0"
-     y1="297.0"
-     x2="970.0"
-     y2="327.0"
-     class="line"
-     opacity="0.95"
-     id="line103" />
-  <line
-     x1="870.0"
-     y1="362.0"
-     x2="970.0"
-     y2="272.0"
-     class="line"
-     opacity="0.95"
-     id="line105" />
-  <line
-     x1="870.0"
-     y1="362.0"
-     x2="970.0"
-     y2="327.0"
-     class="line"
-     opacity="0.95"
-     id="line107" />
-  <rect
-     x="875.0"
-     y="287.0"
-     width="30.0"
-     height="35.0"
-     rx="9.0"
-     ry="9.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="rect109" />
-  <circle
-     cx="800.0"
-     cy="252.0"
-     r="13.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle111" />
-  <circle
-     cx="800.0"
-     cy="282.0"
-     r="13.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle113" />
-  <circle
-     cx="800.0"
-     cy="312.0"
-     r="13.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle115" />
-  <circle
-     cx="800.0"
-     cy="342.0"
-     r="13.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle117" />
-  <circle
-     cx="870.0"
-     cy="232.0"
-     r="13.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle119" />
-  <circle
-     cx="870.0"
-     cy="297.0"
-     r="13.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle121" />
-  <circle
-     cx="870.0"
-     cy="362.0"
-     r="13.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle123" />
-  <circle
-     cx="970.0"
-     cy="272.0"
-     r="13.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle125" />
-  <circle
-     cx="970.0"
-     cy="327.0"
-     r="13.0"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle127" />
-  <text
-     x="890"
-     y="412.0"
-     class="section"
-     text-anchor="middle"
-     id="text131"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="890"
-       dy="0"
-       id="tspan129"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Latent space</tspan>
-  </text>
-  <line
-     x1="973"
-     y1="292"
-     x2="1210"
-     y2="292"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line133" />
-  <path
-     d="M1245,246 L1317,246 L1333,262 L1333,340 L1245,340 Z"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="path135" />
-  <path
-     d="M1317,246 L1317,262 L1333,262"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.6"
-     id="path137" />
-  <line
-     x1="1261"
-     y1="270"
-     x2="1317"
-     y2="270"
-     class="line"
-     id="line139" />
-  <line
-     x1="1261"
-     y1="288"
-     x2="1317"
-     y2="288"
-     class="line"
-     id="line141" />
-  <line
-     x1="1261"
-     y1="306"
-     x2="1317"
-     y2="306"
-     class="line"
-     id="line143" />
-  <line
-     x1="1333"
-     y1="292"
-     x2="1410"
-     y2="292"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line145" />
-  <text
-     x="1535"
-     y="270"
-     class="section"
-     text-anchor="middle"
-     id="text151"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="1535"
-       dy="0"
-       id="tspan147"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Output</tspan>
-    <tspan
-       x="1535"
-       dy="28"
-       id="tspan149"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">response</tspan>
-  </text>
-  <line
-     x1="320"
-     y1="230"
-     x2="320"
-     y2="245"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line153" />
-  <path
-     d="M1460,236 V255 H333"
-     class="line"
-     id="path155" />
-  <rect
-     x="90"
-     y="430"
-     width="1620"
-     height="315"
-     class="box"
-     id="rect157" />
-  <text
-     x="410"
-     y="485"
-     class="title"
-     text-anchor="middle"
-     id="text165">
-    <tspan
-       x="410"
-       dy="0"
-       id="tspan159">Model Parameter</tspan>
-    <tspan
-       x="410"
-       dy="30"
-       id="tspan161">Watermarking</tspan>
-    <tspan
-       x="410"
-       dy="30"
-       id="tspan163">&amp; Steganography</tspan>
-  </text>
-  <line
-     x1="1030"
-     y1="470"
-     x2="1030"
-     y2="558"
-     class="line"
-     id="line167" />
-  <text
-     x="1186"
-     y="488"
-     class="section"
-     id="text173"
-     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:24px;line-height:normal;font-family:Arial, Helvetica, sans-serif;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#1f2937">
-    <tspan
-       x="1186"
-       dy="0"
-       id="tspan169"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:26.66666603px;font-family:Arial, Helvetica, sans-serif;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">Signed Model</tspan>
-    <tspan
-       x="1186"
-       dy="28"
-       id="tspan171"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:26.66666603px;font-family:Arial, Helvetica, sans-serif;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">Steganography</tspan>
-  </text>
-  <rect
-     x="140"
-     y="585"
-     width="430"
-     height="92"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="rect175" />
-  <text
-     x="355"
-     y="622"
-     class="section"
-     text-anchor="middle"
-     id="text181"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="355"
-       dy="0"
-       id="tspan177"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">BLEU-score</tspan>
-    <tspan
-       x="355"
-       dy="28"
-       id="tspan179"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">degradation detection</tspan>
-  </text>
-  <line
-     x1="819.5"
-     y1="582.0"
-     x2="886.0"
-     y2="563.0"
-     class="line"
-     opacity="0.95"
-     id="line183" />
-  <line
-     x1="819.5"
-     y1="582.0"
-     x2="886.0"
-     y2="624.75"
-     class="line"
-     opacity="0.95"
-     id="line185" />
-  <line
-     x1="819.5"
-     y1="582.0"
-     x2="886.0"
-     y2="686.5"
-     class="line"
-     opacity="0.95"
-     id="line187" />
-  <line
-     x1="819.5"
-     y1="610.5"
-     x2="886.0"
-     y2="563.0"
-     class="line"
-     opacity="0.95"
-     id="line189" />
-  <line
-     x1="819.5"
-     y1="610.5"
-     x2="886.0"
-     y2="624.75"
-     class="line"
-     opacity="0.95"
-     id="line191" />
-  <line
-     x1="819.5"
-     y1="610.5"
-     x2="886.0"
-     y2="686.5"
-     class="line"
-     opacity="0.95"
-     id="line193" />
-  <line
-     x1="819.5"
-     y1="639.0"
-     x2="886.0"
-     y2="563.0"
-     class="line"
-     opacity="0.95"
-     id="line195" />
-  <line
-     x1="819.5"
-     y1="639.0"
-     x2="886.0"
-     y2="624.75"
-     class="line"
-     opacity="0.95"
-     id="line197" />
-  <line
-     x1="819.5"
-     y1="639.0"
-     x2="886.0"
-     y2="686.5"
-     class="line"
-     opacity="0.95"
-     id="line199" />
-  <line
-     x1="819.5"
-     y1="667.5"
-     x2="886.0"
-     y2="563.0"
-     class="line"
-     opacity="0.95"
-     id="line201" />
-  <line
-     x1="819.5"
-     y1="667.5"
-     x2="886.0"
-     y2="624.75"
-     class="line"
-     opacity="0.95"
-     id="line203" />
-  <line
-     x1="819.5"
-     y1="667.5"
-     x2="886.0"
-     y2="686.5"
-     class="line"
-     opacity="0.95"
-     id="line205" />
-  <line
-     x1="886.0"
-     y1="563.0"
-     x2="981.0"
-     y2="601.0"
-     class="line"
-     opacity="0.95"
-     id="line207" />
-  <line
-     x1="886.0"
-     y1="563.0"
-     x2="981.0"
-     y2="653.25"
-     class="line"
-     opacity="0.95"
-     id="line209" />
-  <line
-     x1="886.0"
-     y1="624.75"
-     x2="981.0"
-     y2="601.0"
-     class="line"
-     opacity="0.95"
-     id="line211" />
-  <line
-     x1="886.0"
-     y1="624.75"
-     x2="981.0"
-     y2="653.25"
-     class="line"
-     opacity="0.95"
-     id="line213" />
-  <line
-     x1="886.0"
-     y1="686.5"
-     x2="981.0"
-     y2="601.0"
-     class="line"
-     opacity="0.95"
-     id="line215" />
-  <line
-     x1="886.0"
-     y1="686.5"
-     x2="981.0"
-     y2="653.25"
-     class="line"
-     opacity="0.95"
-     id="line217" />
-  <rect
-     x="890.75"
-     y="615.25"
-     width="28.5"
-     height="33.25"
-     rx="8.549999999999999"
-     ry="8.549999999999999"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="rect219" />
-  <circle
-     cx="819.5"
-     cy="582.0"
-     r="12.35"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle221" />
-  <circle
-     cx="819.5"
-     cy="610.5"
-     r="12.35"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle223" />
-  <circle
-     cx="819.5"
-     cy="639.0"
-     r="12.35"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle225" />
-  <circle
-     cx="819.5"
-     cy="667.5"
-     r="12.35"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle227" />
-  <circle
-     cx="886.0"
-     cy="563.0"
-     r="12.35"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle229" />
-  <circle
-     cx="886.0"
-     cy="624.75"
-     r="12.35"
-     fill="#CDE6D8"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle231" />
-  <circle
-     cx="886.0"
-     cy="686.5"
-     r="12.35"
-     fill="#CDE6D8"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle233" />
-  <circle
-     cx="981.0"
-     cy="601.0"
-     r="12.35"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle235" />
-  <circle
-     cx="981.0"
-     cy="653.25"
-     r="12.35"
-     fill="white"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle237" />
-  <text
-     x="905"
-     y="734.0"
-     class="section"
-     text-anchor="middle"
-     id="text241"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="905"
-       dy="0"
-       id="tspan239"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Neural network</tspan>
-  </text>
-  <rect
-     x="1160"
-     y="555"
-     width="360"
-     height="150"
-     class="box"
-     id="rect243" />
-  <rect
-     x="1160"
-     y="555"
-     width="360"
-     height="52"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     rx="16"
-     ry="16"
-     id="rect245" />
-  <rect
-     x="1160"
-     y="591"
-     width="360"
-     height="16"
-     fill="#EAF2FB"
-     stroke="none"
-     id="rect247" />
-  <line
-     x1="1160"
-     y1="607"
-     x2="1520"
-     y2="607"
-     class="line"
-     id="line249" />
-  <text
-     x="1340"
-     y="587"
-     class="header"
-     text-anchor="middle"
-     id="text253"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="1340"
-       dy="0"
-       id="tspan251"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Signed Model Metadata</tspan>
-  </text>
-  <line
-     x1="1215"
-     y1="637"
-     x2="1465"
-     y2="637"
-     class="line"
-     opacity="0.65"
-     id="line255" />
-  <line
-     x1="1215"
-     y1="658"
-     x2="1465"
-     y2="658"
-     class="line"
-     opacity="0.65"
-     id="line257" />
-  <line
-     x1="1215"
-     y1="679"
-     x2="1465"
-     y2="679"
-     class="line"
-     opacity="0.65"
-     id="line259" />
-  <line
-     x1="570"
-     y1="631"
-     x2="760"
-     y2="631"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line261" />
-  <line
-     x1="1018"
-     y1="631"
-     x2="1140"
-     y2="631"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line263" />
-  <line
-     x1="320"
-     y1="339"
-     x2="320"
-     y2="428"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line265" />
-  <line
-     x1="890"
-     y1="392"
-     x2="890"
-     y2="506"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line267" />
-  <line
-     x1="1289"
-     y1="340"
-     x2="1289"
-     y2="553"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line269" />
-  <rect
-     x="70"
-     y="790"
-     width="1660"
-     height="250"
-     class="dashbox"
-     id="rect271" />
-  <text
-     x="900"
-     y="835"
-     class="title"
-     text-anchor="middle"
-     id="text275"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="900"
-       dy="0"
-       id="tspan273"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:29.33333333px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Deepfake Detection &amp; Provenance Metadata</tspan>
-  </text>
-  <ellipse
-     cx="236.0"
-     cy="870"
-     rx="36.0"
-     ry="10"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="ellipse277" />
-  <path
-     d="M200,870 v60 c0,6 72,6 72,0 v-60"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="path279" />
-  <ellipse
-     cx="236.0"
-     cy="930"
-     rx="36.0"
-     ry="10"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="ellipse281" />
-  <ellipse
-     cx="236.0"
-     cy="892"
-     rx="36.0"
-     ry="10"
-     fill="none"
-     stroke="#5E6B7A"
-     stroke-width="1.4"
-     id="ellipse283" />
-  <ellipse
-     cx="236.0"
-     cy="915"
-     rx="36.0"
-     ry="10"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="ellipse285" />
-  <path
-     d="M200,915 v60 c0,6 72,6 72,0 v-60"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="path287" />
-  <ellipse
-     cx="236.0"
-     cy="975"
-     rx="36.0"
-     ry="10"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="ellipse289" />
-  <ellipse
-     cx="236.0"
-     cy="937"
-     rx="36.0"
-     ry="10"
-     fill="none"
-     stroke="#5E6B7A"
-     stroke-width="1.4"
-     id="ellipse291" />
-  <path
-     d="M138,968 L132,936 L140,920 L168,920 L176,936 L170,968 Z"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="path293" />
-  <path
-     d="M326,968 L320,936 L328,920 L356,920 L364,936 L358,968 Z"
-     fill="#EAF2FB"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="path295" />
-  <circle
-     cx="235"
-     cy="944"
-     r="12"
-     fill="#F9FBFF"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle297" />
-  <circle
-     cx="269"
-     cy="944"
-     r="12"
-     fill="#F9FBFF"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle299" />
-  <circle
-     cx="303"
-     cy="944"
-     r="12"
-     fill="#F9FBFF"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle301" />
-  <circle
-     cx="337"
-     cy="944"
-     r="12"
-     fill="#F9FBFF"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="circle303" />
-  <path
-     d="M168,930 H135 V888 H200"
-     class="dline"
-     marker-end="url(#arrow)"
-     id="path305" />
-  <path
-     d="M168,958 H135 V1002 H200"
-     class="dline"
-     marker-end="url(#arrow)"
-     id="path307" />
-  <path
-     d="M320,888 H362 V930"
-     class="dline"
-     marker-end="url(#arrow)"
-     id="path309" />
-  <path
-     d="M320,1002 H362 V958"
-     class="dline"
-     marker-end="url(#arrow)"
-     id="path311" />
-  <line
-     x1="176"
-     y1="944"
-     x2="223"
-     y2="944"
-     class="line"
-     id="line313" />
-  <line
-     x1="371"
-     y1="944"
-     x2="608"
-     y2="944"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line315" />
-  <path
-     d="M800.0,860 L940,894 L930,966 Q800.0,1040 670,966 L660,894 Z"
-     fill="#FCFDFF"
-     stroke="#5E6B7A"
-     stroke-width="1.8"
-     id="path317" />
-  <text
-     x="800"
-     y="898"
-     class="section"
-     id="text329"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:26.66666667px;line-height:normal;font-family:Arial, Helvetica, sans-serif;text-anchor:middle;fill:#1f2937;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="800"
-       dy="0"
-       id="tspan321"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Deepfake</tspan>
-    <tspan
-       x="800"
-       dy="30"
-       id="tspan323"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Detection &amp;</tspan>
-    <tspan
-       x="800"
-       dy="30"
-       id="tspan325"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Provenance</tspan>
-    <tspan
-       x="800"
-       dy="30"
-       id="tspan327"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Metadata</tspan>
-  </text>
-  <rect
-     x="1258"
-     y="884"
-     width="450"
-     height="120"
-     class="box"
-     id="rect331" />
-  <text
-     x="1483"
-     y="930"
-     class="section"
-     text-anchor="middle"
-     id="text339"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="1483"
-       dy="0"
-       id="tspan333"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Deepfake Detection</tspan>
-    <tspan
-       x="1483"
-       dy="28"
-       id="tspan335"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">&amp; Provenance</tspan>
-    <tspan
-       x="1483"
-       dy="28"
-       id="tspan337"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Metadata</tspan>
-  </text>
-  <line
-     x1="940"
-     y1="944"
-     x2="1240"
-     y2="944"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line341" />
-  <line
-     x1="355"
-     y1="677"
-     x2="355"
-     y2="790"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line343" />
-  <line
-     x1="905"
-     y1="736"
-     x2="905"
-     y2="790"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line345" />
-  <line
-     x1="1340"
-     y1="706"
-     x2="1340"
-     y2="790"
-     class="line"
-     marker-end="url(#arrow)"
-     id="line347" />
-  <text
-     x="900.0"
-     y="1080"
+     x="787.95441"
+     y="1007.4141"
      class="caption"
      text-anchor="middle"
      id="text351"
-     style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">
-    <tspan
-       x="900.0"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:26.6667px;font-family:Arial, Helvetica, sans-serif;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#1f2937"><tspan
+       x="787.95441"
        dy="0"
        id="tspan349"
-       style="-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-family:Arial, Helvetica, sans-serif;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:26.66666667px;text-anchor:middle;text-align:center;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;">Figure 1. Cross-Layer Security Controls</tspan>
-  </text>
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:26.6667px;font-family:Arial, Helvetica, sans-serif;-inkscape-font-specification:'Arial, Helvetica, sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle">Figure: Cross-Layer Security Controls</tspan></text>
+  <rect
+     x="48"
+     y="28"
+     width="1704"
+     height="334"
+     class="dash"
+     id="rect2" />
+  <rect
+     x="92"
+     y="74"
+     width="480"
+     height="182"
+     class="box"
+     id="rect3" />
+  <rect
+     x="92"
+     y="74"
+     width="480"
+     height="58"
+     fill="#EAF2FB"
+     stroke="#5E6B7A"
+     stroke-width="2.2"
+     rx="20"
+     ry="20"
+     id="rect4" />
+  <rect
+     x="92"
+     y="112"
+     width="480"
+     height="20"
+     fill="#EAF2FB"
+     id="rect5" />
+  <line
+     x1="92"
+     y1="132"
+     x2="572"
+     y2="132"
+     class="sline"
+     id="line5" />
+  <text
+     x="332"
+     y="111"
+     text-anchor="middle"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:38px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#1f2937"
+     id="text5"><tspan
+       x="332"
+       dy="0"
+       id="tspan5">Prompt-Level Filtering</tspan></text>
+  <text
+     x="332"
+     y="166.39215"
+     text-anchor="middle"
+     style="font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#1f2937"
+     id="text7"><tspan
+       x="332"
+       dy="0"
+       id="tspan6">Prompt-level</tspan><tspan
+       x="332"
+       dy="34.5"
+       id="tspan7">prompt injection</tspan></text>
+  <rect
+     x="1230"
+     y="74"
+     width="498"
+     height="182"
+     class="box"
+     id="rect7" />
+  <rect
+     x="1230"
+     y="74"
+     width="498"
+     height="76"
+     fill="#EAF2FB"
+     stroke="#5E6B7A"
+     stroke-width="2.2"
+     rx="20"
+     ry="20"
+     id="rect8" />
+  <rect
+     x="1230"
+     y="130"
+     width="498"
+     height="20"
+     fill="#EAF2FB"
+     id="rect9" />
+  <line
+     x1="1230"
+     y1="150"
+     x2="1728"
+     y2="150"
+     class="sline"
+     id="line9" />
+  <text
+     x="1479"
+     y="102.45"
+     text-anchor="middle"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:35px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#1f2937"
+     id="text10"><tspan
+       x="1479"
+       dy="0"
+       id="tspan9">Semantic Latency</tspan><tspan
+       x="1479"
+       dy="35.700001"
+       id="tspan10">Analysis</tspan></text>
+  <text
+     x="1497"
+     y="204"
+     text-anchor="middle"
+     style="font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:28px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#1f2937"
+     id="text12"><tspan
+       x="1497"
+       dy="0"
+       id="tspan11">BLEU-score</tspan><tspan
+       x="1497"
+       dy="32.200001"
+       id="tspan12">degradation detection</tspan></text>
+  <line
+     x1="572"
+     y1="158"
+     x2="1198"
+     y2="158"
+     class="line"
+     id="line12" />
+  <text
+     x="132"
+     y="286"
+     class="label"
+     text-anchor="middle"
+     id="text14"><tspan
+       x="132"
+       id="tspan13">Input</tspan><tspan
+       x="132"
+       dy="38"
+       id="tspan14">prompt</tspan></text>
+  <line
+     x1="190"
+     y1="296"
+     x2="238"
+     y2="296"
+     class="line"
+     id="line14" />
+  <path
+     d="M300 248 H398 V352 H300 Z"
+     fill="#EAF2FB"
+     stroke="#5E6B7A"
+     stroke-width="2.2"
+     id="path14" />
+  <path
+     d="M398 248 L422 272 V352 H398 Z"
+     fill="#fff"
+     stroke="#5E6B7A"
+     stroke-width="2.2"
+     id="path15" />
+  <line
+     x1="327"
+     y1="278"
+     x2="384"
+     y2="278"
+     class="sline"
+     id="line15" />
+  <line
+     x1="327"
+     y1="301"
+     x2="384"
+     y2="301"
+     class="sline"
+     id="line16" />
+  <line
+     x1="327"
+     y1="324"
+     x2="384"
+     y2="324"
+     class="sline"
+     id="line17" />
+  <line
+     x1="422"
+     y1="300"
+     x2="495"
+     y2="300"
+     class="line"
+     id="line18" />
+  <line
+     x1="809.04376"
+     y1="244.68813"
+     x2="871.35229"
+     y2="226.94432"
+     class="sline"
+     opacity="0.95"
+     id="line19" />
+  <line
+     x1="809.04376"
+     y1="244.68813"
+     x2="871.35229"
+     y2="283.58801"
+     class="sline"
+     opacity="0.95"
+     id="line20" />
+  <line
+     x1="809.04376"
+     y1="244.68813"
+     x2="871.35229"
+     y2="340.23169"
+     class="sline"
+     opacity="0.95"
+     id="line21" />
+  <line
+     x1="809.04376"
+     y1="270.62137"
+     x2="871.35229"
+     y2="226.94432"
+     class="sline"
+     opacity="0.95"
+     id="line22" />
+  <line
+     x1="809.04376"
+     y1="270.62137"
+     x2="871.35229"
+     y2="283.58801"
+     class="sline"
+     opacity="0.95"
+     id="line23" />
+  <line
+     x1="809.04376"
+     y1="270.62137"
+     x2="871.35229"
+     y2="340.23169"
+     class="sline"
+     opacity="0.95"
+     id="line24" />
+  <line
+     x1="809.04376"
+     y1="296.55463"
+     x2="871.35229"
+     y2="226.94432"
+     class="sline"
+     opacity="0.95"
+     id="line25" />
+  <line
+     x1="809.04376"
+     y1="296.55463"
+     x2="871.35229"
+     y2="283.58801"
+     class="sline"
+     opacity="0.95"
+     id="line26" />
+  <line
+     x1="809.04376"
+     y1="296.55463"
+     x2="871.35229"
+     y2="340.23169"
+     class="sline"
+     opacity="0.95"
+     id="line27" />
+  <line
+     x1="809.04376"
+     y1="322.48788"
+     x2="871.35229"
+     y2="226.94432"
+     class="sline"
+     opacity="0.95"
+     id="line28" />
+  <line
+     x1="809.04376"
+     y1="322.48788"
+     x2="871.35229"
+     y2="283.58801"
+     class="sline"
+     opacity="0.95"
+     id="line29" />
+  <line
+     x1="809.04376"
+     y1="322.48788"
+     x2="871.35229"
+     y2="340.23169"
+     class="sline"
+     opacity="0.95"
+     id="line30" />
+  <line
+     x1="871.35229"
+     y1="226.94432"
+     x2="951.89746"
+     y2="255.60739"
+     class="sline"
+     opacity="0.95"
+     id="line31" />
+  <line
+     x1="871.35229"
+     y1="226.94432"
+     x2="951.89746"
+     y2="304.74408"
+     class="sline"
+     opacity="0.95"
+     id="line32" />
+  <line
+     x1="871.35229"
+     y1="283.58801"
+     x2="951.89746"
+     y2="255.60739"
+     class="sline"
+     opacity="0.95"
+     id="line33" />
+  <line
+     x1="871.35229"
+     y1="283.58801"
+     x2="951.89746"
+     y2="304.74408"
+     class="sline"
+     opacity="0.95"
+     id="line34" />
+  <line
+     x1="871.35229"
+     y1="340.23169"
+     x2="951.89746"
+     y2="255.60739"
+     class="sline"
+     opacity="0.95"
+     id="line35" />
+  <line
+     x1="871.35229"
+     y1="340.23169"
+     x2="951.89746"
+     y2="304.74408"
+     class="sline"
+     opacity="0.95"
+     id="line36" />
+  <ellipse
+     cx="809.04376"
+     cy="244.68813"
+     class="node"
+     id="circle36"
+     rx="11.397902"
+     ry="10.236811" />
+  <ellipse
+     cx="809.04376"
+     cy="270.62137"
+     class="node"
+     id="circle37"
+     rx="11.397902"
+     ry="10.236811" />
+  <ellipse
+     cx="809.04376"
+     cy="296.55463"
+     class="node"
+     id="circle38"
+     rx="11.397902"
+     ry="10.236811" />
+  <ellipse
+     cx="809.04376"
+     cy="322.48788"
+     class="node"
+     id="circle39"
+     rx="11.397902"
+     ry="10.236811" />
+  <ellipse
+     cx="871.35229"
+     cy="226.94432"
+     class="node"
+     id="circle40"
+     rx="11.397902"
+     ry="10.236811" />
+  <ellipse
+     cx="871.35229"
+     cy="283.58801"
+     class="node"
+     id="circle41"
+     rx="11.397902"
+     ry="10.236811" />
+  <ellipse
+     cx="871.35229"
+     cy="340.23169"
+     class="node"
+     id="circle42"
+     rx="11.397902"
+     ry="10.236811" />
+  <ellipse
+     cx="951.89746"
+     cy="255.60739"
+     class="node"
+     id="circle43"
+     rx="11.397902"
+     ry="10.236811" />
+  <ellipse
+     cx="951.89746"
+     cy="304.74408"
+     class="node"
+     id="circle44"
+     rx="11.397902"
+     ry="10.236811" />
+  <rect
+     x="880.47058"
+     y="270.62137"
+     width="22.795803"
+     height="30.027977"
+     rx="7.5986013"
+     ry="6.8245401"
+     fill="#f8fafc"
+     stroke="#5e6b7a"
+     stroke-width="2.1"
+     id="rect44" />
+  <line
+     x1="963"
+     y1="300"
+     x2="1120"
+     y2="300"
+     class="line"
+     id="line44" />
+  <text
+     x="814.29089"
+     y="406.18661"
+     class="label"
+     text-anchor="middle"
+     id="text44"
+     transform="scale(1.0551887,0.9476978)"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:32px;line-height:normal;font-family:Arial, Helvetica, sans-serif;stroke-width:0.720118">Latent space</text>
+  <path
+     d="M1248 248 H1320 V352 H1248 Z"
+     fill="#EAF2FB"
+     stroke="#5E6B7A"
+     stroke-width="2.2"
+     id="path44" />
+  <path
+     d="M1320 248 L1344 272 V352 H1320 Z"
+     fill="#fff"
+     stroke="#5E6B7A"
+     stroke-width="2.2"
+     id="path45" />
+  <line
+     x1="1274"
+     y1="278"
+     x2="1331"
+     y2="278"
+     class="sline"
+     id="line45" />
+  <line
+     x1="1274"
+     y1="301"
+     x2="1331"
+     y2="301"
+     class="sline"
+     id="line46" />
+  <line
+     x1="1274"
+     y1="324"
+     x2="1331"
+     y2="324"
+     class="sline"
+     id="line47" />
+  <line
+     x1="1344"
+     y1="300"
+     x2="1410"
+     y2="300"
+     class="line"
+     id="line48" />
+  <text
+     x="1548"
+     y="286"
+     class="label"
+     text-anchor="middle"
+     id="text49"><tspan
+       x="1548"
+       id="tspan48">Output</tspan><tspan
+       x="1548"
+       dy="38"
+       id="tspan49">response</tspan></text>
+  <line
+     x1="349"
+     y1="256"
+     x2="349"
+     y2="392"
+     class="line"
+     id="line49" />
+  <line
+     x1="349"
+     y1="220"
+     x2="349"
+     y2="248"
+     class="sline"
+     id="line50" />
+  <line
+     x1="348.98203"
+     y1="218.03922"
+     x2="1344.371"
+     y2="218.03922"
+     class="sline"
+     id="line51" />
+  <line
+     x1="1342"
+     y1="222"
+     x2="1342"
+     y2="250"
+     class="sline"
+     id="line52" />
+  <line
+     x1="1284"
+     y1="352"
+     x2="1284"
+     y2="498"
+     class="line"
+     id="line54" />
+  <rect
+     x="70"
+     y="398"
+     width="1620"
+     height="282"
+     class="box"
+     id="rect54" />
+  <text
+     x="365"
+     y="433.35294"
+     class="section"
+     text-anchor="middle"
+     id="text56"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif"><tspan
+       x="365"
+       id="tspan54">Model Parameter</tspan><tspan
+       x="365"
+       dy="36"
+       id="tspan55">Watermarking</tspan><tspan
+       x="365"
+       dy="36"
+       id="tspan56">&amp; Steganography</tspan></text>
+  <text
+     x="1213.9215"
+     y="436.31372"
+     class="section"
+     text-anchor="middle"
+     id="text58"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:Arial, Helvetica, sans-serif"><tspan
+       x="1213.9215"
+       id="tspan57">Signed Model</tspan><tspan
+       x="1213.9215"
+       dy="36"
+       id="tspan58">Steganography</tspan></text>
+  <rect
+     x="104"
+     y="518"
+     width="492"
+     height="96"
+     class="box"
+     id="rect58" />
+  <text
+     x="350"
+     y="557"
+     class="label"
+     text-anchor="middle"
+     id="text60"><tspan
+       x="350"
+       id="tspan59">BLEU-score</tspan><tspan
+       x="350"
+       dy="38"
+       id="tspan60">degradation detection</tspan></text>
+  <line
+     x1="596"
+     y1="566"
+     x2="728"
+     y2="566"
+     class="line"
+     id="line60" />
+  <line
+     x1="784"
+     y1="520"
+     x2="860"
+     y2="496"
+     class="sline"
+     opacity="0.95"
+     id="line61" />
+  <line
+     x1="784"
+     y1="520"
+     x2="860"
+     y2="558"
+     class="sline"
+     opacity="0.95"
+     id="line62" />
+  <line
+     x1="784"
+     y1="520"
+     x2="860"
+     y2="620"
+     class="sline"
+     opacity="0.95"
+     id="line63" />
+  <line
+     x1="784"
+     y1="550"
+     x2="860"
+     y2="496"
+     class="sline"
+     opacity="0.95"
+     id="line64" />
+  <line
+     x1="784"
+     y1="550"
+     x2="860"
+     y2="558"
+     class="sline"
+     opacity="0.95"
+     id="line65" />
+  <line
+     x1="784"
+     y1="550"
+     x2="860"
+     y2="620"
+     class="sline"
+     opacity="0.95"
+     id="line66" />
+  <line
+     x1="784"
+     y1="580"
+     x2="860"
+     y2="496"
+     class="sline"
+     opacity="0.95"
+     id="line67" />
+  <line
+     x1="784"
+     y1="580"
+     x2="860"
+     y2="558"
+     class="sline"
+     opacity="0.95"
+     id="line68" />
+  <line
+     x1="784"
+     y1="580"
+     x2="860"
+     y2="620"
+     class="sline"
+     opacity="0.95"
+     id="line69" />
+  <line
+     x1="784"
+     y1="610"
+     x2="860"
+     y2="496"
+     class="sline"
+     opacity="0.95"
+     id="line70" />
+  <line
+     x1="784"
+     y1="610"
+     x2="860"
+     y2="558"
+     class="sline"
+     opacity="0.95"
+     id="line71" />
+  <line
+     x1="784"
+     y1="610"
+     x2="860"
+     y2="620"
+     class="sline"
+     opacity="0.95"
+     id="line72" />
+  <line
+     x1="860"
+     y1="496"
+     x2="950"
+     y2="540"
+     class="sline"
+     opacity="0.95"
+     id="line73" />
+  <line
+     x1="860"
+     y1="496"
+     x2="950"
+     y2="596"
+     class="sline"
+     opacity="0.95"
+     id="line74" />
+  <line
+     x1="860"
+     y1="558"
+     x2="950"
+     y2="540"
+     class="sline"
+     opacity="0.95"
+     id="line75" />
+  <line
+     x1="860"
+     y1="558"
+     x2="950"
+     y2="596"
+     class="sline"
+     opacity="0.95"
+     id="line76" />
+  <line
+     x1="860"
+     y1="620"
+     x2="950"
+     y2="540"
+     class="sline"
+     opacity="0.95"
+     id="line77" />
+  <line
+     x1="860"
+     y1="620"
+     x2="950"
+     y2="596"
+     class="sline"
+     opacity="0.95"
+     id="line78" />
+  <circle
+     cx="784"
+     cy="520"
+     r="13"
+     class="node"
+     id="circle78" />
+  <circle
+     cx="784"
+     cy="550"
+     r="13"
+     class="node"
+     id="circle79" />
+  <circle
+     cx="784"
+     cy="580"
+     r="13"
+     class="node"
+     id="circle80" />
+  <circle
+     cx="784"
+     cy="610"
+     r="13"
+     class="node"
+     id="circle81" />
+  <circle
+     cx="860"
+     cy="496"
+     r="13"
+     class="node"
+     id="circle82" />
+  <circle
+     cx="860"
+     cy="558"
+     r="13"
+     class="naccent"
+     id="circle83" />
+  <circle
+     cx="860"
+     cy="620"
+     r="13"
+     class="naccent"
+     id="circle84" />
+  <circle
+     cx="950"
+     cy="540"
+     r="13"
+     class="node"
+     id="circle85" />
+  <circle
+     cx="950"
+     cy="596"
+     r="13"
+     class="node"
+     id="circle86" />
+  <rect
+     x="872"
+     y="542"
+     width="28"
+     height="40"
+     rx="10"
+     ry="10"
+     fill="#F8FAFC"
+     stroke="#5E6B7A"
+     stroke-width="2.1"
+     id="rect86" />
+  <text
+     x="867.5686"
+     y="666.03925"
+     class="label"
+     text-anchor="middle"
+     id="text86"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:32px;line-height:normal;font-family:Arial, Helvetica, sans-serif">Neural network</text>
+  <line
+     x1="988"
+     y1="566"
+     x2="1116"
+     y2="566"
+     class="line"
+     id="line86" />
+  <rect
+     x="1128"
+     y="494"
+     width="446"
+     height="142"
+     class="box"
+     id="rect87" />
+  <rect
+     x="1128"
+     y="494"
+     width="446"
+     height="50"
+     fill="#EAF2FB"
+     stroke="#5E6B7A"
+     stroke-width="2.2"
+     rx="20"
+     ry="20"
+     id="rect88" />
+  <rect
+     x="1128"
+     y="524"
+     width="446"
+     height="20"
+     fill="#EAF2FB"
+     id="rect89" />
+  <line
+     x1="1128"
+     y1="544"
+     x2="1574"
+     y2="544"
+     class="sline"
+     id="line89" />
+  <text
+     x="1351"
+     y="522.92157"
+     text-anchor="middle"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:28px;line-height:normal;font-family:Arial, Helvetica, sans-serif;fill:#1f2937"
+     id="text89"><tspan
+       x="1351"
+       dy="0"
+       id="tspan89">Signed Model Metadata</tspan></text>
+  <line
+     x1="1182"
+     y1="572"
+     x2="1488"
+     y2="572"
+     class="sline"
+     opacity="0.65"
+     id="line90" />
+  <line
+     x1="1182"
+     y1="595"
+     x2="1488"
+     y2="595"
+     class="sline"
+     opacity="0.65"
+     id="line91" />
+  <line
+     x1="1182"
+     y1="618"
+     x2="1488"
+     y2="618"
+     class="sline"
+     opacity="0.65"
+     id="line92" />
+  <line
+     x1="348"
+     y1="614"
+     x2="348"
+     y2="726"
+     class="line"
+     id="line93" />
+  <line
+     x1="858"
+     y1="642"
+     x2="858"
+     y2="722"
+     class="line"
+     id="line94" />
+  <line
+     x1="864.40002"
+     y1="384.21445"
+     x2="864.40002"
+     y2="464.18558"
+     class="line"
+     id="line94-1"
+     style="fill:none;stroke:#5e6b7a;stroke-width:2.39957;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow-5)" />
+  <line
+     x1="1351"
+     y1="636"
+     x2="1351"
+     y2="726"
+     class="line"
+     id="line95" />
+  <rect
+     x="48"
+     y="720"
+     width="1704"
+     height="250"
+     class="dash"
+     id="rect95" />
+  <text
+     x="900"
+     y="758"
+     class="section"
+     text-anchor="middle"
+     id="text95">Deepfake Detection &amp; Provenance Metadata</text>
+  <line
+     x1="353"
+     y1="834"
+     x2="598"
+     y2="834"
+     class="line"
+     id="line106" />
+  <path
+     d="M735 812 L900 776 L1065 812 L1048 894 C1008 928 956 946 900 946 C844 946 792 928 752 894 Z"
+     fill="#F8FBFE"
+     stroke="#5E6B7A"
+     stroke-width="2.2"
+     id="path107" />
+  <text
+     x="900"
+     y="834"
+     text-anchor="middle"
+     style="font:700 26px Arial, Helvetica, sans-serif; fill:#1F2937;"
+     id="text110"><tspan
+       x="900"
+       id="tspan107">Deepfake</tspan><tspan
+       x="900"
+       dy="32"
+       id="tspan108">Detection &amp;</tspan><tspan
+       x="900"
+       dy="32"
+       id="tspan109">Provenance</tspan><tspan
+       x="900"
+       dy="32"
+       id="tspan110">Metadata</tspan></text>
+  <line
+     x1="1066"
+     y1="834"
+     x2="1290"
+     y2="834"
+     class="line"
+     id="line110" />
+  <rect
+     x="1290"
+     y="774"
+     width="470"
+     height="132"
+     class="box"
+     id="rect110" />
+  <text
+     x="1525"
+     y="817"
+     text-anchor="middle"
+     style="font:700 28px Arial, Helvetica, sans-serif; fill:#1F2937;"
+     id="text113"><tspan
+       x="1525"
+       id="tspan111">Deepfake Detection</tspan><tspan
+       x="1525"
+       dy="34"
+       id="tspan112">&amp; Provenance</tspan><tspan
+       x="1525"
+       dy="34"
+       id="tspan113">Metadata</tspan></text>
+  <ellipse
+     cx="186.90198"
+     cy="725.52356"
+     rx="27.573551"
+     ry="5.731133"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="ellipse277-9" />
+  <path
+     d="m 159.32845,725.52347 v 34.3868 c 0,3.43868 55.1471,3.43868 55.1471,0 v -34.3868"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="path279-4" />
+  <ellipse
+     cx="186.90198"
+     cy="759.91034"
+     rx="27.573551"
+     ry="5.731133"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="ellipse281-8" />
+  <ellipse
+     cx="186.90198"
+     cy="738.13202"
+     rx="27.573551"
+     ry="5.731133"
+     fill="none"
+     stroke="#5e6b7a"
+     stroke-width="0.927563"
+     id="ellipse283-8" />
+  <ellipse
+     cx="186.90198"
+     cy="751.31366"
+     rx="27.573551"
+     ry="5.731133"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="ellipse285-2" />
+  <path
+     d="m 159.32845,751.31357 v 34.3868 c 0,3.43868 55.1471,3.43868 55.1471,0 v -34.3868"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="path287-4" />
+  <ellipse
+     cx="186.90198"
+     cy="785.70044"
+     rx="27.573551"
+     ry="5.731133"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="ellipse289-5" />
+  <ellipse
+     cx="186.90198"
+     cy="763.92212"
+     rx="27.573551"
+     ry="5.731133"
+     fill="none"
+     stroke="#5e6b7a"
+     stroke-width="0.927563"
+     id="ellipse291-5" />
+  <ellipse
+     cx="187.80676"
+     cy="862.20605"
+     rx="27.573551"
+     ry="5.731133"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="ellipse277-9-7" />
+  <path
+     d="m 160.23322,862.20598 v 34.3868 c 0,3.4387 55.1471,3.4387 55.1471,0 v -34.3868"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="path279-4-1" />
+  <ellipse
+     cx="187.80676"
+     cy="896.59283"
+     rx="27.573551"
+     ry="5.731133"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="ellipse281-8-1" />
+  <ellipse
+     cx="187.80676"
+     cy="874.81451"
+     rx="27.573551"
+     ry="5.731133"
+     fill="none"
+     stroke="#5e6b7a"
+     stroke-width="0.927563"
+     id="ellipse283-8-5" />
+  <ellipse
+     cx="187.80676"
+     cy="887.99615"
+     rx="27.573551"
+     ry="5.731133"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="ellipse285-2-2" />
+  <path
+     d="m 160.23322,887.99608 v 34.3868 c 0,3.4387 55.1471,3.4387 55.1471,0 v -34.3868"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="path287-4-7" />
+  <ellipse
+     cx="187.80676"
+     cy="922.383"
+     rx="27.573551"
+     ry="5.731133"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.19258"
+     id="ellipse289-5-6" />
+  <ellipse
+     cx="187.80676"
+     cy="900.60449"
+     rx="27.573551"
+     ry="5.731133"
+     fill="none"
+     stroke="#5e6b7a"
+     stroke-width="0.927563"
+     id="ellipse291-5-1" />
+  <path
+     d="m 65.097243,862.25953 -6,-32 8,-16 h 28 l 7.999997,16 -5.999997,32 z"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.8"
+     id="path293" />
+  <path
+     d="m 319.09724,860.25953 -6,-32 8,-16 h 28 l 8,16 -6,32 z"
+     fill="#eaf2fb"
+     stroke="#5e6b7a"
+     stroke-width="1.8"
+     id="path295" />
+  <circle
+     cx="171.24008"
+     cy="832.73578"
+     r="12"
+     fill="#f9fbff"
+     stroke="#5e6b7a"
+     stroke-width="1.8"
+     id="circle297" />
+  <circle
+     cx="197.43057"
+     cy="831.78339"
+     r="12"
+     fill="#f9fbff"
+     stroke="#5e6b7a"
+     stroke-width="1.8"
+     id="circle299" />
+  <circle
+     cx="222.09723"
+     cy="832.25958"
+     r="12"
+     fill="#f9fbff"
+     stroke="#5e6b7a"
+     stroke-width="1.8"
+     id="circle301" />
+  <path
+     d="M 105.09042,794.58687 H 72.431443 v -54.14304 h 64.328297"
+     class="dline"
+     marker-end="url(#arrow-6)"
+     id="path305"
+     style="fill:none;stroke:#5e6b7a;stroke-width:2.01841;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:8.83055, 7.56904;marker-start:url(#marker1);marker-end:url(#arrow-6)" />
+  <path
+     d="M 103.09724,874.25953 H 70.097243 v 44.00005 h 64.999997"
+     class="dline"
+     marker-end="url(#arrow-6)"
+     id="path307"
+     style="fill:none;stroke:#5e6b7a;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:7, 6;marker-start:url(#RoundedArrow);marker-end:url(#arrow-6)" />
+  <path
+     d="m 293.09724,758.25953 h 42 v 42"
+     class="dline"
+     marker-end="url(#arrow-6)"
+     id="path309"
+     style="fill:none;stroke:#5e6b7a;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:7, 6;marker-end:url(#arrow-6)" />
+  <path
+     d="m 293.09724,918.25958 h 42 v -44.00005"
+     class="dline"
+     marker-end="url(#arrow-6)"
+     id="path311"
+     style="fill:none;stroke:#5e6b7a;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:7, 6;marker-end:url(#arrow-6)" />
+  <line
+     x1="109.09723"
+     y1="832.25958"
+     x2="156.09723"
+     y2="832.25958"
+     class="line"
+     id="line313"
+     style="fill:none;stroke:#5e6b7a;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" />
+  <line
+     x1="314.42377"
+     y1="832.9624"
+     x2="241.95807"
+     y2="832.53815"
+     class="line"
+     marker-end="url(#arrow-4)"
+     id="line345-2"
+     style="fill:none;stroke:#5e6b7a;stroke-width:2.08108;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow-4)" />
+  <text
+     xml:space="preserve"
+     id="text114"
+     style="writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect114);display:inline;fill:#1f2937;fill-opacity:1;stroke-width:3.976;stroke-dasharray:none" />
 </svg>
