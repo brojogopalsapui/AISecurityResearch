@@ -166,7 +166,7 @@
      stroke="#54D9CA"
      stroke-opacity="0.35"
      id="rect12"
-     style="fill:#0000ff;fill-opacity:1" />
+     style="fill:#ffd5d5;fill-opacity:1" />
   <rect
      x="495"
      y="520"
@@ -177,7 +177,7 @@
      stroke="#8CC4FF"
      stroke-opacity="0.35"
      id="rect13"
-     style="fill:#0000ff" />
+     style="fill:#ffd5d5" />
   <rect
      x="755"
      y="520"
@@ -188,7 +188,7 @@
      stroke="#F4C36D"
      stroke-opacity="0.45"
      id="rect14"
-     style="fill:#0000ff" />
+     style="fill:#ffd5d5" />
   <text
      x="600"
      y="95"
@@ -251,7 +251,8 @@
      font-size="23"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text20">Leakage paths</text>
+     id="text20"
+     style="fill:#1a1a1a">Leakage paths</text>
   <text
      x="600"
      y="558"
@@ -259,7 +260,8 @@
      font-size="23"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text21">Fault surfaces</text>
+     id="text21"
+     style="fill:#1a1a1a">Fault surfaces</text>
   <text
      x="860"
      y="558"
@@ -267,5 +269,6 @@
      font-size="23"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text22">Trust boundaries</text>
+     id="text22"
+     style="fill:#1a1a1a">Trust boundaries</text>
 </svg>

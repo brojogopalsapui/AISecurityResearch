@@ -99,7 +99,7 @@
      stroke="#8cc4ff"
      stroke-opacity="0.35"
      id="rect7-8-9"
-     style="fill:#0000ff;fill-opacity:1;stroke-width:0.453686"
+     style="fill:#ffd5d5;fill-opacity:1;stroke-width:0.453686"
      transform="matrix(0.99999842,0.00177519,0,1,0,0)" />
   <g
      opacity="0.16"
@@ -220,7 +220,8 @@
      font-size="22px"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text15">Secure dataflow • Isolation • Trusted interfaces</text>
+     id="text15"
+     style="fill:#000000">Secure dataflow • Isolation • Trusted interfaces</text>
   <text
      x="910"
      y="354"

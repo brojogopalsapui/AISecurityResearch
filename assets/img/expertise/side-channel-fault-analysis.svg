@@ -22,7 +22,7 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="0.95"
-     inkscape:cx="601.57895"
+     inkscape:cx="602.63158"
      inkscape:cy="321.57895"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
@@ -107,7 +107,7 @@
      stroke="#54d9ca"
      stroke-opacity="0.35"
      id="rect12"
-     style="fill:#0000ff;fill-opacity:1;stroke-width:0.858339" />
+     style="fill:#ffd5d5;fill-opacity:1;stroke-width:0.858339" />
   <text
      x="600"
      y="95"
@@ -253,7 +253,8 @@
      font-size="22px"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text18">Capture</text>
+     id="text18"
+     style="fill:#000000">Capture</text>
   <rect
      x="408.18048"
      y="557.48108"
@@ -264,7 +265,7 @@
      stroke="#54d9ca"
      stroke-opacity="0.35"
      id="rect12-0"
-     style="fill:#0000ff;fill-opacity:1;stroke-width:0.83944" />
+     style="fill:#ffd5d5;fill-opacity:1;stroke-width:0.83944" />
   <text
      x="476.6871"
      y="594.20245"
@@ -272,7 +273,8 @@
      font-size="22px"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text19">Profile</text>
+     id="text19"
+     style="fill:#000000">Profile</text>
   <rect
      x="604.38458"
      y="562.22479"
@@ -283,7 +285,7 @@
      stroke="#54d9ca"
      stroke-opacity="0.35"
      id="rect12-9"
-     style="fill:#0000ff;fill-opacity:1;stroke-width:0.822127" />
+     style="fill:#ffd5d5;fill-opacity:1;stroke-width:0.822127" />
   <rect
      x="797.35846"
      y="557.46368"
@@ -294,7 +296,7 @@
      stroke="#54d9ca"
      stroke-opacity="0.35"
      id="rect12-9-8"
-     style="fill:#0000ff;fill-opacity:1;stroke-width:0.822127" />
+     style="fill:#ffd5d5;fill-opacity:1;stroke-width:0.822127" />
   <text
      x="672"
      y="597"
@@ -302,7 +304,8 @@
      font-size="22px"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text20">Perturb</text>
+     id="text20"
+     style="fill:#000000">Perturb</text>
   <text
      x="870"
      y="591"
@@ -310,5 +313,6 @@
      font-size="22px"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text21">Harden</text>
+     id="text21"
+     style="fill:#000000">Harden</text>
 </svg>
