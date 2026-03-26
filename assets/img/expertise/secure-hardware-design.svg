@@ -74,7 +74,7 @@
      rx="37.114426"
      fill="url(#bg)"
      id="rect5"
-     style="fill:#800000;stroke-width:0.780106"
+     style="fill:#00ffff;stroke-width:0.780106"
      x="48.208954"
      y="117.79141" />
   <rect
@@ -122,7 +122,8 @@
      font-size="25px"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text7">Cross-layer protection from circuit primitives to deployment trust</text>
+     id="text7"
+     style="fill:#000000">Cross-layer protection from circuit primitives to deployment trust</text>
   <rect
      x="141.53406"
      y="223.93896"

@@ -22,8 +22,8 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="1.0866667"
-     inkscape:cx="599.53988"
-     inkscape:cy="377.76074"
+     inkscape:cx="600.4601"
+     inkscape:cy="377.76072"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
      inkscape:window-x="5752"
@@ -105,7 +105,7 @@
      stroke="#DCE8F9"
      stroke-opacity="0.18"
      id="rect6"
-     style="fill:#800000;fill-opacity:1" />
+     style="fill:#00ffff;fill-opacity:1" />
   <rect
      x="240"
      y="215"
@@ -206,7 +206,8 @@
      font-size="25"
      font-family="Inter, Arial, sans-serif"
      text-anchor="middle"
-     id="text15">Tensor engines • On-chip memory • DMA • Observability • Protection</text>
+     id="text15"
+     style="fill:#24221c">Tensor engines • On-chip memory • DMA • Observability • Protection</text>
   <text
      x="370"
      y="355"
