@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com" rel="preconnect" />
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link href="assets/css/style.css?v=20260326-contrastfix" rel="stylesheet" />
+  <link href="assets/css/style.css" rel="stylesheet" />
 </head>
 <body class="subpage">
   <header class="site-header">
@@ -45,51 +45,7 @@
           <p>These sections focus directly on attack surfaces, countermeasures, cross-layer trust, and emerging system-level security questions across modern AI deployments.</p>
         </div>
 
-                <!--
-          ======================================================================
-          INTERNAL MAINTENANCE GUIDE - ADD ONE NEW PAGE INSIDE THIS EXISTING
-          "CORE SECURITY DOMAINS" SECTION
-          ======================================================================
-
-          Use this block when you already have a new HTML file inside ai-security/
-          and only want to add one more visible card here.
-
-          STEPS
-          1. Create the new page first:
-             ai-security/your-new-topic.html
-
-          2. Copy one existing <a class="post-card visual-card">...</a> block.
-
-          3. Paste the copied card anywhere inside this div.card-grid, usually at
-             the end of the existing cards.
-
-          4. Update these fields:
-             - href="ai-security/your-new-topic.html"
-             - image src
-             - image alt
-             - button data-full / data-alt / aria-label
-             - <span class="tag">...</span>
-             - <h3>...</h3>
-             - <p>short 1-2 line explanation</p>
-
-          CARD TEMPLATE
-          <a class="post-card visual-card" href="ai-security/your-new-topic.html">
-            <div class="img-container">
-              <img src="assets/img/diagrams/your-image.svg"
-                   alt="Your topic diagram"
-                   class="zoomable-thumb" />
-              <button class="img-expand-btn"
-                      type="button"
-                      data-full="assets/img/diagrams/your-image.svg"
-                      data-alt="Your topic diagram"
-                      aria-label="Expand your topic diagram">⤢</button>
-            </div>
-            <span class="tag">Your Category</span>
-            <h3>Your page title</h3>
-            <p>Write a short 1-2 line summary explaining why this page matters.</p>
-          </a>
-        -->
-<div class="card-grid three direct-domain-grid">
+        <div class="card-grid three direct-domain-grid">
           <a class="post-card visual-card" href="ai-security/software-security.html">
             <div class="img-container">
               <img src="assets/img/diagrams/software_security_landscape.svg" alt="Software security landscape diagram" class="zoomable-thumb" />
@@ -191,49 +147,7 @@
           <p>These pages provide the systems, hardware, memory, runtime, and deployment knowledge required to interpret AI security behavior correctly. They are written as foundational companions to the direct security sections above.</p>
         </div>
 
-                <!--
-          ======================================================================
-          INTERNAL MAINTENANCE GUIDE - ADD ONE NEW PAGE INSIDE THIS EXISTING
-          "AI FOUNDATIONS" SECTION
-          ======================================================================
-
-          Use this block when you already created one new foundation page inside:
-          ai-foundations/
-
-          STEPS
-          1. Create the page:
-             ai-foundations/your-new-topic.html
-
-          2. Copy one existing <a class="post-card foundation-card">...</a> block.
-
-          3. Paste it inside this div.card-grid, usually below the last card.
-
-          4. Update:
-             - href
-             - image src / alt
-             - expand button attributes
-             - tag
-             - title
-             - short explanation
-
-          CARD TEMPLATE
-          <a class="post-card foundation-card" href="ai-foundations/your-new-topic.html">
-            <div class="img-container">
-              <img src="assets/img/foundations/your-image.svg"
-                   alt="Your foundation diagram"
-                   class="zoomable-thumb" />
-              <button class="img-expand-btn"
-                      type="button"
-                      data-full="assets/img/foundations/your-image.svg"
-                      data-alt="Your foundation diagram"
-                      aria-label="Expand your foundation diagram">⤢</button>
-            </div>
-            <span class="tag">Your Foundation Label</span>
-            <h3>Your foundation page title</h3>
-            <p>Write a short summary showing why this concept helps rigorous AI security analysis.</p>
-          </a>
-        -->
-<div class="card-grid three foundation-grid">
+        <div class="card-grid three foundation-grid">
           <a class="post-card foundation-card" href="ai-foundations/modern-ai-hardware-knowledge.html">
             <div class="img-container">
               <img src="assets/img/foundations/modern-ai-hardware-stack.svg" alt="Modern AI hardware stack diagram" class="zoomable-thumb" />
@@ -296,61 +210,6 @@
         </div>
       </div>
     </section>
-    <!--
-      ========================================================================
-      INTERNAL MAINTENANCE GUIDE - ADD A COMPLETELY NEW RESEARCH SECTION
-      ========================================================================
-
-      Use this only when you want to add a brand-new large block on research.html,
-      not just one extra card.
-
-      RULE
-      New large research section = new <section> block in research.html
-                               + new folder (if needed)
-                               + new linked HTML pages
-
-      EXAMPLE FOLDER IDEAS
-      - ai-systems/
-      - deployment-foundations/
-      - model-evaluation/
-      - trustworthy-runtime/
-
-      SECTION TEMPLATE
-      <section class="section alt">
-        <div class="container">
-          <div class="section-head reveal">
-            <span class="eyebrow">Your Section Label</span>
-            <h2>Your section heading</h2>
-            <p>Write 1-2 sentences explaining what this whole section covers.</p>
-          </div>
-
-          <div class="card-grid three">
-            <a class="post-card" href="your-folder/topic-1.html">
-              <span class="tag">Topic label</span>
-              <h3>Topic 1 title</h3>
-              <p>Short summary for topic 1.</p>
-            </a>
-
-            <a class="post-card" href="your-folder/topic-2.html">
-              <span class="tag">Topic label</span>
-              <h3>Topic 2 title</h3>
-              <p>Short summary for topic 2.</p>
-            </a>
-
-            <a class="post-card" href="your-folder/topic-3.html">
-              <span class="tag">Topic label</span>
-              <h3>Topic 3 title</h3>
-              <p>Short summary for topic 3.</p>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      BEST PRACTICE
-      - Keep the Research page evergreen and structured.
-      - Put time-sensitive papers and news inside ongoing-work.html instead.
-      - Only create a new large section when you expect several pages to live there.
-    -->
   </main>
   <footer class="site-footer">
     <div class="container footer-grid">
