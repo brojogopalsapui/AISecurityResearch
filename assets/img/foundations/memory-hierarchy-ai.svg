@@ -170,21 +170,21 @@
      style="font-style:normal;font-variant:normal;font-weight:800;font-stretch:normal;font-size:19px;line-height:normal;font-family:Inter, Arial, sans-serif">Register File</text>
   <text
      x="550"
-     y="208"
+     y="196"
      class="bs"
      id="text10"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">closest to MACs</text>
   <text
      x="550"
-     y="231"
+     y="219"
      class="bs"
      id="text11"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">smallest + fastest</text>
   <line
      x1="700"
-     y1="214"
+     y1="228"
      x2="700"
-     y2="236"
+     y2="250"
      stroke="#64748b"
      stroke-width="3"
      marker-end="url(#arrowSlate)"
@@ -219,21 +219,21 @@
      style="font-style:normal;font-variant:normal;font-weight:800;font-stretch:normal;font-size:19px;line-height:normal;font-family:Inter, Arial, sans-serif">Local SRAM</text>
   <text
      x="550"
-     y="308"
+     y="296"
      class="bs"
      id="text13"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">tile buffers</text>
   <text
      x="550"
-     y="331"
+     y="317"
      class="bs"
      id="text14"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">high reuse window</text>
   <line
      x1="700"
-     y1="314"
+     y1="328"
      x2="700"
-     y2="336"
+     y2="350"
      stroke="#64748b"
      stroke-width="3"
      marker-end="url(#arrowSlate)"
@@ -268,21 +268,21 @@
      style="font-style:normal;font-variant:normal;font-weight:800;font-stretch:normal;font-size:19px;line-height:normal;font-family:Inter, Arial, sans-serif">On-chip Cache</text>
   <text
      x="550"
-     y="408"
+     y="396"
      class="bs"
      id="text16"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">shared buffers</text>
   <text
      x="550"
-     y="431"
+     y="419"
      class="bs"
      id="text17"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">fabric-visible</text>
   <line
      x1="700"
-     y1="414"
+     y1="430"
      x2="700"
-     y2="436"
+     y2="452"
      stroke="#64748b"
      stroke-width="3"
      marker-end="url(#arrowSlate)"
@@ -317,21 +317,21 @@
      style="font-style:normal;font-variant:normal;font-weight:800;font-stretch:normal;font-size:19px;line-height:normal;font-family:Inter, Arial, sans-serif">HBM / DRAM</text>
   <text
      x="550"
-     y="508"
+     y="496"
      class="bs"
      id="text19"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">weights, activations</text>
   <text
      x="550"
-     y="531"
+     y="519"
      class="bs"
      id="text20"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">bandwidth-critical</text>
   <line
      x1="700"
-     y1="514"
+     y1="530"
      x2="700"
-     y2="536"
+     y2="552"
      stroke="#64748b"
      stroke-width="3"
      marker-end="url(#arrowSlate)"
@@ -366,13 +366,13 @@
      style="font-style:normal;font-variant:normal;font-weight:800;font-stretch:normal;font-size:19px;line-height:normal;font-family:Inter, Arial, sans-serif">Host Memory</text>
   <text
      x="550"
-     y="608"
+     y="594"
      class="bs"
      id="text22"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">offload / paging</text>
   <text
      x="550"
-     y="631"
+     y="617"
      class="bs"
      id="text23"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">largest + slowest</text>
