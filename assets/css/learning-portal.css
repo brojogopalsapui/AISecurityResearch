@@ -613,3 +613,239 @@ details .answer{margin-top:.8rem}
 @media (max-width:860px){
   .pulse-grid{grid-template-columns:1fr}
 }
+
+/* =========================================================
+   HOMEPAGE 3D HERO (for the new Spline-based index hero)
+   Paste at the END of learning-portal.css
+   ========================================================= */
+
+.hero.hero-3d-shell{
+  padding: 2.1rem 0 2.6rem;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(45,103,246,.10), transparent 26%),
+    radial-gradient(circle at 100% 18%, rgba(240,178,77,.12), transparent 24%),
+    linear-gradient(180deg,#f7f0e8 0%, #fbf7f2 50%, #fffdfa 100%);
+  border-top: 1px solid rgba(28,39,51,.06);
+  border-bottom: 1px solid rgba(28,39,51,.08);
+  border-radius: 0 0 38px 38px;
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,.82);
+}
+
+.hero-3d-grid{
+  display:grid;
+  grid-template-columns: 1.03fr .97fr;
+  gap: 1.35rem;
+  align-items: center;
+}
+
+.hero-3d-copy{
+  padding: .4rem 0;
+}
+
+.hero-3d-copy h1{
+  margin: .95rem 0 1rem;
+  max-width: 11ch;
+}
+
+.hero-3d-text{
+  max-width: 62ch;
+  margin: 0;
+  font-size: 1.08rem;
+  color: var(--muted);
+}
+
+.hero-3d-actions{
+  margin-top: 1.35rem;
+}
+
+.hero-3d-search{
+  margin-top: 1.25rem;
+}
+
+.hero-3d-visual-wrap{
+  display:grid;
+  gap: 1rem;
+  align-self: stretch;
+}
+
+.hero-3d-visual{
+  position: relative;
+  min-height: 560px;
+  border-radius: 30px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(76,137,255,.13), transparent 24%),
+    radial-gradient(circle at 82% 24%, rgba(255,182,72,.13), transparent 24%),
+    linear-gradient(180deg,#fcfeff 0%, #eef4ff 100%);
+  border: 1px solid rgba(32,58,87,.10);
+  box-shadow:
+    0 22px 48px rgba(23,53,87,.11),
+    inset 0 1px 0 rgba(255,255,255,.82);
+}
+
+.hero-3d-visual::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0 0;
+  height:72px;
+  background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.06));
+  pointer-events:none;
+}
+
+.hero-3d-visual spline-viewer{
+  display:block;
+  width:100%;
+  height:100%;
+  min-height:560px;
+  background:transparent;
+}
+
+.hero-3d-info-card{
+  padding: 1.08rem 1.12rem 1.18rem;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,251,255,.98));
+  border: 1px solid rgba(32,58,87,.08);
+  box-shadow: 0 14px 34px rgba(23,53,87,.08);
+}
+
+.hero-3d-info-card p{
+  margin: .42rem 0 0;
+}
+
+.hero-3d-info-card .metric-grid{
+  margin-top: .9rem;
+}
+
+.hero-3d-info-card .portal-figure-actions{
+  margin-top: .9rem;
+}
+
+/* make hero buttons look premium but still consistent */
+.hero-3d-shell .btn.btn-primary{
+  background: linear-gradient(135deg, #2f6df6, #4c89ff);
+  box-shadow: 0 18px 34px rgba(47,109,246,.24);
+}
+
+.hero-3d-shell .btn.btn-primary:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 22px 38px rgba(47,109,246,.28);
+}
+
+.hero-3d-shell .btn.btn-accent{
+  box-shadow: 0 16px 30px rgba(255,141,42,.20);
+}
+
+.hero-3d-shell .hero-search{
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(252,248,243,.98));
+  border: 1px solid rgba(28,39,51,.08);
+  box-shadow: 0 18px 42px rgba(28,39,51,.08);
+}
+
+.hero-3d-shell .hero-chips span{
+  background: rgba(255,255,255,.96);
+  border: 1px solid rgba(32,58,87,.08);
+  color: var(--navy);
+  box-shadow: 0 10px 24px rgba(32,58,87,.05);
+}
+
+/* slightly cleaner spacing after this hero */
+.hero.hero-3d-shell + .section{
+  padding-top: 2.35rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px){
+  .hero-3d-grid{
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+
+  .hero-3d-copy h1{
+    max-width: none;
+  }
+
+  .hero-3d-visual{
+    min-height: 500px;
+  }
+
+  .hero-3d-visual spline-viewer{
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 860px){
+  .hero.hero-3d-shell{
+    padding: 1.35rem 0 2rem;
+    border-radius: 0 0 28px 28px;
+  }
+
+  .hero-3d-grid{
+    gap: 1rem;
+  }
+
+  .hero-3d-text{
+    font-size: 1rem;
+  }
+
+  .hero-3d-visual{
+    min-height: 400px;
+    border-radius: 24px;
+  }
+
+  .hero-3d-visual spline-viewer{
+    min-height: 400px;
+  }
+
+  .hero-3d-info-card{
+    border-radius: 20px;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 640px){
+  .hero.hero-3d-shell{
+    padding: 1rem 0 1.7rem;
+  }
+
+  .hero-3d-copy h1{
+    font-size: clamp(2.2rem, 9vw, 3.25rem);
+    line-height: 1.05;
+  }
+
+  .hero-3d-actions{
+    gap: .7rem;
+  }
+
+  .hero-3d-actions .btn,
+  .hero-3d-search .btn{
+    width: 100%;
+  }
+
+  .hero-3d-visual{
+    min-height: 320px;
+    border-radius: 22px;
+  }
+
+  .hero-3d-visual spline-viewer{
+    min-height: 320px;
+  }
+
+  .hero-3d-shell .hero-search{
+    padding: .9rem;
+    border-radius: 20px;
+  }
+
+  .hero-3d-shell .search-fake{
+    min-height: 50px;
+    padding: .7rem .9rem;
+    line-height: 1.55;
+  }
+
+  .hero-3d-info-card .metric-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
