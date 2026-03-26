@@ -9,9 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/learning-portal.css" />
-
-  <!-- Spline viewer -->
-  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.59/build/spline-viewer.js"></script>
 </head>
 <body>
   <div class="topbar">
@@ -19,8 +16,8 @@
       <div class="research-alert" role="status" aria-live="polite">
         <span class="research-alert-badge">Latest note</span>
         <div class="hero-chips">
-          <span><strong>Embodied AI security</strong> is no longer just a model problem</span>
-        </div>
+              <span>Embodied AI security</strong> is no longer just a model problem</span>
+          </div>
         <a class="research-alert-link" href="ongoing-work.html#2026-03-embodied-ai-security-governance">Read the research watch →</a>
       </div>
     </div>
@@ -51,56 +48,61 @@
   </header>
 
   <main>
-    <section class="hero section-top hero-3d-shell">
-      <div class="container hero-3d-grid">
-        <div class="hero-3d-copy">
+    <section class="hero section-top">
+      <div class="container hero-grid">
+        <div class="hero-copy">
           <span class="eyebrow">Structured entry point • Curated topics • Research-depth content</span>
           <h1>Learning Portal for trustworthy AI systems</h1>
-          <p class="lead hero-3d-text">
+          <p class="lead">
             A structured portal for navigating AI security across software, hardware, cloud, edge, predictive, generative,
             agentic, and physical AI, with enough clarity for newcomers and enough depth for serious technical reading.
           </p>
 
-          <div class="hero-actions hero-3d-actions">
+          <div class="hero-actions">
             <a class="btn btn-primary" href="research.html">Start with the research map</a>
             <a class="btn btn-primary" href="ongoing-work.html">Browse trending topics</a>
           </div>
 
-          <div class="hero-search hero-3d-search">
+          <div class="hero-search">
             <div class="hero-search-row">
               <div class="search-fake">🔎 <strong>Where should I begin?</strong> Use the quick links below to jump into domains, foundations, notes, and resources.</div>
               <a class="btn btn-accent" href="publications.html">Open resources</a>
             </div>
-
             <div class="hero-chips">
               <span>AI models</span>
               <span>Software security</span>
               <span>Hardware trust</span>
-              <span>Edge / Physical AI</span>
             </div>
           </div>
         </div>
 
-        <div class="hero-3d-visual-wrap">
-          <div class="hero-3d-visual">
-            <spline-viewer url="YOUR_SPLINE_URL_HERE"></spline-viewer>
-          </div>
-
-          <div class="hero-3d-info-card">
-            <span class="mini-kicker">Portal overview</span>
-            <p>
-              Start with the research map, move into direct topic pages, strengthen the needed systems background in
-              dedicated foundation sections, and follow the living research notes for current directions.
-            </p>
-
-            <div class="metric-grid">
-              <div class="metric-card"><strong>8</strong><span>Security domains</span></div>
-              <div class="metric-card"><strong>Core</strong><span>Learning tracks</span></div>
-              <div class="metric-card"><strong>Live</strong><span>Trending notes</span></div>
+        <div class="hero-visual">
+          <div class="portal-visual">
+            <div class="portal-media hero-figure-media">
+              <img
+                class="hero-figure-img"
+                src="assets/img/hero-diagram1.svg"
+                alt="Overview illustration of AI security across models, systems, and deployment layers"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
+            <div class="portal-figure-actions">
+                <a class="portal-figure-link" href="assets/img/hero-diagram1.svg" target="_blank" rel="noopener noreferrer">Open full figure ↗</a>
             </div>
 
-            <div class="portal-figure-actions">
-              <a class="portal-figure-link" href="research.html">Open research map ↗</a>
+            <div class="portal-copy">
+              <span class="mini-kicker">Portal overview</span>
+              <p>
+                This homepage is designed as a guided entry point: start with the research map, move into direct topic pages,
+                strengthen the needed systems background in dedicated foundation sections, and follow the living research notes for current directions.
+              </p>
+              <div class="metric-grid">
+                <div class="metric-card"><strong>8</strong><span>Security domains</span></div>
+                <div class="metric-card"><strong>Core</strong><span>Learning tracks</span></div>
+                <div class="metric-card"><strong>Live</strong><span>Trending notes</span></div>
+              </div>
+              
             </div>
           </div>
         </div>
