@@ -363,15 +363,16 @@
   </g>
   <text
      x="110"
-     y="405"
+     y="395"
      class="bt"
-     id="text23">Execution concepts</text>
+     id="text23"
+     style="font-style:normal;font-variant:normal;font-weight:800;font-stretch:normal;font-size:19px;line-height:normal;font-family:Inter, Arial, sans-serif">Execution concepts</text>
   <text
      x="110"
-     y="425"
+     y="419"
      class="bs"
      id="text24"
-     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">How models become hardware behavior</text>
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:Inter, Arial, sans-serif">How models adopt hardware behavior</text>
   <g
      filter="url(#shadow)"
      id="g25">
