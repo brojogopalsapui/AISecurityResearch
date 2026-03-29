@@ -41,6 +41,28 @@
 
 <!DOCTYPE html>
 
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -259,13 +281,12 @@
           </article>
         -->
 <div class="watch-stack">
-
-<article class="watch-note accordion" id="2026-03-zero-standing-privilege-p0-security">
+<article class="watch-note accordion" data-category="" id="2026-03-ai-driven-offensive-security-runsybil">
 <button aria-expanded="false" class="accordion-trigger" type="button">
-<span class="accordion-meta">Zero-standing-privilege identity security</span>
-<span class="accordion-title">Zero-standing-privilege identity security</span>
+<span class="accordion-meta">AI-driven offensive security testing</span>
+<span class="accordion-title">AI-driven offensive security testing</span>
 <span class="accordion-preview">
-      Zero-standing-privilege identity security
+      AI-driven offensive security testing
     </span>
 <span class="accordion-cta">Read full note</span>
 <span aria-hidden="true" class="accordion-icon"></span>
@@ -273,7 +294,7 @@
 <div aria-hidden="true" class="accordion-panel">
 <div class="accordion-panel-inner">
 <p>
-        P0 Security focuses on Zero-standing-privilege identity security. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
+        RunSybil focuses on AI-driven offensive security testing. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
       </p>
 <p>
         Technically, this area introduces new attacker models targeting runtime, firmware, or encrypted computation layers. Classical perimeter-based security is insufficient, requiring system-level redesign.
@@ -282,7 +303,7 @@
 <div class="watch-block">
 <h4>What is changing technically</h4>
 <ul>
-<li>- Shift toward runtime and embedded security.
+<li>Shift toward runtime and embedded security.
 - AI systems introduce new attack surfaces.
 - Need for hardware-software co-design.
 - Deployment at scale introduces complexity.</li>
@@ -291,7 +312,7 @@
 <div class="watch-block">
 <h4>What reviewers should notice</h4>
 <ul>
-<li>- Realistic threat model.
+<li>Realistic threat model.
 - System-level evaluation.
 - Clear assumptions.
 - Scalability.</li>
@@ -302,18 +323,17 @@
 <strong>Current research tension:</strong> Security is moving closer to hardware and runtime, but scalability and usability remain unresolved challenges.
       </div>
 <div class="watch-inline-links">
-<a href="posts/2026-03-zero-standing-privilege-p0-security.html">Read full post</a> <a href="Zero-standing-privilege identity security">Zero-standing-privilege identity security</a> <a href="Zero-standing-privilege identity security">Zero-standing-privilege identity security</a> <a href="Zero-standing-privilege identity security">Zero-standing-privilege identity security</a>
+<a href="posts/2026-03-ai-driven-offensive-security-runsybil.html">Read full post</a> <a href="AI-driven offensive security testing">AI-driven offensive security testing</a> <a href="AI-driven offensive security testing">AI-driven offensive security testing</a> <a href="AI-driven offensive security testing">AI-driven offensive security testing</a>
 </div>
 </div>
 </div>
 </article>
-
-          <article class="watch-note accordion" id="2026-03-stack-safeguard-pipelines">
+<article class="watch-note accordion" data-category="" id="2026-03-ai-native-code-security-enclave">
 <button aria-expanded="false" class="accordion-trigger" type="button">
-<span class="accordion-meta">Research Watch • LLM Safeguards • 2025–2026 signal</span>
-<span class="accordion-title">STACK shows why layered LLM safeguards still need adaptive pipeline-level evaluation</span>
+<span class="accordion-meta">AI-native software security</span>
+<span class="accordion-title">AI-native software security</span>
 <span class="accordion-preview">
-      This paper matters because it shifts evaluation from single jailbreak-resistant models to full safeguard pipelines. It shows that layered input/output classifier defenses can look strong under standard testing, yet still fail badly once the attacker is optimized against the pipeline as a system.
+      AI-native software security
     </span>
 <span class="accordion-cta">Read full note</span>
 <span aria-hidden="true" class="accordion-icon"></span>
@@ -321,54 +341,7 @@
 <div aria-hidden="true" class="accordion-panel">
 <div class="accordion-panel-inner">
 <p>
-        A useful contribution of this paper is that it stops treating safeguard components in isolation and instead evaluates the full defense pipeline as the actual object of attack. The authors build an open-source pipeline around a target model with input and output classifiers, show that a few-shot-prompted classifier can outperform ShieldGemma across their benchmark setting, and report that this stronger pipeline drives the attack success rate on ClearHarm down to 0% under baseline attacks such as PAP, ReNeLLM, and Best-of-N.
-      </p>
-<p>
-        The core result is STACK, a staged attack procedure that develops jailbreaks against each component and then combines them to defeat the whole system. In the paper’s main evaluation, black-box STACK reaches 71% attack success rate on ClearHarm against the few-shot classifier pipeline, and transfer STACK still reaches 33%, which is important because it suggests that even layered defense-in-depth can become brittle once the attacker explicitly optimizes against the pipeline architecture rather than only the base model or a single guard.
-      </p>
-<div class="watch-columns">
-<div class="watch-block">
-<h4>What is changing technically</h4>
-<ul>
-<li>Evaluation is moving from single-model jailbreak testing to full pipeline-aware red teaming.</li>
-<li>Input and output classifiers may each look strong on their own, but staged attacks can exploit their interaction and ordering.</li>
-<li>A few-shot prompted safeguard classifier can significantly improve baseline robustness, yet this does not guarantee resilience to adaptive attacks.</li>
-<li>Transfer-style attacks show that even limited-access adversaries may be able to target safeguard pipelines without direct access to every component.</li>
-</ul>
-</div>
-<div class="watch-block">
-<h4>What reviewers should notice</h4>
-<ul>
-<li>Whether the paper evaluates the entire safeguard pipeline rather than only one moderation component.</li>
-<li>Whether the attack is adaptive to the defense architecture, not just reused from generic jailbreak benchmarks.</li>
-<li>Whether robustness is reported in realistic black-box and transfer settings, not only toy or fully white-box assumptions.</li>
-<li>Whether mitigation claims are framed as practical hardening guidance instead of proof that defense-in-depth alone is sufficient.</li>
-</ul>
-</div>
-</div>
-<div class="watch-bottom-note">
-<strong>Current research tension:</strong> Current research tension: layered safeguards are becoming operationally important for frontier models, but this paper shows that composition alone is not enough; once attackers optimize against the pipeline as a system, apparent robustness can collapse much faster than ordinary benchmark results suggest.
-      </div>
-<div class="watch-inline-links">
-<a href="posts/2026-03-stack-safeguard-pipelines.html">Read full post</a> <a href="ai-security/generative-ai.html">See full generative AI page</a> <a href="https://arxiv.org/pdf/2506.24068" rel="noopener noreferrer" target="_blank">STACK paper (arXiv PDF)</a> <a href="https://github.com/AlignmentResearch/defense-in-depth-demo" rel="noopener noreferrer" target="_blank">Open-source defense pipeline demo</a>
-</div>
-</div>
-</div>
-</article>
-<article class="watch-note accordion" id="2026-03-secure-edge-ai-infrastructure-armada">
-<button aria-expanded="false" class="accordion-trigger" type="button">
-<span class="accordion-meta">Secure edge AI infrastructure</span>
-<span class="accordion-title">Secure edge AI infrastructure</span>
-<span class="accordion-preview">
-      Secure edge AI infrastructure
-    </span>
-<span class="accordion-cta">Read full note</span>
-<span aria-hidden="true" class="accordion-icon"></span>
-</button>
-<div aria-hidden="true" class="accordion-panel">
-<div class="accordion-panel-inner">
-<p>
-        Armada focuses on Secure edge AI infrastructure. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
+        Enclave focuses on AI-native software security. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
       </p>
 <p>
         Technically, this area introduces new attacker models targeting runtime, firmware, or encrypted computation layers. Classical perimeter-based security is insufficient, requiring system-level redesign.
@@ -377,7 +350,7 @@
 <div class="watch-block">
 <h4>What is changing technically</h4>
 <ul>
-<li>- Shift toward runtime and embedded security.
+<li>Shift toward runtime and embedded security.
 - AI systems introduce new attack surfaces.
 - Need for hardware-software co-design.
 - Deployment at scale introduces complexity.</li>
@@ -386,7 +359,7 @@
 <div class="watch-block">
 <h4>What reviewers should notice</h4>
 <ul>
-<li>- Realistic threat model.
+<li>Realistic threat model.
 - System-level evaluation.
 - Clear assumptions.
 - Scalability.</li>
@@ -397,17 +370,17 @@
 <strong>Current research tension:</strong> Security is moving closer to hardware and runtime, but scalability and usability remain unresolved challenges.
       </div>
 <div class="watch-inline-links">
-<a href="posts/2026-03-secure-edge-ai-infrastructure-armada.html">Read full post</a> <a href="Secure edge AI infrastructure">Secure edge AI infrastructure</a> <a href="Secure edge AI infrastructure">Secure edge AI infrastructure</a> <a href="Secure edge AI infrastructure">Secure edge AI infrastructure</a>
+<a href="posts/2026-03-ai-native-code-security-enclave.html">Read full post</a> <a href="AI-native software security">AI-native software security</a> <a href="AI-native software security">AI-native software security</a> <a href="AI-native software security">AI-native software security</a>
 </div>
 </div>
 </div>
 </article>
-<article class="watch-note accordion" id="2026-03-embodied-ai-security-governance">
+<article class="watch-note accordion" data-category="" id="2026-03-application-runtime-detection-oligo-security">
 <button aria-expanded="false" class="accordion-trigger" type="button">
-<span class="accordion-meta">Research Watch • Embodied AI Security Governance • 2026 signal</span>
-<span class="accordion-title">Embodied AI Security Is No Longer Just a Model Problem</span>
+<span class="accordion-meta">Application runtime detection and response</span>
+<span class="accordion-title">Application runtime detection and response</span>
 <span class="accordion-preview">
-      This paper reframes embodied AI security as a full cyber-physical-social problem, not just LLM robustness or robot safety in isolation. Once an agent can sense, decide, and act in the real world, security has to span algorithms, sensors, actuators, data, and deployment governance together.
+      Application runtime detection and response
     </span>
 <span class="accordion-cta">Read full note</span>
 <span aria-hidden="true" class="accordion-icon"></span>
@@ -415,54 +388,7 @@
 <div aria-hidden="true" class="accordion-panel">
 <div class="accordion-panel-inner">
 <p>
-        Embodied AI changes the security discussion because the model is no longer only producing text or labels - it is now coupled to sensors, actuators, power, communications, and physical environments. The paper's main contribution is to show that security must be understood across three connected layers: the agent itself, its interaction with people and objects, and the broader information, physical, and social domains in which it is deployed.
-      </p>
-<p>
-        Technically, this means older AI evaluation habits are too narrow. A system may look robust at the model level yet still fail through poisoned training data, prompt injection, sensor spoofing, actuator manipulation, or unsafe task planning. The useful framing here is that embodied AI inherits classical AI attacks and adds cross-domain failure paths, so security review must cover algorithm safety, sensing-control integrity, data privacy, interaction safety, supply-chain trust, runtime monitoring, and governance mechanisms such as logging, traceability, and emergency override.
-      </p>
-<div class="watch-columns">
-<div class="watch-block">
-<h4>What is changing technically</h4>
-<ul>
-<li>The security boundary shifts from model inference to the full perception-decision-actuation loop.</li>
-<li>Embodied systems inherit AI attacks such as poisoning and jailbreaks, then add physical attacks on sensors, actuators, power, and communications.</li>
-<li>Security claims now have to be tied to real-world consequence: human harm, object damage, unsafe motion, privacy leakage, or social misuse.</li>
-<li>Deployment requires stronger lifecycle controls, including evaluation standards, trusted supply chains, runtime logging, and minimum human override mechanisms.</li>
-</ul>
-</div>
-<div class="watch-block">
-<h4>What reviewers should notice</h4>
-<ul>
-<li>Whether the paper defines a realistic threat or deployment model across sensing, planning, action, and supervision.</li>
-<li>Whether the work measures downstream physical or operational consequence rather than only model error or attack success rate.</li>
-<li>Whether assumptions about trusted hardware, clean data, secure channels, or human-in-the-loop intervention are explicit.</li>
-<li>Whether the proposed security or governance direction can scale beyond one demo robot to heterogeneous deployed embodied systems.</li>
-</ul>
-</div>
-</div>
-<div class="watch-bottom-note">
-<strong>Current research tension:</strong> The real challenge is not making embodied AI more capable, but making cross-domain autonomy trustworthy when perception, reasoning, and physical action can all be exploited together.
-      </div>
-<div class="watch-inline-links">
-<a href="posts/2026-03-embodied-ai-security-governance.html">Read full post</a> <a href="https://doi.org/10.16418/j.issn.1000-3045.20250218002" rel="noopener noreferrer" target="_blank">Paper DOI</a> <a href="https://bulletinofcas.researchcommons.org/journal/vol40/iss3/4" rel="noopener noreferrer" target="_blank">Bulletin page</a>
-</div>
-</div>
-</div>
-</article>
-<article class="watch-note accordion" id="2026-03-embedded-runtime-security-exein">
-<button aria-expanded="false" class="accordion-trigger" type="button">
-<span class="accordion-meta">Embedded runtime security for IoT devices</span>
-<span class="accordion-title">Embedded runtime security for IoT devices</span>
-<span class="accordion-preview">
-      Embedded runtime security for IoT devices
-    </span>
-<span class="accordion-cta">Read full note</span>
-<span aria-hidden="true" class="accordion-icon"></span>
-</button>
-<div aria-hidden="true" class="accordion-panel">
-<div class="accordion-panel-inner">
-<p>
-        Exein focuses on Embedded runtime security for IoT devices. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
+        Oligo Security focuses on Application runtime detection and response. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
       </p>
 <p>
         Technically, this area introduces new attacker models targeting runtime, firmware, or encrypted computation layers. Classical perimeter-based security is insufficient, requiring system-level redesign.
@@ -471,7 +397,7 @@
 <div class="watch-block">
 <h4>What is changing technically</h4>
 <ul>
-<li>- Shift toward runtime and embedded security.
+<li>Shift toward runtime and embedded security.
 - AI systems introduce new attack surfaces.
 - Need for hardware-software co-design.
 - Deployment at scale introduces complexity.</li>
@@ -480,7 +406,7 @@
 <div class="watch-block">
 <h4>What reviewers should notice</h4>
 <ul>
-<li>- Realistic threat model.
+<li>Realistic threat model.
 - System-level evaluation.
 - Clear assumptions.
 - Scalability.</li>
@@ -491,12 +417,59 @@
 <strong>Current research tension:</strong> Security is moving closer to hardware and runtime, but scalability and usability remain unresolved challenges.
       </div>
 <div class="watch-inline-links">
-<a href="posts/2026-03-embedded-runtime-security-exein.html">Read full post</a> <a href="Embedded runtime security for IoT devices">Embedded runtime security for IoT devices</a> <a href="Embedded runtime security for IoT devices">Embedded runtime security for IoT devices</a> <a href="Embedded runtime security for IoT devices">Embedded runtime security for IoT devices</a>
+<a href="posts/2026-03-application-runtime-detection-oligo-security.html">Read full post</a> <a href="Application runtime detection and response">Application runtime detection and response</a> <a href="Application runtime detection and response">Application runtime detection and response</a> <a href="Application runtime detection and response">Application runtime detection and response</a>
 </div>
 </div>
 </div>
 </article>
-<article class="watch-note accordion" id="2026-03-belfort-encrypted-compute">
+<article class="watch-note accordion" data-category="" id="2026-03-autonomous-soc-investigation-qevlar-ai">
+<button aria-expanded="false" class="accordion-trigger" type="button">
+<span class="accordion-meta">Autonomous SOC and AI-driven alert investigation</span>
+<span class="accordion-title">Autonomous SOC and AI-driven alert investigation</span>
+<span class="accordion-preview">
+      Autonomous SOC and AI-driven alert investigation
+    </span>
+<span class="accordion-cta">Read full note</span>
+<span aria-hidden="true" class="accordion-icon"></span>
+</button>
+<div aria-hidden="true" class="accordion-panel">
+<div class="accordion-panel-inner">
+<p>
+        Qevlar AI focuses on Autonomous SOC and AI-driven alert investigation. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
+      </p>
+<p>
+        Technically, this area introduces new attacker models targeting runtime, firmware, or encrypted computation layers. Classical perimeter-based security is insufficient, requiring system-level redesign.
+      </p>
+<div class="watch-columns">
+<div class="watch-block">
+<h4>What is changing technically</h4>
+<ul>
+<li>Shift toward runtime and embedded security.
+- AI systems introduce new attack surfaces.
+- Need for hardware-software co-design.
+- Deployment at scale introduces complexity.</li>
+</ul>
+</div>
+<div class="watch-block">
+<h4>What reviewers should notice</h4>
+<ul>
+<li>Realistic threat model.
+- System-level evaluation.
+- Clear assumptions.
+- Scalability.</li>
+</ul>
+</div>
+</div>
+<div class="watch-bottom-note">
+<strong>Current research tension:</strong> Security is moving closer to hardware and runtime, but scalability and usability remain unresolved challenges.
+      </div>
+<div class="watch-inline-links">
+<a href="posts/2026-03-autonomous-soc-investigation-qevlar-ai.html">Read full post</a> <a href="Autonomous SOC and AI-driven alert investigation">Autonomous SOC and AI-driven alert investigation</a> <a href="Autonomous SOC and AI-driven alert investigation">Autonomous SOC and AI-driven alert investigation</a> <a href="Autonomous SOC and AI-driven alert investigation">Autonomous SOC and AI-driven alert investigation</a>
+</div>
+</div>
+</div>
+</article>
+<article class="watch-note accordion" data-category="" id="2026-03-belfort-encrypted-compute">
 <button aria-expanded="false" class="accordion-trigger" type="button">
 <span class="accordion-meta">Research Watch • Belfort • 2026 encrypted compute signal</span>
 <span class="accordion-title">Belfort shows encrypted compute is becoming real infrastructure</span>
@@ -543,12 +516,12 @@
 </div>
 </div>
 </article>
-<article class="watch-note accordion" id="2026-03-autonomous-soc-investigation-qevlar-ai">
+<article class="watch-note accordion" data-category="" id="2026-03-embedded-runtime-security-exein">
 <button aria-expanded="false" class="accordion-trigger" type="button">
-<span class="accordion-meta">Autonomous SOC and AI-driven alert investigation</span>
-<span class="accordion-title">Autonomous SOC and AI-driven alert investigation</span>
+<span class="accordion-meta">Embedded runtime security for IoT devices</span>
+<span class="accordion-title">Embedded runtime security for IoT devices</span>
 <span class="accordion-preview">
-      Autonomous SOC and AI-driven alert investigation
+      Embedded runtime security for IoT devices
     </span>
 <span class="accordion-cta">Read full note</span>
 <span aria-hidden="true" class="accordion-icon"></span>
@@ -556,7 +529,7 @@
 <div aria-hidden="true" class="accordion-panel">
 <div class="accordion-panel-inner">
 <p>
-        Qevlar AI focuses on Autonomous SOC and AI-driven alert investigation. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
+        Exein focuses on Embedded runtime security for IoT devices. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
       </p>
 <p>
         Technically, this area introduces new attacker models targeting runtime, firmware, or encrypted computation layers. Classical perimeter-based security is insufficient, requiring system-level redesign.
@@ -565,7 +538,7 @@
 <div class="watch-block">
 <h4>What is changing technically</h4>
 <ul>
-<li>- Shift toward runtime and embedded security.
+<li>Shift toward runtime and embedded security.
 - AI systems introduce new attack surfaces.
 - Need for hardware-software co-design.
 - Deployment at scale introduces complexity.</li>
@@ -574,7 +547,7 @@
 <div class="watch-block">
 <h4>What reviewers should notice</h4>
 <ul>
-<li>- Realistic threat model.
+<li>Realistic threat model.
 - System-level evaluation.
 - Clear assumptions.
 - Scalability.</li>
@@ -585,17 +558,17 @@
 <strong>Current research tension:</strong> Security is moving closer to hardware and runtime, but scalability and usability remain unresolved challenges.
       </div>
 <div class="watch-inline-links">
-<a href="posts/2026-03-autonomous-soc-investigation-qevlar-ai.html">Read full post</a> <a href="Autonomous SOC and AI-driven alert investigation">Autonomous SOC and AI-driven alert investigation</a> <a href="Autonomous SOC and AI-driven alert investigation">Autonomous SOC and AI-driven alert investigation</a> <a href="Autonomous SOC and AI-driven alert investigation">Autonomous SOC and AI-driven alert investigation</a>
+<a href="posts/2026-03-embedded-runtime-security-exein.html">Read full post</a> <a href="Embedded runtime security for IoT devices">Embedded runtime security for IoT devices</a> <a href="Embedded runtime security for IoT devices">Embedded runtime security for IoT devices</a> <a href="Embedded runtime security for IoT devices">Embedded runtime security for IoT devices</a>
 </div>
 </div>
 </div>
 </article>
-<article class="watch-note accordion" id="2026-03-application-runtime-detection-oligo-security">
+<article class="watch-note accordion" data-category="" id="2026-03-embodied-ai-security-governance">
 <button aria-expanded="false" class="accordion-trigger" type="button">
-<span class="accordion-meta">Application runtime detection and response</span>
-<span class="accordion-title">Application runtime detection and response</span>
+<span class="accordion-meta">Research Watch • Embodied AI Security Governance • 2026 signal</span>
+<span class="accordion-title">Embodied AI Security Is No Longer Just a Model Problem</span>
 <span class="accordion-preview">
-      Application runtime detection and response
+      This paper reframes embodied AI security as a full cyber-physical-social problem, not just LLM robustness or robot safety in isolation. Once an agent can sense, decide, and act in the real world, security has to span algorithms, sensors, actuators, data, and deployment governance together.
     </span>
 <span class="accordion-cta">Read full note</span>
 <span aria-hidden="true" class="accordion-icon"></span>
@@ -603,46 +576,46 @@
 <div aria-hidden="true" class="accordion-panel">
 <div class="accordion-panel-inner">
 <p>
-        Oligo Security focuses on Application runtime detection and response. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
+        Embodied AI changes the security discussion because the model is no longer only producing text or labels - it is now coupled to sensors, actuators, power, communications, and physical environments. The paper's main contribution is to show that security must be understood across three connected layers: the agent itself, its interaction with people and objects, and the broader information, physical, and social domains in which it is deployed.
       </p>
 <p>
-        Technically, this area introduces new attacker models targeting runtime, firmware, or encrypted computation layers. Classical perimeter-based security is insufficient, requiring system-level redesign.
+        Technically, this means older AI evaluation habits are too narrow. A system may look robust at the model level yet still fail through poisoned training data, prompt injection, sensor spoofing, actuator manipulation, or unsafe task planning. The useful framing here is that embodied AI inherits classical AI attacks and adds cross-domain failure paths, so security review must cover algorithm safety, sensing-control integrity, data privacy, interaction safety, supply-chain trust, runtime monitoring, and governance mechanisms such as logging, traceability, and emergency override.
       </p>
 <div class="watch-columns">
 <div class="watch-block">
 <h4>What is changing technically</h4>
 <ul>
-<li>- Shift toward runtime and embedded security.
-- AI systems introduce new attack surfaces.
-- Need for hardware-software co-design.
-- Deployment at scale introduces complexity.</li>
+<li>The security boundary shifts from model inference to the full perception-decision-actuation loop.</li>
+<li>Embodied systems inherit AI attacks such as poisoning and jailbreaks, then add physical attacks on sensors, actuators, power, and communications.</li>
+<li>Security claims now have to be tied to real-world consequence: human harm, object damage, unsafe motion, privacy leakage, or social misuse.</li>
+<li>Deployment requires stronger lifecycle controls, including evaluation standards, trusted supply chains, runtime logging, and minimum human override mechanisms.</li>
 </ul>
 </div>
 <div class="watch-block">
 <h4>What reviewers should notice</h4>
 <ul>
-<li>- Realistic threat model.
-- System-level evaluation.
-- Clear assumptions.
-- Scalability.</li>
+<li>Whether the paper defines a realistic threat or deployment model across sensing, planning, action, and supervision.</li>
+<li>Whether the work measures downstream physical or operational consequence rather than only model error or attack success rate.</li>
+<li>Whether assumptions about trusted hardware, clean data, secure channels, or human-in-the-loop intervention are explicit.</li>
+<li>Whether the proposed security or governance direction can scale beyond one demo robot to heterogeneous deployed embodied systems.</li>
 </ul>
 </div>
 </div>
 <div class="watch-bottom-note">
-<strong>Current research tension:</strong> Security is moving closer to hardware and runtime, but scalability and usability remain unresolved challenges.
+<strong>Current research tension:</strong> The real challenge is not making embodied AI more capable, but making cross-domain autonomy trustworthy when perception, reasoning, and physical action can all be exploited together.
       </div>
 <div class="watch-inline-links">
-<a href="posts/2026-03-application-runtime-detection-oligo-security.html">Read full post</a> <a href="Application runtime detection and response">Application runtime detection and response</a> <a href="Application runtime detection and response">Application runtime detection and response</a> <a href="Application runtime detection and response">Application runtime detection and response</a>
+<a href="posts/2026-03-embodied-ai-security-governance.html">Read full post</a> <a href="https://doi.org/10.16418/j.issn.1000-3045.20250218002" rel="noopener noreferrer" target="_blank">Paper DOI</a> <a href="https://bulletinofcas.researchcommons.org/journal/vol40/iss3/4" rel="noopener noreferrer" target="_blank">Bulletin page</a>
 </div>
 </div>
 </div>
 </article>
-<article class="watch-note accordion" id="2026-03-ai-native-code-security-enclave">
+<article class="watch-note accordion" data-category="" id="2026-03-secure-edge-ai-infrastructure-armada">
 <button aria-expanded="false" class="accordion-trigger" type="button">
-<span class="accordion-meta">AI-native software security</span>
-<span class="accordion-title">AI-native software security</span>
+<span class="accordion-meta">Secure edge AI infrastructure</span>
+<span class="accordion-title">Secure edge AI infrastructure</span>
 <span class="accordion-preview">
-      AI-native software security
+      Secure edge AI infrastructure
     </span>
 <span class="accordion-cta">Read full note</span>
 <span aria-hidden="true" class="accordion-icon"></span>
@@ -650,7 +623,7 @@
 <div aria-hidden="true" class="accordion-panel">
 <div class="accordion-panel-inner">
 <p>
-        Enclave focuses on AI-native software security. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
+        Armada focuses on Secure edge AI infrastructure. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
       </p>
 <p>
         Technically, this area introduces new attacker models targeting runtime, firmware, or encrypted computation layers. Classical perimeter-based security is insufficient, requiring system-level redesign.
@@ -659,7 +632,7 @@
 <div class="watch-block">
 <h4>What is changing technically</h4>
 <ul>
-<li>- Shift toward runtime and embedded security.
+<li>Shift toward runtime and embedded security.
 - AI systems introduce new attack surfaces.
 - Need for hardware-software co-design.
 - Deployment at scale introduces complexity.</li>
@@ -668,7 +641,7 @@
 <div class="watch-block">
 <h4>What reviewers should notice</h4>
 <ul>
-<li>- Realistic threat model.
+<li>Realistic threat model.
 - System-level evaluation.
 - Clear assumptions.
 - Scalability.</li>
@@ -679,17 +652,17 @@
 <strong>Current research tension:</strong> Security is moving closer to hardware and runtime, but scalability and usability remain unresolved challenges.
       </div>
 <div class="watch-inline-links">
-<a href="posts/2026-03-ai-native-code-security-enclave.html">Read full post</a> <a href="AI-native software security">AI-native software security</a> <a href="AI-native software security">AI-native software security</a> <a href="AI-native software security">AI-native software security</a>
+<a href="posts/2026-03-secure-edge-ai-infrastructure-armada.html">Read full post</a> <a href="Secure edge AI infrastructure">Secure edge AI infrastructure</a> <a href="Secure edge AI infrastructure">Secure edge AI infrastructure</a> <a href="Secure edge AI infrastructure">Secure edge AI infrastructure</a>
 </div>
 </div>
 </div>
 </article>
-<article class="watch-note accordion" id="2026-03-ai-driven-offensive-security-runsybil">
+<article class="watch-note accordion" data-category="" id="2026-03-stack-safeguard-pipelines">
 <button aria-expanded="false" class="accordion-trigger" type="button">
-<span class="accordion-meta">AI-driven offensive security testing</span>
-<span class="accordion-title">AI-driven offensive security testing</span>
+<span class="accordion-meta">Research Watch • LLM Safeguards • 2025–2026 signal</span>
+<span class="accordion-title">STACK shows why layered LLM safeguards still need adaptive pipeline-level evaluation</span>
 <span class="accordion-preview">
-      AI-driven offensive security testing
+      This paper matters because it shifts evaluation from single jailbreak-resistant models to full safeguard pipelines. It shows that layered input/output classifier defenses can look strong under standard testing, yet still fail badly once the attacker is optimized against the pipeline as a system.
     </span>
 <span class="accordion-cta">Read full note</span>
 <span aria-hidden="true" class="accordion-icon"></span>
@@ -697,7 +670,54 @@
 <div aria-hidden="true" class="accordion-panel">
 <div class="accordion-panel-inner">
 <p>
-        RunSybil focuses on AI-driven offensive security testing. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
+        A useful contribution of this paper is that it stops treating safeguard components in isolation and instead evaluates the full defense pipeline as the actual object of attack. The authors build an open-source pipeline around a target model with input and output classifiers, show that a few-shot-prompted classifier can outperform ShieldGemma across their benchmark setting, and report that this stronger pipeline drives the attack success rate on ClearHarm down to 0% under baseline attacks such as PAP, ReNeLLM, and Best-of-N.
+      </p>
+<p>
+        The core result is STACK, a staged attack procedure that develops jailbreaks against each component and then combines them to defeat the whole system. In the paper’s main evaluation, black-box STACK reaches 71% attack success rate on ClearHarm against the few-shot classifier pipeline, and transfer STACK still reaches 33%, which is important because it suggests that even layered defense-in-depth can become brittle once the attacker explicitly optimizes against the pipeline architecture rather than only the base model or a single guard.
+      </p>
+<div class="watch-columns">
+<div class="watch-block">
+<h4>What is changing technically</h4>
+<ul>
+<li>Evaluation is moving from single-model jailbreak testing to full pipeline-aware red teaming.</li>
+<li>Input and output classifiers may each look strong on their own, but staged attacks can exploit their interaction and ordering.</li>
+<li>A few-shot prompted safeguard classifier can significantly improve baseline robustness, yet this does not guarantee resilience to adaptive attacks.</li>
+<li>Transfer-style attacks show that even limited-access adversaries may be able to target safeguard pipelines without direct access to every component.</li>
+</ul>
+</div>
+<div class="watch-block">
+<h4>What reviewers should notice</h4>
+<ul>
+<li>Whether the paper evaluates the entire safeguard pipeline rather than only one moderation component.</li>
+<li>Whether the attack is adaptive to the defense architecture, not just reused from generic jailbreak benchmarks.</li>
+<li>Whether robustness is reported in realistic black-box and transfer settings, not only toy or fully white-box assumptions.</li>
+<li>Whether mitigation claims are framed as practical hardening guidance instead of proof that defense-in-depth alone is sufficient.</li>
+</ul>
+</div>
+</div>
+<div class="watch-bottom-note">
+<strong>Current research tension:</strong> Current research tension: layered safeguards are becoming operationally important for frontier models, but this paper shows that composition alone is not enough; once attackers optimize against the pipeline as a system, apparent robustness can collapse much faster than ordinary benchmark results suggest.
+      </div>
+<div class="watch-inline-links">
+<a href="posts/2026-03-stack-safeguard-pipelines.html">Read full post</a> <a href="ai-security/generative-ai.html">See full generative AI page</a> <a href="https://arxiv.org/pdf/2506.24068" rel="noopener noreferrer" target="_blank">STACK paper (arXiv PDF)</a> <a href="https://github.com/AlignmentResearch/defense-in-depth-demo" rel="noopener noreferrer" target="_blank">Open-source defense pipeline demo</a>
+</div>
+</div>
+</div>
+</article>
+<article class="watch-note accordion" data-category="" id="2026-03-zero-standing-privilege-p0-security">
+<button aria-expanded="false" class="accordion-trigger" type="button">
+<span class="accordion-meta">Zero-standing-privilege identity security</span>
+<span class="accordion-title">Zero-standing-privilege identity security</span>
+<span class="accordion-preview">
+      Zero-standing-privilege identity security
+    </span>
+<span class="accordion-cta">Read full note</span>
+<span aria-hidden="true" class="accordion-icon"></span>
+</button>
+<div aria-hidden="true" class="accordion-panel">
+<div class="accordion-panel-inner">
+<p>
+        P0 Security focuses on Zero-standing-privilege identity security. This reflects a broader shift toward securing AI-native and edge systems where traditional cloud security assumptions no longer hold.
       </p>
 <p>
         Technically, this area introduces new attacker models targeting runtime, firmware, or encrypted computation layers. Classical perimeter-based security is insufficient, requiring system-level redesign.
@@ -706,7 +726,7 @@
 <div class="watch-block">
 <h4>What is changing technically</h4>
 <ul>
-<li>- Shift toward runtime and embedded security.
+<li>Shift toward runtime and embedded security.
 - AI systems introduce new attack surfaces.
 - Need for hardware-software co-design.
 - Deployment at scale introduces complexity.</li>
@@ -715,7 +735,7 @@
 <div class="watch-block">
 <h4>What reviewers should notice</h4>
 <ul>
-<li>- Realistic threat model.
+<li>Realistic threat model.
 - System-level evaluation.
 - Clear assumptions.
 - Scalability.</li>
@@ -726,7 +746,7 @@
 <strong>Current research tension:</strong> Security is moving closer to hardware and runtime, but scalability and usability remain unresolved challenges.
       </div>
 <div class="watch-inline-links">
-<a href="posts/2026-03-ai-driven-offensive-security-runsybil.html">Read full post</a> <a href="AI-driven offensive security testing">AI-driven offensive security testing</a> <a href="AI-driven offensive security testing">AI-driven offensive security testing</a> <a href="AI-driven offensive security testing">AI-driven offensive security testing</a>
+<a href="posts/2026-03-zero-standing-privilege-p0-security.html">Read full post</a> <a href="Zero-standing-privilege identity security">Zero-standing-privilege identity security</a> <a href="Zero-standing-privilege identity security">Zero-standing-privilege identity security</a> <a href="Zero-standing-privilege identity security">Zero-standing-privilege identity security</a>
 </div>
 </div>
 </div>
