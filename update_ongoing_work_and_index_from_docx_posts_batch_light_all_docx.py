@@ -7,8 +7,18 @@ from bs4 import BeautifulSoup, NavigableString
 from docx import Document
 
 # ===== USER CONFIG =====
-SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR
+from pathlib import Path
+
+if "__file__" in globals():
+    BASE_DIR = Path(__file__).resolve().parent
+else:
+    BASE_DIR = Path.cwd()
+
+# If running from dark folder, go one level up
+if BASE_DIR.name == "dark":
+    PROJECT_ROOT = BASE_DIR.parent
+else:
+    PROJECT_ROOT = BASE_DIR
 
 WEEKLY_INPUTS_DIR = PROJECT_ROOT / 'weekly-inputs'
 POSTS_DIR = PROJECT_ROOT / 'posts'
