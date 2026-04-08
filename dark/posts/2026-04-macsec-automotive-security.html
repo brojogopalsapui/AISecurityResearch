@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>2026 04 Macsec Automotive Security | AI Security Research</title>
+  <link href="../assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <main class="section" style="padding-top: 8rem;">
+    <div class="container" style="max-width: 900px;">
+      <a href="../ongoing-work.html" style="display:inline-block;margin-bottom:1rem;">← Back to Trending Topics</a>
+      <div class="section-label">Academic Signals</div>
+      <h1>2026 04 Macsec Automotive Security</h1>
+      <p class="section-lead">Research Watch • April 2026 signal</p>
+      <p>The integration of MACsec into automotive Ethernet reflects a fundamental shift in how vehicle communication security is treated. Traditionally, in-vehicle networks focused on functional correctness and reliability, with security added as an overlay. However, modern vehicles rely heavily on high-speed Ethernet backbones connecting ADAS, sensors, and domain controllers. In this context, communication integrity directly impacts system behavior, making security a core architectural requirement rather than an optional feature.</p>
+      <p>Technically, MACsec introduces link-layer encryption, authentication, and replay protection directly into Ethernet communication. When aligned with emerging automotive standards such as ISO/PAS 8800, this shifts the security boundary closer to hardware and real-time data paths. However, this also introduces new system-level challenges: latency constraints, key management in distributed ECUs, and maintaining deterministic communication. Traditional security evaluation methods are insufficient here because attacks on timing or data integrity at the link layer can propagate into control decisions in safety-critical systems.</p>
+      <h2>What is changing technically</h2>
+      <ul><li>- Automotive networks are moving to fully authenticated and encrypted Ethernet communication.</li>
+<li>- Security is embedded at the data link layer with strict timing constraints.</li>
+<li>- Communication integrity becomes directly tied to system safety.</li>
+<li>- Deployment requires hardware-level MACsec IP integration.</li></ul>
+      <h2>What reviewers should notice</h2>
+      <ul><li>- Realistic automotive constraints such as latency and real-time control.</li>
+<li>- System-level impact, not just cryptographic correctness.</li>
+<li>- Key management across distributed ECUs.</li>
+<li>- Scalability across heterogeneous architectures.</li></ul>
+      <p><strong>Current research tension.</strong> Securing in-vehicle communication at the link layer improves integrity, but introduces tension between cryptographic enforcement and real-time deterministic behavior.</p>
+      <div class="watch-links"></div>
+    </div>
+  </main>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>
