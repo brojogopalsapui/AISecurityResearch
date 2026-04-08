@@ -7,13 +7,16 @@ from bs4 import BeautifulSoup, NavigableString
 from docx import Document
 
 # ===== USER CONFIG =====
-WEEKLY_INPUTS_DIR = Path('weekly-inputs')
-POSTS_DIR = Path('posts')
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR
+
+WEEKLY_INPUTS_DIR = PROJECT_ROOT / 'weekly-inputs'
+POSTS_DIR = PROJECT_ROOT / 'posts'
 BATCH_PROCESS_ALL_DOCX = True
 AUTO_PICK_LATEST_DOCX = False
-MANUAL_DOCX_PATH = Path('weekly-inputs/2026-03-stack-safeguard-pipelines.docx')
-INPUT_ONGOING_HTML = Path('ongoing-work.html')
-INPUT_INDEX_HTML = Path('index.html')
+MANUAL_DOCX_PATH = WEEKLY_INPUTS_DIR / '2026-03-stack-safeguard-pipelines.docx'
+INPUT_ONGOING_HTML = PROJECT_ROOT / 'ongoing-work.html'
+INPUT_INDEX_HTML = PROJECT_ROOT / 'index.html'
 OUTPUT_ONGOING_HTML = INPUT_ONGOING_HTML
 OUTPUT_INDEX_HTML = INPUT_INDEX_HTML
 AUTO_GENERATE_FULL_POST = True
@@ -47,6 +50,11 @@ SECTION_TARGETS = {
     'ecosystem': 'ecosystem-stream-list',
 }
 
+PREFERRED_FILENAME_RE = re.compile(r'^(\d{2})-(\d{2})-(\d{4})-(\d{6})-([a-z0-9][a-z0-9-]*)$', re.IGNORECASE)
+YMD_FILENAME_RE = re.compile(r'^(\d{4})-(\d{2})-(\d{2})-([a-z0-9][a-z0-9-]*)$', re.IGNORECASE)
+LEGACY_FILENAME_RE = re.compile(r'^(\d{4})-(\d{2})-(.+)$', re.IGNORECASE)
+
+
 def _clean(value):
     if value is None:
         return ''
@@ -54,25 +62,92 @@ def _clean(value):
         return value.strip()
     return str(value).strip()
 
+
+def parse_filename_info(stem: str):
+    m = PREFERRED_FILENAME_RE.match(stem)
+    if m:
+        day, month, year = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        hhmmss = m.group(4)
+        hour, minute, second = int(hhmmss[0:2]), int(hhmmss[2:4]), int(hhmmss[4:6])
+        slug = m.group(5).lower()
+        if 1 <= month <= 12 and 1 <= day <= 31:
+            return {
+                'style': 'preferred',
+                'year': year,
+                'month': month,
+                'day': day,
+                'hour': hour,
+                'minute': minute,
+                'second': second,
+                'slug': slug,
+                'display_date': f'{day:02d}-{month:02d}-{year:04d}',
+                'month_year': f'{month_name[month]} {year}',
+            }
+    m = YMD_FILENAME_RE.match(stem)
+    if m:
+        year, month, day = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        slug = m.group(4).lower()
+        if 1 <= month <= 12 and 1 <= day <= 31:
+            return {
+                'style': 'ymd',
+                'year': year,
+                'month': month,
+                'day': day,
+                'hour': 0,
+                'minute': 0,
+                'second': 0,
+                'slug': slug,
+                'display_date': f'{day:02d}-{month:02d}-{year:04d}',
+                'month_year': f'{month_name[month]} {year}',
+            }
+    m = LEGACY_FILENAME_RE.match(stem)
+    if m:
+        year, month = int(m.group(1)), int(m.group(2))
+        slug = m.group(3).lower()
+        if 1 <= month <= 12:
+            return {
+                'style': 'legacy',
+                'year': year,
+                'month': month,
+                'day': 0,
+                'hour': 0,
+                'minute': 0,
+                'second': 0,
+                'slug': slug,
+                'display_date': '',
+                'month_year': f'{month_name[month]} {year}',
+            }
+    return None
+
+
 def stem_to_month_year(stem: str) -> str:
-    m = re.match(r'^(\d{4})-(\d{2})-', stem)
-    if not m:
-        return stem
-    year = int(m.group(1))
-    month = int(m.group(2))
-    if 1 <= month <= 12:
-        return f'{month_name[month]} {year}'
-    return stem
+    info = parse_filename_info(stem)
+    return info['month_year'] if info else stem
+
+
+def stem_to_display_date(stem: str) -> str:
+    info = parse_filename_info(stem)
+    return info['display_date'] if info else ''
+
+
+def format_trending_title(stem: str, title: str) -> str:
+    display_date = stem_to_display_date(stem)
+    return f'{display_date} | {title}' if display_date else title
+
 
 def _docx_sort_key(path: Path):
-    name = path.stem
-    m = re.match(r'^(\d{4})-(\d{2})(?:-(.+))?$', name, re.IGNORECASE)
-    if m:
-        year = int(m.group(1))
-        month = int(m.group(2))
-        tail = (m.group(3) or '').lower()
-        return (0, year, month, tail)
-    return (1, path.stat().st_mtime, name.lower())
+    info = parse_filename_info(path.stem)
+    if info:
+        return (0, info['year'], info['month'], info['day'], info['hour'], info['minute'], info['second'], info['slug'])
+    return (1, path.stat().st_mtime, path.stem.lower())
+
+
+def _filename_guidance(name: str) -> str:
+    return (
+        f"Filename '{name}' does not match the preferred DD-MM-YYYY-HHMMSS-topic-name.docx format. "
+        "Use zero-padded date and HHMMSS so the latest note is selected correctly even when multiple notes are added on the same day."
+    )
+
 
 def list_processable_docx_files(folder: Path):
     hints = {name.lower() for name in TEMPLATE_DOCX_HINTS}
@@ -85,8 +160,10 @@ def list_processable_docx_files(folder: Path):
         raise FileNotFoundError(f'No usable DOCX files found in {folder}.')
     return sorted(candidates, key=_docx_sort_key)
 
+
 def pick_latest_docx(folder: Path) -> Path:
     return list_processable_docx_files(folder)[-1]
+
 
 def parse_weekly_docx(path: Path):
     doc = Document(str(path))
@@ -123,6 +200,7 @@ def parse_weekly_docx(path: Path):
             data[heading] = content if heading in {'What Is Changing Technically', 'What Reviewers Should Notice'} else '\n'.join(content)
     return data
 
+
 def normalize_category(raw_category: str, warnings: list[str]) -> str:
     category = _clean(raw_category).lower()
     if category not in ALLOWED_CATEGORIES:
@@ -133,9 +211,12 @@ def normalize_category(raw_category: str, warnings: list[str]) -> str:
         category = 'academic'
     return category
 
+
 def normalize_docx_data(data, docx_stem: str, relative_full_post_link: str):
     md = data['metadata']
     warnings = []
+    if not PREFERRED_FILENAME_RE.match(docx_stem):
+        warnings.append(_filename_guidance(f'{docx_stem}.docx'))
     if FORCE_POST_ID_FROM_FILENAME:
         existing_post_id = _clean(md.get('Post ID'))
         if existing_post_id and existing_post_id != docx_stem:
@@ -161,6 +242,7 @@ def normalize_docx_data(data, docx_stem: str, relative_full_post_link: str):
         warnings.append('Preview was blank in the DOCX, so one was inferred from the first full-note paragraph.')
     return warnings
 
+
 def _is_valid_href(href: str) -> bool:
     href = _clean(href)
     if not href:
@@ -170,6 +252,7 @@ def _is_valid_href(href: str) -> bool:
     if ' ' in href:
         return False
     return '/' in href or href.endswith('.html') or href.endswith('.pdf')
+
 
 def add_link_html(links, href, label):
     href = _clean(href)
@@ -181,20 +264,23 @@ def add_link_html(links, href, label):
     else:
         links.append(f'<a href="{escape(href, quote=True)}">{escape(label)}</a>')
 
+
 def build_home_watch_card(post_id, title, preview):
     return f'''
 <a class="watch-card" href="ongoing-work.html#{escape(post_id, quote=True)}">
   <div class="watch-card-label">Latest research note</div>
   <h3>{escape(title)}</h3>
   <p>{escape(preview)}</p>
-  <span>Open note →</span>
+  <span>Open note -></span>
 </a>'''.strip()
+
 
 def build_watch_article(data):
     md = data['metadata']
     category = _clean(md.get('Category')).lower()
     post_id = _clean(md.get('Post ID'))
     title = _clean(md.get('Title')) or 'Untitled research note'
+    display_title = format_trending_title(post_id, title)
     p1 = _clean(data.get('Full Note Paragraph 1'))
     p2 = _clean(data.get('Full Note Paragraph 2'))
     preview = _clean(md.get('Preview')) or ((p1[:220].rsplit(' ', 1)[0] + '...') if p1 else title)
@@ -217,7 +303,7 @@ def build_watch_article(data):
 <article class="watch-note accordion" data-category="{escape(category, quote=True)}" id="{escape(post_id, quote=True)}">
   <button aria-expanded="false" class="accordion-trigger" type="button">
     <span class="accordion-meta">{escape(meta_line)}</span>
-    <span class="accordion-title">{escape(title)}</span>
+    <span class="accordion-title">{escape(display_title)}</span>
     <span class="accordion-preview">{escape(preview)}</span>
     <span class="accordion-cta">Read full note</span>
     <span aria-hidden="true" class="accordion-icon"></span>
@@ -243,6 +329,7 @@ def build_watch_article(data):
 </article>
 '''.strip()
     return post_id, title, preview, category, article_html
+
 
 def build_full_post_html(data):
     md = data['metadata']
@@ -273,7 +360,7 @@ def build_full_post_html(data):
 <body>
   <main class="section" style="padding-top: 8rem;">
     <div class="container" style="max-width: 900px;">
-      <a href="../ongoing-work.html" style="display:inline-block;margin-bottom:1rem;">← Back to Trending Topics</a>
+      <a href="../ongoing-work.html" style="display:inline-block;margin-bottom:1rem;"><- Back to Trending Topics</a>
       <div class="section-label">{escape(stream_badge)}</div>
       <h1>{escape(title)}</h1>
       <p class="section-lead">{escape(meta_line)}</p>
@@ -291,9 +378,11 @@ def build_full_post_html(data):
 </body>
 </html>'''.strip()
 
+
 def detect_doctype(html_text: str) -> str:
     m = re.match(r'\s*(<!DOCTYPE[^>]+>)', html_text, flags=re.IGNORECASE)
     return m.group(1) if m else '<!DOCTYPE html>'
+
 
 def validate_paths(docx_path, ongoing_input_path, ongoing_output_path, index_input_path, index_output_path):
     warnings = []
@@ -305,11 +394,14 @@ def validate_paths(docx_path, ongoing_input_path, ongoing_output_path, index_inp
         raise FileNotFoundError(f'Input index.html not found: {index_input_path.resolve()}')
     if docx_path.name.lower() in {name.lower() for name in TEMPLATE_DOCX_HINTS}:
         warnings.append('DOCX_PATH looks like a blank template file. Use a filled weekly DOCX instead.')
+    if not PREFERRED_FILENAME_RE.match(docx_path.stem):
+        warnings.append(_filename_guidance(docx_path.name))
     if ongoing_input_path.resolve() != ongoing_output_path.resolve():
         warnings.append('OUTPUT_ONGOING_HTML differs from INPUT_ONGOING_HTML. Best default: update in place.')
     if index_input_path.resolve() != index_output_path.resolve():
         warnings.append('OUTPUT_INDEX_HTML differs from INPUT_INDEX_HTML. Best default: update in place.')
     return warnings
+
 
 def _find_stream_container(soup: BeautifulSoup, category: str):
     target_id = SECTION_TARGETS[category]
@@ -320,6 +412,7 @@ def _find_stream_container(soup: BeautifulSoup, category: str):
     if watch_stack is not None:
         return watch_stack
     raise ValueError('Could not find a supported trending-topics container in ongoing-work.html')
+
 
 def update_ongoing_work_html(input_html_path, output_html_path, article_id, article_html, category, replace_duplicate=True):
     html_text = input_html_path.read_text(encoding='utf-8')
@@ -345,6 +438,7 @@ def update_ongoing_work_html(input_html_path, output_html_path, article_id, arti
     output_html_path.write_text(final_html, encoding='utf-8')
     return output_html_path
 
+
 def update_index_html(input_html_path, output_html_path, post_id, title, preview, update_floating=True, update_slider=True, replace_duplicate=True, max_cards=6):
     html_text = input_html_path.read_text(encoding='utf-8')
     doctype = detect_doctype(html_text)
@@ -358,7 +452,7 @@ def update_index_html(input_html_path, output_html_path, post_id, title, preview
             notif_text.append(strong)
             notif_text.append(NavigableString(f' {title}. '))
             link = soup.new_tag('a', href=f'ongoing-work.html#{post_id}')
-            link.string = 'Read note →'
+            link.string = 'Read note ->'
             notif_text.append(link)
         else:
             research_alert = soup.select_one('div.research-alert')
@@ -379,7 +473,7 @@ def update_index_html(input_html_path, output_html_path, post_id, title, preview
                     link_node = soup.new_tag('a', attrs={'class': 'research-alert-link'})
                     research_alert.append(link_node)
                 link_node['href'] = f'ongoing-work.html#{post_id}'
-                link_node.string = 'Read the research watch →'
+                link_node.string = 'Read the research watch ->'
             else:
                 raise ValueError('Could not find a supported floating/latest-note block in index.html (expected either .floating-notif .notif-text or .research-alert).')
     if update_slider:
@@ -409,10 +503,12 @@ def update_index_html(input_html_path, output_html_path, post_id, title, preview
     output_html_path.write_text(final_html, encoding='utf-8')
     return output_html_path
 
+
 def write_full_post_html(output_path: Path, full_post_html: str):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(full_post_html, encoding='utf-8')
     return output_path
+
 
 if BATCH_PROCESS_ALL_DOCX:
     DOCX_PATHS = list_processable_docx_files(WEEKLY_INPUTS_DIR)
@@ -480,6 +576,6 @@ if generated_post_paths:
     print('Generated/updated full posts:')
     for p in generated_post_paths:
         print('-', p.resolve())
-print() 
+print()
 print('Homepage latest note now points to:', latest_home_item['post_id'])
 print('Homepage latest note title:', latest_home_item['title'])
