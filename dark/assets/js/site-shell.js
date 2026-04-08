@@ -6,14 +6,14 @@
 
   function currentSignal(nav){
     const map = {
-      home: 'Swipe through focused cards, then open the full topic when you want deeper reading.',
-      research: 'Tap any track to open the full note. Foundations and security topics stay intentionally separated for easier reading.',
-      trending: 'Short pulse notes first, deeper context one tap away.',
-      resources: 'Curated material for structured self-study.',
-      about: 'Cross-layer AI security, explained through a guided research portal.',
-      contact: 'Research, collaboration, and contact pathways.'
+      home: "",
+      research: "",
+      trending: "",
+      resources: "",
+      about: "",
+      contact: ""
     };
-    return map[nav] || map.research;
+    return map[nav] || "";
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -35,25 +35,18 @@
     ];
 
     if (topMount) {
-      topMount.innerHTML = `
-        <div class="portal-topline">
-          <div class="container portal-topline__inner">
-            <span class="portal-pill portal-pill--pulse">Research Portal</span>
-            <p class="portal-topline__text">${currentSignal(nav)}</p>
-            <a class="portal-topline__link" href="${base}ongoing-work.html">Live notes ↗</a>
-          </div>
-        </div>`;
+      topMount.innerHTML = "";
     }
 
     if (headerMount) {
       headerMount.innerHTML = `
         <header class="site-shell-header">
           <div class="container shell-header__inner">
-            <a class="shell-brand" href="${base}index.html" aria-label="Brojogopal Sapui Research Portal home">
+            <a class="shell-brand" href="${base}index.html" aria-label="Brojogopal Sapui AI Security home">
               <span class="shell-brand__mark">BS</span>
               <span class="shell-brand__copy">
                 <strong>AI Security</strong>
-                <small>research portal</small>
+                <small>Brojogopal Sapui</small>
               </span>
             </a>
             <button class="shell-menu-btn" id="shellMenuBtn" aria-label="Open navigation" aria-controls="shellNav" aria-expanded="false">
