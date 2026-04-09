@@ -2645,3 +2645,17 @@ h1, h2, h3, h4 { letter-spacing: -0.022em; }
 .document-card h3 { margin-top: 0.4rem; }
 .document-card .btn-row { margin-top: 1rem; }
 @media (max-width: 980px) { .pulse-grid-dark, .pulse-anchor-stack, .stream-board { grid-template-columns: 1fr; } }
+
+
+/* 2026-04 trending topics category and link spacing refinement */
+.watch-links { display: flex; flex-wrap: wrap; gap: 0.8rem 1.1rem; margin-top: 1rem; }
+.watch-links a { display: inline-flex; align-items: center; min-height: 34px; padding: 0.1rem 0; white-space: nowrap; }
+.watch-note .accordion-meta { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0.55rem 0.65rem; }
+.watch-note .meta-line-text { display: inline; }
+.category-pill { display: inline-flex; align-items: center; justify-content: center; min-height: 28px; padding: 0.14rem 0.72rem; border-radius: 999px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid transparent; }
+.category-pill-academic { background: rgba(37, 99, 235, 0.10); border-color: rgba(37, 99, 235, 0.22); color: #1d4ed8; }
+.category-pill-industry { background: rgba(13, 148, 136, 0.11); border-color: rgba(13, 148, 136, 0.22); color: #0f766e; }
+.category-pill-ecosystem { background: rgba(234, 88, 12, 0.11); border-color: rgba(234, 88, 12, 0.24); color: #c2410c; }
+.watch-note[data-category="academic"] { border-left: 4px solid rgba(37, 99, 235, 0.34); }
+.watch-note[data-category="industry"] { border-left: 4px solid rgba(13, 148, 136, 0.38); }
+.watch-note[data-category="ecosystem"] { border-left: 4px solid rgba(234, 88, 12, 0.42); }

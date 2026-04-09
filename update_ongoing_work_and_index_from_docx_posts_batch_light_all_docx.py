@@ -49,6 +49,11 @@ CATEGORY_LABELS = {
     'industry': 'Industry & Innovation',
     'ecosystem': 'Companies & Releases',
 }
+CATEGORY_PILL_LABELS = {
+    'academic': 'Academic',
+    'industry': 'Industry',
+    'ecosystem': 'Ecosystem',
+}
 CATEGORY_META_LABELS = {
     'academic': 'Academic stream',
     'industry': 'Industry stream',
@@ -124,7 +129,7 @@ def parse_filename_info(stem: str):
                 'minute': 0,
                 'second': 0,
                 'slug': slug,
-                'display_date': '',
+                'display_date': f'{month:02d}-{year:04d}',
                 'month_year': f'{month_name[month]} {year}',
             }
     return None
@@ -210,6 +215,28 @@ def parse_weekly_docx(path: Path):
             data[heading] = content if heading in {'What Is Changing Technically', 'What Reviewers Should Notice'} else '\n'.join(content)
     return data
 
+
+
+
+def is_placeholder_docx(data) -> bool:
+    md = data.get('metadata', {})
+    checks = [
+        _clean(md.get('Title')).lower(),
+        _clean(md.get('Meta Line')).lower(),
+        _clean(md.get('Preview')).lower(),
+        _clean(md.get('Related Static Page (optional)')).lower(),
+        _clean(md.get('External Link 1 URL (optional)')).lower(),
+        _clean(md.get('External Link 2 URL (optional)')).lower(),
+    ]
+    placeholder_markers = [
+        'your new weekly research note title',
+        'research watch • your topic',
+        'write a short 2–3 line preview',
+        'write a short 2-3 line preview',
+        'ai-security/related-page.html',
+        'https://example.com',
+    ]
+    return any(marker in text for text in checks for marker in placeholder_markers if text)
 
 def normalize_category(raw_category: str, warnings: list[str]) -> str:
     category = _clean(raw_category).lower()
@@ -298,6 +325,7 @@ def build_watch_article(data):
     stream_label = CATEGORY_META_LABELS.get(category, category.title())
     if stream_label.lower() not in meta_line.lower():
         meta_line = f'{meta_line} • {stream_label}'
+    category_pill = CATEGORY_PILL_LABELS.get(category, category.title())
     tech_list = data.get('What Is Changing Technically', [])
     reviewer_list = data.get('What Reviewers Should Notice', [])
     tension = _clean(data.get('Current Research Tension'))
@@ -312,7 +340,7 @@ def build_watch_article(data):
     article_html = f'''
 <article class="watch-note accordion" data-category="{escape(category, quote=True)}" id="{escape(post_id, quote=True)}">
   <button aria-expanded="false" class="accordion-trigger" type="button">
-    <span class="accordion-meta">{escape(meta_line)}</span>
+    <span class="accordion-meta"><span class="category-pill category-pill-{escape(category, quote=True)}">{escape(category_pill)}</span><span class="meta-line-text">{escape(meta_line)}</span></span>
     <span class="accordion-title">{escape(display_title)}</span>
     <span class="accordion-preview">{escape(preview)}</span>
     <span class="accordion-cta">Read full note</span>
@@ -527,7 +555,7 @@ else:
 LATEST_DOCX_PATH = DOCX_PATHS[-1]
 print('DOCX files selected:')
 for p in DOCX_PATHS:
-    latest_flag = '   <-- homepage latest note' if p == LATEST_DOCX_PATH else ''
+    latest_flag = '   <-- candidate for homepage latest note' if p == LATEST_DOCX_PATH else ''
     print(f'- {p}{latest_flag}')
 path_warnings = validate_paths(LATEST_DOCX_PATH, INPUT_ONGOING_HTML, OUTPUT_ONGOING_HTML, INPUT_INDEX_HTML, OUTPUT_INDEX_HTML)
 if path_warnings:
@@ -541,6 +569,10 @@ for docx_path in DOCX_PATHS:
     relative_full_post_link = f'posts/{docx_stem}.html'
     suggested_post_html_path = OUTPUT_POSTS_DIR / f'{docx_stem}.html'
     data = parse_weekly_docx(docx_path)
+    if is_placeholder_docx(data):
+        print(f'SKIPPING TEMPLATE-LIKE DOCX: {docx_path.name}')
+        print('- This file still contains template placeholder text/links, so it will not be published or used for homepage updates.\n')
+        continue
     normalize_warnings = normalize_docx_data(data, docx_stem, relative_full_post_link)
     md = data['metadata']
     if normalize_warnings:
@@ -549,6 +581,9 @@ for docx_path in DOCX_PATHS:
             print('-', w)
         print()
     processed_items.append({'docx_path': docx_path, 'docx_stem': docx_stem, 'suggested_post_html_path': suggested_post_html_path, 'data': data, 'post_id': _clean(md.get('Post ID')), 'title': _clean(md.get('Title')), 'meta_line': _clean(md.get('Meta Line')), 'preview': _clean(md.get('Preview')), 'category': _clean(md.get('Category')), 'full_post_link': _clean(md.get('Full Post Link (optional)'))})
+
+if not processed_items:
+    raise RuntimeError('No publishable DOCX files were found after filtering out template-like placeholders.')
 print('Selected DOCX summary:')
 for item in processed_items:
     latest_tag = ' [homepage latest note]' if item['docx_path'] == LATEST_DOCX_PATH else ''
@@ -564,6 +599,7 @@ ongoing_output_path = None
 index_output_path = None
 latest_home_item = None
 generated_post_paths = []
+publishable_latest_docx = max((item['docx_path'] for item in processed_items), key=_docx_sort_key)
 for item in processed_items:
     post_id, title, preview, category, article_html = build_watch_article(item['data'])
     ongoing_input_for_this_run = OUTPUT_ONGOING_HTML if ongoing_output_path is not None else INPUT_ONGOING_HTML
@@ -574,7 +610,7 @@ for item in processed_items:
         full_post_html = build_full_post_html(item['data'])
         generated_post_path = write_full_post_html(item['suggested_post_html_path'], full_post_html)
         generated_post_paths.append(generated_post_path)
-    if item['docx_path'] == LATEST_DOCX_PATH:
+    if item['docx_path'] == publishable_latest_docx:
         latest_home_item = {'post_id': post_id, 'title': title, 'preview': preview}
 if latest_home_item is None:
     raise RuntimeError('Could not determine which processed DOCX should control the homepage latest note.')
