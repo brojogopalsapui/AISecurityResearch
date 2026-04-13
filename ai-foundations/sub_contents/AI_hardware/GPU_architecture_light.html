@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPU // CUDA Architecture for AI Acceleration</title>
+<style>
+  :root{
+    --bg:#eef4fb;
+    --bg-2:#ffffff;
+    --grid:rgba(120,145,175,0.14);
+    --ink:#102033;
+    --dim:#5d7188;
+    --acid:#1fa64a;
+    --cyan:#0c8ecf;
+    --magenta:#c33aa0;
+    --amber:#c47a12;
+    --red:#c93a4f;
+    --line:rgba(12,142,207,0.16);
+    --font-display:"Segoe UI",Arial,sans-serif;
+    --font-mono:"Consolas","Courier New",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:var(--font-mono);font-size:14px;line-height:1.55;overflow-x:hidden}
+  body{
+    background-image:
+      radial-gradient(ellipse at 20% 0%,rgba(12,142,207,0.10),transparent 52%),
+      radial-gradient(ellipse at 80% 100%,rgba(31,166,74,0.08),transparent 55%),
+      linear-gradient(var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:auto,auto,48px 48px,48px 48px;
+    background-position:0 0,0 0,-1px -1px,-1px -1px;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:100;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,0.06) 0,rgba(255,255,255,0.06) 1px,transparent 1px,transparent 3px);
+    mix-blend-mode:soft-light;
+  }
+  .display{font-family:var(--font-display);font-weight:800;letter-spacing:-0.02em;line-height:0.9}
+  .container{max-width:1280px;margin:0 auto;padding:48px 32px}
+
+  /* HEADER */
+  header{border:1px solid var(--line);background:linear-gradient(135deg,rgba(255,255,255,0.98),rgba(239,246,253,0.95));padding:40px 44px;position:relative;overflow:hidden;box-shadow:0 18px 48px rgba(18,52,86,0.08)}
+  header::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:scan 4s linear infinite}
+  @keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+  .meta{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:24px;flex-wrap:wrap;gap:8px}
+  .meta span:nth-child(2){color:var(--acid)}
+  .blink{animation:blink 1.2s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+  h1.display{font-size:clamp(42px,7vw,96px);color:var(--ink);margin-bottom:8px}
+  h1 .stroke{-webkit-text-stroke:1.5px var(--cyan);color:transparent;font-style:italic}
+  h1 .acid{color:var(--acid)}
+  .tagline{font-size:13px;color:#4f647b;max-width:680px;margin-top:20px;border-left:2px solid var(--acid);padding-left:16px}
+  .tagline b{color:var(--ink)}
+
+  /* SECTION */
+  section{margin-top:64px}
+  .sec-label{display:flex;align-items:center;gap:14px;margin-bottom:8px;font-size:11px;color:var(--cyan);letter-spacing:0.2em;text-transform:uppercase}
+  .sec-label::before{content:"";width:32px;height:1px;background:var(--cyan)}
+  .sec-label::after{content:"";flex:1;height:1px;background:var(--line)}
+  h2.display{font-size:clamp(28px,4.2vw,52px);margin-bottom:24px}
+  h2 .dim{color:var(--dim)}
+
+  /* COMPARE */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:880px){.compare{grid-template-columns:1fr}}
+  .panel{border:1px solid var(--line);background:rgba(255,255,255,0.90);padding:28px;position:relative;backdrop-filter:blur(2px);box-shadow:0 16px 32px rgba(16,32,51,0.06)}
+  .panel-tag{position:absolute;top:-1px;left:24px;background:var(--bg);padding:0 12px;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);transform:translateY(-50%)}
+  .panel.cpu .panel-tag{color:var(--amber)}
+  .panel.gpu .panel-tag{color:var(--acid)}
+  .panel h3{font-family:var(--font-display);font-size:28px;margin-bottom:6px;font-weight:600}
+  .panel.cpu h3{color:var(--amber)}
+  .panel.gpu h3{color:var(--acid)}
+  .panel .sub{font-size:11px;color:var(--dim);margin-bottom:24px;text-transform:uppercase;letter-spacing:0.1em}
+
+  /* CPU diagram */
+  .cpu-diagram{height:220px;border:1px dashed rgba(255,181,71,0.25);padding:14px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px}
+  .cpu-core{border:1px solid var(--amber);background:rgba(196,122,18,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--amber);text-transform:uppercase;letter-spacing:0.1em;position:relative;overflow:hidden;transition:background 0.2s}
+  .cpu-core.active{background:rgba(196,122,18,0.16);box-shadow:inset 0 0 12px rgba(196,122,18,0.24)}
+  .cpu-core .label{font-size:9px;color:var(--dim);position:absolute;top:6px;left:8px;letter-spacing:0.05em}
+
+  /* GPU diagram */
+  .gpu-diagram{height:220px;border:1px dashed rgba(124,255,90,0.25);padding:12px;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(16,1fr);gap:2px}
+  .gpu-core{background:rgba(31,166,74,0.10);border:1px solid rgba(31,166,74,0.15);transition:background 0.15s,box-shadow 0.15s}
+  .gpu-core.fire{background:var(--acid);box-shadow:0 0 4px rgba(31,166,74,0.35)}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;font-size:11px}
+  .stat{border-top:1px solid var(--line);padding-top:8px}
+  .stat .k{color:var(--dim);text-transform:uppercase;font-size:9px;letter-spacing:0.1em;margin-bottom:4px}
+  .stat .v{font-family:var(--font-display);font-size:22px;font-weight:600}
+  .panel.cpu .stat .v{color:var(--amber)}
+  .panel.gpu .stat .v{color:var(--acid)}
+
+  /* PIPELINE */
+  .pipeline{border:1px solid var(--line);background:rgba(255,255,255,0.90);padding:36px;box-shadow:0 14px 30px rgba(16,32,51,0.05)}
+  .pipe-row{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+  .pipe-row:last-child{margin-bottom:0}
+  .pipe-label{width:140px;flex-shrink:0;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;font-size:10px}
+  .pipe-track{flex:1;height:36px;background:rgba(16,32,51,0.03);border:1px solid var(--line);position:relative;overflow:hidden}
+  /* pipeline blocks drawn by canvas */
+  .pipe-canvas{position:absolute;inset:0;width:100%;height:100%}
+  .pipe-throughput{width:120px;text-align:right;font-family:var(--font-display);font-weight:600;font-size:18px}
+  .pipe-row.cpu .pipe-throughput{color:var(--amber)}
+  .pipe-row.gpu .pipe-throughput{color:var(--acid)}
+
+  /* SM HIERARCHY */
+  .hierarchy{display:grid;grid-template-columns:1fr 1.4fr;gap:24px}
+  @media(max-width:880px){.hierarchy{grid-template-columns:1fr}}
+  .h-text h3{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--cyan);margin-bottom:14px}
+  .h-text p{color:#1f3145;margin-bottom:14px;font-size:13px}
+  .h-text p b{color:var(--acid)}
+  .h-text ul{list-style:none}
+  .h-text li{padding:8px 0;border-bottom:1px dashed var(--line);font-size:12px;color:#586d84;display:flex;gap:12px}
+  .h-text li::before{content:">>";color:var(--cyan);font-weight:700}
+  .h-text li b{color:var(--ink)}
+
+  .sm-viz{border:1px solid var(--line);background:rgba(255,255,255,0.90);padding:24px;position:relative;min-height:380px;box-shadow:0 16px 34px rgba(16,32,51,0.05)}
+  .sm-title{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .sm-title b{color:var(--cyan)}
+  .sm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .sm{border:1px solid var(--line);padding:10px;background:rgba(12,142,207,0.06)}
+  .sm-name{font-size:8px;color:var(--cyan);letter-spacing:0.05em;margin-bottom:6px}
+  .warp{display:grid;grid-template-columns:repeat(8,1fr);gap:2px}
+  .thread{aspect-ratio:1;background:rgba(31,166,74,0.10);border:0.5px solid rgba(31,166,74,0.18);transition:background 0.25s,box-shadow 0.25s}
+  .thread.exec{background:var(--acid);box-shadow:0 0 3px rgba(31,166,74,0.35)}
+  .sm-bus{margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+  .bus-row{display:flex;align-items:center;gap:12px;font-size:10px;color:var(--dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em}
+  .bus-bar{flex:1;height:6px;background:rgba(16,32,51,0.05);border:1px solid var(--line);overflow:hidden;position:relative}
+  .bus-fill{position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+  .bus-row b{color:var(--cyan);font-family:var(--font-mono);width:60px;text-align:right}
+
+  /* MATRIX */
+  .matrix-section{border:1px solid var(--line);background:rgba(255,255,255,0.92);padding:36px;box-shadow:0 16px 34px rgba(16,32,51,0.05)}
+  .mm-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:16px}
+  .mm-header h3{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--ink)}
+  .mm-header .eq{font-size:13px;color:var(--magenta);font-family:var(--font-mono)}
+  .mm-stage{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:18px;align-items:center}
+  @media(max-width:880px){.mm-stage{grid-template-columns:1fr;text-align:center}}
+  .mat{border:1px solid var(--line);padding:8px;background:rgba(241,246,251,0.98);position:relative;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);gap:2px}
+  .mat-label{position:absolute;top:-22px;left:0;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em}
+  .mat-label b{color:var(--cyan)}
+  .cell{background:rgba(16,32,51,0.05);border:0.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:6px;color:#63778d}
+  .cell.row-hi{background:var(--magenta);color:#0b1520;font-weight:700}
+  .cell.col-hi{background:var(--cyan);color:#0b1520;font-weight:700}
+  .cell.result{background:var(--acid);color:#0b1520;font-weight:700}
+  .op{font-family:var(--font-display);font-size:42px;font-weight:600;color:var(--cyan);text-align:center}
+  .mm-info{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:32px}
+  @media(max-width:680px){.mm-info{grid-template-columns:1fr}}
+  .mm-card{border-left:2px solid var(--cyan);padding:12px 16px;background:rgba(12,142,207,0.06)}
+  .mm-card .n{font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--cyan)}
+  .mm-card .d{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
+
+  /* MEMORY */
+  .mem-stack{display:flex;flex-direction:column;gap:8px}
+  .mem-row{display:grid;grid-template-columns:160px 1fr 120px 120px;gap:16px;align-items:center;border:1px solid var(--line);padding:14px 18px;background:rgba(255,255,255,0.88);position:relative;overflow:hidden;box-shadow:0 10px 22px rgba(16,32,51,0.04)}
+  .mem-row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+  .mem-row.l1::before{background:var(--acid)}
+  .mem-row.shared::before{background:var(--magenta)}
+  .mem-row.l2::before{background:var(--cyan)}
+  .mem-row.hbm::before{background:var(--amber)}
+  .mem-row.host::before{background:var(--red)}
+  .mem-name{font-family:var(--font-display);font-weight:600;font-size:16px}
+  .mem-row.l1 .mem-name{color:var(--acid)}
+  .mem-row.shared .mem-name{color:var(--magenta)}
+  .mem-row.l2 .mem-name{color:var(--cyan)}
+  .mem-row.hbm .mem-name{color:var(--amber)}
+  .mem-row.host .mem-name{color:var(--red)}
+  .mem-bar{height:8px;background:rgba(16,32,51,0.05);border:1px solid var(--line);position:relative;overflow:hidden}
+  .mem-fill{position:absolute;top:0;bottom:0;left:0;animation:mem-pulse 3s ease-in-out infinite}
+  .mem-row.l1 .mem-fill{width:100%;background:var(--acid)}
+  .mem-row.shared .mem-fill{width:88%;background:var(--magenta)}
+  .mem-row.l2 .mem-fill{width:70%;background:var(--cyan)}
+  .mem-row.hbm .mem-fill{width:40%;background:var(--amber)}
+  .mem-row.host .mem-fill{width:8%;background:var(--red)}
+  @keyframes mem-pulse{0%,100%{opacity:1}50%{opacity:0.55}}
+  .mem-val{font-size:11px;color:#18304a;text-align:right;font-family:var(--font-mono)}
+  .mem-val span{color:var(--dim);font-size:9px;display:block;text-transform:uppercase;letter-spacing:0.1em}
+  @media(max-width:700px){.mem-row{grid-template-columns:1fr 1fr;gap:8px}}
+
+  footer{margin-top:80px;padding:32px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.15em;flex-wrap:wrap;gap:12px}
+  footer .acid{color:var(--acid)}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="meta">
+      <span>// DOC.ID: NV-CUDA-ARCH-0xA100</span>
+      <span>STATUS: COMPILED <span class="blink">█</span></span>
+      <span>REV 4.6 / 2026</span>
+    </div>
+    <h1 class="display">PARALLEL<br><span class="stroke">by</span> <span class="acid">DESIGN.</span></h1>
+    <p class="tagline">A technical walkthrough of how <b>GPU hardware architecture</b> processes thousands of <b>CUDA cores</b> simultaneously to accelerate AI workloads — and why a <b>CPU</b>, with its handful of fat cores, fundamentally cannot keep up.</p>
+  </header>
+
+  <!-- 01 CORE COUNT -->
+  <section>
+    <div class="sec-label">01 · Topology</div>
+    <h2 class="display">A few smart cores. <span class="dim">vs.</span> Ten thousand simple ones.</h2>
+    <div class="compare">
+      <div class="panel cpu">
+        <div class="panel-tag">x86 / Latency-Optimized</div>
+        <h3>CPU</h3>
+        <div class="sub">Central Processing Unit</div>
+        <div class="cpu-diagram" id="cpuDiagram">
+          <div class="cpu-core"><span class="label">CORE 0</span>ALU + L1 + BRANCH</div>
+          <div class="cpu-core"><span class="label">CORE 1</span>ALU + L1 + BRANCH</div>
+          <div class="cpu-core"><span class="label">CORE 2</span>ALU + L1 + BRANCH</div>
+          <div class="cpu-core"><span class="label">CORE 3</span>ALU + L1 + BRANCH</div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="k">Cores</div><div class="v">4–64</div></div>
+          <div class="stat"><div class="k">Clock</div><div class="v">5.0 GHz</div></div>
+          <div class="stat"><div class="k">Cache/core</div><div class="v">~1 MB</div></div>
+          <div class="stat"><div class="k">Optimized</div><div class="v">Latency</div></div>
+        </div>
+      </div>
+      <div class="panel gpu">
+        <div class="panel-tag">CUDA / Throughput-Optimized</div>
+        <h3>GPU</h3>
+        <div class="sub">Graphics Processing Unit · AI Accelerator</div>
+        <div class="gpu-diagram" id="gpuDiagram"></div>
+        <div class="stats">
+          <div class="stat"><div class="k">CUDA Cores</div><div class="v">10,752</div></div>
+          <div class="stat"><div class="k">Tensor Cores</div><div class="v">432</div></div>
+          <div class="stat"><div class="k">SMs</div><div class="v">132</div></div>
+          <div class="stat"><div class="k">Optimized</div><div class="v">Throughput</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 PIPELINE -->
+  <section>
+    <div class="sec-label">02 · Execution Model</div>
+    <h2 class="display">Sequential threads <span class="dim">→</span> SIMT swarms.</h2>
+    <div class="pipeline">
+      <div class="pipe-row cpu">
+        <div class="pipe-label">CPU · Serial</div>
+        <div class="pipe-track"><canvas class="pipe-canvas" id="cpuCanvas"></canvas></div>
+        <div class="pipe-throughput">~4 ops/cyc</div>
+      </div>
+      <div class="pipe-row gpu">
+        <div class="pipe-label">GPU · SIMT</div>
+        <div class="pipe-track"><canvas class="pipe-canvas" id="gpuCanvas"></canvas></div>
+        <div class="pipe-throughput">~10⁴ ops/cyc</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 SM -->
+  <section>
+    <div class="sec-label">03 · The Streaming Multiprocessor</div>
+    <h2 class="display">Inside an <span class="dim">SM.</span></h2>
+    <div class="hierarchy">
+      <div class="h-text">
+        <h3>SM // The Building Block</h3>
+        <p>A modern GPU is a fabric of <b>Streaming Multiprocessors</b>. Each SM bundles dozens of CUDA cores, special-function units, tensor cores, register files, and shared memory into one tightly coupled compute tile.</p>
+        <p>Threads are dispatched in groups of 32 — a <b>warp</b> — and execute the <em>same instruction</em> on different data lanes (SIMT).</p>
+        <ul>
+          <li><b>64–128</b> CUDA cores per SM</li>
+          <li><b>4</b> Tensor Cores per SM (FP16/BF16/FP8 GEMM)</li>
+          <li><b>256 KB</b> register file — zero-cost context switch</li>
+          <li><b>Warp scheduler</b> issues 1 instruction → 32 threads</li>
+          <li>Memory stalls hidden by <b>thousands</b> of in-flight warps</li>
+        </ul>
+      </div>
+      <div class="sm-viz">
+        <div class="sm-title"><span>STREAMING_MULTIPROCESSOR // <b>x16 SHOWN</b></span><span>WARP_SIZE = 32</span></div>
+        <div class="sm-grid" id="smGrid"></div>
+        <div class="sm-bus">
+          <div class="bus-row">L1 / TEX <div class="bus-bar"><div class="bus-fill" id="bus0"></div></div><b>192 KB</b></div>
+          <div class="bus-row">SHARED   <div class="bus-bar"><div class="bus-fill" id="bus1"></div></div><b>228 KB</b></div>
+          <div class="bus-row">REG FILE <div class="bus-bar"><div class="bus-fill" id="bus2"></div></div><b>256 KB</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 MATRIX -->
+  <section>
+    <div class="sec-label">04 · The AI Workload</div>
+    <h2 class="display">Why this matters: <span class="dim">GEMM.</span></h2>
+    <div class="matrix-section">
+      <div class="mm-header">
+        <h3>Matrix Multiplication on Tensor Cores</h3>
+        <div class="eq">C = A · B  →  ~90% of all transformer FLOPs</div>
+      </div>
+      <div class="mm-stage">
+        <div class="mat" id="matA"><div class="mat-label">MATRIX <b>A</b> · activations</div></div>
+        <div class="op">×</div>
+        <div class="mat" id="matB"><div class="mat-label">MATRIX <b>B</b> · weights</div></div>
+        <div class="op">=</div>
+        <div class="mat" id="matC"><div class="mat-label">MATRIX <b>C</b> · output</div></div>
+      </div>
+      <div class="mm-info">
+        <div class="mm-card"><div class="n">1 cycle</div><div class="d">Tensor Core: 4×4×4 fused multiply-add</div></div>
+        <div class="mm-card"><div class="n">312 TFLOP/s</div><div class="d">FP16 throughput per device</div></div>
+        <div class="mm-card"><div class="n">~250×</div><div class="d">vs. equivalent CPU GEMM</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 MEMORY -->
+  <section>
+    <div class="sec-label">05 · Memory Subsystem</div>
+    <h2 class="display">Feeding the <span class="dim">beast.</span></h2>
+    <div class="mem-stack">
+      <div class="mem-row l1">
+        <div class="mem-name">REGISTERS</div>
+        <div class="mem-bar"><div class="mem-fill"></div></div>
+        <div class="mem-val">~20 TB/s<span>BANDWIDTH</span></div>
+        <div class="mem-val">1 cycle<span>LATENCY</span></div>
+      </div>
+      <div class="mem-row shared">
+        <div class="mem-name">SHARED / L1</div>
+        <div class="mem-bar"><div class="mem-fill"></div></div>
+        <div class="mem-val">~19 TB/s<span>BANDWIDTH</span></div>
+        <div class="mem-val">~30 cycles<span>LATENCY</span></div>
+      </div>
+      <div class="mem-row l2">
+        <div class="mem-name">L2 CACHE</div>
+        <div class="mem-bar"><div class="mem-fill"></div></div>
+        <div class="mem-val">~5 TB/s<span>BANDWIDTH</span></div>
+        <div class="mem-val">~200 cycles<span>LATENCY</span></div>
+      </div>
+      <div class="mem-row hbm">
+        <div class="mem-name">HBM3</div>
+        <div class="mem-bar"><div class="mem-fill"></div></div>
+        <div class="mem-val">3.35 TB/s<span>BANDWIDTH</span></div>
+        <div class="mem-val">~500 cycles<span>LATENCY</span></div>
+      </div>
+      <div class="mem-row host">
+        <div class="mem-name">HOST DRAM</div>
+        <div class="mem-bar"><div class="mem-fill"></div></div>
+        <div class="mem-val">64 GB/s<span>PCIE 5.0</span></div>
+        <div class="mem-val">~10⁴ cycles<span>LATENCY</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>// END_OF_TRANSMISSION</span>
+    <span class="acid">PARALLELISM ≠ FREQUENCY</span>
+    <span>RENDERED OFFLINE · NO DEPENDENCIES</span>
+  </footer>
+
+</div>
+<script>
+// ── helpers ──────────────────────────────────────────────────────────
+function rand(a,b){return a+Math.random()*(b-a)}
+function randInt(a,b){return Math.floor(rand(a,b+1))}
+function pick(arr){return arr[randInt(0,arr.length-1)]}
+
+// ── GPU core grid (256 cells) ─────────────────────────────────────────
+const gpuDiag = document.getElementById('gpuDiagram');
+const gpuCores = [];
+for(let i=0;i<256;i++){
+  const c = document.createElement('div');
+  c.className='gpu-core';
+  gpuDiag.appendChild(c);
+  gpuCores.push(c);
+}
+// Wave animation: ~80 cores fire each tick, fade after 300ms
+const GPU_FIRE_MS = 80;
+let gpuFiring = new Set();
+function gpuWave(){
+  // clear previous
+  gpuFiring.forEach(i=>gpuCores[i].classList.remove('fire'));
+  gpuFiring.clear();
+  const n = randInt(60,90);
+  while(gpuFiring.size<n) gpuFiring.add(randInt(0,255));
+  gpuFiring.forEach(i=>gpuCores[i].classList.add('fire'));
+}
+setInterval(gpuWave, GPU_FIRE_MS);
+gpuWave();
+
+// ── CPU core highlight (one at a time) ───────────────────────────────
+const cpuCores = document.querySelectorAll('#cpuDiagram .cpu-core');
+let cpuIdx=0;
+setInterval(()=>{
+  cpuCores.forEach(c=>c.classList.remove('active'));
+  cpuCores[cpuIdx].classList.add('active');
+  cpuIdx=(cpuIdx+1)%cpuCores.length;
+},600);
+
+// ── Pipeline canvas animation ─────────────────────────────────────────
+function initPipeCanvas(canvasEl, blockW, blockGap, color, speed, label){
+  const track = canvasEl.parentElement;
+  function resize(){
+    canvasEl.width = track.clientWidth;
+    canvasEl.height = track.clientHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // each block: {x, label}
+  const blocks = [];
+  const totalW = () => canvasEl.width;
+  // spawn initial blocks spread across track
+  function spawnBlocks(){
+    blocks.length = 0;
+    const spacing = blockW + blockGap;
+    const count = Math.ceil(totalW() / spacing) + 2;
+    for(let i=0;i<count;i++){
+      blocks.push({ x: i * spacing });
+    }
+  }
+  spawnBlocks();
+  window.addEventListener('resize', spawnBlocks);
+
+  const H = () => canvasEl.height;
+
+  function draw(){
+    const ctx = canvasEl.getContext('2d');
+    const w = totalW(), h = H();
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = color;
+    ctx.font = `bold 9px Consolas,monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    blocks.forEach((b,i)=>{
+      b.x += speed;
+      if(b.x > w + blockW) b.x = -blockW;
+      // draw block
+      const bh = h - 4;
+      ctx.fillStyle = color;
+      ctx.fillRect(b.x - blockW/2, 2, blockW, bh);
+      ctx.fillStyle = '#eef4fb';
+      ctx.fillText(label+i, b.x, h/2);
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// CPU: 4 wide blocks, slow
+initPipeCanvas(
+  document.getElementById('cpuCanvas'),
+  60, 180, '#ffb547', 0.8, 'T'
+);
+// GPU: many narrow blocks, fast
+initPipeCanvas(
+  document.getElementById('gpuCanvas'),
+  8, 4, '#7cff5a', 2.4, ''
+);
+
+// ── Bus animation (JS-driven) ─────────────────────────────────────────
+const buses = [
+  document.getElementById('bus0'),
+  document.getElementById('bus1'),
+  document.getElementById('bus2')
+];
+let busPos = [0,33,66];
+function animBus(){
+  buses.forEach((b,i)=>{
+    busPos[i] = (busPos[i] + 0.8) % 130;
+    b.style.left = (busPos[i]-30)+'%';
+  });
+  requestAnimationFrame(animBus);
+}
+animBus();
+
+// ── SM grid: 16 SMs × 32 threads ─────────────────────────────────────
+const smGrid = document.getElementById('smGrid');
+const allThreads = [];
+for(let s=0;s<16;s++){
+  const sm = document.createElement('div');
+  sm.className='sm';
+  const nm = document.createElement('div');
+  nm.className='sm-name';
+  nm.textContent = 'SM_'+String(s).padStart(2,'0');
+  sm.appendChild(nm);
+  const warp = document.createElement('div');
+  warp.className='warp';
+  for(let t=0;t<32;t++){
+    const th = document.createElement('div');
+    th.className='thread';
+    warp.appendChild(th);
+    allThreads.push(th);
+  }
+  sm.appendChild(warp);
+  smGrid.appendChild(sm);
+}
+// Warp execution: whole SMs activate together
+function execWarps(){
+  allThreads.forEach(t=>t.classList.remove('exec'));
+  const numSMs = randInt(6,12);
+  const chosen = new Set();
+  while(chosen.size<numSMs) chosen.add(randInt(0,15));
+  chosen.forEach(s=>{
+    for(let t=0;t<32;t++) allThreads[s*32+t].classList.add('exec');
+  });
+}
+setInterval(execWarps,700);
+execWarps();
+
+// ── Matrix multiplication animation ───────────────────────────────────
+const matA = document.getElementById('matA');
+const matB = document.getElementById('matB');
+const matC = document.getElementById('matC');
+const cA=[],cB=[],cC=[];
+for(let i=0;i<64;i++){
+  function mkCell(parent,arr){
+    const d=document.createElement('div');
+    d.className='cell';
+    parent.appendChild(d);
+    arr.push(d);
+  }
+  mkCell(matA,cA); mkCell(matB,cB); mkCell(matC,cC);
+}
+// fill with random values
+cA.forEach(c=>c.textContent=(rand(-1,1)).toFixed(1));
+cB.forEach(c=>c.textContent=(rand(-1,1)).toFixed(1));
+
+let mmStep=0;
+function stepMM(){
+  cA.forEach(c=>c.classList.remove('row-hi'));
+  cB.forEach(c=>c.classList.remove('col-hi'));
+  const row=Math.floor(mmStep/8), col=mmStep%8;
+  for(let k=0;k<8;k++) cA[row*8+k].classList.add('row-hi');
+  for(let k=0;k<8;k++) cB[k*8+col].classList.add('col-hi');
+  const out=cC[row*8+col];
+  out.classList.add('result');
+  out.textContent=(rand(-2,2)).toFixed(1);
+  mmStep=(mmStep+1)%64;
+  if(mmStep===0){
+    setTimeout(()=>{
+      cC.forEach(c=>{c.classList.remove('result');c.textContent='';});
+    },600);
+  }
+}
+setInterval(stepMM,200);
+</script>
+</body>
+</html>
