@@ -153,6 +153,83 @@
   .edge.yellow{stroke:var(--yellow);stroke-dasharray:3 3}
   .edge.blue{stroke:var(--blue)}
 
+  /* ===== animations ===== */
+  @keyframes dash { to { stroke-dashoffset: -200; } }
+  @keyframes dashSlow { to { stroke-dashoffset: -400; } }
+  @keyframes pulseStroke {
+    0%,100% { stroke-opacity:.35; stroke-width:1.2; }
+    50%     { stroke-opacity:1;   stroke-width:2.2; }
+  }
+  @keyframes floatAlong {
+    from { offset-distance:0%;   opacity:0; }
+    8%   { opacity:1; }
+    92%  { opacity:1; }
+    to   { offset-distance:100%; opacity:0; }
+  }
+  @keyframes blink {
+    0%,45%,100% { opacity:.25; }
+    50%,95%     { opacity:1; }
+  }
+  @keyframes glow {
+    0%,100% { filter: drop-shadow(0 0 2px currentColor); opacity:.85; }
+    50%     { filter: drop-shadow(0 0 10px currentColor); opacity:1; }
+  }
+  @keyframes sweepDot {
+    0%   { cx: 80;   opacity:0; }
+    5%   { opacity:1; }
+    95%  { opacity:1; }
+    100% { cx: 1040; opacity:0; }
+  }
+  @keyframes sweepDotLate {
+    0%   { cx: 80;   opacity:0; }
+    5%   { opacity:1; }
+    95%  { opacity:1; }
+    100% { cx: 1130; opacity:0; }
+  }
+  @keyframes deadlineFlash {
+    0%,80%,100% { opacity:.4; }
+    90%         { opacity:1; }
+  }
+  @keyframes spoofShake {
+    0%,100% { transform: translate(0,0); }
+    25%     { transform: translate(1px,-1px); }
+    75%     { transform: translate(-1px,1px); }
+  }
+
+  .flow      { stroke-dasharray: 8 10; animation: dash 2.2s linear infinite; }
+  .flow-slow { stroke-dasharray: 6 14; animation: dashSlow 4s linear infinite; }
+  .flow-red  { stroke-dasharray: 6 8;  animation: dash 1.4s linear infinite; }
+
+  .pulse-red { animation: pulseStroke 1.8s ease-in-out infinite; }
+
+  .particle {
+    offset-rotate: 0deg;
+    animation: floatAlong 3.2s linear infinite;
+  }
+  .p-d0 { animation-delay: 0s; }
+  .p-d1 { animation-delay: .6s; }
+  .p-d2 { animation-delay: 1.2s; }
+  .p-d3 { animation-delay: 1.8s; }
+  .p-d4 { animation-delay: 2.4s; }
+  .p-fast { animation-duration: 2.2s; }
+  .p-slow { animation-duration: 4.2s; }
+
+  .blink     { animation: blink 1.6s ease-in-out infinite; }
+  .glow-node { animation: glow 2.4s ease-in-out infinite; }
+  .shake     { animation: spoofShake .18s linear infinite; transform-origin: center; transform-box: fill-box; }
+
+  .sweep-green { animation: sweepDot 6s linear infinite; }
+  .sweep-red   { animation: sweepDotLate 6s linear infinite; }
+  .deadline-flash { animation: deadlineFlash 6s linear infinite; }
+
+  /* pause animations on non-active slides to save cycles */
+  .slide:not(.active) * { animation-play-state: paused !important; }
+
+  @media (prefers-reduced-motion: reduce){
+    .flow,.flow-slow,.flow-red,.pulse-red,.particle,.blink,.glow-node,
+    .shake,.sweep-green,.sweep-red,.deadline-flash{animation:none!important}
+  }
+
   @media (max-width:720px){
     header.top,main,.controls,footer.foot{padding-left:18px;padding-right:18px}
     .slide-num{font-size:30px;min-width:52px}
@@ -247,16 +324,32 @@
           <text x="1085" y="268" text-anchor="middle" class="t-small t-mute">physical effect</text>
         </g>
 
-        <!-- forward arrows -->
-        <path class="edge" d="M220,245 L260,245" marker-end="url(#arr)"/>
-        <path class="edge" d="M410,245 L450,245" marker-end="url(#arr)"/>
-        <path class="edge" d="M600,245 L640,245" marker-end="url(#arr)"/>
-        <path class="edge" d="M790,245 L830,245" marker-end="url(#arr)"/>
-        <path class="edge" d="M980,245 L1020,245" marker-end="url(#arr)"/>
+        <!-- forward arrows with flow animation -->
+        <path class="edge flow" d="M220,245 L260,245" marker-end="url(#arr)"/>
+        <path class="edge flow" d="M410,245 L450,245" marker-end="url(#arr)"/>
+        <path class="edge flow" d="M600,245 L640,245" marker-end="url(#arr)"/>
+        <path class="edge flow" d="M790,245 L830,245" marker-end="url(#arr)"/>
+        <path class="edge flow" d="M980,245 L1020,245" marker-end="url(#arr)"/>
 
-        <!-- feedback loop -->
-        <path class="edge orange" d="M1085,200 C1085,100 145,100 145,200" marker-end="url(#arr-orange)"/>
+        <!-- main pipeline path (invisible) for particle travel -->
+        <path id="s0pipe" d="M145,245 L335,245 L525,245 L715,245 L905,245 L1085,245"
+              fill="none" stroke="none"/>
+
+        <!-- traveling data particles -->
+        <circle r="4" fill="#7fe3ef" class="particle p-d0" style="offset-path: path('M145,245 L335,245 L525,245 L715,245 L905,245 L1085,245');"/>
+        <circle r="4" fill="#7fe3ef" class="particle p-d1" style="offset-path: path('M145,245 L335,245 L525,245 L715,245 L905,245 L1085,245');"/>
+        <circle r="4" fill="#d0b6ff" class="particle p-d2" style="offset-path: path('M145,245 L335,245 L525,245 L715,245 L905,245 L1085,245');"/>
+        <circle r="4" fill="#ffa17a" class="particle p-d3" style="offset-path: path('M145,245 L335,245 L525,245 L715,245 L905,245 L1085,245');"/>
+
+        <!-- feedback loop (animated) -->
+        <path class="edge orange flow-slow" d="M1085,200 C1085,100 145,100 145,200" marker-end="url(#arr-orange)"/>
         <text x="600" y="115" text-anchor="middle" class="t-small" fill="#ffa17a">the system changes the world it will next perceive</text>
+
+        <!-- particle traveling the feedback loop -->
+        <circle r="3.5" fill="#ffa17a" class="particle p-slow p-d0"
+                style="offset-path: path('M1085,200 C1085,100 145,100 145,200');"/>
+        <circle r="3.5" fill="#ffa17a" class="particle p-slow p-d2"
+                style="offset-path: path('M1085,200 C1085,100 145,100 145,200');"/>
 
         <!-- attack surfaces (red arrows in) -->
         <g>
@@ -281,12 +374,12 @@
           <text x="1040" y="420" text-anchor="middle" class="t-xsmall t-mute">fault inj • OTA • fleet backend</text>
         </g>
 
-        <!-- red arrows pointing up to the pipeline -->
-        <path class="edge red" d="M150,380 L145,290" marker-end="url(#arr-red)"/>
-        <path class="edge red" d="M370,380 L335,290" marker-end="url(#arr-red)"/>
-        <path class="edge red" d="M590,380 L600,290" marker-end="url(#arr-red)"/>
-        <path class="edge red" d="M810,380 L810,290" marker-end="url(#arr-red)"/>
-        <path class="edge red" d="M1040,380 L1050,290" marker-end="url(#arr-red)"/>
+        <!-- red arrows pointing up to the pipeline (animated flow) -->
+        <path class="edge red flow-red" d="M150,380 L145,290" marker-end="url(#arr-red)"/>
+        <path class="edge red flow-red" d="M370,380 L335,290" marker-end="url(#arr-red)"/>
+        <path class="edge red flow-red" d="M590,380 L600,290" marker-end="url(#arr-red)"/>
+        <path class="edge red flow-red" d="M810,380 L810,290" marker-end="url(#arr-red)"/>
+        <path class="edge red flow-red" d="M1040,380 L1050,290" marker-end="url(#arr-red)"/>
 
         <text x="600" y="490" text-anchor="middle" class="t-small t-dim">Core insight: the security boundary now spans sensing, timing, control, communication, actuation, and the lifecycle that supplies them all.</text>
       </svg>
@@ -380,14 +473,20 @@
         <text x="1050" y="264" text-anchor="middle" class="t-small t-mute">hazard in the real world</text>
 
         <!-- arrows -->
-        <path class="edge red" d="M260,89  L340,200" marker-end="url(#a1r)"/>
-        <path class="edge red" d="M260,169 L340,220" marker-end="url(#a1r)"/>
-        <path class="edge red" d="M260,249 L340,250" marker-end="url(#a1r)"/>
-        <path class="edge red" d="M260,329 L340,280" marker-end="url(#a1r)"/>
-        <path class="edge red" d="M260,409 L340,310" marker-end="url(#a1r)"/>
+        <path class="edge red flow-red" d="M260,89  L340,200" marker-end="url(#a1r)"/>
+        <path class="edge red flow-red" d="M260,169 L340,220" marker-end="url(#a1r)"/>
+        <path class="edge red flow-red" d="M260,249 L340,250" marker-end="url(#a1r)"/>
+        <path class="edge red flow-red" d="M260,329 L340,280" marker-end="url(#a1r)"/>
+        <path class="edge red flow-red" d="M260,409 L340,310" marker-end="url(#a1r)"/>
 
-        <path class="edge" d="M560,250 L640,250" marker-end="url(#a1)"/>
-        <path class="edge" d="M860,250 L940,250" marker-end="url(#a1)"/>
+        <path class="edge flow" d="M560,250 L640,250" marker-end="url(#a1)"/>
+        <path class="edge flow" d="M860,250 L940,250" marker-end="url(#a1)"/>
+
+        <!-- traveling corrupted-data particle showing the bad input propagating -->
+        <circle r="4" fill="#ff5470" class="particle p-d0"
+                style="offset-path: path('M450,250 L750,250 L1050,250');"/>
+        <circle r="4" fill="#ff5470" class="particle p-d2"
+                style="offset-path: path('M450,250 L750,250 L1050,250');"/>
 
         <text x="600" y="470" text-anchor="middle" class="t-small t-dim">Key point: the model can be entirely uncompromised and still be wrong, because its inputs have been shaped before acquisition.</text>
       </svg>
@@ -459,10 +558,20 @@
         <text x="980" y="238" text-anchor="middle" class="t-small t-mute">brake / grip</text>
 
         <!-- arrows along pipeline -->
-        <path class="edge" d="M220,215 L270,215" marker-end="url(#a2)"/>
-        <path class="edge" d="M430,215 L480,215" marker-end="url(#a2)"/>
-        <path class="edge" d="M640,215 L690,215" marker-end="url(#a2)"/>
-        <path class="edge" d="M850,215 L900,215" marker-end="url(#a2)"/>
+        <path class="edge flow" d="M220,215 L270,215" marker-end="url(#a2)"/>
+        <path class="edge flow" d="M430,215 L480,215" marker-end="url(#a2)"/>
+        <path class="edge flow" d="M640,215 L690,215" marker-end="url(#a2)"/>
+        <path class="edge flow" d="M850,215 L900,215" marker-end="url(#a2)"/>
+
+        <!-- particles representing data flowing through the pipeline, progressively turning red -->
+        <circle r="4" fill="#7fe3ef" class="particle p-d0"
+                style="offset-path: path('M140,215 L350,215 L560,215 L770,215 L980,215');"/>
+        <circle r="4" fill="#d0b6ff" class="particle p-d1"
+                style="offset-path: path('M140,215 L350,215 L560,215 L770,215 L980,215');"/>
+        <circle r="4" fill="#ff8ea0" class="particle p-d2"
+                style="offset-path: path('M140,215 L350,215 L560,215 L770,215 L980,215');"/>
+        <circle r="4" fill="#ff5470" class="particle p-d3"
+                style="offset-path: path('M140,215 L350,215 L560,215 L770,215 L980,215');"/>
 
         <!-- interface labels -->
         <text x="245" y="155" text-anchor="middle" class="t-xsmall t-mute">object list</text>
@@ -494,10 +603,10 @@
         </g>
 
         <!-- arrows up -->
-        <path class="edge red" d="M170,330 L210,260" marker-end="url(#a2r)"/>
-        <path class="edge red" d="M410,330 L380,260" marker-end="url(#a2r)"/>
-        <path class="edge red" d="M650,330 L585,260" marker-end="url(#a2r)"/>
-        <path class="edge red" d="M890,330 L790,260" marker-end="url(#a2r)"/>
+        <path class="edge red flow-red" d="M170,330 L210,260" marker-end="url(#a2r)"/>
+        <path class="edge red flow-red" d="M410,330 L380,260" marker-end="url(#a2r)"/>
+        <path class="edge red flow-red" d="M650,330 L585,260" marker-end="url(#a2r)"/>
+        <path class="edge red flow-red" d="M890,330 L790,260" marker-end="url(#a2r)"/>
 
         <text x="600" y="460" text-anchor="middle" class="t-small t-dim">Internally coherent, physically wrong: each module trusts its upstream contract, so the error is invisible until actuation.</text>
       </svg>
@@ -557,6 +666,12 @@
         <circle cx="800" cy="170" r="6" fill="#7bd88f"/>
         <circle cx="1040" cy="170" r="6" fill="#7bd88f"/>
 
+        <!-- racing green dot: finishes on time -->
+        <circle cy="170" r="8" fill="#7bd88f" style="filter:drop-shadow(0 0 8px #7bd88f)">
+          <animate attributeName="cx" from="80" to="1040" dur="6s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;1;1;1;0" keyTimes="0;0.05;0.5;0.95;1" dur="6s" repeatCount="indefinite"/>
+        </circle>
+
         <!-- attacked timeline -->
         <rect x="80" y="330" width="1050" height="40" rx="6" fill="rgba(255,84,112,.12)" stroke="#ff5470"/>
         <text x="560" y="395" text-anchor="middle" class="t-label" fill="#ff8ea0">under timing attack: stale data, missed deadlines</text>
@@ -566,29 +681,44 @@
         <circle cx="940" cy="350" r="6" fill="#ff5470"/>
         <circle cx="1130" cy="350" r="6" fill="#ff5470" stroke="#fff" stroke-width="1"/>
 
-        <!-- deadline marker -->
-        <line x1="1040" y1="120" x2="1040" y2="400" stroke="#ffd166" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <!-- racing red dot: overruns past deadline -->
+        <circle cy="350" r="8" fill="#ff5470" style="filter:drop-shadow(0 0 10px #ff5470)">
+          <animate attributeName="cx" from="80" to="1130" dur="6s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;1;1;1;0" keyTimes="0;0.05;0.5;0.95;1" dur="6s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- "deadline missed" flash label that appears only when the red dot crosses the deadline -->
+        <text x="1075" y="340" class="t-xsmall" fill="#ff5470" font-weight="700">
+          MISSED
+          <animate attributeName="opacity" values="0;0;0;0;1;1;0" keyTimes="0;0.4;0.7;0.85;0.88;0.98;1" dur="6s" repeatCount="indefinite"/>
+        </text>
+
+        <!-- deadline marker (flashes when red dot arrives) -->
+        <line x1="1040" y1="120" x2="1040" y2="400" stroke="#ffd166" stroke-width="1.5" stroke-dasharray="4 4">
+          <animate attributeName="stroke-opacity" values="0.4;0.4;0.4;0.4;1;1;0.4" keyTimes="0;0.4;0.7;0.85;0.88;0.98;1" dur="6s" repeatCount="indefinite"/>
+          <animate attributeName="stroke-width" values="1.5;1.5;1.5;1.5;3;3;1.5" keyTimes="0;0.4;0.7;0.85;0.88;0.98;1" dur="6s" repeatCount="indefinite"/>
+        </line>
         <text x="1040" y="115" text-anchor="middle" class="t-small" fill="#ffd989">deadline</text>
 
         <!-- attack arrows into pipeline -->
         <g>
-          <rect class="node red" x="60"  y="60" width="220" height="48" rx="8"/>
+          <rect class="node red pulse-red" x="60"  y="60" width="220" height="48" rx="8"/>
           <text x="170" y="90" text-anchor="middle" class="t-label" fill="#ff8ea0">compute saturation</text>
 
-          <rect class="node red" x="310" y="60" width="220" height="48" rx="8"/>
+          <rect class="node red pulse-red" x="310" y="60" width="220" height="48" rx="8"/>
           <text x="420" y="90" text-anchor="middle" class="t-label" fill="#ff8ea0">network jitter / delay</text>
 
-          <rect class="node red" x="560" y="60" width="220" height="48" rx="8"/>
+          <rect class="node red pulse-red" x="560" y="60" width="220" height="48" rx="8"/>
           <text x="670" y="90" text-anchor="middle" class="t-label" fill="#ff8ea0">clock drift / desync</text>
 
-          <rect class="node red" x="810" y="60" width="260" height="48" rx="8"/>
+          <rect class="node red pulse-red" x="810" y="60" width="260" height="48" rx="8"/>
           <text x="940" y="90" text-anchor="middle" class="t-label" fill="#ff8ea0">priority inversion / scheduler abuse</text>
         </g>
 
-        <path class="edge red" d="M170,108 L170,150" marker-end="url(#a3)"/>
-        <path class="edge red" d="M420,108 L420,150" marker-end="url(#a3)"/>
-        <path class="edge red" d="M670,108 L670,150" marker-end="url(#a3)"/>
-        <path class="edge red" d="M940,108 L940,150" marker-end="url(#a3)"/>
+        <path class="edge red flow-red" d="M170,108 L170,150" marker-end="url(#a3)"/>
+        <path class="edge red flow-red" d="M420,108 L420,150" marker-end="url(#a3)"/>
+        <path class="edge red flow-red" d="M670,108 L670,150" marker-end="url(#a3)"/>
+        <path class="edge red flow-red" d="M940,108 L940,150" marker-end="url(#a3)"/>
 
         <text x="600" y="460" text-anchor="middle" class="t-small t-dim">The model may still be correct, but by the time its output reaches the actuator, the world has moved on.</text>
       </svg>
@@ -654,17 +784,35 @@
         <text x="600" y="390" text-anchor="middle" class="t-small t-mute">mission / map</text>
         <text x="600" y="406" text-anchor="middle" class="t-small t-mute">policy updates</text>
 
-        <!-- attacker MITM box -->
-        <rect x="310" y="200" width="140" height="100" rx="10" fill="rgba(255,84,112,.1)" stroke="#ff5470" stroke-dasharray="4 3"/>
+        <!-- attacker MITM box (pulsing) -->
+        <rect x="310" y="200" width="140" height="100" rx="10" fill="rgba(255,84,112,.1)" stroke="#ff5470" stroke-dasharray="4 3" class="pulse-red"/>
         <text x="380" y="232" text-anchor="middle" class="t-title" fill="#ff8ea0">MITM</text>
         <text x="380" y="254" text-anchor="middle" class="t-xsmall t-mute">spoof • replay</text>
         <text x="380" y="270" text-anchor="middle" class="t-xsmall t-mute">inject • drop</text>
 
         <!-- connection lines through MITM -->
-        <path class="edge red" d="M240,250 L310,250" marker-end="url(#a4r)"/>
-        <path class="edge red" d="M450,250 L510,250" marker-end="url(#a4r)"/>
-        <path class="edge blue" d="M510,140 C430,140 380,180 380,200" marker-end="url(#a4)"/>
-        <path class="edge blue" d="M510,380 C430,380 380,320 380,300" marker-end="url(#a4)"/>
+        <path class="edge red flow-red" d="M240,250 L310,250" marker-end="url(#a4r)"/>
+        <path class="edge red flow-red" d="M450,250 L510,250" marker-end="url(#a4r)"/>
+        <path class="edge blue flow" d="M510,140 C430,140 380,180 380,200" marker-end="url(#a4)"/>
+        <path class="edge blue flow" d="M510,380 C430,380 380,320 380,300" marker-end="url(#a4)"/>
+
+        <!-- legitimate messages flowing from infra down to agent (hijacked midway) -->
+        <circle r="4" fill="#9bc2ff" class="particle p-d0"
+                style="offset-path: path('M510,250 L450,250 L380,250');"/>
+        <circle r="4" fill="#9bc2ff" class="particle p-d2"
+                style="offset-path: path('M510,250 L450,250 L380,250');"/>
+
+        <!-- corrupted messages continuing to the agent -->
+        <circle r="4" fill="#ff5470" class="particle p-d1"
+                style="offset-path: path('M380,250 L310,250 L240,250');"/>
+        <circle r="4" fill="#ff5470" class="particle p-d3"
+                style="offset-path: path('M380,250 L310,250 L240,250');"/>
+
+        <!-- peer traffic hijacked too -->
+        <circle r="3.5" fill="#9bc2ff" class="particle p-slow p-d0"
+                style="offset-path: path('M600,160 C430,140 380,180 380,200');"/>
+        <circle r="3.5" fill="#9bc2ff" class="particle p-slow p-d2"
+                style="offset-path: path('M600,380 C430,380 380,320 380,300');"/>
 
         <!-- receiver semantic check -->
         <rect class="node violet" x="800" y="170" width="320" height="160" rx="12"/>
@@ -753,33 +901,47 @@
         </g>
 
         <!-- OTA fan-out -->
-        <path class="edge" d="M500,130 L210,230" marker-end="url(#a5)"/>
-        <path class="edge" d="M600,130 L600,230" marker-end="url(#a5)"/>
-        <path class="edge" d="M700,130 L990,230" marker-end="url(#a5)"/>
+        <path class="edge flow" d="M500,130 L210,230" marker-end="url(#a5)"/>
+        <path class="edge flow" d="M600,130 L600,230" marker-end="url(#a5)"/>
+        <path class="edge flow" d="M700,130 L990,230" marker-end="url(#a5)"/>
 
-        <!-- attacker: backend compromise -->
-        <rect x="820" y="40" width="340" height="90" rx="10" fill="rgba(255,84,112,.08)" stroke="#ff5470" stroke-dasharray="4 3"/>
+        <!-- malicious update fanning out to every device simultaneously -->
+        <circle r="4.5" fill="#ff5470" class="particle p-d0"
+                style="offset-path: path('M500,130 L210,230');"/>
+        <circle r="4.5" fill="#ff5470" class="particle p-d0"
+                style="offset-path: path('M600,130 L600,230');"/>
+        <circle r="4.5" fill="#ff5470" class="particle p-d0"
+                style="offset-path: path('M700,130 L990,230');"/>
+        <circle r="4.5" fill="#ff5470" class="particle p-d2"
+                style="offset-path: path('M500,130 L210,230');"/>
+        <circle r="4.5" fill="#ff5470" class="particle p-d2"
+                style="offset-path: path('M600,130 L600,230');"/>
+        <circle r="4.5" fill="#ff5470" class="particle p-d2"
+                style="offset-path: path('M700,130 L990,230');"/>
+
+        <!-- attacker: backend compromise (pulsing) -->
+        <rect x="820" y="40" width="340" height="90" rx="10" fill="rgba(255,84,112,.08)" stroke="#ff5470" stroke-dasharray="4 3" class="pulse-red"/>
         <text x="990" y="70" text-anchor="middle" class="t-label" fill="#ff8ea0">backend-driven physical compromise</text>
         <text x="990" y="90" text-anchor="middle" class="t-xsmall t-mute">malicious model / map / policy pushed to fleet</text>
         <text x="990" y="108" text-anchor="middle" class="t-xsmall t-mute">one breach → many embodied systems</text>
-        <path class="edge red" d="M820,85 L780,85" marker-end="url(#a5r)"/>
+        <path class="edge red flow-red" d="M820,85 L780,85" marker-end="url(#a5r)"/>
 
         <!-- local attackers -->
         <g>
-          <rect x="40"  y="430" width="260" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <rect x="40"  y="430" width="260" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470" class="pulse-red"/>
           <text x="170" y="454" text-anchor="middle" class="t-label" fill="#ff8ea0">fault injection / glitch</text>
           <text x="170" y="472" text-anchor="middle" class="t-xsmall t-mute">bypass safety checks, corrupt memory</text>
-          <path class="edge red" d="M170,430 L180,370" marker-end="url(#a5r)"/>
+          <path class="edge red flow-red" d="M170,430 L180,370" marker-end="url(#a5r)"/>
 
-          <rect x="430" y="430" width="340" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <rect x="430" y="430" width="340" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470" class="pulse-red"/>
           <text x="600" y="454" text-anchor="middle" class="t-label" fill="#ff8ea0">maintenance / insider access</text>
           <text x="600" y="472" text-anchor="middle" class="t-xsmall t-mute">calibration tools, engineering workstations, service modes</text>
-          <path class="edge red" d="M600,430 L600,370" marker-end="url(#a5r)"/>
+          <path class="edge red flow-red" d="M600,430 L600,370" marker-end="url(#a5r)"/>
 
-          <rect x="860" y="430" width="280" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <rect x="860" y="430" width="280" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470" class="pulse-red"/>
           <text x="1000" y="454" text-anchor="middle" class="t-label" fill="#ff8ea0">debug / peripheral tamper</text>
           <text x="1000" y="472" text-anchor="middle" class="t-xsmall t-mute">JTAG, sensor board, counterfeit module</text>
-          <path class="edge red" d="M1000,430 L1000,370" marker-end="url(#a5r)"/>
+          <path class="edge red flow-red" d="M1000,430 L1000,370" marker-end="url(#a5r)"/>
         </g>
       </svg>
     </div>
