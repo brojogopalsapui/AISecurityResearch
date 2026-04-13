@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Physical AI Attack Visualization — Research Grade (Dark)</title>
+<style>
+  :root{
+    --bg:#07090d;
+    --bg2:#0b0f15;
+    --panel:#0e141c;
+    --panel2:#111925;
+    --ink:#e6ecf3;
+    --ink-dim:#9aa7b8;
+    --ink-mute:#6b7889;
+    --line:#1c2733;
+    --line2:#243244;
+    --accent:#ff6b3d;     /* embodied / actuation - warm orange */
+    --accent2:#ffb347;
+    --cyan:#4dd0e1;       /* sensing */
+    --green:#7bd88f;      /* safe */
+    --red:#ff5470;        /* threat */
+    --violet:#b48cff;     /* control / planner */
+    --yellow:#ffd166;     /* timing */
+    --blue:#6aa9ff;       /* comms */
+    --shadow:0 10px 40px rgba(0,0,0,.55);
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(255,107,61,.10), transparent 60%),
+    radial-gradient(1000px 600px at 90% 0%, rgba(77,208,225,.08), transparent 60%),
+    var(--bg);
+    color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;min-height:100vh;
+  }
+  header.top{
+    padding:28px 32px 10px;max-width:1280px;margin:0 auto;
+  }
+  header.top h1{
+    font-size:22px;letter-spacing:.12em;text-transform:uppercase;
+    margin:0;color:var(--ink);
+  }
+  header.top h1 span{color:var(--accent)}
+  header.top p.sub{
+    margin:6px 0 0;color:var(--ink-dim);font-size:13.5px;max-width:900px;
+  }
+  .controls{
+    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+    padding:14px 32px;max-width:1280px;margin:0 auto;
+    border-bottom:1px solid var(--line);
+  }
+  .controls button{
+    background:var(--panel);color:var(--ink);border:1px solid var(--line2);
+    padding:8px 14px;border-radius:8px;cursor:pointer;font-family:var(--sans);
+    font-size:12.5px;letter-spacing:.04em;transition:all .15s ease;
+  }
+  .controls button:hover{border-color:var(--accent);color:var(--accent)}
+  .controls button.primary{background:var(--accent);color:#12060a;border-color:var(--accent);font-weight:600}
+  .controls button.primary:hover{background:var(--accent2);border-color:var(--accent2);color:#12060a}
+  .counter{margin-left:auto;color:var(--ink-mute);font-family:var(--mono);font-size:12px}
+
+  main{max-width:1280px;margin:0 auto;padding:28px 32px 60px}
+  .slide{display:none;animation:fade .35s ease both}
+  .slide.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .slide-head{display:flex;align-items:flex-start;gap:18px;margin-bottom:14px}
+  .slide-num{
+    font-family:var(--mono);font-size:42px;color:var(--accent);
+    line-height:1;letter-spacing:-.02em;min-width:70px;
+    text-shadow:0 0 28px rgba(255,107,61,.35);
+  }
+  .slide-title h2{
+    margin:0 0 4px;font-size:24px;letter-spacing:.01em;color:var(--ink);
+  }
+  .slide-title p{
+    margin:0;color:var(--ink-dim);font-size:14px;
+  }
+  .lede{
+    margin:10px 0 18px;color:var(--ink-dim);font-size:14px;max-width:1040px;line-height:1.6;
+  }
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}
+  .badge{
+    font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:999px;
+    border:1px solid var(--line2);color:var(--ink-dim);background:rgba(255,255,255,.02);
+    letter-spacing:.05em;text-transform:lowercase;
+  }
+  .badge.red{border-color:rgba(255,84,112,.45);color:#ff8ea0}
+  .badge.cyan{border-color:rgba(77,208,225,.45);color:#7fe3ef}
+  .badge.orange{border-color:rgba(255,107,61,.55);color:#ffa17a}
+  .badge.violet{border-color:rgba(180,140,255,.45);color:#d0b6ff}
+  .badge.yellow{border-color:rgba(255,209,102,.5);color:#ffd989}
+  .badge.blue{border-color:rgba(106,169,255,.45);color:#9bc2ff}
+
+  .canvas{
+    background:linear-gradient(180deg,var(--panel) 0%,var(--panel2) 100%);
+    border:1px solid var(--line2);border-radius:14px;
+    padding:22px;box-shadow:var(--shadow);overflow:hidden;
+  }
+  .canvas svg{display:block;width:100%;height:auto}
+
+  .research{
+    margin-top:22px;background:rgba(255,107,61,.05);
+    border:1px solid rgba(255,107,61,.25);border-left:3px solid var(--accent);
+    border-radius:10px;padding:18px 22px;
+  }
+  .research h3{
+    margin:0 0 10px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);
+  }
+  .research ul{margin:0;padding-left:20px;color:var(--ink-dim);font-size:13.5px;line-height:1.65}
+  .research li{margin:6px 0}
+  .research li b{color:var(--ink)}
+
+  .scenario{
+    margin-top:16px;padding:14px 18px;border:1px dashed var(--line2);
+    border-radius:10px;color:var(--ink-dim);font-size:13px;font-style:italic;
+    background:rgba(255,255,255,.015);
+  }
+  .scenario b{color:var(--ink);font-style:normal}
+
+  footer.foot{
+    max-width:1280px;margin:0 auto;padding:18px 32px 40px;
+    color:var(--ink-mute);font-size:12px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  }
+  footer.foot b{color:var(--ink-dim)}
+
+  /* SVG text defaults */
+  svg text{font-family:var(--sans);fill:var(--ink)}
+  .t-mute{fill:var(--ink-mute)}
+  .t-dim{fill:var(--ink-dim)}
+  .t-small{font-size:11px}
+  .t-xsmall{font-size:10px}
+  .t-label{font-size:12px;font-weight:600}
+  .t-title{font-size:13px;font-weight:700}
+
+  .node{fill:var(--panel2);stroke:var(--line2);stroke-width:1.2}
+  .node.cyan{stroke:var(--cyan)}
+  .node.red{stroke:var(--red)}
+  .node.orange{stroke:var(--accent)}
+  .node.violet{stroke:var(--violet)}
+  .node.yellow{stroke:var(--yellow)}
+  .node.blue{stroke:var(--blue)}
+  .node.green{stroke:var(--green)}
+  .edge{fill:none;stroke:var(--line2);stroke-width:1.4}
+  .edge.cyan{stroke:var(--cyan)}
+  .edge.red{stroke:var(--red);stroke-dasharray:5 4}
+  .edge.orange{stroke:var(--accent)}
+  .edge.violet{stroke:var(--violet)}
+  .edge.yellow{stroke:var(--yellow);stroke-dasharray:3 3}
+  .edge.blue{stroke:var(--blue)}
+
+  @media (max-width:720px){
+    header.top,main,.controls,footer.foot{padding-left:18px;padding-right:18px}
+    .slide-num{font-size:30px;min-width:52px}
+    .slide-title h2{font-size:19px}
+    .canvas{padding:12px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>PHYSICAL AI <span>ATTACK VISUALIZATION</span></h1>
+  <p class="sub">Research-grade attack flows for embodied systems: perception, timing, control, communication, hardware, and lifecycle surfaces across the perception-to-action loop.</p>
+</header>
+
+<div class="controls">
+  <button id="prev">◀ Prev</button>
+  <button id="auto" class="primary">Start autoplay</button>
+  <button id="next">Next ▶</button>
+  <button id="reset">Reset</button>
+  <button id="full">Fullscreen</button>
+  <div class="counter" id="counter">Slide 1 / 6</div>
+</div>
+
+<main id="deck">
+
+  <!-- ============ SLIDE 0 : OVERVIEW ============ -->
+  <section class="slide active" data-idx="0">
+    <div class="slide-head">
+      <div class="slide-num">00</div>
+      <div class="slide-title">
+        <h2>Threat Model Overview</h2>
+        <p>Why physical AI expands security beyond the model</p>
+      </div>
+    </div>
+    <p class="lede">Physical AI systems — robots, vehicles, drones, industrial cells — sense the world, interpret it, act on it, and then re-sense the world they just changed. Security is no longer about the model output alone. It is about a <b>closed-loop trust problem</b> spanning sensing, timing, control, communication, and actuation.</p>
+    <div class="badges">
+      <span class="badge cyan">perception loop</span>
+      <span class="badge orange">actuation boundary</span>
+      <span class="badge yellow">real-time constraints</span>
+      <span class="badge red">safety coupling</span>
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#243244"/>
+          </marker>
+          <marker id="arr-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#ff5470"/>
+          </marker>
+          <marker id="arr-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#ff6b3d"/>
+          </marker>
+        </defs>
+
+        <!-- environment ring -->
+        <ellipse cx="600" cy="260" rx="540" ry="210" fill="none" stroke="#1c2733" stroke-dasharray="2 5"/>
+        <text x="600" y="40" text-anchor="middle" class="t-dim t-small">physical environment (weather, lighting, RF, humans, clutter)</text>
+
+        <!-- stages -->
+        <g>
+          <rect class="node cyan" x="70"  y="200" width="150" height="90" rx="10"/>
+          <text x="145" y="232" text-anchor="middle" class="t-title" fill="#7fe3ef">Sensing</text>
+          <text x="145" y="252" text-anchor="middle" class="t-small t-mute">cam • lidar • radar</text>
+          <text x="145" y="268" text-anchor="middle" class="t-small t-mute">imu • gnss • tactile</text>
+
+          <rect class="node cyan" x="260" y="200" width="150" height="90" rx="10"/>
+          <text x="335" y="232" text-anchor="middle" class="t-title" fill="#7fe3ef">Perception</text>
+          <text x="335" y="252" text-anchor="middle" class="t-small t-mute">fusion + detection</text>
+          <text x="335" y="268" text-anchor="middle" class="t-small t-mute">state estimation</text>
+
+          <rect class="node violet" x="450" y="200" width="150" height="90" rx="10"/>
+          <text x="525" y="232" text-anchor="middle" class="t-title" fill="#d0b6ff">Planning</text>
+          <text x="525" y="252" text-anchor="middle" class="t-small t-mute">policy • path</text>
+          <text x="525" y="268" text-anchor="middle" class="t-small t-mute">risk / cost maps</text>
+
+          <rect class="node violet" x="640" y="200" width="150" height="90" rx="10"/>
+          <text x="715" y="232" text-anchor="middle" class="t-title" fill="#d0b6ff">Control</text>
+          <text x="715" y="252" text-anchor="middle" class="t-small t-mute">real-time loops</text>
+          <text x="715" y="268" text-anchor="middle" class="t-small t-mute">safety interlocks</text>
+
+          <rect class="node orange" x="830" y="200" width="150" height="90" rx="10"/>
+          <text x="905" y="232" text-anchor="middle" class="t-title" fill="#ffa17a">Actuation</text>
+          <text x="905" y="252" text-anchor="middle" class="t-small t-mute">motion • grip</text>
+          <text x="905" y="268" text-anchor="middle" class="t-small t-mute">valves • motors</text>
+
+          <rect class="node orange" x="1020" y="200" width="130" height="90" rx="10"/>
+          <text x="1085" y="232" text-anchor="middle" class="t-title" fill="#ffa17a">World</text>
+          <text x="1085" y="252" text-anchor="middle" class="t-small t-mute">changed state</text>
+          <text x="1085" y="268" text-anchor="middle" class="t-small t-mute">physical effect</text>
+        </g>
+
+        <!-- forward arrows -->
+        <path class="edge" d="M220,245 L260,245" marker-end="url(#arr)"/>
+        <path class="edge" d="M410,245 L450,245" marker-end="url(#arr)"/>
+        <path class="edge" d="M600,245 L640,245" marker-end="url(#arr)"/>
+        <path class="edge" d="M790,245 L830,245" marker-end="url(#arr)"/>
+        <path class="edge" d="M980,245 L1020,245" marker-end="url(#arr)"/>
+
+        <!-- feedback loop -->
+        <path class="edge orange" d="M1085,200 C1085,100 145,100 145,200" marker-end="url(#arr-orange)"/>
+        <text x="600" y="115" text-anchor="middle" class="t-small" fill="#ffa17a">the system changes the world it will next perceive</text>
+
+        <!-- attack surfaces (red arrows in) -->
+        <g>
+          <rect x="50"  y="380" width="200" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="150" y="402" text-anchor="middle" class="t-label" fill="#ff8ea0">environmental attacker</text>
+          <text x="150" y="420" text-anchor="middle" class="t-xsmall t-mute">spoof • jam • blind • occlude</text>
+
+          <rect x="270" y="380" width="200" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="370" y="402" text-anchor="middle" class="t-label" fill="#ff8ea0">pipeline tamper</text>
+          <text x="370" y="420" text-anchor="middle" class="t-xsmall t-mute">maps • calib • estimators</text>
+
+          <rect x="490" y="380" width="200" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="590" y="402" text-anchor="middle" class="t-label" fill="#ff8ea0">timing / real-time</text>
+          <text x="590" y="420" text-anchor="middle" class="t-xsmall t-mute">delay • jitter • stale fusion</text>
+
+          <rect x="710" y="380" width="200" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="810" y="402" text-anchor="middle" class="t-label" fill="#ff8ea0">comms / coordination</text>
+          <text x="810" y="420" text-anchor="middle" class="t-xsmall t-mute">v2x • fieldbus • telemetry</text>
+
+          <rect x="930" y="380" width="220" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="1040" y="402" text-anchor="middle" class="t-label" fill="#ff8ea0">hardware / lifecycle</text>
+          <text x="1040" y="420" text-anchor="middle" class="t-xsmall t-mute">fault inj • OTA • fleet backend</text>
+        </g>
+
+        <!-- red arrows pointing up to the pipeline -->
+        <path class="edge red" d="M150,380 L145,290" marker-end="url(#arr-red)"/>
+        <path class="edge red" d="M370,380 L335,290" marker-end="url(#arr-red)"/>
+        <path class="edge red" d="M590,380 L600,290" marker-end="url(#arr-red)"/>
+        <path class="edge red" d="M810,380 L810,290" marker-end="url(#arr-red)"/>
+        <path class="edge red" d="M1040,380 L1050,290" marker-end="url(#arr-red)"/>
+
+        <text x="600" y="490" text-anchor="middle" class="t-small t-dim">Core insight: the security boundary now spans sensing, timing, control, communication, actuation, and the lifecycle that supplies them all.</text>
+      </svg>
+    </div>
+
+    <div class="research">
+      <h3>Why this matters technically</h3>
+      <ul>
+        <li>In embodied systems, a model error is not a text error — it is a <b>physical state change</b> that feeds back into the next observation.</li>
+        <li>The effective attack surface includes <b>sensor physics</b>, <b>real-time budgets</b>, <b>inter-module contracts</b>, and <b>actuation authority</b>, not just the model.</li>
+        <li>Security failures are often <b>cross-layer</b>: a spoofed sensor, a missed deadline, and a weak fallback combine into one unsafe trajectory.</li>
+        <li>Assurance must track <b>environment → perception → plan → control → actuation → changed environment</b> as a single analysis unit.</li>
+      </ul>
+    </div>
+    <div class="scenario"><b>System view:</b> secure deployment of physical AI requires defending perception, timing, control, communications, hardware, and fleet lifecycle together — not any single layer in isolation.</div>
+  </section>
+
+  <!-- ============ SLIDE 1 : SENSOR SPOOFING ============ -->
+  <section class="slide" data-idx="1">
+    <div class="slide-head">
+      <div class="slide-num">01</div>
+      <div class="slide-title">
+        <h2>Sensor Spoofing &amp; Environmental Manipulation</h2>
+        <p>Attacking the sensing boundary before the model ever runs</p>
+      </div>
+    </div>
+    <p class="lede">Physical AI begins with sensing, so the first opportunity for manipulation is the sensor boundary itself. An attacker who can shape light, RF, acoustics, geometry, or material properties of the scene can alter what the model sees — without touching the software.</p>
+    <div class="badges">
+      <span class="badge cyan">sensor path</span>
+      <span class="badge red">spoof / jam / blind</span>
+      <span class="badge yellow">pre-model attack</span>
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#243244"/>
+          </marker>
+          <marker id="a1r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#ff5470"/>
+          </marker>
+        </defs>
+
+        <!-- attacker sources (left column) -->
+        <g>
+          <rect class="node red" x="40" y="60" width="220" height="58" rx="8"/>
+          <text x="150" y="84" text-anchor="middle" class="t-label" fill="#ff8ea0">adversarial patches &amp; patterns</text>
+          <text x="150" y="102" text-anchor="middle" class="t-xsmall t-mute">stickers, paint, projected light</text>
+
+          <rect class="node red" x="40" y="140" width="220" height="58" rx="8"/>
+          <text x="150" y="164" text-anchor="middle" class="t-label" fill="#ff8ea0">GNSS spoofing</text>
+          <text x="150" y="182" text-anchor="middle" class="t-xsmall t-mute">fake satellite signals → wrong pose</text>
+
+          <rect class="node red" x="40" y="220" width="220" height="58" rx="8"/>
+          <text x="150" y="244" text-anchor="middle" class="t-label" fill="#ff8ea0">lidar / radar injection</text>
+          <text x="150" y="262" text-anchor="middle" class="t-xsmall t-mute">phantom returns, saturation</text>
+
+          <rect class="node red" x="40" y="300" width="220" height="58" rx="8"/>
+          <text x="150" y="324" text-anchor="middle" class="t-label" fill="#ff8ea0">acoustic / ultrasonic</text>
+          <text x="150" y="342" text-anchor="middle" class="t-xsmall t-mute">MEMS resonance, IMU disruption</text>
+
+          <rect class="node red" x="40" y="380" width="220" height="58" rx="8"/>
+          <text x="150" y="404" text-anchor="middle" class="t-label" fill="#ff8ea0">process-level perturbation</text>
+          <text x="150" y="422" text-anchor="middle" class="t-xsmall t-mute">industrial probes within plausible range</text>
+        </g>
+
+        <!-- sensor front-end -->
+        <rect class="node cyan" x="340" y="150" width="220" height="200" rx="12"/>
+        <text x="450" y="180" text-anchor="middle" class="t-title" fill="#7fe3ef">Sensor front-end</text>
+        <text x="450" y="210" text-anchor="middle" class="t-small t-mute">acquisition</text>
+        <text x="450" y="228" text-anchor="middle" class="t-small t-mute">preprocessing</text>
+        <text x="450" y="246" text-anchor="middle" class="t-small t-mute">calibration assumptions</text>
+        <text x="450" y="264" text-anchor="middle" class="t-small t-mute">time synchronization</text>
+        <text x="450" y="300" text-anchor="middle" class="t-xsmall" fill="#ff8ea0">← attacked BEFORE the model</text>
+
+        <!-- model / perception -->
+        <rect class="node violet" x="640" y="150" width="220" height="200" rx="12"/>
+        <text x="750" y="180" text-anchor="middle" class="t-title" fill="#d0b6ff">Perception model</text>
+        <text x="750" y="210" text-anchor="middle" class="t-small t-mute">detection / classification</text>
+        <text x="750" y="228" text-anchor="middle" class="t-small t-mute">fusion across sensors</text>
+        <text x="750" y="246" text-anchor="middle" class="t-small t-mute">object lists + confidence</text>
+        <text x="750" y="300" text-anchor="middle" class="t-xsmall t-mute">receives corrupted input as if it were trustworthy</text>
+
+        <!-- downstream impact -->
+        <rect class="node orange" x="940" y="150" width="220" height="200" rx="12"/>
+        <text x="1050" y="180" text-anchor="middle" class="t-title" fill="#ffa17a">Physical consequence</text>
+        <text x="1050" y="210" text-anchor="middle" class="t-small t-mute">misdetection</text>
+        <text x="1050" y="228" text-anchor="middle" class="t-small t-mute">wrong localization</text>
+        <text x="1050" y="246" text-anchor="middle" class="t-small t-mute">unsafe path / control</text>
+        <text x="1050" y="264" text-anchor="middle" class="t-small t-mute">hazard in the real world</text>
+
+        <!-- arrows -->
+        <path class="edge red" d="M260,89  L340,200" marker-end="url(#a1r)"/>
+        <path class="edge red" d="M260,169 L340,220" marker-end="url(#a1r)"/>
+        <path class="edge red" d="M260,249 L340,250" marker-end="url(#a1r)"/>
+        <path class="edge red" d="M260,329 L340,280" marker-end="url(#a1r)"/>
+        <path class="edge red" d="M260,409 L340,310" marker-end="url(#a1r)"/>
+
+        <path class="edge" d="M560,250 L640,250" marker-end="url(#a1)"/>
+        <path class="edge" d="M860,250 L940,250" marker-end="url(#a1)"/>
+
+        <text x="600" y="470" text-anchor="middle" class="t-small t-dim">Key point: the model can be entirely uncompromised and still be wrong, because its inputs have been shaped before acquisition.</text>
+      </svg>
+    </div>
+
+    <div class="research">
+      <h3>Why sensor-boundary attacks are hard</h3>
+      <ul>
+        <li>They often exploit the <b>physics of acquisition</b> — lens flare, RF interference, MEMS resonance — not any ML weakness.</li>
+        <li>Attacks can be <b>transient and localized</b>, which makes them hard to reproduce after the event or to capture in benchmark datasets.</li>
+        <li>They bypass most model-centric defenses because the model sees a plausible-looking input that has already been corrupted upstream.</li>
+        <li>Defense needs <b>multi-modal fusion</b>, <b>plausibility checks</b>, <b>calibration monitoring</b>, and environment-aware confidence — not a single hardened classifier.</li>
+      </ul>
+    </div>
+    <div class="scenario"><b>Scenario:</b> a vehicle sees a stop sign defaced by a crafted pattern, its lidar receives phantom returns from a roadside injector, and its GNSS is gently spoofed — each channel alone looks recoverable, but their fusion quietly drifts into an unsafe plan.</div>
+  </section>
+
+  <!-- ============ SLIDE 2 : PIPELINE COMPROMISE ============ -->
+  <section class="slide" data-idx="2">
+    <div class="slide-head">
+      <div class="slide-num">02</div>
+      <div class="slide-title">
+        <h2>Perception-to-Action Pipeline Compromise</h2>
+        <p>Attacking maps, state estimators, and inter-module contracts</p>
+      </div>
+    </div>
+    <p class="lede">Compromise does not stop at the model. The intermediate artifacts that flow between perception, planning, and control — object lists, occupancy maps, localization priors, cost surfaces, calibration transforms — are themselves security-sensitive data. Small distortions early in the pipeline become large physical deviations later.</p>
+    <div class="badges">
+      <span class="badge violet">pipeline integrity</span>
+      <span class="badge orange">calibration / maps</span>
+      <span class="badge red">silent semantic drift</span>
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#243244"/>
+          </marker>
+          <marker id="a2r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#ff5470"/>
+          </marker>
+        </defs>
+
+        <!-- pipeline strip -->
+        <rect class="node cyan"   x="60"  y="170" width="160" height="90" rx="10"/>
+        <text x="140" y="200" text-anchor="middle" class="t-title" fill="#7fe3ef">Perception</text>
+        <text x="140" y="222" text-anchor="middle" class="t-small t-mute">object list</text>
+        <text x="140" y="238" text-anchor="middle" class="t-small t-mute">free-space mask</text>
+
+        <rect class="node violet" x="270" y="170" width="160" height="90" rx="10"/>
+        <text x="350" y="200" text-anchor="middle" class="t-title" fill="#d0b6ff">Fusion / State</text>
+        <text x="350" y="222" text-anchor="middle" class="t-small t-mute">localization</text>
+        <text x="350" y="238" text-anchor="middle" class="t-small t-mute">tracking</text>
+
+        <rect class="node violet" x="480" y="170" width="160" height="90" rx="10"/>
+        <text x="560" y="200" text-anchor="middle" class="t-title" fill="#d0b6ff">Planner</text>
+        <text x="560" y="222" text-anchor="middle" class="t-small t-mute">cost map</text>
+        <text x="560" y="238" text-anchor="middle" class="t-small t-mute">trajectory</text>
+
+        <rect class="node violet" x="690" y="170" width="160" height="90" rx="10"/>
+        <text x="770" y="200" text-anchor="middle" class="t-title" fill="#d0b6ff">Controller</text>
+        <text x="770" y="222" text-anchor="middle" class="t-small t-mute">setpoints</text>
+        <text x="770" y="238" text-anchor="middle" class="t-small t-mute">safety interlock</text>
+
+        <rect class="node orange" x="900" y="170" width="160" height="90" rx="10"/>
+        <text x="980" y="200" text-anchor="middle" class="t-title" fill="#ffa17a">Actuators</text>
+        <text x="980" y="222" text-anchor="middle" class="t-small t-mute">motor / valve</text>
+        <text x="980" y="238" text-anchor="middle" class="t-small t-mute">brake / grip</text>
+
+        <!-- arrows along pipeline -->
+        <path class="edge" d="M220,215 L270,215" marker-end="url(#a2)"/>
+        <path class="edge" d="M430,215 L480,215" marker-end="url(#a2)"/>
+        <path class="edge" d="M640,215 L690,215" marker-end="url(#a2)"/>
+        <path class="edge" d="M850,215 L900,215" marker-end="url(#a2)"/>
+
+        <!-- interface labels -->
+        <text x="245" y="155" text-anchor="middle" class="t-xsmall t-mute">object list</text>
+        <text x="455" y="155" text-anchor="middle" class="t-xsmall t-mute">world state</text>
+        <text x="665" y="155" text-anchor="middle" class="t-xsmall t-mute">trajectory</text>
+        <text x="875" y="155" text-anchor="middle" class="t-xsmall t-mute">control cmd</text>
+
+        <!-- tampering targets below -->
+        <g>
+          <rect x="60"  y="330" width="220" height="80" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="170" y="354" text-anchor="middle" class="t-label" fill="#ff8ea0">map tampering</text>
+          <text x="170" y="372" text-anchor="middle" class="t-xsmall t-mute">edited lane / no-go / height</text>
+          <text x="170" y="390" text-anchor="middle" class="t-xsmall t-mute">silently wrong routing</text>
+
+          <rect x="300" y="330" width="220" height="80" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="410" y="354" text-anchor="middle" class="t-label" fill="#ff8ea0">calibration bias</text>
+          <text x="410" y="372" text-anchor="middle" class="t-xsmall t-mute">extrinsics, transforms</text>
+          <text x="410" y="390" text-anchor="middle" class="t-xsmall t-mute">looks like drift or wear</text>
+
+          <rect x="540" y="330" width="220" height="80" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="650" y="354" text-anchor="middle" class="t-label" fill="#ff8ea0">cost-map poisoning</text>
+          <text x="650" y="372" text-anchor="middle" class="t-xsmall t-mute">risk / preference fields</text>
+          <text x="650" y="390" text-anchor="middle" class="t-xsmall t-mute">biases planner choices</text>
+
+          <rect x="780" y="330" width="220" height="80" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="890" y="354" text-anchor="middle" class="t-label" fill="#ff8ea0">controller gain edit</text>
+          <text x="890" y="372" text-anchor="middle" class="t-xsmall t-mute">tampered PID / limits</text>
+          <text x="890" y="390" text-anchor="middle" class="t-xsmall t-mute">unstable or sluggish</text>
+        </g>
+
+        <!-- arrows up -->
+        <path class="edge red" d="M170,330 L210,260" marker-end="url(#a2r)"/>
+        <path class="edge red" d="M410,330 L380,260" marker-end="url(#a2r)"/>
+        <path class="edge red" d="M650,330 L585,260" marker-end="url(#a2r)"/>
+        <path class="edge red" d="M890,330 L790,260" marker-end="url(#a2r)"/>
+
+        <text x="600" y="460" text-anchor="middle" class="t-small t-dim">Internally coherent, physically wrong: each module trusts its upstream contract, so the error is invisible until actuation.</text>
+      </svg>
+    </div>
+
+    <div class="research">
+      <h3>Research angle: inter-module contracts as attack surface</h3>
+      <ul>
+        <li>Artifacts like <b>maps</b>, <b>extrinsics</b>, <b>localization priors</b>, and <b>cost fields</b> are usually treated as configuration, not as security-sensitive data. That assumption breaks in physical AI.</li>
+        <li>Small semantic distortions (a shifted lane edge, a wrong transform) can be amplified through the chain into large kinematic or positional errors.</li>
+        <li>Compromise of these artifacts is <b>hard to detect</b> because each module sees internally consistent input and produces internally consistent output.</li>
+        <li>Good defenses: <b>authenticated interfaces between modules</b>, <b>physical-invariant sanity checks</b>, <b>independent cross-validation</b>, and <b>graceful degradation</b> when a module is uncertain.</li>
+      </ul>
+    </div>
+    <div class="scenario"><b>Scenario:</b> a warehouse robot's extrinsic calibration is biased by a few millimetres during maintenance. Perception still detects pallets correctly, the planner still builds a clean trajectory — but the grasp repeatedly collides with shelving edges in ways that look like normal wear.</div>
+  </section>
+
+  <!-- ============ SLIDE 3 : TIMING / REAL-TIME ============ -->
+  <section class="slide" data-idx="3">
+    <div class="slide-head">
+      <div class="slide-num">03</div>
+      <div class="slide-title">
+        <h2>Timing &amp; Real-Time Exploitation</h2>
+        <p>Latency and synchronization as control variables for the attacker</p>
+      </div>
+    </div>
+    <p class="lede">In embodied systems, <b>a correct answer that arrives too late is equivalent to a wrong answer</b>. Attackers can target scheduling, packet delay, compute load, and clock synchronization to push the system into regions where its decisions are based on stale world models — without ever touching the model weights.</p>
+    <div class="badges">
+      <span class="badge yellow">deadlines</span>
+      <span class="badge yellow">jitter</span>
+      <span class="badge red">stale fusion</span>
+      <span class="badge cyan">clock drift</span>
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#243244"/>
+          </marker>
+        </defs>
+
+        <!-- timeline axis -->
+        <line x1="80" y1="260" x2="1120" y2="260" stroke="#243244" stroke-width="1.4"/>
+        <text x="80"  y="285" class="t-xsmall t-mute">t0 sensor</text>
+        <text x="320" y="285" class="t-xsmall t-mute">fusion</text>
+        <text x="560" y="285" class="t-xsmall t-mute">plan</text>
+        <text x="800" y="285" class="t-xsmall t-mute">control</text>
+        <text x="1040" y="285" class="t-xsmall t-mute">deadline</text>
+
+        <!-- nominal budget -->
+        <rect x="80" y="150" width="960" height="40" rx="6" fill="rgba(123,216,143,.12)" stroke="#7bd88f"/>
+        <text x="560" y="135" text-anchor="middle" class="t-label" fill="#7bd88f">nominal control-loop budget</text>
+        <circle cx="80"  cy="170" r="6" fill="#7bd88f"/>
+        <circle cx="320" cy="170" r="6" fill="#7bd88f"/>
+        <circle cx="560" cy="170" r="6" fill="#7bd88f"/>
+        <circle cx="800" cy="170" r="6" fill="#7bd88f"/>
+        <circle cx="1040" cy="170" r="6" fill="#7bd88f"/>
+
+        <!-- attacked timeline -->
+        <rect x="80" y="330" width="1050" height="40" rx="6" fill="rgba(255,84,112,.12)" stroke="#ff5470"/>
+        <text x="560" y="395" text-anchor="middle" class="t-label" fill="#ff8ea0">under timing attack: stale data, missed deadlines</text>
+        <circle cx="80"  cy="350" r="6" fill="#ff5470"/>
+        <circle cx="360" cy="350" r="6" fill="#ff5470"/>
+        <circle cx="640" cy="350" r="6" fill="#ff5470"/>
+        <circle cx="940" cy="350" r="6" fill="#ff5470"/>
+        <circle cx="1130" cy="350" r="6" fill="#ff5470" stroke="#fff" stroke-width="1"/>
+
+        <!-- deadline marker -->
+        <line x1="1040" y1="120" x2="1040" y2="400" stroke="#ffd166" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <text x="1040" y="115" text-anchor="middle" class="t-small" fill="#ffd989">deadline</text>
+
+        <!-- attack arrows into pipeline -->
+        <g>
+          <rect class="node red" x="60"  y="60" width="220" height="48" rx="8"/>
+          <text x="170" y="90" text-anchor="middle" class="t-label" fill="#ff8ea0">compute saturation</text>
+
+          <rect class="node red" x="310" y="60" width="220" height="48" rx="8"/>
+          <text x="420" y="90" text-anchor="middle" class="t-label" fill="#ff8ea0">network jitter / delay</text>
+
+          <rect class="node red" x="560" y="60" width="220" height="48" rx="8"/>
+          <text x="670" y="90" text-anchor="middle" class="t-label" fill="#ff8ea0">clock drift / desync</text>
+
+          <rect class="node red" x="810" y="60" width="260" height="48" rx="8"/>
+          <text x="940" y="90" text-anchor="middle" class="t-label" fill="#ff8ea0">priority inversion / scheduler abuse</text>
+        </g>
+
+        <path class="edge red" d="M170,108 L170,150" marker-end="url(#a3)"/>
+        <path class="edge red" d="M420,108 L420,150" marker-end="url(#a3)"/>
+        <path class="edge red" d="M670,108 L670,150" marker-end="url(#a3)"/>
+        <path class="edge red" d="M940,108 L940,150" marker-end="url(#a3)"/>
+
+        <text x="600" y="460" text-anchor="middle" class="t-small t-dim">The model may still be correct, but by the time its output reaches the actuator, the world has moved on.</text>
+      </svg>
+    </div>
+
+    <div class="research">
+      <h3>Timing as a security variable</h3>
+      <ul>
+        <li>Latency attacks do not need to change any bit of the model. They change <b>when</b> the answer arrives relative to the world.</li>
+        <li>Especially dangerous in <b>autonomous driving</b>, <b>collaborative robotics</b>, <b>drones</b>, and <b>industrial motion</b>, where control budgets are tight.</li>
+        <li>Timing failures can compose with perception failures: a correct detection arriving after the deadline is indistinguishable from a miss.</li>
+        <li>Security evaluation must therefore include <b>deadlines</b>, <b>synchronization quality</b>, and <b>loop budgets</b> — not only accuracy under static inputs.</li>
+      </ul>
+    </div>
+    <div class="scenario"><b>Scenario:</b> a drone's visual-inertial fusion is delayed just enough by a saturated ML accelerator that each control command is applied to an already-outdated pose estimate. The autopilot oscillates, then enters emergency mode — exactly what the attacker wanted.</div>
+  </section>
+
+  <!-- ============ SLIDE 4 : COMMUNICATIONS / COORDINATION ============ -->
+  <section class="slide" data-idx="4">
+    <div class="slide-head">
+      <div class="slide-num">04</div>
+      <div class="slide-title">
+        <h2>Communication &amp; Coordination Attacks</h2>
+        <p>Man-in-the-middle, replay, and semantic-plausibility gaps across links</p>
+      </div>
+    </div>
+    <p class="lede">Physical-AI systems rarely act alone. Robots coordinate with supervisors, vehicles exchange data with infrastructure, drones receive mission updates, and AI-enabled OT consumes commands from engineering layers. Each link is an attack surface — and message integrity alone is not enough when the receiver cannot judge whether the message still makes sense in the current physical context.</p>
+    <div class="badges">
+      <span class="badge blue">v2x / fieldbus</span>
+      <span class="badge red">replay / spoof</span>
+      <span class="badge violet">semantic plausibility</span>
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#243244"/>
+          </marker>
+          <marker id="a4r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#ff5470"/>
+          </marker>
+        </defs>
+
+        <!-- nodes -->
+        <rect class="node orange" x="60"  y="200" width="180" height="100" rx="10"/>
+        <text x="150" y="232" text-anchor="middle" class="t-title" fill="#ffa17a">Embodied agent</text>
+        <text x="150" y="254" text-anchor="middle" class="t-small t-mute">vehicle • robot</text>
+        <text x="150" y="270" text-anchor="middle" class="t-small t-mute">drone • cobot</text>
+
+        <rect class="node blue" x="510" y="80" width="180" height="80" rx="10"/>
+        <text x="600" y="110" text-anchor="middle" class="t-title" fill="#9bc2ff">Peer agents</text>
+        <text x="600" y="130" text-anchor="middle" class="t-small t-mute">v2v / swarm</text>
+        <text x="600" y="146" text-anchor="middle" class="t-small t-mute">coordination</text>
+
+        <rect class="node blue" x="510" y="200" width="180" height="100" rx="10"/>
+        <text x="600" y="232" text-anchor="middle" class="t-title" fill="#9bc2ff">Infra / supervisor</text>
+        <text x="600" y="254" text-anchor="middle" class="t-small t-mute">v2x • fieldbus</text>
+        <text x="600" y="270" text-anchor="middle" class="t-small t-mute">OT monitor</text>
+
+        <rect class="node blue" x="510" y="340" width="180" height="80" rx="10"/>
+        <text x="600" y="370" text-anchor="middle" class="t-title" fill="#9bc2ff">Fleet / cloud</text>
+        <text x="600" y="390" text-anchor="middle" class="t-small t-mute">mission / map</text>
+        <text x="600" y="406" text-anchor="middle" class="t-small t-mute">policy updates</text>
+
+        <!-- attacker MITM box -->
+        <rect x="310" y="200" width="140" height="100" rx="10" fill="rgba(255,84,112,.1)" stroke="#ff5470" stroke-dasharray="4 3"/>
+        <text x="380" y="232" text-anchor="middle" class="t-title" fill="#ff8ea0">MITM</text>
+        <text x="380" y="254" text-anchor="middle" class="t-xsmall t-mute">spoof • replay</text>
+        <text x="380" y="270" text-anchor="middle" class="t-xsmall t-mute">inject • drop</text>
+
+        <!-- connection lines through MITM -->
+        <path class="edge red" d="M240,250 L310,250" marker-end="url(#a4r)"/>
+        <path class="edge red" d="M450,250 L510,250" marker-end="url(#a4r)"/>
+        <path class="edge blue" d="M510,140 C430,140 380,180 380,200" marker-end="url(#a4)"/>
+        <path class="edge blue" d="M510,380 C430,380 380,320 380,300" marker-end="url(#a4)"/>
+
+        <!-- receiver semantic check -->
+        <rect class="node violet" x="800" y="170" width="320" height="160" rx="12"/>
+        <text x="960" y="200" text-anchor="middle" class="t-title" fill="#d0b6ff">Receiver-side checks</text>
+        <text x="960" y="226" text-anchor="middle" class="t-small t-mute">origin authentication ✓</text>
+        <text x="960" y="244" text-anchor="middle" class="t-small t-mute">freshness / nonce ✓</text>
+        <text x="960" y="262" text-anchor="middle" class="t-small t-mute">rate / bounds ✓</text>
+        <text x="960" y="286" text-anchor="middle" class="t-label" fill="#ffa17a">+ physical plausibility?</text>
+        <text x="960" y="304" text-anchor="middle" class="t-xsmall t-mute">does this command make sense</text>
+        <text x="960" y="318" text-anchor="middle" class="t-xsmall t-mute">for my current state?</text>
+
+        <path class="edge" d="M690,250 L800,250" marker-end="url(#a4)"/>
+
+        <text x="600" y="470" text-anchor="middle" class="t-small t-dim">A cryptographically valid command can still be physically nonsensical — integrity ≠ safety in embodied systems.</text>
+      </svg>
+    </div>
+
+    <div class="research">
+      <h3>Distributed autonomy = distributed trust</h3>
+      <ul>
+        <li><b>Distributed autonomy</b> increases performance but also introduces trust assumptions across every node and every link.</li>
+        <li>Intermittent connectivity can force systems into <b>emergency or fallback modes</b> that themselves become attack targets.</li>
+        <li>Message integrity alone is insufficient: the receiver must also ask <b>does this still make sense in my current physical state?</b></li>
+        <li>Defenses combine authenticated channels, replay protection, rate bounds, and <b>physics-aware plausibility checks</b> at the receiver.</li>
+      </ul>
+    </div>
+    <div class="scenario"><b>Scenario:</b> a cooperative intersection receives a replayed V2X message reporting that a truck has already cleared the lane. The message is cryptographically valid, but the receiving vehicle has no way to cross-check against its own perception before releasing the brake.</div>
+  </section>
+
+  <!-- ============ SLIDE 5 : HARDWARE, LIFECYCLE & BACKEND ============ -->
+  <section class="slide" data-idx="5">
+    <div class="slide-head">
+      <div class="slide-num">05</div>
+      <div class="slide-title">
+        <h2>Hardware, Lifecycle &amp; Fleet-Backend Compromise</h2>
+        <p>From fault injection at the edge to OTA-driven fleet-wide physical impact</p>
+      </div>
+    </div>
+    <p class="lede">Physical AI runs on edge hardware and depends on remote updates, cloud planners, and fleet-management infrastructure. A local fault-injection attack can alter both the intelligence <i>and</i> the actuation path. A backend breach can push a malicious model, unsafe map, or biased calibration to thousands of devices at once. Local hardening alone is not enough.</p>
+    <div class="badges">
+      <span class="badge red">fault injection</span>
+      <span class="badge orange">ota / fleet</span>
+      <span class="badge violet">maintenance insider</span>
+      <span class="badge yellow">lifecycle assurance</span>
+    </div>
+
+    <div class="canvas">
+      <svg viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#243244"/>
+          </marker>
+          <marker id="a5r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#ff5470"/>
+          </marker>
+        </defs>
+
+        <!-- cloud / fleet backend -->
+        <rect class="node blue" x="420" y="40" width="360" height="90" rx="12"/>
+        <text x="600" y="70" text-anchor="middle" class="t-title" fill="#9bc2ff">Fleet backend &amp; OTA pipeline</text>
+        <text x="600" y="92" text-anchor="middle" class="t-small t-mute">model store • map service • policies</text>
+        <text x="600" y="110" text-anchor="middle" class="t-small t-mute">calibration data • telemetry • orchestration</text>
+
+        <!-- three edge devices -->
+        <g>
+          <rect class="node orange" x="80"  y="230" width="260" height="140" rx="12"/>
+          <text x="210" y="258" text-anchor="middle" class="t-title" fill="#ffa17a">Edge device A</text>
+          <text x="210" y="280" text-anchor="middle" class="t-small t-mute">secure boot / attest</text>
+          <text x="210" y="296" text-anchor="middle" class="t-small t-mute">model + maps + calib</text>
+          <text x="210" y="312" text-anchor="middle" class="t-small t-mute">control MCU</text>
+          <text x="210" y="340" text-anchor="middle" class="t-xsmall t-mute">actuator authority</text>
+
+          <rect class="node orange" x="470" y="230" width="260" height="140" rx="12"/>
+          <text x="600" y="258" text-anchor="middle" class="t-title" fill="#ffa17a">Edge device B</text>
+          <text x="600" y="280" text-anchor="middle" class="t-small t-mute">identical stack</text>
+          <text x="600" y="296" text-anchor="middle" class="t-small t-mute">same OTA channel</text>
+          <text x="600" y="312" text-anchor="middle" class="t-small t-mute">same keys?</text>
+          <text x="600" y="340" text-anchor="middle" class="t-xsmall t-mute">actuator authority</text>
+
+          <rect class="node orange" x="860" y="230" width="260" height="140" rx="12"/>
+          <text x="990" y="258" text-anchor="middle" class="t-title" fill="#ffa17a">Edge device C</text>
+          <text x="990" y="280" text-anchor="middle" class="t-small t-mute">debug interfaces?</text>
+          <text x="990" y="296" text-anchor="middle" class="t-small t-mute">service mode?</text>
+          <text x="990" y="312" text-anchor="middle" class="t-small t-mute">field-serviceable</text>
+          <text x="990" y="340" text-anchor="middle" class="t-xsmall t-mute">actuator authority</text>
+        </g>
+
+        <!-- OTA fan-out -->
+        <path class="edge" d="M500,130 L210,230" marker-end="url(#a5)"/>
+        <path class="edge" d="M600,130 L600,230" marker-end="url(#a5)"/>
+        <path class="edge" d="M700,130 L990,230" marker-end="url(#a5)"/>
+
+        <!-- attacker: backend compromise -->
+        <rect x="820" y="40" width="340" height="90" rx="10" fill="rgba(255,84,112,.08)" stroke="#ff5470" stroke-dasharray="4 3"/>
+        <text x="990" y="70" text-anchor="middle" class="t-label" fill="#ff8ea0">backend-driven physical compromise</text>
+        <text x="990" y="90" text-anchor="middle" class="t-xsmall t-mute">malicious model / map / policy pushed to fleet</text>
+        <text x="990" y="108" text-anchor="middle" class="t-xsmall t-mute">one breach → many embodied systems</text>
+        <path class="edge red" d="M820,85 L780,85" marker-end="url(#a5r)"/>
+
+        <!-- local attackers -->
+        <g>
+          <rect x="40"  y="430" width="260" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="170" y="454" text-anchor="middle" class="t-label" fill="#ff8ea0">fault injection / glitch</text>
+          <text x="170" y="472" text-anchor="middle" class="t-xsmall t-mute">bypass safety checks, corrupt memory</text>
+          <path class="edge red" d="M170,430 L180,370" marker-end="url(#a5r)"/>
+
+          <rect x="430" y="430" width="340" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="600" y="454" text-anchor="middle" class="t-label" fill="#ff8ea0">maintenance / insider access</text>
+          <text x="600" y="472" text-anchor="middle" class="t-xsmall t-mute">calibration tools, engineering workstations, service modes</text>
+          <path class="edge red" d="M600,430 L600,370" marker-end="url(#a5r)"/>
+
+          <rect x="860" y="430" width="280" height="60" rx="8" fill="rgba(255,84,112,.07)" stroke="#ff5470"/>
+          <text x="1000" y="454" text-anchor="middle" class="t-label" fill="#ff8ea0">debug / peripheral tamper</text>
+          <text x="1000" y="472" text-anchor="middle" class="t-xsmall t-mute">JTAG, sensor board, counterfeit module</text>
+          <path class="edge red" d="M1000,430 L1000,370" marker-end="url(#a5r)"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="research">
+      <h3>Why lifecycle and fleet are the dominant risk vectors</h3>
+      <ul>
+        <li><b>Local hardening can be neutralized by a central breach.</b> A compromised OTA, map service, or policy endpoint can push unsafe changes to many devices at once.</li>
+        <li>Fault injection, glitching, and debug-interface abuse can alter both the <b>intelligence</b> and the <b>actuation</b> path on a single device — the safety envelope is only as strong as the MCU enforcing it.</li>
+        <li>Maintenance and servicing are recurring high-privilege windows: <b>calibration tools</b>, <b>engineering workstations</b>, and <b>service modes</b> need the same scrutiny as production paths.</li>
+        <li>Good physical-AI programs enforce <b>secure boot</b>, <b>attestation</b>, <b>rollback protection</b>, <b>signed models and maps</b>, <b>hardware-rooted identity</b>, and <b>lifecycle governance of updates and servicing</b>.</li>
+      </ul>
+    </div>
+    <div class="scenario"><b>Scenario:</b> an attacker compromises the fleet's map-update service and pushes a subtly edited high-definition map — a single lane boundary shifted by 40 cm. Every vehicle in the fleet inherits the error simultaneously, and the first signs appear only in aggregate as drifting lane-keeping behavior.</div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div><b>Slide <span id="counter2">1</span> / 6</b> — Physical AI Attack Surface</div>
+  <div>Focus: sensor spoofing, pipeline compromise, timing exploitation, communication attacks, hardware &amp; fleet-lifecycle risk</div>
+</footer>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let i = 0, timer = null;
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const auto = document.getElementById('auto');
+  const reset = document.getElementById('reset');
+  const full = document.getElementById('full');
+  const counter = document.getElementById('counter');
+  const counter2 = document.getElementById('counter2');
+
+  function show(n){
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s,k)=>s.classList.toggle('active', k===i));
+    counter.textContent = 'Slide ' + (i+1) + ' / ' + slides.length;
+    counter2.textContent = (i+1);
+  }
+  function startAuto(){
+    auto.textContent = 'Stop autoplay';
+    timer = setInterval(()=>show(i+1), 8000);
+  }
+  function stopAuto(){
+    auto.textContent = 'Start autoplay';
+    if(timer){clearInterval(timer); timer=null;}
+  }
+  prev.addEventListener('click', ()=>{stopAuto(); show(i-1);});
+  next.addEventListener('click', ()=>{stopAuto(); show(i+1);});
+  auto.addEventListener('click', ()=>{ timer ? stopAuto() : startAuto(); });
+  reset.addEventListener('click', ()=>{stopAuto(); show(0);});
+  full.addEventListener('click', ()=>{
+    if(!document.fullscreenElement){ document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }
+    else { document.exitFullscreen && document.exitFullscreen(); }
+  });
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'){stopAuto(); show(i+1);}
+    else if(e.key==='ArrowLeft'){stopAuto(); show(i-1);}
+    else if(e.key===' '){e.preventDefault(); timer ? stopAuto() : startAuto();}
+  });
+  show(0);
+})();
+</script>
+</body>
+</html>
