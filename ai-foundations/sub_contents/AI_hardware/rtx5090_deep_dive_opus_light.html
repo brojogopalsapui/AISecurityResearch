@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GeForce RTX 5090 — Deep Hardware Architecture Deep Dive</title>
+<style>
+  :root{
+    --bg:#f5f8fd;
+    --bg2:#eaf1fb;
+    --panel:#ffffff;
+    --panel2:#f4f8ff;
+    --border:#cdd9ef;
+    --accent:#5f9e00; /* NVIDIA green */
+    --accent2:#0077cc;
+    --warn:#c97700;
+    --pink:#c83d74;
+    --purple:#7a58d1;
+    --text:#0f1a2e;
+    --muted:#5f6f8f;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:radial-gradient(ellipse at top,#eef5ff 0%,#f7fbff 60%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  header{padding:48px 24px 24px;text-align:center;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(95,158,0,.10),transparent)}
+  header h1{margin:0;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;background:linear-gradient(90deg,#76b900,#00d4ff 60%,#a479ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p.sub{color:var(--muted);margin:8px 0 0;font-size:15px;max-width:780px;margin-left:auto;margin-right:auto}
+  nav.toc{max-width:1200px;margin:20px auto 0;padding:14px 18px;background:var(--panel);border:1px solid var(--border);border-radius:12px;display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+  nav.toc a{color:var(--accent2);text-decoration:none;padding:6px 10px;border-radius:6px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.15)}
+  nav.toc a:hover{background:rgba(0,212,255,.15)}
+  main{max-width:1200px;margin:0 auto;padding:24px 20px 80px}
+  section{margin:44px 0;padding:26px;background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 40px rgba(0,0,0,.3)}
+  section h2{margin:0 0 6px;font-size:24px;color:#10203a;display:flex;align-items:center;gap:10px}
+  section h2 .tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:var(--accent);color:#0b0f1a;letter-spacing:.05em}
+  section h3{margin:24px 0 10px;font-size:17px;color:var(--accent2)}
+  section p{color:#334562;margin:8px 0}
+  section p.lede{color:var(--muted);font-size:14px;margin:0 0 18px}
+  .grid{display:grid;gap:16px}
+  .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .grid.cols-4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .stat{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .stat .v{font-size:22px;font-weight:700;color:#fff;margin-top:4px}
+  .stat .v small{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
+  .stage{background:#f9fbff;border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px;overflow:hidden}
+  .stage svg{display:block;width:100%;height:auto;max-width:100%}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+  .btn{cursor:pointer;background:var(--accent);color:#0b0f1a;font-weight:700;border:0;padding:9px 16px;border-radius:8px;font-size:13px;letter-spacing:.02em;transition:transform .1s,filter .1s}
+  .btn:hover{filter:brightness(1.1)}
+  .btn:active{transform:translateY(1px)}
+  .btn.alt{background:transparent;color:var(--accent2);border:1px solid var(--accent2)}
+  .btn.warn{background:var(--warn);color:#0b0f1a}
+  .chip{display:inline-block;padding:3px 10px;border-radius:999px;background:rgba(118,185,0,.12);color:var(--accent);font-size:11px;font-weight:600;border:1px solid rgba(118,185,0,.3);margin:2px 4px 2px 0}
+  .chip.cyan{background:rgba(0,212,255,.1);color:var(--accent2);border-color:rgba(0,212,255,.3)}
+  .chip.pink{background:rgba(255,77,141,.1);color:var(--pink);border-color:rgba(255,77,141,.3)}
+  .chip.purple{background:rgba(164,121,255,.1);color:var(--purple);border-color:rgba(164,121,255,.3)}
+  code{font-family:var(--mono);background:#eef4ff;padding:1px 6px;border-radius:4px;font-size:12px;color:#355c00;border:1px solid var(--border)}
+  pre{font-family:var(--mono);background:#f4f8ff;padding:14px;border-radius:8px;font-size:12px;border:1px solid var(--border);overflow-x:auto;color:#334562}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-top:10px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend i{width:14px;height:14px;border-radius:3px;display:inline-block}
+  .narr{background:#f4f8ff;border-left:3px solid var(--accent);padding:10px 14px;margin-top:12px;border-radius:0 8px 8px 0;font-size:13px;min-height:40px;color:#334562;font-family:var(--mono)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border)}
+  th{color:var(--accent2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  td{color:#334562}
+  .footnote{color:var(--muted);font-size:12px;margin-top:10px;font-style:italic}
+  footer{text-align:center;padding:30px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:40px;background:#fbfdff}
+  /* SVG animation helpers */
+  .pulse{animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+  .flow{stroke-dasharray:6 4;animation:flow 1.2s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-20}}
+  .blink{animation:blink 1s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>GeForce RTX 5090 — Hardware Architecture Deep Dive</h1>
+  <p class="sub">
+    An interactive, research-level tour of NVIDIA's flagship Blackwell GPU (GB202-300-A1):
+    hardware blocks, on-chip interconnect, memory hierarchy, and an animated walkthrough of
+    how an MNIST digit classifier is trained and served on the silicon.
+  </p>
+</header>
+
+<nav class="toc">
+  <a href="#specs">1. Specs</a>
+  <a href="#diechip">2. Die & Chip Layout</a>
+  <a href="#gpc">3. GPC / TPC / SM Hierarchy</a>
+  <a href="#sm">4. SM Internals</a>
+  <a href="#tensor">5. 5th-Gen Tensor Core</a>
+  <a href="#memory">6. Memory Hierarchy</a>
+  <a href="#io">7. I/O & Peripherals</a>
+  <a href="#mnist-train">8. MNIST Training</a>
+  <a href="#mnist-infer">9. MNIST Inference</a>
+  <a href="#sources">Sources</a>
+</nav>
+
+<main>
+
+<!-- ========================= SPECS ========================= -->
+<section id="specs">
+  <h2><span class="tag">01</span> At a Glance — GB202 / RTX 5090</h2>
+  <p class="lede">
+    The RTX 5090 is built on TSMC's custom 4N (also called 4NP) node and is the largest consumer GPU die NVIDIA has ever shipped.
+    It ships a <em>partially harvested</em> GB202: 170 of 192 Streaming Multiprocessors are enabled, leaving headroom for a future "Ti" SKU.
+  </p>
+  <div class="grid cols-4">
+    <div class="stat"><div class="k">Architecture</div><div class="v">Blackwell<small>GB202</small></div></div>
+    <div class="stat"><div class="k">Process</div><div class="v">TSMC 4N<small>custom 5 nm class</small></div></div>
+    <div class="stat"><div class="k">Transistors</div><div class="v">92.2<small>billion</small></div></div>
+    <div class="stat"><div class="k">Die size</div><div class="v">~750<small>mm²</small></div></div>
+    <div class="stat"><div class="k">CUDA cores</div><div class="v">21,760</div></div>
+    <div class="stat"><div class="k">SMs / Tensor / RT</div><div class="v">170 / 680 / 170</div></div>
+    <div class="stat"><div class="k">L2 cache</div><div class="v">96<small>MB</small></div></div>
+    <div class="stat"><div class="k">Memory</div><div class="v">32 GB<small>GDDR7 @ 28 Gbps</small></div></div>
+    <div class="stat"><div class="k">Bus / BW</div><div class="v">512-bit<small>1 792 GB/s</small></div></div>
+    <div class="stat"><div class="k">Boost clock</div><div class="v">2.41<small>GHz</small></div></div>
+    <div class="stat"><div class="k">AI (FP4 sparse)</div><div class="v">3 352<small>TOPS</small></div></div>
+    <div class="stat"><div class="k">TGP</div><div class="v">575<small>W</small></div></div>
+  </div>
+  <p class="footnote">Numbers compiled from NVIDIA's RTX Blackwell whitepaper, TechPowerUp, NotebookCheck and arXiv microbenchmark studies (see Sources).</p>
+</section>
+
+<!-- ========================= DIE ========================= -->
+<section id="diechip">
+  <h2><span class="tag">02</span> Die Floorplan & Top-Level Chip Layout</h2>
+  <p class="lede">
+    The GB202 die is a monolithic rectangle of 12 Graphics Processing Clusters (GPCs) wrapped in the memory/L2/IO ring.
+    The schematic below is a <em>topological</em> rendering — block sizes are approximate, but positions mirror NVIDIA's published floorplan.
+  </p>
+
+  <div class="stage">
+    <svg id="dieSvg" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gpcGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#1a2548"/><stop offset="1" stop-color="#0d1530"/>
+        </linearGradient>
+        <linearGradient id="memGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2a1133"/><stop offset="1" stop-color="#140621"/>
+        </linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="2.5"/></filter>
+      </defs>
+
+      <!-- substrate -->
+      <rect x="10" y="10" width="880" height="540" rx="14" fill="#f7fbff" stroke="#243052"/>
+      <!-- GDDR7 chips top & bottom -->
+      <g id="gddrTop">
+        <!-- 8 on top, 8 on bottom = 16 chips x 32-bit = 512-bit -->
+      </g>
+
+      <!-- PCIe edge marker -->
+      <rect x="30" y="500" width="840" height="22" rx="3" fill="#141d37" stroke="#2f3e6a"/>
+      <text x="450" y="516" text-anchor="middle" fill="#5f6f8f" font-size="11" font-family="ui-monospace">PCIe Gen5 ×16 edge connector (~64 GB/s each way)</text>
+
+      <!-- die rectangle -->
+      <rect id="die" x="120" y="70" width="660" height="380" rx="10" fill="#edf4ff" stroke="#3a4a7a" stroke-width="2"/>
+      <text x="450" y="60" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">GB202 die — 750 mm², 92.2 B transistors</text>
+
+      <!-- L2 cache slab in middle -->
+      <rect x="390" y="230" width="120" height="60" rx="4" fill="#e7f1ff" stroke="#00d4ff"/>
+      <text x="450" y="255" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">L2 CACHE</text>
+      <text x="450" y="272" text-anchor="middle" fill="#5f6f8f" font-size="10">96 MB</text>
+
+      <!-- 12 GPCs arranged 3 rows x 4 cols, skipping center -->
+      <g id="gpcGroup"></g>
+
+      <!-- Memory controllers ring -->
+      <g id="memRing"></g>
+
+      <!-- Display + NVENC/NVDEC + PCIe block -->
+      <rect x="130" y="400" width="120" height="40" rx="4" fill="url(#memGrad)" stroke="#a479ff"/>
+      <text x="190" y="418" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">Display Engine</text>
+      <text x="190" y="432" text-anchor="middle" fill="#5f6f8f" font-size="9">HDMI 2.1b · 3× DP 2.1b</text>
+
+      <rect x="260" y="400" width="130" height="40" rx="4" fill="url(#memGrad)" stroke="#ff4d8d"/>
+      <text x="325" y="418" text-anchor="middle" fill="#ff4d8d" font-size="11" font-weight="700">3× NVENC · 2× NVDEC</text>
+      <text x="325" y="432" text-anchor="middle" fill="#5f6f8f" font-size="9">9th-gen / 6th-gen · 4:2:2</text>
+
+      <rect x="400" y="400" width="100" height="40" rx="4" fill="url(#memGrad)" stroke="#ffb03b"/>
+      <text x="450" y="418" text-anchor="middle" fill="#ffb03b" font-size="11" font-weight="700">AMP</text>
+      <text x="450" y="432" text-anchor="middle" fill="#5f6f8f" font-size="9">AI Management Proc.</text>
+
+      <rect x="510" y="400" width="110" height="40" rx="4" fill="url(#memGrad)" stroke="#00d4ff"/>
+      <text x="565" y="418" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">PCIe 5.0 ×16</text>
+      <text x="565" y="432" text-anchor="middle" fill="#5f6f8f" font-size="9">Host interface</text>
+
+      <rect x="630" y="400" width="140" height="40" rx="4" fill="url(#memGrad)" stroke="#76b900"/>
+      <text x="700" y="418" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">GigaThread Engine</text>
+      <text x="700" y="432" text-anchor="middle" fill="#5f6f8f" font-size="9">Global scheduler</text>
+    </svg>
+  </div>
+  <p class="footnote">GB202 contains 12 GPCs × 8 TPCs × 2 SMs = 192 SMs fully enabled. The 5090 ships with 170 SMs enabled (22 fused off for yield).</p>
+</section>
+
+<!-- ========================= GPC ========================= -->
+<section id="gpc">
+  <h2><span class="tag">03</span> GPC → TPC → SM Hierarchy</h2>
+  <p class="lede">
+    A <strong>Graphics Processing Cluster (GPC)</strong> is the largest self-contained execution tile on the chip.
+    Each GPC houses a Raster Engine, 2 ROP partitions (16 ROPs total), and 8 Texture Processing Clusters. Each TPC is a pair of SMs sharing a PolyMorph Engine.
+    Click any GPC to zoom.
+  </p>
+  <div class="stage">
+    <svg id="gpcSvg" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="tpcGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#143d1b"/><stop offset="1" stop-color="#0a1f0c"/>
+        </linearGradient>
+      </defs>
+      <rect x="10" y="10" width="880" height="400" rx="10" fill="#f9fbff" stroke="#243052"/>
+      <text x="450" y="32" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">One GPC — Raster Engine + 8 TPCs + ROPs</text>
+
+      <!-- Raster Engine -->
+      <rect x="40" y="50" width="820" height="44" rx="6" fill="#e7f1ff" stroke="#00d4ff"/>
+      <text x="450" y="70" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">Raster Engine — triangle setup · edge/Z · tile binning · hierarchical-Z</text>
+      <text x="450" y="85" text-anchor="middle" fill="#5f6f8f" font-size="10">feeds pixels into SMs for shading</text>
+
+      <!-- 8 TPCs -->
+      <g id="tpcRow"></g>
+
+      <!-- ROPs bottom -->
+      <rect x="40" y="330" width="400" height="44" rx="6" fill="#331430" stroke="#ff4d8d"/>
+      <text x="240" y="350" text-anchor="middle" fill="#ff4d8d" font-size="12" font-weight="700">ROP partition 0 — 8 ROPs</text>
+      <text x="240" y="365" text-anchor="middle" fill="#5f6f8f" font-size="10">blend · depth test · color write-out</text>
+
+      <rect x="460" y="330" width="400" height="44" rx="6" fill="#331430" stroke="#ff4d8d"/>
+      <text x="660" y="350" text-anchor="middle" fill="#ff4d8d" font-size="12" font-weight="700">ROP partition 1 — 8 ROPs</text>
+      <text x="660" y="365" text-anchor="middle" fill="#5f6f8f" font-size="10">16 ROPs / GPC × 11 GPCs enabled → 176 ROPs</text>
+
+      <!-- data arrows -->
+      <line x1="450" y1="94" x2="450" y2="108" stroke="#00d4ff" stroke-width="2" class="flow"/>
+      <line x1="240" y1="310" x2="240" y2="330" stroke="#ff4d8d" stroke-width="2" class="flow"/>
+      <line x1="660" y1="310" x2="660" y2="330" stroke="#ff4d8d" stroke-width="2" class="flow"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ========================= SM ========================= -->
+<section id="sm">
+  <h2><span class="tag">04</span> Inside a Blackwell SM (Streaming Multiprocessor)</h2>
+  <p class="lede">
+    Each SM is split into <strong>4 sub-cores (processing blocks)</strong>. Each sub-core has its own warp scheduler, register file, and a slice of the SM's
+    compute: CUDA cores (unified INT32/FP32), tensor core, and load/store units. A single L1 / shared memory cache and the RT core are shared across
+    the SM. Press <code>▶ run warp</code> to animate a 32-thread warp flowing through one sub-core.
+  </p>
+
+  <div class="stage">
+    <svg id="smSvg" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="540" rx="12" fill="#f9fbff" stroke="#243052"/>
+      <text x="450" y="32" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">
+        Blackwell SM — 128 CUDA cores · 4 Tensor Cores · 1 RT Core · 128 KB L1/shared
+      </text>
+
+      <!-- L1 instruction cache at top -->
+      <rect x="60" y="50" width="780" height="30" rx="4" fill="#e7f1ff" stroke="#00d4ff"/>
+      <text x="450" y="69" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">L1 Instruction Cache &nbsp;·&nbsp; Warp dispatch</text>
+
+      <!-- 4 sub-cores -->
+      <g id="subcores"></g>
+
+      <!-- RT core right side bottom -->
+      <rect x="60" y="440" width="400" height="70" rx="8" fill="#fff2e2" stroke="#ffb03b"/>
+      <text x="260" y="465" text-anchor="middle" fill="#ffb03b" font-size="12" font-weight="700">4th-Gen RT Core (shared by SM)</text>
+      <text x="260" y="482" text-anchor="middle" fill="#334562" font-size="10">BVH traversal · ray-triangle &amp; ray-box intersect · Mega Geometry</text>
+      <text x="260" y="498" text-anchor="middle" fill="#5f6f8f" font-size="10">2× triangle-intersect rate vs Ada</text>
+
+      <!-- L1 data / shared mem -->
+      <rect x="480" y="440" width="360" height="70" rx="8" fill="#e7f1ff" stroke="#00d4ff"/>
+      <text x="660" y="465" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">L1 Data / Shared Memory — 128 KB</text>
+      <text x="660" y="482" text-anchor="middle" fill="#334562" font-size="10">configurable split · 4 Tex units · TMA (Tensor Memory Accelerator)</text>
+      <text x="660" y="498" text-anchor="middle" fill="#5f6f8f" font-size="10">backing store for warp reg spills</text>
+
+      <!-- Warp animation layer -->
+      <g id="warpAnim"></g>
+    </svg>
+  </div>
+  <div class="controls">
+    <button class="btn" id="runWarp">▶ run warp</button>
+    <button class="btn alt" id="resetWarp">↺ reset</button>
+    <span class="legend">
+      <span><i style="background:#76b900"></i>INT32/FP32 CUDA</span>
+      <span><i style="background:#00d4ff"></i>Tensor Core (5th gen)</span>
+      <span><i style="background:#a479ff"></i>Warp scheduler / dispatch</span>
+      <span><i style="background:#ffb03b"></i>RT core</span>
+    </span>
+  </div>
+  <div class="narr" id="warpNarr">Idle. Press <b>run warp</b> — a 32-thread warp will be scheduled, operands fetched from the register file, and a fused MAC will execute across all 32 lanes of the sub-core.</div>
+
+  <h3>Key differences vs Ada (RTX 40-series) SM</h3>
+  <table>
+    <thead><tr><th>Feature</th><th>Ada SM</th><th>Blackwell SM</th></tr></thead>
+    <tbody>
+      <tr><td>INT32/FP32 datapath</td><td>Split: 1× FP32, 1× FP32+INT32</td><td>Unified — both datapaths can do INT32 <em>or</em> FP32 per cycle</td></tr>
+      <tr><td>Tensor core generation</td><td>4th gen — FP16/BF16/FP8</td><td>5th gen — adds FP6, FP4, NVFP4, MXFP formats</td></tr>
+      <tr><td>RT core generation</td><td>3rd gen</td><td>4th gen — 2× triangle-intersect, Mega Geometry / LSS &amp; subdivision surface primitives</td></tr>
+      <tr><td>Neural shader support</td><td>No</td><td>Yes — shaders can inline small MLPs via Tensor cores</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========================= TENSOR CORE ========================= -->
+<section id="tensor">
+  <h2><span class="tag">05</span> 5th-Generation Tensor Core — FP4 Matrix Multiply</h2>
+  <p class="lede">
+    The Tensor Core is a systolic-array-style matrix engine. In each cycle it computes <code>D = A·B + C</code> over a tile of operands.
+    On Blackwell, a single Tensor Core tile can operate on FP4 (NVFP4 / MXFP4), FP6, FP8, FP16, BF16, TF32, or FP64 —
+    doubling throughput every time you halve the bit-width. Press <code>▶ step MAC</code> to watch a 4×4 tile MAC animation.
+  </p>
+
+  <div class="stage">
+    <svg id="tcSvg" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="400" rx="12" fill="#f9fbff" stroke="#243052"/>
+      <text x="450" y="34" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">Tensor Core — D = A·B + C  (4×4 tile, single cycle)</text>
+
+      <!-- A matrix -->
+      <g id="matA"></g>
+      <text x="120" y="95" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">A (activations, FP4)</text>
+      <!-- B matrix -->
+      <g id="matB"></g>
+      <text x="330" y="95" text-anchor="middle" fill="#a479ff" font-size="12" font-weight="700">B (weights, FP4)</text>
+      <!-- MAC unit -->
+      <rect x="450" y="150" width="120" height="120" rx="10" fill="#edf8eb" stroke="#76b900" stroke-width="2"/>
+      <text x="510" y="200" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">multiply–</text>
+      <text x="510" y="218" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">accumulate</text>
+      <text x="510" y="240" text-anchor="middle" fill="#5f6f8f" font-size="10">16 lanes</text>
+
+      <!-- C accumulator -->
+      <g id="matC"></g>
+      <text x="680" y="95" text-anchor="middle" fill="#ffb03b" font-size="12" font-weight="700">C accumulator (FP16)</text>
+
+      <!-- D output -->
+      <g id="matD"></g>
+      <text x="810" y="95" text-anchor="middle" fill="#ff4d8d" font-size="12" font-weight="700">D (out)</text>
+
+      <!-- arrows -->
+      <path d="M 170 200 L 450 200" stroke="#00d4ff" stroke-width="2" fill="none" class="flow" marker-end="url(#arr)"/>
+      <path d="M 380 200 L 450 215" stroke="#a479ff" stroke-width="2" fill="none" class="flow" marker-end="url(#arr)"/>
+      <path d="M 570 210 L 640 200" stroke="#76b900" stroke-width="2" fill="none" class="flow" marker-end="url(#arr)"/>
+      <path d="M 730 200 L 770 200" stroke="#ff4d8d" stroke-width="2" fill="none" class="flow" marker-end="url(#arr)"/>
+      <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334562"/></marker></defs>
+
+      <text x="450" y="350" text-anchor="middle" fill="#5f6f8f" font-size="11">
+        Blackwell adds <tspan fill="#76b900">tcgen05.mma</tspan> PTX — single-thread MMA issue, removes warp-wide barrier; operands staged from TMEM
+      </text>
+      <text x="450" y="370" text-anchor="middle" fill="#5f6f8f" font-size="11">
+        Micro-scaling (NVFP4) keeps accuracy by quantizing per 16-element block with a shared scale factor
+      </text>
+    </svg>
+  </div>
+  <div class="controls">
+    <button class="btn" id="stepMac">▶ step MAC</button>
+    <button class="btn alt" id="playMac">▶▶ play</button>
+    <button class="btn alt" id="resetMac">↺ reset</button>
+  </div>
+
+  <h3>Precision/throughput ladder (relative to FP16 = 1×)</h3>
+  <div class="grid cols-4">
+    <div class="stat"><div class="k">FP16 / BF16</div><div class="v">1× <small>baseline</small></div></div>
+    <div class="stat"><div class="k">FP8</div><div class="v">2×</div></div>
+    <div class="stat"><div class="k">FP6</div><div class="v">2× <small>shares FP8 datapath</small></div></div>
+    <div class="stat"><div class="k">FP4 / NVFP4</div><div class="v">4×</div></div>
+  </div>
+</section>
+
+<!-- ========================= MEMORY HIERARCHY ========================= -->
+<section id="memory">
+  <h2><span class="tag">06</span> Memory Hierarchy & Data Paths</h2>
+  <p class="lede">
+    Data in a Blackwell kernel flows through six nested levels — the closer to the SM, the faster and tinier.
+    Press <code>▶ animate load</code> to watch a single 128-byte cache line be fetched from GDDR7 all the way down into a warp register.
+  </p>
+
+  <div class="stage">
+    <svg id="memSvg" viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="420" rx="12" fill="#f9fbff" stroke="#243052"/>
+      <text x="450" y="34" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">Memory hierarchy — 6 levels, ~3 orders of magnitude latency spread</text>
+
+      <!-- Levels stacked -->
+      <!-- 1 GDDR7 -->
+      <rect x="60" y="60" width="780" height="46" rx="6" fill="#f1ebff" stroke="#a479ff"/>
+      <text x="80" y="88" fill="#a479ff" font-size="12" font-weight="700">GDDR7 HBM-like  ·  32 GB  ·  1 792 GB/s</text>
+      <text x="830" y="88" text-anchor="end" fill="#5f6f8f" font-size="11" font-family="ui-monospace">~350 ns · off-chip</text>
+
+      <!-- 2 L2 -->
+      <rect x="100" y="120" width="700" height="42" rx="6" fill="#e9f4ff" stroke="#00d4ff"/>
+      <text x="120" y="146" fill="#00d4ff" font-size="12" font-weight="700">L2 Cache  ·  96 MB  ·  shared by all SMs</text>
+      <text x="790" y="146" text-anchor="end" fill="#5f6f8f" font-size="11" font-family="ui-monospace">~360 cy</text>
+
+      <!-- 3 L1/shared -->
+      <rect x="160" y="176" width="580" height="40" rx="6" fill="#eef8ec" stroke="#76b900"/>
+      <text x="180" y="202" fill="#76b900" font-size="12" font-weight="700">L1 data / shared memory  ·  128 KB per SM</text>
+      <text x="730" y="202" text-anchor="end" fill="#5f6f8f" font-size="11" font-family="ui-monospace">~30–40 cy</text>
+
+      <!-- 4 TMEM -->
+      <rect x="200" y="230" width="500" height="40" rx="6" fill="#faedf6" stroke="#ff4d8d"/>
+      <text x="220" y="256" fill="#ff4d8d" font-size="12" font-weight="700">TMEM  ·  256 KB per SM  ·  tensor-core scratchpad</text>
+      <text x="690" y="256" text-anchor="end" fill="#5f6f8f" font-size="11" font-family="ui-monospace">16 TB/s read</text>
+
+      <!-- 5 Register file -->
+      <rect x="250" y="284" width="400" height="40" rx="6" fill="#fff2e2" stroke="#ffb03b"/>
+      <text x="270" y="310" fill="#ffb03b" font-size="12" font-weight="700">Register file  ·  256 KB per SM  ·  split 4 sub-cores</text>
+      <text x="640" y="310" text-anchor="end" fill="#5f6f8f" font-size="11" font-family="ui-monospace">~1 cy</text>
+
+      <!-- 6 Operand collectors -->
+      <rect x="310" y="338" width="280" height="40" rx="6" fill="#f0fdff" stroke="#e6f1a3"/>
+      <text x="330" y="364" fill="#e6f1a3" font-size="12" font-weight="700">Operand collector / lane</text>
+      <text x="580" y="364" text-anchor="end" fill="#5f6f8f" font-size="11" font-family="ui-monospace">0 cy</text>
+
+      <!-- animated cache line -->
+      <circle id="cacheLine" cx="80" cy="83" r="8" fill="#76b900" opacity="0"/>
+    </svg>
+  </div>
+  <div class="controls">
+    <button class="btn" id="runMem">▶ animate load</button>
+    <button class="btn alt" id="resetMem">↺ reset</button>
+  </div>
+  <div class="narr" id="memNarr">Ready. The cache line will walk from GDDR7 → L2 → L1 → TMEM → Register → Operand collector.</div>
+
+  <h3>Why the hierarchy matters for AI</h3>
+  <p>
+    A Tensor Core can burn through <em>thousands</em> of MACs per nanosecond — far faster than GDDR7 can deliver raw bytes.
+    The job of every lower cache level is to keep the Tensor Cores fed with operand tiles. Blackwell added <strong>TMEM</strong>
+    (Tensor Memory) — a dedicated 256 KB scratchpad per SM, accessed by new <code>tcgen05.cp/ld/st</code> instructions — specifically to
+    stage matrix operands without thrashing shared memory or the register file.
+  </p>
+</section>
+
+<!-- ========================= I/O ========================= -->
+<section id="io">
+  <h2><span class="tag">07</span> I/O, Peripherals & Fixed-Function Blocks</h2>
+  <p class="lede">
+    Outside the compute fabric, the RTX 5090 has a rich set of fixed-function blocks that handle host communication,
+    display, video, and — new on Blackwell — a microcontroller dedicated to AI task arbitration.
+  </p>
+  <div class="grid cols-2">
+    <div class="stat">
+      <div class="k"><span class="chip cyan">PCIe 5.0 ×16</span></div>
+      <div class="v" style="font-size:15px;color:#c8d0e8;font-weight:500;line-height:1.5">
+        Host interface. 32 GT/s per lane × 16 lanes = <strong>~64 GB/s</strong> each direction.
+        DMA engines stream tensors and texture data between system RAM and GDDR7.
+      </div>
+    </div>
+    <div class="stat">
+      <div class="k"><span class="chip">GigaThread Engine</span></div>
+      <div class="v" style="font-size:15px;color:#c8d0e8;font-weight:500;line-height:1.5">
+        Global work distributor. Receives CUDA kernel launches, decomposes them into cooperative thread-array (CTA / thread-block) units and assigns them round-robin to SMs that have free resources.
+      </div>
+    </div>
+    <div class="stat">
+      <div class="k"><span class="chip" style="background:rgba(255,176,59,.1);color:var(--warn);border-color:rgba(255,176,59,.3)">AMP — AI Management Proc.</span></div>
+      <div class="v" style="font-size:15px;color:#c8d0e8;font-weight:500;line-height:1.5">
+        New on Blackwell. A small RISC microcontroller that arbitrates AI workloads (DLSS, neural shaders) vs graphics work — reduces CPU round-trips and cooperates with Windows hardware-accelerated GPU scheduling.
+      </div>
+    </div>
+    <div class="stat">
+      <div class="k"><span class="chip pink">3× NVENC (9th-gen) · 2× NVDEC (6th-gen)</span></div>
+      <div class="v" style="font-size:15px;color:#c8d0e8;font-weight:500;line-height:1.5">
+        Dedicated video silicon: H.264, HEVC, AV1 encode/decode — and for the first time in GeForce, <strong>4:2:2</strong> chroma support for pro video.
+      </div>
+    </div>
+    <div class="stat">
+      <div class="k"><span class="chip purple">Display Engine</span></div>
+      <div class="v" style="font-size:15px;color:#c8d0e8;font-weight:500;line-height:1.5">
+        1× HDMI 2.1b + 3× DisplayPort 2.1b (UHBR20). Drives 8K@165 Hz with DSC, or 4K@480 Hz.
+      </div>
+    </div>
+    <div class="stat">
+      <div class="k"><span class="chip">16× GDDR7 Memory Controllers</span></div>
+      <div class="v" style="font-size:15px;color:#c8d0e8;font-weight:500;line-height:1.5">
+        Ring of sixteen 32-bit channels → 512-bit bus. PAM3 signaling at 28 Gbps per pin = 1 792 GB/s aggregate.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= MNIST TRAINING ========================= -->
+<section id="mnist-train">
+  <h2><span class="tag">08</span> Case Study — Training MNIST on the RTX 5090</h2>
+  <p class="lede">
+    Let's trace a complete training step of a tiny MLP (784 → 128 → 10) on a batch of 256 MNIST digits.
+    Press <code>▶ run epoch step</code> and watch how work flows across the chip: CPU → PCIe → GigaThread → SMs → Tensor Cores → back to L2 → GDDR7.
+  </p>
+
+  <div class="stage">
+    <svg id="trainSvg" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="540" rx="12" fill="#f9fbff" stroke="#243052"/>
+
+      <!-- CPU / host -->
+      <rect x="40" y="40" width="150" height="60" rx="8" fill="#e7f1ff" stroke="#00d4ff"/>
+      <text x="115" y="65" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">Host CPU</text>
+      <text x="115" y="82" text-anchor="middle" fill="#5f6f8f" font-size="10">PyTorch, cuDNN launch</text>
+
+      <!-- PCIe -->
+      <line x1="190" y1="70" x2="280" y2="70" stroke="#00d4ff" stroke-width="3" class="flow"/>
+      <text x="235" y="60" text-anchor="middle" fill="#5f6f8f" font-size="10">PCIe 5.0</text>
+
+      <!-- GigaThread -->
+      <rect x="280" y="40" width="160" height="60" rx="8" fill="#edf8eb" stroke="#76b900"/>
+      <text x="360" y="65" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">GigaThread Engine</text>
+      <text x="360" y="82" text-anchor="middle" fill="#5f6f8f" font-size="10">decompose → CTAs</text>
+
+      <!-- GDDR7 pool -->
+      <rect x="720" y="40" width="140" height="60" rx="8" fill="#f1ebff" stroke="#a479ff"/>
+      <text x="790" y="65" text-anchor="middle" fill="#a479ff" font-size="12" font-weight="700">GDDR7 32 GB</text>
+      <text x="790" y="82" text-anchor="middle" fill="#5f6f8f" font-size="10">weights W1, W2, batch X</text>
+
+      <line x1="440" y1="70" x2="720" y2="70" stroke="#a479ff" stroke-width="2" class="flow"/>
+
+      <!-- L2 -->
+      <rect x="280" y="140" width="340" height="40" rx="6" fill="#e9f4ff" stroke="#00d4ff"/>
+      <text x="450" y="164" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">L2 Cache (96 MB) — shared</text>
+
+      <line x1="790" y1="100" x2="450" y2="140" stroke="#00d4ff" stroke-width="2" class="flow"/>
+
+      <!-- SM grid -->
+      <g id="smGrid"></g>
+
+      <!-- Phase readout -->
+      <rect x="40" y="480" width="820" height="54" rx="8" fill="#edf4ff" stroke="#243052"/>
+      <text x="60" y="500" fill="#5f6f8f" font-size="11" font-family="ui-monospace">phase</text>
+      <text id="trainPhase" x="60" y="522" fill="#76b900" font-size="16" font-weight="700" font-family="ui-monospace">idle</text>
+      <text id="trainMetric" x="860" y="522" text-anchor="end" fill="#00d4ff" font-size="13" font-family="ui-monospace">step 0 · loss —</text>
+    </svg>
+  </div>
+  <div class="controls">
+    <button class="btn" id="runTrain">▶ run epoch step</button>
+    <button class="btn alt" id="resetTrain">↺ reset</button>
+  </div>
+  <div class="narr" id="trainNarr">Ready. We'll walk through the 7 phases: (1) host launch → (2) HtoD DMA → (3) forward FC1 GEMM → (4) ReLU → (5) forward FC2 → (6) softmax+loss → (7) backward+SGD weight update.</div>
+
+  <h3>What actually runs on which block</h3>
+  <table>
+    <thead><tr><th>Phase</th><th>Where</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>1. Kernel launch</td><td>Host CPU → PCIe 5.0 → GigaThread</td><td><code>cudaLaunchKernel</code> · command buffer DMAed over PCIe; GigaThread reads it and fans out CTAs</td></tr>
+      <tr><td>2. HtoD data copy</td><td>PCIe 5.0 DMA → GDDR7 → L2</td><td>Batch X (256 × 784 × 1 B) ≈ 200 KB · copied once per step, then pinned in L2</td></tr>
+      <tr><td>3. FC1: Y1 = X·W1<sup>T</sup></td><td>Tensor cores in ~60 SMs</td><td>GEMM tiled 128×128 × 256 — BF16 operands, FP32 accum; tiles staged through TMEM</td></tr>
+      <tr><td>4. ReLU(Y1)</td><td>CUDA cores, same SMs</td><td>Elementwise max(0,x) fused into epilogue — no extra DRAM trip</td></tr>
+      <tr><td>5. FC2: Y2 = A1·W2<sup>T</sup></td><td>Tensor cores</td><td>Smaller GEMM (256 × 128 × 10), latency-bound</td></tr>
+      <tr><td>6. Softmax + cross-entropy</td><td>CUDA cores + special-function units</td><td>exp / sum / log done per-row in shared memory</td></tr>
+      <tr><td>7. Backward + SGD update</td><td>Tensor cores + CUDA cores → L2 → GDDR7</td><td>Reverses the graph: dW2, dW1 computed by transposed GEMMs; atomic writes update W1, W2 in GDDR7</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========================= MNIST INFERENCE ========================= -->
+<section id="mnist-infer">
+  <h2><span class="tag">09</span> Inference — Classifying One Digit</h2>
+  <p class="lede">
+    Draw (or click <code>🎲 random</code>) a digit in the canvas below. We simulate inference using a pretrained-feel set of weights and show, step by step,
+    the activations flowing through FC1 → ReLU → FC2 → Softmax, exactly mirroring the hardware path on the RTX 5090.
+  </p>
+
+  <div class="grid cols-2">
+    <!-- Left: draw canvas -->
+    <div>
+      <h3>Input: 28 × 28 pixel image</h3>
+      <canvas id="digitCanvas" width="280" height="280" style="background:#ffffff;border:2px solid var(--border);border-radius:8px;cursor:crosshair;image-rendering:pixelated;display:block"></canvas>
+      <div class="controls">
+        <button class="btn" id="inferBtn">▶ classify</button>
+        <button class="btn alt" id="clearCanvas">clear</button>
+        <button class="btn alt" id="randomDigit">🎲 random</button>
+      </div>
+      <p class="footnote">Note: weights here are procedurally generated templates (one per digit), not a real trained model — the goal is to visualize the hardware pipeline, not beat MNIST SOTA.</p>
+    </div>
+    <!-- Right: hidden layer + logits bar chart -->
+    <div>
+      <h3>Hardware pipeline &amp; activations</h3>
+      <div class="stage">
+        <svg id="inferSvg" viewBox="0 0 480 420" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="480" height="420" fill="#f9fbff"/>
+
+          <!-- input -->
+          <rect x="20" y="30" width="60" height="60" rx="4" fill="#edf4ff" stroke="#8a97b8"/>
+          <text x="50" y="110" text-anchor="middle" fill="#5f6f8f" font-size="10">input 784</text>
+
+          <!-- FC1 -->
+          <rect x="110" y="20" width="80" height="80" rx="4" fill="#edf8eb" stroke="#76b900"/>
+          <text x="150" y="55" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">FC1</text>
+          <text x="150" y="70" text-anchor="middle" fill="#76b900" font-size="9">Tensor Core</text>
+          <text x="150" y="120" text-anchor="middle" fill="#5f6f8f" font-size="10">128 hidden</text>
+
+          <!-- ReLU -->
+          <rect x="220" y="30" width="60" height="60" rx="4" fill="#fff2e2" stroke="#ffb03b"/>
+          <text x="250" y="62" text-anchor="middle" fill="#ffb03b" font-size="11" font-weight="700">ReLU</text>
+          <text x="250" y="76" text-anchor="middle" fill="#ffb03b" font-size="9">CUDA</text>
+
+          <!-- FC2 -->
+          <rect x="310" y="20" width="80" height="80" rx="4" fill="#edf8eb" stroke="#76b900"/>
+          <text x="350" y="55" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">FC2</text>
+          <text x="350" y="70" text-anchor="middle" fill="#76b900" font-size="9">Tensor Core</text>
+          <text x="350" y="120" text-anchor="middle" fill="#5f6f8f" font-size="10">10 logits</text>
+
+          <!-- arrows -->
+          <line id="a1" x1="80" y1="60" x2="110" y2="60" stroke="#00d4ff" stroke-width="2"/>
+          <line id="a2" x1="190" y1="60" x2="220" y2="60" stroke="#00d4ff" stroke-width="2"/>
+          <line id="a3" x1="280" y1="60" x2="310" y2="60" stroke="#00d4ff" stroke-width="2"/>
+
+          <!-- bar chart for output -->
+          <text x="240" y="160" text-anchor="middle" fill="#334562" font-size="12" font-weight="700">Softmax output</text>
+          <g id="bars"></g>
+        </svg>
+      </div>
+      <div class="narr" id="inferNarr">Draw a digit and press <b>classify</b>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= SOURCES ========================= -->
+<section id="sources">
+  <h2><span class="tag">∞</span> Sources &amp; Further Reading</h2>
+  <ul style="color:#c8d0e8;font-size:13px;line-height:1.9">
+    <li>NVIDIA, <em>RTX Blackwell GPU Architecture Whitepaper v1.1</em> — block-level GPC / TPC / SM diagrams, RT &amp; Tensor core generation notes.</li>
+    <li>TechPowerUp &amp; NotebookCheck GPU Database — SKU specs, clock/memory configuration, ROP/TMU counts.</li>
+    <li>Jarmusch et al., <em>"Dissecting the NVIDIA Blackwell Architecture with Microbenchmarks"</em> (arXiv 2507.10789, Dec 2025) — SM sub-core layout, <code>tcgen05</code>, TMEM, measured latency/throughput.</li>
+    <li>SemiAnalysis, <em>"NVIDIA Tensor Core Evolution: From Volta To Blackwell"</em> — FP4/FP6/NVFP4 format deep-dive, datapath sharing.</li>
+    <li>Wikipedia, <em>GeForce RTX 50 series</em> &amp; <em>Blackwell (microarchitecture)</em> — I/O and display feature set, NVENC/NVDEC generations.</li>
+    <li>Moor Insights &amp; Strategy RTX 5090 review — AI Management Processor (AMP) description and Windows scheduler interaction.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  Research-level hardware walkthrough · diagrams are schematic (block positions topological, not a literal die photo).
+  RTX 5090 / GB202 information compiled April 2026.
+</footer>
+
+<script>
+/* =====================================================================
+   Helper: SVG create
+   ===================================================================== */
+const SVG='http://www.w3.org/2000/svg';
+function el(tag,attrs={}){const e=document.createElementNS(SVG,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+/* =====================================================================
+   1. DIE floorplan — 12 GPCs, memory ring
+   ===================================================================== */
+(function buildDie(){
+  const svg=document.getElementById('dieSvg');
+  const gpcGroup=document.getElementById('gpcGroup');
+  // 3 rows x 4 cols, all 12 GPCs
+  const dieX=120,dieY=70,dieW=660,dieH=380;
+  const cols=4,rows=3,pad=10;
+  // reserve center two for L2 — we'll just place 12 GPCs around it with the L2 overlapping
+  const cellW=(dieW-(cols+1)*pad)/cols;
+  const cellH=((dieH-(rows+1)*pad-60)/rows); // leave bottom 60 for IO row
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const i=r*cols+c;
+      const x=dieX+pad+c*(cellW+pad);
+      const y=dieY+pad+r*(cellH+pad);
+      const g=el('g',{});
+      const rect=el('rect',{x,y,width:cellW,height:cellH,rx:4,fill:'url(#gpcGrad)',stroke:'#76b900','stroke-width':'1','data-gpc':i});
+      g.appendChild(rect);
+      const label=el('text',{x:x+cellW/2,y:y+cellH/2-4,'text-anchor':'middle',fill:'#c8d0e8','font-size':'11','font-weight':'700'});
+      label.textContent='GPC '+i;
+      g.appendChild(label);
+      const sub=el('text',{x:x+cellW/2,y:y+cellH/2+10,'text-anchor':'middle',fill:'#8a97b8','font-size':'9'});
+      sub.textContent='8 TPC · 16 SM · 16 ROP';
+      g.appendChild(sub);
+      // subtle pulse randomly
+      rect.style.animation='pulse '+(2+Math.random()*3)+'s ease-in-out infinite';
+      gpcGroup.appendChild(g);
+    }
+  }
+  // 16 GDDR7 chips — 8 top, 8 bottom of die
+  const gddrGroup=document.getElementById('gddrTop');
+  for(let i=0;i<8;i++){
+    const x=135+i*82;
+    const top=el('rect',{x,y:30,width:70,height:28,rx:3,fill:'#1a0f2b',stroke:'#a479ff'});
+    const topt=el('text',{x:x+35,y:48,'text-anchor':'middle',fill:'#a479ff','font-size':'9','font-weight':'700'});
+    topt.textContent='GDDR7';
+    gddrGroup.appendChild(top);gddrGroup.appendChild(topt);
+
+    const bot=el('rect',{x,y:462,width:70,height:28,rx:3,fill:'#1a0f2b',stroke:'#a479ff'});
+    const bott=el('text',{x:x+35,y:480,'text-anchor':'middle',fill:'#a479ff','font-size':'9','font-weight':'700'});
+    bott.textContent='GDDR7';
+    gddrGroup.appendChild(bot);gddrGroup.appendChild(bott);
+  }
+})();
+
+/* =====================================================================
+   2. GPC diagram — 8 TPCs in a row
+   ===================================================================== */
+(function buildGpc(){
+  const row=document.getElementById('tpcRow');
+  for(let i=0;i<8;i++){
+    const x=40+i*103;
+    const y=110;
+    const w=95,h=200;
+    const g=el('g',{});
+    const rect=el('rect',{x,y,width:w,height:h,rx:5,fill:'url(#tpcGrad)',stroke:'#76b900'});
+    g.appendChild(rect);
+    const lbl=el('text',{x:x+w/2,y:y+18,'text-anchor':'middle',fill:'#76b900','font-size':'11','font-weight':'700'});
+    lbl.textContent='TPC '+i;
+    g.appendChild(lbl);
+    // PolyMorph engine
+    const pm=el('rect',{x:x+8,y:y+30,width:w-16,height:20,rx:3,fill:'#0a1f0c',stroke:'#ffb03b'});
+    g.appendChild(pm);
+    const pmt=el('text',{x:x+w/2,y:y+44,'text-anchor':'middle',fill:'#ffb03b','font-size':'9'});
+    pmt.textContent='PolyMorph';
+    g.appendChild(pmt);
+    // 2 SMs
+    for(let s=0;s<2;s++){
+      const sx=x+6,sy=y+58+s*68,sw=w-12,sh=60;
+      const sm=el('rect',{x:sx,y:sy,width:sw,height:sh,rx:3,fill:'#112a1b',stroke:'#00d4ff'});
+      g.appendChild(sm);
+      const st=el('text',{x:sx+sw/2,y:sy+18,'text-anchor':'middle',fill:'#00d4ff','font-size':'10','font-weight':'700'});
+      st.textContent='SM '+s;
+      g.appendChild(st);
+      const s2=el('text',{x:sx+sw/2,y:sy+32,'text-anchor':'middle',fill:'#8a97b8','font-size':'8'});
+      s2.textContent='128 CUDA';
+      g.appendChild(s2);
+      const s3=el('text',{x:sx+sw/2,y:sy+44,'text-anchor':'middle',fill:'#8a97b8','font-size':'8'});
+      s3.textContent='4 TC · 1 RT';
+      g.appendChild(s3);
+    }
+    row.appendChild(g);
+  }
+})();
+
+/* =====================================================================
+   3. SM internals — 4 sub-cores with warp animation
+   ===================================================================== */
+(function buildSm(){
+  const group=document.getElementById('subcores');
+  const subW=200,subH=330,subY=100,gap=10,startX=60;
+  for(let i=0;i<4;i++){
+    const x=startX+i*(subW+gap);
+    const g=el('g',{});
+    const rect=el('rect',{x,y:subY,width:subW,height:subH,rx:8,fill:'#0a1226',stroke:'#243052','data-sub':i});
+    g.appendChild(rect);
+    const lbl=el('text',{x:x+subW/2,y:subY+20,'text-anchor':'middle',fill:'#c8d0e8','font-size':'12','font-weight':'700'});
+    lbl.textContent='Sub-core '+i;
+    g.appendChild(lbl);
+
+    // Warp scheduler
+    const wsY=subY+34;
+    const ws=el('rect',{x:x+12,y:wsY,width:subW-24,height:30,rx:4,fill:'#1a0f2b',stroke:'#a479ff','data-block':'ws'+i});
+    g.appendChild(ws);
+    const wst=el('text',{x:x+subW/2,y:wsY+19,'text-anchor':'middle',fill:'#a479ff','font-size':'10','font-weight':'700'});
+    wst.textContent='Warp Scheduler · Dispatch';
+    g.appendChild(wst);
+
+    // Register file
+    const rfY=subY+72;
+    const rf=el('rect',{x:x+12,y:rfY,width:subW-24,height:30,rx:4,fill:'#06242a',stroke:'#e6f1a3','data-block':'rf'+i});
+    g.appendChild(rf);
+    const rft=el('text',{x:x+subW/2,y:rfY+19,'text-anchor':'middle',fill:'#e6f1a3','font-size':'10','font-weight':'700'});
+    rft.textContent='Register file 64 KB';
+    g.appendChild(rft);
+
+    // CUDA cores (32 lanes grid 8x4)
+    const cuY=subY+110;
+    const ccBox=el('rect',{x:x+12,y:cuY,width:subW-24,height:80,rx:4,fill:'#0a1a0c',stroke:'#76b900','data-block':'cc'+i});
+    g.appendChild(ccBox);
+    const cct=el('text',{x:x+subW/2,y:cuY+14,'text-anchor':'middle',fill:'#76b900','font-size':'10','font-weight':'700'});
+    cct.textContent='32× CUDA lanes (INT32/FP32)';
+    g.appendChild(cct);
+    for(let row=0;row<4;row++){
+      for(let col=0;col<8;col++){
+        const cx=x+22+col*((subW-44)/8);
+        const cy=cuY+22+row*14;
+        const c=el('rect',{x:cx,y:cy,width:14,height:10,rx:1,fill:'#1a3a1d',stroke:'#76b900','stroke-width':'0.5','data-lane':i+'-'+(row*8+col)});
+        g.appendChild(c);
+      }
+    }
+
+    // Tensor core
+    const tcY=subY+198;
+    const tc=el('rect',{x:x+12,y:tcY,width:subW-24,height:50,rx:4,fill:'#0f2238',stroke:'#00d4ff','data-block':'tc'+i});
+    g.appendChild(tc);
+    const tct=el('text',{x:x+subW/2,y:tcY+20,'text-anchor':'middle',fill:'#00d4ff','font-size':'11','font-weight':'700'});
+    tct.textContent='Tensor Core (5th gen)';
+    g.appendChild(tct);
+    const tct2=el('text',{x:x+subW/2,y:tcY+36,'text-anchor':'middle',fill:'#8a97b8','font-size':'9'});
+    tct2.textContent='FP4/FP6/FP8/BF16/FP16/TF32/FP64';
+    g.appendChild(tct2);
+
+    // LSU
+    const lsuY=subY+256;
+    const lsu=el('rect',{x:x+12,y:lsuY,width:subW-24,height:30,rx:4,fill:'#2a1233',stroke:'#ff4d8d','data-block':'lsu'+i});
+    g.appendChild(lsu);
+    const lsut=el('text',{x:x+subW/2,y:lsuY+19,'text-anchor':'middle',fill:'#ff4d8d','font-size':'10','font-weight':'700'});
+    lsut.textContent='LSU · TMA · SFU';
+    g.appendChild(lsut);
+
+    group.appendChild(g);
+  }
+})();
+
+// Warp animation
+(function warpAnim(){
+  const svg=document.getElementById('smSvg');
+  const narr=document.getElementById('warpNarr');
+  const anim=document.getElementById('warpAnim');
+  let timer=[];
+  function reset(){
+    timer.forEach(clearTimeout);timer=[];
+    while(anim.firstChild)anim.removeChild(anim.firstChild);
+    // reset lane colors
+    document.querySelectorAll('[data-lane]').forEach(n=>n.setAttribute('fill','#1a3a1d'));
+    narr.innerHTML='Idle. Press <b>run warp</b>.';
+  }
+  function step(msg,fn,ms){ timer.push(setTimeout(()=>{narr.innerHTML=msg;fn&&fn();},ms)); }
+  document.getElementById('resetWarp').onclick=reset;
+  document.getElementById('runWarp').onclick=()=>{
+    reset();
+    // Phase 1: instruction fetch at warp scheduler of sub-core 0
+    step('① <b>Instruction fetch</b> — L1 I-cache → sub-core 0 warp scheduler. 32 threads (1 warp) selected from the active warp pool.',
+      ()=>{
+        const pulse=el('rect',{x:72,y:134,width:176,height:30,rx:4,fill:'none',stroke:'#a479ff','stroke-width':'3'});
+        pulse.setAttribute('class','blink');
+        anim.appendChild(pulse);
+      },100);
+
+    step('② <b>Operand fetch</b> — register file read: 3 source regs × 32 lanes = 96 reg ports exercised in one cycle.',
+      ()=>{
+        const pulse=el('rect',{x:72,y:172,width:176,height:30,rx:4,fill:'none',stroke:'#e6f1a3','stroke-width':'3'});
+        pulse.setAttribute('class','blink');
+        anim.appendChild(pulse);
+      },1400);
+
+    step('③ <b>Execute</b> — 32 CUDA lanes fire a fused multiply-add (FFMA) in lockstep (SIMT). Latency ≈ 4 cycles.',
+      ()=>{
+        document.querySelectorAll('[data-lane^="0-"]').forEach((n,i)=>{
+          setTimeout(()=>n.setAttribute('fill','#76b900'),i*20);
+        });
+      },2800);
+
+    step('④ <b>Writeback</b> — result latched back into the register file; warp scheduler releases slot for next instruction.',
+      ()=>{
+        const pulse=el('rect',{x:72,y:172,width:176,height:30,rx:4,fill:'none',stroke:'#00d4ff','stroke-width':'3'});
+        pulse.setAttribute('class','blink');
+        anim.appendChild(pulse);
+      },4500);
+
+    step('⑤ <b>Next cycle</b> — sub-core 0 can co-issue a tensor-core MMA on the <em>same</em> cycle via dual-issue. Meanwhile sub-cores 1–3 run their own warps independently.',
+      ()=>{
+        for(let i=0;i<4;i++){
+          const pulse=el('rect',{x:72+i*(200+10),y:298,width:176,height:50,rx:4,fill:'none',stroke:'#00d4ff','stroke-width':'2'});
+          pulse.setAttribute('class','blink');
+          anim.appendChild(pulse);
+        }
+      },6100);
+
+    step('✅ Warp retired. An SM hosts ~48 warps simultaneously — the scheduler interleaves them to hide memory latency.',null,8000);
+  };
+  reset();
+})();
+
+/* =====================================================================
+   4. Tensor core MAC animation
+   ===================================================================== */
+(function tensorCore(){
+  const N=4;
+  const svg=document.getElementById('tcSvg');
+  const matA=document.getElementById('matA');
+  const matB=document.getElementById('matB');
+  const matC=document.getElementById('matC');
+  const matD=document.getElementById('matD');
+  let A=[],B=[],C=[],D=[];
+  let cursorR=0,cursorC=0;
+  function rand(){return (Math.random()*2-1).toFixed(2);}
+  function build(){
+    A=[];B=[];C=[];D=[];
+    [matA,matB,matC,matD].forEach(g=>{while(g.firstChild)g.removeChild(g.firstChild);});
+    const cell=26;
+    // A at x=50..150
+    for(let r=0;r<N;r++){A.push([]);D.push([]);C.push([]);B.push([]);
+      for(let c=0;c<N;c++){
+        const v=parseFloat(rand());A[r].push(v);
+        const rect=el('rect',{x:50+c*cell,y:110+r*cell,width:cell-1,height:cell-1,fill:'#0a1226',stroke:'#00d4ff','data-ar':r,'data-ac':c});
+        matA.appendChild(rect);
+        const t=el('text',{x:50+c*cell+cell/2-0.5,y:110+r*cell+cell/2+4,'text-anchor':'middle',fill:'#c8d0e8','font-size':'9','font-family':'ui-monospace'});
+        t.textContent=v.toFixed(1);matA.appendChild(t);
+
+        const v2=parseFloat(rand());B[r].push(v2);
+        const rect2=el('rect',{x:260+c*cell,y:110+r*cell,width:cell-1,height:cell-1,fill:'#0a1226',stroke:'#a479ff','data-br':r,'data-bc':c});
+        matB.appendChild(rect2);
+        const t2=el('text',{x:260+c*cell+cell/2-0.5,y:110+r*cell+cell/2+4,'text-anchor':'middle',fill:'#c8d0e8','font-size':'9','font-family':'ui-monospace'});
+        t2.textContent=v2.toFixed(1);matB.appendChild(t2);
+
+        C[r].push(0);D[r].push(0);
+        const rect3=el('rect',{x:610+c*cell,y:110+r*cell,width:cell-1,height:cell-1,fill:'#0a1226',stroke:'#ffb03b','data-cr':r,'data-cc':c});
+        matC.appendChild(rect3);
+        const t3=el('text',{x:610+c*cell+cell/2-0.5,y:110+r*cell+cell/2+4,'text-anchor':'middle',fill:'#c8d0e8','font-size':'9','font-family':'ui-monospace'});
+        t3.textContent='0.0';matC.appendChild(t3);
+
+        const rect4=el('rect',{x:770+c*cell,y:110+r*cell,width:cell-1,height:cell-1,fill:'#0a1226',stroke:'#ff4d8d','data-dr':r,'data-dc':c});
+        matD.appendChild(rect4);
+        const t4=el('text',{x:770+c*cell+cell/2-0.5,y:110+r*cell+cell/2+4,'text-anchor':'middle',fill:'#c8d0e8','font-size':'9','font-family':'ui-monospace'});
+        t4.textContent='0.0';matD.appendChild(t4);
+      }
+    }
+    cursorR=0;cursorC=0;
+  }
+  function step(){
+    if(cursorR>=N){return false;}
+    // compute D[r][c] += A[r][k]*B[k][c] for k=0..N-1 — do one output cell per step
+    const r=cursorR,c=cursorC;
+    let s=0;for(let k=0;k<N;k++)s+=A[r][k]*B[k][c];
+    D[r][c]=s;
+    // highlight row r of A, col c of B
+    document.querySelectorAll('[data-ar]').forEach(n=>{
+      n.setAttribute('fill',n.getAttribute('data-ar')==r?'#1a3a4d':'#0a1226');
+    });
+    document.querySelectorAll('[data-bc]').forEach(n=>{
+      n.setAttribute('fill',n.getAttribute('data-bc')==c?'#2a1a4d':'#0a1226');
+    });
+    // update D cell
+    const dText=matD.querySelectorAll('text');
+    // We need to find matching rect text — the DOM order is rect,text,rect,text ... so text at index r*N+c in the text list
+    const dTexts=Array.from(matD.querySelectorAll('text'));
+    dTexts[r*N+c].textContent=s.toFixed(1);
+    const dRects=Array.from(matD.querySelectorAll('rect'));
+    dRects[r*N+c].setAttribute('fill','#4d1a2a');
+    cursorC++;
+    if(cursorC>=N){cursorC=0;cursorR++;}
+    return true;
+  }
+  let playing=null;
+  document.getElementById('stepMac').onclick=()=>step();
+  document.getElementById('playMac').onclick=()=>{
+    if(playing){clearInterval(playing);playing=null;return;}
+    playing=setInterval(()=>{if(!step()){clearInterval(playing);playing=null;}},350);
+  };
+  document.getElementById('resetMac').onclick=()=>{if(playing){clearInterval(playing);playing=null;}build();};
+  build();
+})();
+
+/* =====================================================================
+   5. Memory hierarchy animation
+   ===================================================================== */
+(function memHier(){
+  const c=document.getElementById('cacheLine');
+  const narr=document.getElementById('memNarr');
+  let timers=[];
+  function reset(){
+    timers.forEach(clearTimeout);timers=[];
+    c.setAttribute('opacity','0');
+    c.setAttribute('cx','80');c.setAttribute('cy','83');
+    narr.innerHTML='Ready. Press <b>animate load</b>.';
+  }
+  function anim(x,y,t,msg){
+    timers.push(setTimeout(()=>{
+      c.setAttribute('opacity','1');
+      c.animate([{cx:c.getAttribute('cx'),cy:c.getAttribute('cy')},{cx:x,cy:y}],{duration:600,fill:'forwards'});
+      setTimeout(()=>{c.setAttribute('cx',x);c.setAttribute('cy',y);},600);
+      narr.innerHTML=msg;
+    },t));
+  }
+  document.getElementById('resetMem').onclick=reset;
+  document.getElementById('runMem').onclick=()=>{
+    reset();
+    anim(450,83,100,'① <b>GDDR7</b> — memory controller issues a 128-byte burst read at 28 Gbps. ~350 ns round-trip.');
+    anim(450,141,1000,'② <b>L2 (96 MB)</b> — line is inserted into L2; future requests from any SM hit here at ~360 cycles.');
+    anim(450,196,2200,'③ <b>L1 / shared (128 KB)</b> — SM local copy. Configurable split with shared memory. ~35 cycle hit.');
+    anim(450,250,3400,'④ <b>TMEM (256 KB)</b> — tensor operand scratchpad; tcgen05.cp stages A/B tiles for the tensor core.');
+    anim(450,304,4600,'⑤ <b>Register file (256 KB)</b> — the operand finally lands in a per-thread register. 1 cycle.');
+    anim(450,358,5800,'⑥ <b>Operand collector</b> — register port arbitrator feeds the actual ALU lane. Zero extra cycles.');
+    timers.push(setTimeout(()=>{narr.innerHTML='✅ Load complete. From 350 ns (DRAM) to &lt;1 ns (operand) — ~3 orders of magnitude hierarchy.';},7000));
+  };
+  reset();
+})();
+
+/* =====================================================================
+   6. Training walkthrough
+   ===================================================================== */
+(function train(){
+  const smGrid=document.getElementById('smGrid');
+  // Draw 10 x 17 = 170 tiny SM squares
+  const cols=17,rows=10,startX=60,startY=210,cell=18,gap=3;
+  const sms=[];
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const x=startX+c*(cell+gap),y=startY+r*(cell+gap);
+      const rect=el('rect',{x,y,width:cell,height:cell,rx:2,fill:'#0a1a0c',stroke:'#243052','stroke-width':'0.5'});
+      smGrid.appendChild(rect);
+      sms.push(rect);
+    }
+  }
+  const label=el('text',{x:60,y:200,fill:'#76b900','font-size':'11','font-weight':'700','font-family':'ui-monospace'});
+  label.textContent='170 Streaming Multiprocessors';
+  smGrid.appendChild(label);
+
+  const phaseEl=document.getElementById('trainPhase');
+  const metricEl=document.getElementById('trainMetric');
+  const narr=document.getElementById('trainNarr');
+  let timers=[];
+  function reset(){
+    timers.forEach(clearTimeout);timers=[];
+    sms.forEach(s=>{s.setAttribute('fill','#0a1a0c');s.style.animation='';});
+    phaseEl.textContent='idle';metricEl.textContent='step 0 · loss —';
+    narr.innerHTML='Ready. Press <b>run epoch step</b>.';
+  }
+  function lightUp(n,color){
+    for(let i=0;i<n&&i<sms.length;i++){
+      sms[i].setAttribute('fill',color);
+      sms[i].style.animation='pulse '+(1+Math.random())+'s ease-in-out infinite';
+    }
+    for(let i=n;i<sms.length;i++){sms[i].setAttribute('fill','#0a1a0c');sms[i].style.animation='';}
+  }
+  function phase(t,name,msg,n,color,metric){
+    timers.push(setTimeout(()=>{
+      phaseEl.textContent=name;
+      narr.innerHTML=msg;
+      lightUp(n,color);
+      if(metric)metricEl.textContent=metric;
+    },t));
+  }
+  document.getElementById('resetTrain').onclick=reset;
+  document.getElementById('runTrain').onclick=()=>{
+    reset();
+    phase(100,'① launch',
+      '<b>Host CPU</b> calls <code>cudaLaunchKernel</code>. Command buffer streams across PCIe 5.0 ×16 at 64 GB/s. GigaThread decodes it.',
+      0,'#0a1a0c','step 1 · loss —');
+    phase(1100,'② HtoD DMA',
+      '<b>DMA copy</b>: batch X (256×784 bytes ≈ 200 KB) + labels sent GDDR7-side; pinned into L2 for reuse.',
+      5,'#1a0f2b','step 1 · loss —');
+    phase(2200,'③ forward FC1 GEMM',
+      '<b>Tensor cores</b> fire a 256×784×128 BF16 GEMM. Tiles staged via TMEM. ~60 SMs needed — the rest idle for this tiny model.',
+      60,'#1a3a4d','step 1 · loss —');
+    phase(3600,'④ ReLU (fused)',
+      '<b>CUDA cores</b> run max(0,x) as a GEMM epilogue — no round-trip to L2. Same SMs, different datapath.',
+      60,'#1a3a1d','step 1 · loss —');
+    phase(4700,'⑤ forward FC2',
+      '<b>Tensor cores</b> compute Y2 = A1·W2ᵀ (256×128×10). Tiny — latency-bound, ~8 SMs suffice.',
+      8,'#1a3a4d','step 1 · loss —');
+    phase(5800,'⑥ softmax + loss',
+      '<b>Special-function units + CUDA cores</b> compute exp/sum/log in shared memory. Cross-entropy aggregated to a single scalar.',
+      8,'#2a1a0a','step 1 · loss 2.31');
+    phase(7000,'⑦ backward + SGD',
+      '<b>Reverse graph</b>: transposed GEMMs on Tensor cores produce dW2, dW1. Atomic adds update weights back in GDDR7 via L2 write-through.',
+      80,'#2a1233','step 1 · loss 2.04');
+    phase(8400,'✅ step done',
+      'Batch complete. Weights updated. Next launch starts immediately — GigaThread overlaps DMA of the next batch with this one.',
+      0,'#0a1a0c','step 2 · loss 2.04 ↓');
+  };
+  reset();
+})();
+
+/* =====================================================================
+   7. MNIST inference with drawable canvas
+   ===================================================================== */
+(function infer(){
+  const canvas=document.getElementById('digitCanvas');
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,280,280);
+  let drawing=false;
+  function pos(e){
+    const r=canvas.getBoundingClientRect();
+    const t=e.touches?e.touches[0]:e;
+    return {x:(t.clientX-r.left)*(280/r.width),y:(t.clientY-r.top)*(280/r.height)};
+  }
+  function draw(e){
+    if(!drawing)return;
+    const p=pos(e);
+    ctx.fillStyle='#0f1a2e';
+    ctx.beginPath();ctx.arc(p.x,p.y,14,0,Math.PI*2);ctx.fill();
+    e.preventDefault();
+  }
+  canvas.addEventListener('mousedown',e=>{drawing=true;draw(e);});
+  canvas.addEventListener('mousemove',draw);
+  window.addEventListener('mouseup',()=>drawing=false);
+  canvas.addEventListener('touchstart',e=>{drawing=true;draw(e);},{passive:false});
+  canvas.addEventListener('touchmove',draw,{passive:false});
+  canvas.addEventListener('touchend',()=>drawing=false);
+
+  document.getElementById('clearCanvas').onclick=()=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,280,280);drawBars(new Array(10).fill(0));};
+
+  // Fake "trained weights": template digits — we compare input to each template and softmax
+  const templates={};
+  function buildTemplates(){
+    // digits 0..9 as simple bitmaps on a 28x28 grid
+    const t={
+      0:[[7,4,14,14],[7,4,14,1]],  // frame
+      1:[[13,4,2,20]],
+      2:[[6,4,16,3],[20,8,2,10],[6,17,16,3]],
+      3:[[6,4,16,3],[6,12,16,3],[6,20,16,3]],
+      4:[[6,4,2,12],[6,14,16,2],[20,4,2,20]],
+      5:[[6,4,16,3],[6,4,2,10],[6,12,16,3],[20,14,2,8],[6,20,16,3]],
+      6:[[6,4,16,3],[6,4,2,20],[6,12,16,3],[20,12,2,10],[6,20,16,3]],
+      7:[[6,4,16,3],[18,6,2,18]],
+      8:[[6,4,14,3],[6,4,2,20],[18,4,2,20],[6,12,14,3],[6,20,14,3]],
+      9:[[6,4,14,3],[6,4,2,10],[18,4,2,20],[6,12,14,3],[6,20,14,3]]
+    };
+    for(const d in t){
+      const arr=new Float32Array(784);
+      t[d].forEach(([x,y,w,h])=>{
+        for(let j=0;j<h;j++)for(let i=0;i<w;i++){
+          if(x+i<28&&y+j<28)arr[(y+j)*28+(x+i)]=1;
+        }
+      });
+      templates[d]=arr;
+    }
+  }
+  buildTemplates();
+
+  function downsample(){
+    // read canvas at 28x28
+    const scratch=document.createElement('canvas');
+    scratch.width=28;scratch.height=28;
+    const sctx=scratch.getContext('2d');
+    sctx.drawImage(canvas,0,0,28,28);
+    const data=sctx.getImageData(0,0,28,28).data;
+    const out=new Float32Array(784);
+    for(let i=0;i<784;i++){out[i]=data[i*4]/255;}
+    return out;
+  }
+  function dot(a,b){let s=0;for(let i=0;i<784;i++)s+=a[i]*b[i];return s;}
+  function norm(a){let s=0;for(let i=0;i<784;i++)s+=a[i]*a[i];return Math.sqrt(s)||1;}
+
+  function classify(x){
+    // cosine similarity against each template — then softmax
+    const n=norm(x);
+    const scores=[];
+    for(let d=0;d<10;d++){
+      const t=templates[d];
+      scores.push(dot(x,t)/(n*norm(t)));
+    }
+    // softmax with temperature
+    const T=12;
+    const ex=scores.map(s=>Math.exp(s*T));
+    const sum=ex.reduce((a,b)=>a+b,0);
+    return ex.map(e=>e/sum);
+  }
+
+  const barsG=document.getElementById('bars');
+  function drawBars(probs){
+    while(barsG.firstChild)barsG.removeChild(barsG.firstChild);
+    const startX=40,startY=180,barW=32,maxH=180,gap=8;
+    const max=Math.max(...probs,0.001);
+    for(let i=0;i<10;i++){
+      const h=(probs[i]/max)*maxH;
+      const x=startX+i*(barW+gap);
+      const y=startY+maxH-h;
+      const winner=probs[i]===max;
+      const rect=el('rect',{x,y,width:barW,height:h,rx:2,fill:winner?'#76b900':'#00d4ff',opacity:'0.85'});
+      barsG.appendChild(rect);
+      const lbl=el('text',{x:x+barW/2,y:startY+maxH+14,'text-anchor':'middle',fill:winner?'#76b900':'#8a97b8','font-size':'11','font-weight':winner?'700':'400'});
+      lbl.textContent=i;
+      barsG.appendChild(lbl);
+      const val=el('text',{x:x+barW/2,y:y-3,'text-anchor':'middle',fill:'#c8d0e8','font-size':'9'});
+      val.textContent=(probs[i]*100).toFixed(0)+'%';
+      barsG.appendChild(val);
+    }
+  }
+  drawBars(new Array(10).fill(0));
+
+  const narr=document.getElementById('inferNarr');
+  function run(){
+    const x=downsample();
+    // animate arrows
+    [['a1','#00d4ff'],['a2','#ffb03b'],['a3','#00d4ff']].forEach(([id,col],i)=>{
+      setTimeout(()=>{
+        const line=document.getElementById(id);
+        line.setAttribute('stroke-width','4');
+        setTimeout(()=>line.setAttribute('stroke-width','2'),400);
+      },i*500);
+    });
+    setTimeout(()=>{
+      narr.innerHTML='① <b>HtoD copy</b> — 784-byte vector DMA over PCIe 5.0 into GDDR7, then staged into L2.';
+    },50);
+    setTimeout(()=>{
+      narr.innerHTML='② <b>FC1 GEMM</b> — Tensor cores compute 784×128 · x (single-sample GEMV). Tiles staged via TMEM. ~2 SMs used.';
+    },600);
+    setTimeout(()=>{
+      narr.innerHTML='③ <b>ReLU</b> — fused elementwise on CUDA cores (same SM, no round-trip).';
+    },1100);
+    setTimeout(()=>{
+      narr.innerHTML='④ <b>FC2 GEMM</b> — 128×10 · h → 10 logits. Latency-bound.';
+    },1600);
+    setTimeout(()=>{
+      const p=classify(x);
+      drawBars(p);
+      const pred=p.indexOf(Math.max(...p));
+      narr.innerHTML='⑤ <b>Softmax on special-function units</b> → class <b style="color:#76b900;font-size:18px">'+pred+'</b> with '+(Math.max(...p)*100).toFixed(0)+'% confidence.';
+    },2100);
+  }
+
+  document.getElementById('inferBtn').onclick=run;
+
+  document.getElementById('randomDigit').onclick=()=>{
+    const d=Math.floor(Math.random()*10);
+    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,280,280);
+    const t={
+      0:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.ellipse(140,140,70,100,0,0,Math.PI*2);ctx.stroke();},
+      1:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=32;ctx.beginPath();ctx.moveTo(140,40);ctx.lineTo(140,240);ctx.stroke();},
+      2:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(70,90);ctx.quadraticCurveTo(140,30,210,90);ctx.quadraticCurveTo(210,150,70,220);ctx.lineTo(210,220);ctx.stroke();},
+      3:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(70,70);ctx.quadraticCurveTo(210,50,180,140);ctx.quadraticCurveTo(230,220,70,210);ctx.stroke();},
+      4:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(70,40);ctx.lineTo(70,150);ctx.lineTo(220,150);ctx.moveTo(180,40);ctx.lineTo(180,240);ctx.stroke();},
+      5:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(210,50);ctx.lineTo(80,50);ctx.lineTo(80,130);ctx.quadraticCurveTo(220,110,200,190);ctx.quadraticCurveTo(160,240,70,210);ctx.stroke();},
+      6:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(200,60);ctx.quadraticCurveTo(60,100,80,180);ctx.quadraticCurveTo(140,260,200,180);ctx.quadraticCurveTo(220,120,80,150);ctx.stroke();},
+      7:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(60,60);ctx.lineTo(220,60);ctx.lineTo(120,240);ctx.stroke();},
+      8:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=22;ctx.beginPath();ctx.ellipse(140,90,60,45,0,0,Math.PI*2);ctx.ellipse(140,190,70,55,0,0,Math.PI*2);ctx.stroke();},
+      9:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.ellipse(140,100,60,55,0,0,Math.PI*2);ctx.moveTo(200,100);ctx.quadraticCurveTo(210,200,100,240);ctx.stroke();}
+    };
+    t[d]();
+  };
+})();
+</script>
+</body>
+</html>
