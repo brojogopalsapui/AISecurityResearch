@@ -7,22 +7,22 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-0:#f8fbff;
+    --bg-0:#f6f9fc;
     --bg-1:#eef4fb;
-    --bg-2:#dbeafe;
-    --grid:#d5dfec;
-    --cyan:#0369a1;
+    --bg-2:#e8f1fb;
+    --grid:#d6e2f1;
+    --cyan:#0891b2;
     --cyan-soft:#38bdf8;
-    --violet:#7c3aed;
+    --violet:#8b5cf6;
     --magenta:#db2777;
     --amber:#d97706;
     --red:#dc2626;
     --green:#16a34a;
     --text:#0f172a;
-    --muted:#475569;
+    --muted:#64748b;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;background:radial-gradient(ellipse at center,var(--bg-2) 0%,var(--bg-1) 42%,var(--bg-0) 78%);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow:hidden}
+  html,body{height:100%;background:radial-gradient(ellipse at center,var(--bg-2) 0%,var(--bg-0) 70%);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow:hidden}
   .stage{position:relative;width:100vw;height:100vh;min-height:720px;overflow:hidden}
 
   /* animated grid backdrop */
@@ -34,13 +34,13 @@
     background-size:44px 44px;
     mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
     -webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
-    opacity:.35;
+    opacity:.55;
     animation:drift 30s linear infinite;
   }
   @keyframes drift{from{background-position:0 0}to{background-position:44px 44px}}
 
   /* subtle scanlines */
-  .scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(15,23,42,0.028) 0 2px,transparent 2px 4px);mix-blend-mode:multiply}
+  .scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(15,23,42,0.018) 0 2px,transparent 2px 4px);mix-blend-mode:multiply;opacity:.35}
 
   /* header */
   .hud{position:absolute;top:28px;left:32px;right:32px;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);z-index:20}
@@ -55,7 +55,7 @@
   /* legend */
   .legend{position:absolute;bottom:28px;left:32px;right:32px;display:flex;justify-content:center;gap:28px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);z-index:20}
   .legend .item{display:flex;align-items:center;gap:8px}
-  .legend .sw{width:14px;height:14px;border-radius:3px;box-shadow:0 0 0 1px rgba(15,23,42,.08),0 0 6px currentColor}
+  .legend .sw{width:14px;height:14px;border-radius:3px;box-shadow:0 0 8px currentColor}
   .legend .threat{color:var(--red)}
   .legend .defense{color:var(--cyan)}
   .legend .data{color:var(--violet)}
@@ -65,7 +65,7 @@
   .tag{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;z-index:5}
   .tag h1{font-weight:300;font-size:12px;letter-spacing:.5em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;opacity:0;animation:fadeIn 1s ease-out 1.2s forwards}
   .tag h2{font-weight:700;font-size:22px;letter-spacing:.08em;color:var(--text);opacity:0;animation:fadeIn 1s ease-out 1.5s forwards}
-  .tag h2 em{font-style:normal;color:var(--cyan);text-shadow:0 0 14px rgba(8,145,178,.22)}
+  .tag h2 em{font-style:normal;color:var(--cyan);text-shadow:0 0 12px rgba(8,145,178,.18)}
   @keyframes fadeIn{to{opacity:1}}
 </style>
 </head>
@@ -94,26 +94,26 @@
 
       <!-- gradients -->
       <radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#38bdf8" stop-opacity="1"/>
-        <stop offset="50%" stop-color="#0891b2" stop-opacity=".6"/>
-        <stop offset="100%" stop-color="#0369a1" stop-opacity="0"/>
+        <stop offset="0%" stop-color="#67e8f9" stop-opacity="1"/>
+        <stop offset="50%" stop-color="#22d3ee" stop-opacity=".6"/>
+        <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
       </radialGradient>
       <linearGradient id="shieldGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#0891b2" stop-opacity=".8"/>
-        <stop offset="100%" stop-color="#7c3aed" stop-opacity=".4"/>
+        <stop offset="0%" stop-color="#22d3ee" stop-opacity=".8"/>
+        <stop offset="100%" stop-color="#8b5cf6" stop-opacity=".4"/>
       </linearGradient>
       <radialGradient id="threatGrad">
-        <stop offset="0%" stop-color="#dc2626"/>
-        <stop offset="100%" stop-color="#991b1b" stop-opacity="0"/>
+        <stop offset="0%" stop-color="#ef4444"/>
+        <stop offset="100%" stop-color="#7f1d1d" stop-opacity="0"/>
       </radialGradient>
       <radialGradient id="dataGrad">
-        <stop offset="0%" stop-color="#7c3aed"/>
+        <stop offset="0%" stop-color="#8b5cf6"/>
         <stop offset="100%" stop-color="#6d28d9" stop-opacity="0"/>
       </radialGradient>
 
       <!-- marker arrow -->
       <marker id="arrowR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-        <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
+        <path d="M0,0 L10,5 L0,10 z" fill="#ef4444"/>
       </marker>
 
       <!-- dashed path animation via stroke-dashoffset -->
@@ -224,17 +224,17 @@
 
     <!-- BACKGROUND PULSE RINGS from core -->
     <g>
-      <circle class="pulse-ring" cx="800" cy="450" r="180" fill="none" stroke="#0891b2" stroke-width="1.5" opacity=".8"/>
-      <circle class="pulse-ring d2" cx="800" cy="450" r="180" fill="none" stroke="#0891b2" stroke-width="1.5" opacity=".8"/>
-      <circle class="pulse-ring d3" cx="800" cy="450" r="180" fill="none" stroke="#0891b2" stroke-width="1.5" opacity=".8"/>
+      <circle class="pulse-ring" cx="800" cy="450" r="180" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity=".8"/>
+      <circle class="pulse-ring d2" cx="800" cy="450" r="180" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity=".8"/>
+      <circle class="pulse-ring d3" cx="800" cy="450" r="180" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity=".8"/>
     </g>
 
     <!-- OUTER ROTATING RING (decorative) -->
     <g class="rotor ccw">
-      <circle cx="800" cy="450" r="340" fill="none" stroke="#c7d6e5" stroke-width="1" stroke-dasharray="2 10"/>
+      <circle cx="800" cy="450" r="340" fill="none" stroke="#1a2440" stroke-width="1" stroke-dasharray="2 10"/>
     </g>
     <g class="rotor cw">
-      <circle cx="800" cy="450" r="305" fill="none" stroke="#0891b2" stroke-width=".8" stroke-dasharray="30 6 2 6" opacity=".35"/>
+      <circle cx="800" cy="450" r="305" fill="none" stroke="#22d3ee" stroke-width=".8" stroke-dasharray="30 6 2 6" opacity=".35"/>
     </g>
 
     <!-- SHIELD LAYER 1: outer - input validation -->
@@ -243,23 +243,23 @@
     </g>
     <!-- SHIELD LAYER 2: middle - guardrails -->
     <g class="rotor ccw" filter="url(#softGlow)">
-      <circle cx="800" cy="450" r="220" fill="none" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="4 8" opacity=".55"/>
+      <circle cx="800" cy="450" r="220" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-dasharray="4 8" opacity=".55"/>
     </g>
     <!-- SHIELD LAYER 3: inner hexagonal guardrail -->
     <g class="rotor fast" opacity=".8">
       <polygon points="800,270 956,360 956,540 800,630 644,540 644,360"
-               fill="none" stroke="#0891b2" stroke-width="2" filter="url(#softGlow)"/>
+               fill="none" stroke="#22d3ee" stroke-width="2" filter="url(#softGlow)"/>
       <polygon points="800,270 956,360 956,540 800,630 644,540 644,360"
-               fill="none" stroke="#38bdf8" stroke-width="1" opacity=".5"/>
+               fill="none" stroke="#67e8f9" stroke-width="1" opacity=".5"/>
     </g>
 
     <!-- CORE: AI MODEL -->
     <g class="core-inner" filter="url(#bigGlow)">
       <circle cx="800" cy="450" r="110" fill="url(#coreGrad)"/>
-      <circle cx="800" cy="450" r="78" fill="#ffffff" stroke="#0891b2" stroke-width="2"/>
-      <circle cx="800" cy="450" r="78" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3 4" opacity=".7"/>
+      <circle cx="800" cy="450" r="78" fill="#0a0f1c" stroke="#22d3ee" stroke-width="2"/>
+      <circle cx="800" cy="450" r="78" fill="none" stroke="#67e8f9" stroke-width="1" stroke-dasharray="3 4" opacity=".7"/>
       <!-- neural network icon -->
-      <g stroke="#38bdf8" stroke-width="1.2" fill="#0891b2">
+      <g stroke="#67e8f9" stroke-width="1.2" fill="#22d3ee">
         <line x1="760" y1="420" x2="800" y2="440"/>
         <line x1="760" y1="450" x2="800" y2="440"/>
         <line x1="760" y1="480" x2="800" y2="440"/>
@@ -292,47 +292,47 @@
     <!-- Each threat has: a card, a path to the shield, packets traveling along it, and an impact flash at shield hit -->
 
     <!-- Threat 1: Prompt Injection -->
-    <path id="p1" d="M 220 140 C 400 200, 540 300, 660 400" fill="none" stroke="#dc2626" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
-    <g class="node node-threat enter e1" transform="translate(60 110)">
+    <path id="p1" d="M 220 140 C 400 200, 540 300, 660 400" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
+    <g class="node node-threat enter e1" transform="translate(72 110)">
       <rect width="180" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">PROMPT INJECTION</text>
       <text x="14" y="40" class="label">malicious instructions</text>
     </g>
 
     <!-- Threat 2: Data Poisoning -->
-    <path id="p2" d="M 220 280 C 380 310, 540 360, 660 430" fill="none" stroke="#dc2626" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
-    <g class="node node-threat enter e2" transform="translate(60 252)">
+    <path id="p2" d="M 220 280 C 380 310, 540 360, 660 430" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
+    <g class="node node-threat enter e2" transform="translate(72 252)">
       <rect width="180" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">DATA POISONING</text>
       <text x="14" y="40" class="label">training set tampering</text>
     </g>
 
     <!-- Threat 3: Adversarial Input -->
-    <path id="p3" d="M 220 440 C 380 440, 540 445, 660 450" fill="none" stroke="#dc2626" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
-    <g class="node node-threat enter e3" transform="translate(60 412)">
+    <path id="p3" d="M 220 440 C 380 440, 540 445, 660 450" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
+    <g class="node node-threat enter e3" transform="translate(72 412)">
       <rect width="180" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">ADVERSARIAL INPUT</text>
       <text x="14" y="40" class="label">crafted perturbations</text>
     </g>
 
     <!-- Threat 4: Model Extraction -->
-    <path id="p4" d="M 220 600 C 380 570, 540 520, 660 470" fill="none" stroke="#dc2626" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
-    <g class="node node-threat enter e4" transform="translate(60 572)">
+    <path id="p4" d="M 220 600 C 380 570, 540 520, 660 470" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
+    <g class="node node-threat enter e4" transform="translate(72 572)">
       <rect width="180" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">MODEL EXTRACTION</text>
       <text x="14" y="40" class="label">weight / IP theft</text>
     </g>
 
     <!-- Threat 5: Jailbreak -->
-    <path id="p5" d="M 220 740 C 380 680, 540 570, 660 490" fill="none" stroke="#dc2626" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
-    <g class="node node-threat enter e5" transform="translate(60 712)">
+    <path id="p5" d="M 220 740 C 380 680, 540 570, 660 490" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
+    <g class="node node-threat enter e5" transform="translate(72 712)">
       <rect width="180" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">JAILBREAK ATTEMPT</text>
       <text x="14" y="40" class="label">policy bypass</text>
     </g>
 
     <!-- Threat 6: Membership Inference (top center-left) -->
-    <path id="p6" d="M 520 80 C 600 180, 660 280, 720 360" fill="none" stroke="#dc2626" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
+    <path id="p6" d="M 520 80 C 600 180, 660 280, 720 360" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 5" opacity=".35"/>
     <g class="node node-threat enter e6" transform="translate(420 52)">
       <rect width="190" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">MEMBERSHIP INFERENCE</text>
@@ -340,12 +340,12 @@
     </g>
 
     <!-- PACKETS traveling along threat paths -->
-    <circle class="packet pk-1" r="5" fill="#dc2626" filter="url(#softGlow)" style="offset-path:path('M 220 140 C 400 200, 540 300, 660 400')"/>
-    <circle class="packet pk-2" r="5" fill="#dc2626" filter="url(#softGlow)" style="offset-path:path('M 220 280 C 380 310, 540 360, 660 430')"/>
-    <circle class="packet pk-3" r="5" fill="#dc2626" filter="url(#softGlow)" style="offset-path:path('M 220 440 C 380 440, 540 445, 660 450')"/>
-    <circle class="packet pk-4" r="5" fill="#dc2626" filter="url(#softGlow)" style="offset-path:path('M 220 600 C 380 570, 540 520, 660 470')"/>
-    <circle class="packet pk-5" r="5" fill="#dc2626" filter="url(#softGlow)" style="offset-path:path('M 220 740 C 380 680, 540 570, 660 490')"/>
-    <circle class="packet pk-6" r="5" fill="#dc2626" filter="url(#softGlow)" style="offset-path:path('M 520 80 C 600 180, 660 280, 720 360')"/>
+    <circle class="packet pk-1" r="5" fill="#ef4444" filter="url(#softGlow)" style="offset-path:path('M 220 140 C 400 200, 540 300, 660 400')"/>
+    <circle class="packet pk-2" r="5" fill="#ef4444" filter="url(#softGlow)" style="offset-path:path('M 220 280 C 380 310, 540 360, 660 430')"/>
+    <circle class="packet pk-3" r="5" fill="#ef4444" filter="url(#softGlow)" style="offset-path:path('M 220 440 C 380 440, 540 445, 660 450')"/>
+    <circle class="packet pk-4" r="5" fill="#ef4444" filter="url(#softGlow)" style="offset-path:path('M 220 600 C 380 570, 540 520, 660 470')"/>
+    <circle class="packet pk-5" r="5" fill="#ef4444" filter="url(#softGlow)" style="offset-path:path('M 220 740 C 380 680, 540 570, 660 490')"/>
+    <circle class="packet pk-6" r="5" fill="#ef4444" filter="url(#softGlow)" style="offset-path:path('M 520 80 C 600 180, 660 280, 720 360')"/>
 
     <!-- IMPACT FLASHES on shield -->
     <circle class="impact i1" cx="660" cy="400" r="2" fill="url(#threatGrad)" filter="url(#bigGlow)"/>
@@ -358,40 +358,40 @@
     <!-- ================ DEFENSE NODES (right side) ================ -->
     <!-- These annotate what the shield layers do -->
 
-    <g class="node node-defense enter e1" transform="translate(1360 110)">
+    <g class="node node-defense enter e1" transform="translate(1328 110)">
       <rect width="200" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">INPUT SANITIZATION</text>
       <text x="14" y="40" class="label">filter • classify • redact</text>
     </g>
-    <path d="M 1100 250 C 1200 200, 1300 170, 1360 140" fill="none" stroke="#0891b2" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
+    <path d="M 1100 250 C 1200 200, 1300 170, 1360 140" fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
 
-    <g class="node node-defense enter e2" transform="translate(1360 252)">
+    <g class="node node-defense enter e2" transform="translate(1328 252)">
       <rect width="200" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">POLICY GUARDRAILS</text>
       <text x="14" y="40" class="label">rules • constitution</text>
     </g>
-    <path d="M 1050 360 C 1180 320, 1280 290, 1360 280" fill="none" stroke="#0891b2" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
+    <path d="M 1050 360 C 1180 320, 1280 290, 1360 280" fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
 
-    <g class="node node-defense enter e3" transform="translate(1360 412)">
+    <g class="node node-defense enter e3" transform="translate(1328 412)">
       <rect width="200" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">ANOMALY DETECTION</text>
       <text x="14" y="40" class="label">ML-based monitoring</text>
     </g>
-    <path d="M 1060 450 C 1180 442, 1280 440, 1360 440" fill="none" stroke="#0891b2" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
+    <path d="M 1060 450 C 1180 442, 1280 440, 1360 440" fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
 
-    <g class="node node-defense enter e4" transform="translate(1360 572)">
+    <g class="node node-defense enter e4" transform="translate(1328 572)">
       <rect width="200" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">ENCRYPTION / AUDIT</text>
       <text x="14" y="40" class="label">logs • crypto • trace</text>
     </g>
-    <path d="M 1050 540 C 1180 560, 1280 590, 1360 600" fill="none" stroke="#0891b2" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
+    <path d="M 1050 540 C 1180 560, 1280 590, 1360 600" fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
 
-    <g class="node node-defense enter e5" transform="translate(1360 712)">
+    <g class="node node-defense enter e5" transform="translate(1328 712)">
       <rect width="200" height="56" rx="6"/>
       <text x="14" y="22" font-weight="600">HUMAN OVERSIGHT</text>
       <text x="14" y="40" class="label">review • red-team</text>
     </g>
-    <path d="M 1010 620 C 1160 660, 1280 700, 1360 740" fill="none" stroke="#0891b2" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
+    <path d="M 1010 620 C 1160 660, 1280 700, 1360 740" fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
 
     <!-- ================ SAFE USER APPLICATIONS (bottom) ================ -->
     <g class="node node-user enter e6" transform="translate(700 790)">
@@ -399,20 +399,20 @@
       <text x="14" y="22" font-weight="600">TRUSTED OUTPUT</text>
       <text x="14" y="40" class="label">apps • users • services</text>
     </g>
-    <path id="outPath" d="M 800 560 C 800 660, 800 720, 800 790" fill="none" stroke="#16a34a" stroke-width="1.2" stroke-dasharray="2 5" opacity=".5"/>
+    <path id="outPath" d="M 800 560 C 800 660, 800 720, 800 790" fill="none" stroke="#34d399" stroke-width="1.2" stroke-dasharray="2 5" opacity=".5"/>
 
     <!-- data particles flowing out safely -->
-    <circle class="data-pk d1" r="4" fill="#16a34a" filter="url(#softGlow)" style="offset-path:path('M 800 560 C 800 660, 800 720, 800 790')"/>
-    <circle class="data-pk d2" r="4" fill="#16a34a" filter="url(#softGlow)" style="offset-path:path('M 800 560 C 800 660, 800 720, 800 790')"/>
-    <circle class="data-pk d3" r="4" fill="#16a34a" filter="url(#softGlow)" style="offset-path:path('M 800 560 C 800 660, 800 720, 800 790')"/>
-    <circle class="data-pk d4" r="4" fill="#16a34a" filter="url(#softGlow)" style="offset-path:path('M 800 560 C 800 660, 800 720, 800 790')"/>
+    <circle class="data-pk d1" r="4" fill="#34d399" filter="url(#softGlow)" style="offset-path:path('M 800 560 C 800 660, 800 720, 800 790')"/>
+    <circle class="data-pk d2" r="4" fill="#34d399" filter="url(#softGlow)" style="offset-path:path('M 800 560 C 800 660, 800 720, 800 790')"/>
+    <circle class="data-pk d3" r="4" fill="#34d399" filter="url(#softGlow)" style="offset-path:path('M 800 560 C 800 660, 800 720, 800 790')"/>
+    <circle class="data-pk d4" r="4" fill="#34d399" filter="url(#softGlow)" style="offset-path:path('M 800 560 C 800 660, 800 720, 800 790')"/>
 
     <!-- decorative data particles orbiting -->
     <g class="rotor cw" opacity=".6">
-      <circle cx="1060" cy="450" r="3" fill="#7c3aed" filter="url(#softGlow)"/>
-      <circle cx="540" cy="450" r="3" fill="#7c3aed" filter="url(#softGlow)"/>
-      <circle cx="800" cy="190" r="3" fill="#7c3aed" filter="url(#softGlow)"/>
-      <circle cx="800" cy="710" r="3" fill="#7c3aed" filter="url(#softGlow)"/>
+      <circle cx="1060" cy="450" r="3" fill="#8b5cf6" filter="url(#softGlow)"/>
+      <circle cx="540" cy="450" r="3" fill="#8b5cf6" filter="url(#softGlow)"/>
+      <circle cx="800" cy="190" r="3" fill="#8b5cf6" filter="url(#softGlow)"/>
+      <circle cx="800" cy="710" r="3" fill="#8b5cf6" filter="url(#softGlow)"/>
     </g>
 
     <!-- connecting tick marks between core and each defense (subtle) -->
@@ -423,10 +423,10 @@
   </div>
 
   <div class="legend">
-    <div class="item threat"><span class="sw" style="background:#dc2626"></span>Threat Vector</div>
-    <div class="item defense"><span class="sw" style="background:#0891b2"></span>Defense Layer</div>
-    <div class="item data"><span class="sw" style="background:#7c3aed"></span>Data Flow</div>
-    <div class="item safe"><span class="sw" style="background:#16a34a"></span>Trusted Output</div>
+    <div class="item threat"><span class="sw" style="background:#ef4444"></span>Threat Vector</div>
+    <div class="item defense"><span class="sw" style="background:#22d3ee"></span>Defense Layer</div>
+    <div class="item data"><span class="sw" style="background:#8b5cf6"></span>Data Flow</div>
+    <div class="item safe"><span class="sw" style="background:#34d399"></span>Trusted Output</div>
   </div>
 </div>
 </body>
