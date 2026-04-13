@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edge AI Attack Taxonomy — Brojogopal Sapui (Light)</title>
+<style>
+  :root {
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface2: #eaf1f8;
+    --border: #c9d7e8;
+    --accent: #1d4ed8;
+    --accent2: #6d28d9;
+    --accent3: #0f766e;
+    --danger: #b91c1c;
+    --warn: #b45309;
+    --success: #047857;
+    --text: #0f172a;
+    --muted: #475569;
+    --glow: rgba(29,78,216,0.16);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 3rem 2rem 2rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(29,78,216,0.08) 0%, transparent 70%);
+  }
+  header h1 {
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #1d4ed8, #6d28d9, #047857);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+  }
+  header p {
+    color: var(--muted);
+    margin-top: .6rem;
+    font-size: .95rem;
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(59,130,246,.15);
+    border: 1px solid rgba(59,130,246,.35);
+    color: #1d4ed8;
+    font-size: .72rem;
+    padding: .22rem .7rem;
+    border-radius: 999px;
+    margin-top: .8rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    position: relative;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem 1.2rem;
+    justify-content: center;
+    padding: .8rem 2rem 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .75rem;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.4rem;
+    padding: 1rem 2rem 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+    position: relative;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 38px rgba(15,23,42,.10), 0 0 0 1px var(--accent);
+    border-color: var(--accent);
+  }
+  .card-header {
+    padding: 1.1rem 1.3rem .7rem;
+    display: flex;
+    align-items: flex-start;
+    gap: .9rem;
+  }
+  .card-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .card-title { font-size: 1rem; font-weight: 700; line-height: 1.3; }
+  .card-cat {
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    margin-top: .2rem;
+  }
+  .card-desc {
+    font-size: .82rem;
+    color: var(--muted);
+    line-height: 1.55;
+    padding: 0 1.3rem .8rem;
+  }
+
+  /* ── ANIMATION STAGE ── */
+  .stage {
+    height: 180px;
+    background: linear-gradient(180deg, #edf3fa 0%, #e6eef8 100%);
+    border-top: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── IMPACT / SEVERITY BAR ── */
+  .card-footer {
+    padding: .7rem 1.3rem .9rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .severity-label { font-size: .7rem; color: var(--muted); white-space: nowrap; }
+  .severity-bar {
+    flex: 1;
+    height: 5px;
+    background: rgba(15,23,42,.08);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .severity-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 1s ease;
+  }
+  .sev-critical { background: linear-gradient(90deg, #ef4444, #f97316); }
+  .sev-high     { background: linear-gradient(90deg, #f59e0b, #b45309); }
+  .sev-medium   { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+  .sev-low      { background: linear-gradient(90deg, #10b981, #047857); }
+
+  /* ── MODAL ── */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,.34);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    backdrop-filter: blur(4px);
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    max-width: 780px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 26px 64px rgba(15,23,42,.18);
+    animation: modalIn .25s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(.93) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-header {
+    padding: 1.6rem 1.8rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .modal-title { font-size: 1.3rem; font-weight: 700; }
+  .modal-cat { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-top: .25rem; }
+  .modal-close {
+    background: none; border: none;
+    color: var(--muted); font-size: 1.4rem;
+    cursor: pointer; line-height: 1;
+    padding: .2rem .4rem;
+    border-radius: 6px;
+    transition: color .15s, background .15s;
+  }
+  .modal-close:hover { color: var(--text); background: rgba(15,23,42,.06); }
+  .modal-body { padding: 1.4rem 1.8rem 1.8rem; }
+  .modal-section { margin-bottom: 1.3rem; }
+  .modal-section h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: .5rem; }
+  .modal-section p { font-size: .88rem; color: var(--text); line-height: 1.65; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .4rem; }
+  .tag {
+    background: rgba(59,130,246,.12);
+    border: 1px solid rgba(59,130,246,.25);
+    color: #1d4ed8;
+    font-size: .71rem;
+    padding: .2rem .55rem;
+    border-radius: 6px;
+  }
+  .countermeasure-list { list-style: none; margin-top: .4rem; }
+  .countermeasure-list li {
+    font-size: .85rem;
+    color: var(--text);
+    padding: .28rem 0;
+    border-bottom: 1px solid rgba(15,23,42,.07);
+    display: flex;
+    gap: .5rem;
+  }
+  .countermeasure-list li::before { content: '→'; color: var(--success); flex-shrink: 0; }
+
+  /* ═══════════════════════════════
+     INDIVIDUAL ATTACK ANIMATIONS
+  ═══════════════════════════════ */
+
+  /* Shared helpers */
+  .chip {
+    position: absolute;
+    font-size: .6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  /* 1. Firmware tampering ───────────────────────────── */
+  .anim-firmware { width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; }
+  .fw-chain { display:flex; align-items:center; gap:6px; }
+  .fw-stage {
+    width: 48px; height: 34px;
+    border-radius: 6px;
+    font-size: .55rem;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center; line-height:1.1;
+    background: rgba(16,185,129,.15);
+    border: 1px solid rgba(16,185,129,.4);
+    color: #047857;
+    position: relative;
+  }
+  .fw-stage.tampered {
+    animation: fwFlip 4s infinite;
+  }
+  @keyframes fwFlip {
+    0%, 50% { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.4); color: #047857; }
+    55%, 95% { background: rgba(239,68,68,.2); border-color: rgba(239,68,68,.6); color: #b91c1c; box-shadow: 0 0 10px rgba(239,68,68,.4); }
+    100% { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.4); color: #047857; }
+  }
+  .fw-arrow { color: var(--muted); font-size: .8rem; }
+  .fw-inject {
+    position: absolute;
+    top: 14px; left: 50%;
+    transform: translateX(-50%);
+    font-size: .6rem;
+    color: #b91c1c;
+    animation: fwInject 4s infinite;
+  }
+  @keyframes fwInject {
+    0%, 45% { opacity: 0; transform: translate(-50%, -6px); }
+    55%, 90% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -6px); }
+  }
+  .fw-label {
+    position: absolute;
+    bottom: 12px;
+    font-size: .6rem;
+    color: var(--muted);
+  }
+
+  /* 2. Model extraction / local theft ───────────────── */
+  .anim-extract { width:100%; height:100%; position:relative; }
+  .ex-chip {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 72px; height: 58px;
+    background: rgba(59,130,246,.15);
+    border: 2px solid rgba(59,130,246,.5);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .6rem; color: #1d4ed8; text-align: center;
+  }
+  .ex-chip::before {
+    content: '';
+    position: absolute; inset: -6px;
+    border: 1px dashed rgba(59,130,246,.3);
+    border-radius: 14px;
+  }
+  .ex-probe {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+  }
+  .ex-probe:nth-child(2) { top: 20px; left: 24px; animation: probeMove1 3s infinite; }
+  .ex-probe:nth-child(3) { top: 20px; right: 24px; animation: probeMove2 3s infinite .5s; }
+  .ex-probe:nth-child(4) { bottom: 20px; left: 50%; animation: probeMove3 3s infinite 1s; }
+  @keyframes probeMove1 {
+    0%,100% { opacity: 0; transform: translate(0,0); }
+    30%,70% { opacity: 1; transform: translate(30px, 20px); }
+  }
+  @keyframes probeMove2 {
+    0%,100% { opacity: 0; transform: translate(0,0); }
+    30%,70% { opacity: 1; transform: translate(-30px, 20px); }
+  }
+  @keyframes probeMove3 {
+    0%,100% { opacity: 0; transform: translate(-50%,0); }
+    30%,70% { opacity: 1; transform: translate(-50%, -22px); }
+  }
+  .ex-leak {
+    position: absolute;
+    bottom: 12px; right: 14px;
+    font-size: .6rem;
+    color: #b91c1c;
+    animation: blink 1.2s infinite;
+  }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+
+  /* 3. Side-channel & fault injection ───────────────── */
+  .anim-sidechan { width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; }
+  .sc-chip {
+    width: 60px; height: 60px;
+    background: rgba(139,92,246,.15);
+    border: 1px solid rgba(139,92,246,.5);
+    border-radius: 8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: .6rem; color: #6d28d9;
+    position: relative;
+    z-index: 2;
+  }
+  .sc-wave {
+    position: absolute;
+    top: 50%; left: 14px;
+    width: calc(100% - 28px);
+    height: 40px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  .sc-line {
+    stroke: #1d4ed8;
+    stroke-width: 1.5;
+    fill: none;
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: scDraw 2.5s infinite linear;
+  }
+  @keyframes scDraw {
+    0% { stroke-dashoffset: 200; }
+    60% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -200; }
+  }
+  .sc-bolt {
+    position: absolute;
+    top: 22px; right: 30px;
+    font-size: 1.1rem;
+    color: #b45309;
+    animation: scGlitch 2.5s infinite;
+  }
+  @keyframes scGlitch {
+    0%, 60%, 100% { opacity: 0; transform: scale(.6); }
+    65%, 75% { opacity: 1; transform: scale(1.2) rotate(8deg); }
+  }
+  .sc-label {
+    position: absolute;
+    bottom: 10px;
+    font-size: .6rem;
+    color: var(--muted);
+  }
+
+  /* 4. Sensor spoofing ──────────────────────────────── */
+  .anim-sensor { width:100%; height:100%; position:relative; }
+  .ss-cam {
+    position: absolute;
+    left: 16px; top: 50%;
+    transform: translateY(-50%);
+    width: 54px; height: 44px;
+    background: rgba(6,182,212,.15);
+    border: 1px solid rgba(6,182,212,.45);
+    border-radius: 8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: .6rem; color: #0f766e;
+  }
+  .ss-model {
+    position: absolute;
+    right: 16px; top: 50%;
+    transform: translateY(-50%);
+    width: 54px; height: 44px;
+    background: rgba(139,92,246,.15);
+    border: 1px solid rgba(139,92,246,.45);
+    border-radius: 8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: .6rem; color: #6d28d9;
+  }
+  .ss-beam {
+    position: absolute;
+    top: 20%; left: 76px;
+    width: calc(100% - 152px);
+    height: 14px;
+    background: linear-gradient(90deg, transparent, rgba(251,191,36,.5), transparent);
+    animation: ssBeam 3s infinite;
+  }
+  @keyframes ssBeam {
+    0%,100% { opacity: 0; transform: scaleX(.3); }
+    40%,70% { opacity: 1; transform: scaleX(1); }
+  }
+  .ss-wave {
+    position: absolute;
+    top: 55%; left: 76px;
+    width: calc(100% - 152px);
+    height: 2px;
+    background: rgba(59,130,246,.5);
+  }
+  .ss-wave::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, #1d4ed8 0 6px, transparent 6px 12px);
+    animation: ssFlow 1.5s infinite linear;
+  }
+  @keyframes ssFlow {
+    from { transform: translateX(0); }
+    to { transform: translateX(12px); }
+  }
+  .ss-spoof {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: .6rem;
+    color: #b45309;
+    animation: blink 1.4s infinite;
+  }
+  .ss-wrong {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    font-size: .6rem;
+    color: #b91c1c;
+    animation: blink 1.4s infinite .5s;
+  }
+
+  /* 5. Debug-interface abuse ────────────────────────── */
+  .anim-debug { width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; }
+  .dbg-board {
+    width: 150px; height: 90px;
+    background: rgba(34,49,74,.7);
+    border: 1px solid rgba(148,163,184,.25);
+    border-radius: 6px;
+    position: relative;
+  }
+  .dbg-pins {
+    position: absolute;
+    top: 8px; right: 8px;
+    display: flex; gap: 3px;
+  }
+  .dbg-pin {
+    width: 5px; height: 12px;
+    background: #b45309;
+    border-radius: 1px;
+    animation: dbgBlink 1.6s infinite;
+  }
+  .dbg-pin:nth-child(2) { animation-delay: .2s; }
+  .dbg-pin:nth-child(3) { animation-delay: .4s; }
+  .dbg-pin:nth-child(4) { animation-delay: .6s; }
+  @keyframes dbgBlink {
+    0%,100% { opacity: .25; box-shadow: none; }
+    50% { opacity: 1; box-shadow: 0 0 6px #b45309; }
+  }
+  .dbg-label { position: absolute; top: 8px; left: 10px; font-size: .55rem; color: #94a3b8; letter-spacing: .08em; }
+  .dbg-mem {
+    position: absolute;
+    bottom: 10px; left: 10px;
+    font-size: .55rem;
+    color: #047857;
+    font-family: monospace;
+    animation: dbgLeak 3s infinite;
+  }
+  @keyframes dbgLeak {
+    0% { opacity: 0; }
+    20%,80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .dbg-probe {
+    position: absolute;
+    top: -6px; right: 2px;
+    width: 2px; height: 24px;
+    background: linear-gradient(180deg, #ef4444, transparent);
+    animation: dbgProbe 2.5s infinite;
+  }
+  @keyframes dbgProbe {
+    0%,100% { transform: translateY(-10px); opacity: 0; }
+    40%,70% { transform: translateY(0); opacity: 1; }
+  }
+  .dbg-caption {
+    position: absolute;
+    bottom: 8px;
+    font-size: .6rem;
+    color: #b91c1c;
+  }
+
+  /* 6. Provisioning / fleet ─────────────────────────── */
+  .anim-fleet { width:100%; height:100%; position:relative; }
+  .fl-cloud {
+    position: absolute;
+    top: 12px; left: 50%;
+    transform: translateX(-50%);
+    font-size: .62rem;
+    padding: 4px 10px;
+    background: rgba(59,130,246,.15);
+    border: 1px solid rgba(59,130,246,.4);
+    color: #1d4ed8;
+    border-radius: 14px;
+  }
+  .fl-devices {
+    position: absolute;
+    bottom: 18px; left: 0; right: 0;
+    display: flex;
+    justify-content: space-evenly;
+  }
+  .fl-dev {
+    width: 28px; height: 26px;
+    border-radius: 4px;
+    background: rgba(16,185,129,.15);
+    border: 1px solid rgba(16,185,129,.5);
+    display:flex; align-items:center; justify-content:center;
+    font-size: .55rem;
+    color: #047857;
+    position: relative;
+  }
+  .fl-dev.bad {
+    animation: flCompromise 4s infinite;
+  }
+  @keyframes flCompromise {
+    0%, 40% { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.5); color: #047857; }
+    50%, 95% { background: rgba(239,68,68,.2); border-color: rgba(239,68,68,.6); color: #b91c1c; box-shadow: 0 0 8px rgba(239,68,68,.5); }
+    100% { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.5); color: #047857; }
+  }
+  .fl-line {
+    position: absolute;
+    top: 34px;
+    width: 1px;
+    height: 90px;
+    background: linear-gradient(180deg, rgba(59,130,246,.4), transparent);
+  }
+  .fl-pulse {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #ef4444;
+    box-shadow: 0 0 6px #ef4444;
+    animation: flPulse 3s infinite linear;
+  }
+  @keyframes flPulse {
+    0% { top: 30px; opacity: 0; }
+    15% { opacity: 1; }
+    90% { top: 120px; opacity: 1; }
+    100% { top: 128px; opacity: 0; }
+  }
+
+  /* 7. Runtime / TEE boundary failure ───────────────── */
+  .anim-runtime { width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; }
+  .rt-stack {
+    display: flex; flex-direction: column;
+    gap: 4px;
+    width: 180px;
+  }
+  .rt-layer {
+    height: 22px;
+    border-radius: 4px;
+    display:flex; align-items:center;
+    padding: 0 10px;
+    font-size: .6rem;
+  }
+  .rt-app { background: rgba(59,130,246,.15); border:1px solid rgba(59,130,246,.4); color: #1d4ed8; }
+  .rt-tee { background: rgba(16,185,129,.15); border:1px solid rgba(16,185,129,.4); color: #047857; }
+  .rt-os  { background: rgba(148,163,184,.1); border:1px solid rgba(148,163,184,.25); color: #475569; }
+  .rt-hw  { background: rgba(139,92,246,.12); border:1px solid rgba(139,92,246,.35); color: #6d28d9; }
+  .rt-break {
+    position: absolute;
+    width: 40px; height: 2px;
+    background: #ef4444;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    animation: rtBreak 3s infinite;
+    box-shadow: 0 0 10px #ef4444;
+  }
+  @keyframes rtBreak {
+    0%, 30% { opacity: 0; width: 0; }
+    50%, 80% { opacity: 1; width: 60px; }
+    100% { opacity: 0; width: 60px; }
+  }
+  .rt-label {
+    position: absolute;
+    bottom: 10px;
+    font-size: .6rem;
+    color: #b91c1c;
+  }
+
+  /* 8. Privacy leakage ──────────────────────────────── */
+  .anim-privacy { width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; }
+  .pv-device {
+    width: 70px; height: 70px;
+    background: rgba(6,182,212,.15);
+    border: 1px solid rgba(6,182,212,.4);
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: .62rem; color: #0f766e;
+    text-align: center;
+    position: relative;
+  }
+  .pv-drop {
+    position: absolute;
+    right: 14px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
+    animation: pvDrip 2.4s infinite;
+  }
+  .pv-drop:nth-child(2) { animation-delay: .4s; }
+  .pv-drop:nth-child(3) { animation-delay: .8s; }
+  .pv-drop:nth-child(4) { animation-delay: 1.2s; }
+  @keyframes pvDrip {
+    0% { top: 50%; opacity: 0; transform: scale(.5); }
+    15% { opacity: 1; transform: scale(1); }
+    85% { top: 90%; opacity: 1; }
+    100% { top: 95%; opacity: 0; }
+  }
+  .pv-cache {
+    position: absolute;
+    right: 14px; bottom: 14px;
+    font-size: .55rem;
+    color: var(--muted);
+  }
+  .pv-out {
+    position: absolute;
+    right: 14px; top: 14px;
+    font-size: .55rem;
+    color: #b45309;
+  }
+
+  /* 9. Resource exhaustion / DoS ────────────────────── */
+  .anim-exhaust { width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; }
+  .ex-device {
+    width: 80px; height: 44px;
+    background: rgba(59,130,246,.15);
+    border: 1px solid rgba(59,130,246,.45);
+    border-radius: 8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: .62rem; color: #1d4ed8;
+    position: relative;
+    animation: exShake 0.15s infinite;
+    animation-play-state: paused;
+  }
+  .ex-device.shaking { animation-play-state: running; }
+  @keyframes exShake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-1px); }
+    75% { transform: translateX(1px); }
+  }
+  .ex-battery {
+    width: 100px; height: 10px;
+    background: rgba(15,23,42,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ex-battery::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+    transform-origin: left;
+    animation: exDrain 3.5s infinite;
+  }
+  @keyframes exDrain {
+    0% { transform: scaleX(1); }
+    85% { transform: scaleX(0.05); }
+    100% { transform: scaleX(0.05); }
+  }
+  .ex-req {
+    position: absolute;
+    top: 14px; left: 14px;
+    font-size: .55rem;
+    color: #b91c1c;
+  }
+  .ex-warn {
+    font-size: .6rem;
+    color: #b45309;
+    animation: blink 1s infinite;
+  }
+
+  /* 10. Reliability-security crossover ──────────────── */
+  .anim-reliab { width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; }
+  .rl-graph {
+    width: 200px; height: 80px;
+    position: relative;
+  }
+  .rl-axis {
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 100%;
+    border-left: 1px solid rgba(148,163,184,.3);
+    border-bottom: 1px solid rgba(148,163,184,.3);
+  }
+  .rl-curve {
+    position: absolute;
+    inset: 0;
+  }
+  .rl-path {
+    fill: none;
+    stroke: #047857;
+    stroke-width: 2;
+    stroke-dasharray: 250;
+    stroke-dashoffset: 0;
+    animation: rlDraw 4s infinite;
+  }
+  @keyframes rlDraw {
+    0%,100% { stroke: #047857; }
+    50%,80% { stroke: #ef4444; }
+  }
+  .rl-zone {
+    position: absolute;
+    right: 8%;
+    top: 10%;
+    width: 30%;
+    height: 80%;
+    background: rgba(239,68,68,.12);
+    border: 1px dashed rgba(239,68,68,.4);
+    border-radius: 4px;
+    animation: blink 2s infinite;
+  }
+  .rl-label-x {
+    position: absolute;
+    bottom: -14px;
+    right: 0;
+    font-size: .55rem;
+    color: var(--muted);
+  }
+  .rl-label-y {
+    position: absolute;
+    top: -12px;
+    left: 0;
+    font-size: .55rem;
+    color: var(--muted);
+  }
+  .rl-caption {
+    position: absolute;
+    bottom: 10px;
+    font-size: .6rem;
+    color: #b91c1c;
+  }
+
+  /* Footer note */
+  .footnote {
+    text-align: center;
+    color: var(--muted);
+    font-size: .75rem;
+    padding: 0 2rem 2.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .footnote a { color: #1d4ed8; text-decoration: none; }
+  .footnote a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Edge AI Attack Taxonomy</h1>
+  <p>Interactive visualization of the device-level threats facing edge AI systems — from firmware tampering and side-channel leakage to sensor spoofing, fleet compromise, and reliability-to-security crossover.</p>
+  <div class="badge">Edge AI Security · Research Visualization</div>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Critical</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>High</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Medium</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Low</div>
+  <div class="legend-item" style="color:#475569">· Click any card for details</div>
+</div>
+
+<div class="grid" id="cardGrid"></div>
+
+<div class="footnote">
+  Companion visualization for the <em>Edge AI Security</em> page. Click any card to open mechanism, variants, impact, and countermeasures.
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-cat" id="modal-cat"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const ATTACKS = [
+  {
+    id: 'firmware',
+    title: 'Firmware Tampering & Insecure Boot',
+    category: 'Device Boundary',
+    icon: '🧬',
+    iconBg: 'rgba(239,68,68,.2)',
+    severity: 'critical',
+    sevPct: 94,
+    desc: 'Unsigned updates, broken chain-of-trust, or rollback-prone boot paths let attackers install modified runtimes on edge devices.',
+    full: {
+      mechanism: 'Edge security starts before inference. If the boot ROM, first-stage bootloader, firmware image, or model package can be replaced, most higher-layer defenses become irrelevant. Unsigned updates, incomplete chain-of-trust verification, weak rollback protection, or insecure provisioning allow adversaries to install modified runtimes, bypass safety checks, or silently downgrade security features.',
+      variants: ['Unsigned firmware injection', 'Rollback / downgrade attacks', 'OTA update-agent compromise', 'Configuration partition tampering', 'Recovery-path abuse'],
+      impact: 'Silent installation of backdoored runtimes, disabled safety checks, persistent compromise across reboots, and fleet-wide exposure when update infrastructure is weak.',
+      countermeasures: ['Hardware root-of-trust anchored secure boot', 'Measured boot with remote attestation', 'Anti-rollback version counters', 'Signed firmware and model packages end-to-end', 'Separate factory / dev / production boot policies'],
+      refs: 'NIST SP 1800-36B; Arm PSA; NIST IR 8532'
+    },
+    anim: `
+      <div class="anim-firmware">
+        <div class="fw-inject">⚠ unsigned image</div>
+        <div class="fw-chain">
+          <div class="fw-stage">ROM</div>
+          <div class="fw-arrow">→</div>
+          <div class="fw-stage">Boot</div>
+          <div class="fw-arrow">→</div>
+          <div class="fw-stage tampered">FW</div>
+          <div class="fw-arrow">→</div>
+          <div class="fw-stage">Model</div>
+        </div>
+        <div class="fw-label">chain-of-trust broken</div>
+      </div>`
+  },
+  {
+    id: 'extract',
+    title: 'Model Extraction & Artifact Theft',
+    category: 'Model Boundary',
+    icon: '🕵️',
+    iconBg: 'rgba(59,130,246,.2)',
+    severity: 'high',
+    sevPct: 82,
+    desc: 'Quantized weights, accelerator graphs, and tokenizer assets sitting in local flash or DRAM are read out through probing or firmware analysis.',
+    full: {
+      mechanism: 'Unlike cloud-hosted models, edge models are physically present. Quantized weights, compiled binaries, accelerator graphs, tokenizer assets, and runtime metadata may sit in flash, DRAM, eMMC, or external memory. Attackers copy these artifacts directly, infer them from side channels, or reconstruct them through firmware analysis. This matters for both IP protection and security, because extracted models enable offline study, transfer attacks, and targeted reverse engineering.',
+      variants: ['Direct flash / eMMC readout', 'Board-level bus probing', 'Debug-port assisted memory dump', 'Firmware reverse engineering', 'Side-channel weight inference'],
+      impact: 'Theft of proprietary models, loss of IP and competitive advantage, transfer-attack material for offline adversaries, and reverse-engineered decision logic in safety-critical products.',
+      countermeasures: ['Encrypted model storage with hardware-bound keys', 'Key release gated by verified device state', 'Integrity checks on accelerator binaries', 'Hardened external memory and weight-transfer paths', 'Minimize persistent intermediate artifacts'],
+      refs: 'NIST AI 100-2; Arm PSA; PSA Certified attestation'
+    },
+    anim: `
+      <div class="anim-extract">
+        <div class="ex-chip">Edge<br>Model</div>
+        <div class="ex-probe"></div>
+        <div class="ex-probe"></div>
+        <div class="ex-probe"></div>
+        <div class="ex-leak">⚡ weights leaked</div>
+      </div>`
+  },
+  {
+    id: 'sidechan',
+    title: 'Side-Channel & Fault Injection',
+    category: 'Physical Attack',
+    icon: '⚡',
+    iconBg: 'rgba(139,92,246,.2)',
+    severity: 'critical',
+    sevPct: 88,
+    desc: 'Power, EM, and timing traces leak model internals; voltage or clock glitches force misclassification or skip safety checks.',
+    full: {
+      mechanism: 'Edge devices are ideal targets for physical observation: they are nearby and resource-constrained. Power traces, timing behavior, EM emissions, and memory traffic can reveal properties of the model, inputs, or control flow. Fault injection through voltage glitches, clock glitches, laser or light disturbance, and EM interference can corrupt execution, skip checks, or induce model errors — used to extract secrets or to force misclassification.',
+      variants: ['Power / EM side-channels', 'Timing and cache leakage', 'Voltage and clock glitching', 'Optical / laser fault injection', 'Thermal and EMI disturbance'],
+      impact: 'Leakage of model weights or inputs, bypass of security checks, forced misclassification of safety-critical decisions, and instability that attackers can reliably exploit.',
+      countermeasures: ['Masking, hiding, and balanced dataflow', 'Randomized scheduling and dummy operations', 'Tamper / glitch detection sensors', 'Redundant checks at decision points', 'Leakage and FI budgets factored into accelerator design'],
+      refs: 'NIST AI 100-2; Arm PSA; ENISA Fog & Edge Report'
+    },
+    anim: `
+      <div class="anim-sidechan">
+        <svg class="sc-wave" viewBox="0 0 200 40" preserveAspectRatio="none">
+          <path class="sc-line" d="M0,20 Q20,5 40,20 T80,20 T120,20 T160,20 T200,20" />
+        </svg>
+        <div class="sc-chip">NPU</div>
+        <div class="sc-bolt">⚡</div>
+        <div class="sc-label">power + EM leakage · glitching</div>
+      </div>`
+  },
+  {
+    id: 'sensor',
+    title: 'Sensor Spoofing & Physical Manipulation',
+    category: 'Data Boundary',
+    icon: '📡',
+    iconBg: 'rgba(6,182,212,.2)',
+    severity: 'high',
+    sevPct: 80,
+    desc: 'Attackers never touch the weights — they manipulate the sensed world through light, sound, RF, or shaped physical disturbances.',
+    full: {
+      mechanism: 'Edge AI often sits directly on top of sensors, so the attacker may never need to touch the weights or firmware if they can reliably manipulate the sensed world. Camera-based systems are misled by lighting or visual artifacts, microphones by acoustic injection, RF systems by spoofed signals, and industrial sensors by carefully shaped physical disturbances. The attack is algorithmic in outcome, but the entry point is physical and local.',
+      variants: ['Optical / lighting perturbations on cameras', 'Acoustic injection into microphones', 'RF and GNSS spoofing', 'LiDAR / radar manipulation', 'Shaped industrial-sensor disturbances'],
+      impact: 'False classification, alarm suppression, false acceptance in authentication, and safety consequences when the device controls physical actions.',
+      countermeasures: ['Plausibility and rate-of-change checks', 'Cross-sensor fusion and consistency tests', 'Challenge-response and randomized sensing', 'Pre-inference anomaly detection', 'Anomalous-state fallback and human-in-the-loop'],
+      refs: 'ENISA-JRC Autonomous Driving Report; NIST AI RMF'
+    },
+    anim: `
+      <div class="anim-sensor">
+        <div class="ss-spoof">🔦 spoofed input</div>
+        <div class="ss-cam">📷</div>
+        <div class="ss-beam"></div>
+        <div class="ss-wave"></div>
+        <div class="ss-model">Model</div>
+        <div class="ss-wrong">✗ wrong class</div>
+      </div>`
+  },
+  {
+    id: 'debug',
+    title: 'Debug-Interface Abuse',
+    category: 'Device Boundary',
+    icon: '🔌',
+    iconBg: 'rgba(245,158,11,.2)',
+    severity: 'high',
+    sevPct: 78,
+    desc: 'JTAG, UART, SWD, and factory-test pads left enabled in production let attackers dump memory and bypass boot policy.',
+    full: {
+      mechanism: 'JTAG, UART, SWD, test pads, boundary scan, factory modes, and vendor debug paths remain a classic weakness in deployed devices. If these interfaces are left enabled, poorly protected, or recoverable after reset, an attacker may dump memory, bypass boot policy, change configuration, or inspect secure-state transitions. This is a major risk for low-cost edge devices where manufacturing convenience often conflicts with secure deployment.',
+      variants: ['JTAG / SWD memory dump', 'UART shell access', 'Factory-mode re-entry', 'Boundary-scan probing', 'Vendor backdoor commands'],
+      impact: 'Full memory and key material exposure, bypass of secure boot, configuration tampering, and a reliable foothold for deeper attacks on the device and fleet.',
+      countermeasures: ['Disable JTAG / UART / SWD in production', 'Authenticated debug unlock only', 'Remove or shield accessible test pads', 'Audit manufacturing and service workflows', 'Life-cycle lockout after provisioning'],
+      refs: 'NIST IR 8532; Arm PSA; PSA Certified'
+    },
+    anim: `
+      <div class="anim-debug">
+        <div class="dbg-board">
+          <div class="dbg-label">JTAG</div>
+          <div class="dbg-pins">
+            <div class="dbg-pin"></div>
+            <div class="dbg-pin"></div>
+            <div class="dbg-pin"></div>
+            <div class="dbg-pin"></div>
+          </div>
+          <div class="dbg-probe"></div>
+          <div class="dbg-mem">0xA3F1 0x0042 0xDEAD...</div>
+        </div>
+        <div class="dbg-caption">⚠ memory dump via debug port</div>
+      </div>`
+  },
+  {
+    id: 'fleet',
+    title: 'Insecure Provisioning & Fleet Compromise',
+    category: 'Lifecycle Boundary',
+    icon: '🛰️',
+    iconBg: 'rgba(59,130,246,.2)',
+    severity: 'critical',
+    sevPct: 90,
+    desc: 'Weak onboarding, cloned identities, or compromised update channels turn one weakness into a fleet-wide breach.',
+    full: {
+      mechanism: 'Edge devices must be provisioned with identities, keys, certificates, firmware, and sometimes model packages before they can be trusted in the field. Weak onboarding processes allow counterfeit or cloned devices, unauthorized re-enrollment, credential theft, or misbinding of identity to hardware. Once devices are deployed at scale, fleet orchestration itself becomes an attack surface — one compromised management path may affect thousands of nodes.',
+      variants: ['Cloned or counterfeit devices', 'Credential theft during onboarding', 'Unauthorized re-enrollment', 'Compromised update orchestration', 'Ownership-transfer abuse'],
+      impact: 'Fleet-wide silent compromise, counterfeit device admission into trusted networks, breach of SLA and regulatory guarantees, and long dwell time before detection.',
+      countermeasures: ['Hardware-rooted device identity', 'Attestation before credential release', 'Signed, staged, rollback-safe updates', 'Separation of build / sign / approve / deploy authority', 'Continuous authorization beyond first boot'],
+      refs: 'NIST SP 1800-36B; PSA Certified attestation; Arm PSA'
+    },
+    anim: `
+      <div class="anim-fleet">
+        <div class="fl-cloud">☁ fleet mgmt</div>
+        <div class="fl-line" style="left:20%"></div>
+        <div class="fl-line" style="left:40%"></div>
+        <div class="fl-line" style="left:60%"></div>
+        <div class="fl-line" style="left:80%"></div>
+        <div class="fl-pulse" style="left:calc(60% - 2px)"></div>
+        <div class="fl-devices">
+          <div class="fl-dev">✓</div>
+          <div class="fl-dev">✓</div>
+          <div class="fl-dev bad">✗</div>
+          <div class="fl-dev bad">✗</div>
+        </div>
+      </div>`
+  },
+  {
+    id: 'runtime',
+    title: 'Runtime & Trusted-App Boundary Failure',
+    category: 'Execution Trust',
+    icon: '🧱',
+    iconBg: 'rgba(139,92,246,.2)',
+    severity: 'high',
+    sevPct: 76,
+    desc: 'Compromise of the host OS, driver stack, or middleware around the model runtime exposes inputs, outputs, and attestation.',
+    full: {
+      mechanism: 'Many edge AI deployments sit inside larger software stacks: Linux gateways, Android devices, RTOS environments, middleware pipelines, and sensor services. A local software compromise can expose model files, capture inputs and outputs, subvert attestation, or manipulate inference scheduling. Protecting only the NPU or model binary is not enough — the entire runtime boundary must hold.',
+      variants: ['Host OS or driver compromise', 'Middleware and pipeline tampering', 'TEE / TrustZone boundary escape', 'Inference scheduling manipulation', 'I/O interception between sensors and model'],
+      impact: 'Covert capture of user data and inference results, subversion of attestation signals, and manipulation of model decisions without touching the weights themselves.',
+      countermeasures: ['TrustZone / TEE-backed model execution', 'Minimal trusted application surface', 'Memory protection unit (MPU) enforcement', 'Attested IPC between sensor and inference services', 'Strict driver and middleware signing'],
+      refs: 'Arm PSA; PSA Certified; NIST IR 8532'
+    },
+    anim: `
+      <div class="anim-runtime">
+        <div class="rt-stack">
+          <div class="rt-layer rt-app">Model / App</div>
+          <div class="rt-layer rt-tee">TEE · TrustZone</div>
+          <div class="rt-layer rt-os">OS · Drivers</div>
+          <div class="rt-layer rt-hw">Hardware</div>
+        </div>
+        <div class="rt-break"></div>
+        <div class="rt-label">⚡ boundary bypass</div>
+      </div>`
+  },
+  {
+    id: 'privacy',
+    title: 'Privacy Leakage via Caching & Telemetry',
+    category: 'Data Boundary',
+    icon: '🫧',
+    iconBg: 'rgba(16,185,129,.2)',
+    severity: 'medium',
+    sevPct: 66,
+    desc: 'Local caches, feature maps, crash logs, and fleet analytics quietly carry sensitive data off the device.',
+    full: {
+      mechanism: 'Edge AI is often marketed as privacy-preserving because raw data stays local. That promise is only partially true if the device stores cached inputs, embeddings, feature maps, logs, or telemetry that later leave the device. Sensitive information may leak not only through the inference result, but through diagnostic uploads, crash logs, local storage remnants, or poorly minimized fleet analytics.',
+      variants: ['Cached input and feature leakage', 'Crash-report exfiltration', 'Telemetry over-collection', 'Federated update gradient leakage', 'Local storage remnants after deletion'],
+      impact: 'Violation of privacy promises, GDPR / HIPAA exposure, re-identification of users, and erosion of trust in on-device AI claims.',
+      countermeasures: ['Minimize persistent intermediate state', 'Differential privacy in telemetry and federated updates', 'Encrypted, scoped crash and log pipelines', 'Lifecycle-aware data retention policies', 'Precise, auditable privacy claims per feature'],
+      refs: 'NIST AI RMF; ENISA Fog & Edge Report; OWASP LLM Top 10'
+    },
+    anim: `
+      <div class="anim-privacy">
+        <div class="pv-device">Edge<br>Device</div>
+        <div class="pv-drop"></div>
+        <div class="pv-drop"></div>
+        <div class="pv-drop"></div>
+        <div class="pv-drop"></div>
+        <div class="pv-out">↑ telemetry</div>
+        <div class="pv-cache">cache · logs · embeddings</div>
+      </div>`
+  },
+  {
+    id: 'exhaust',
+    title: 'Resource Exhaustion & Battery Drain',
+    category: 'Availability',
+    icon: '🔋',
+    iconBg: 'rgba(245,158,11,.2)',
+    severity: 'medium',
+    sevPct: 62,
+    desc: 'Crafted inputs trigger expensive inference, repeated wakeups, or thermal throttling — draining batteries and destabilizing always-on classifiers.',
+    full: {
+      mechanism: 'Resource-constrained devices can be pushed into unstable behavior with comparatively small effort. Adversaries flood inputs, trigger repeated wakeups, induce expensive inference paths, drain batteries, exhaust SRAM, or cause thermal throttling and watchdog resets. These attacks are especially relevant for battery-powered sensors and always-on edge classifiers.',
+      variants: ['Sponge-style compute-heavy inputs', 'Wakeup / keyword-spotting flooding', 'SRAM / memory pressure attacks', 'Thermal and watchdog reset induction', 'Expensive inference path triggering'],
+      impact: 'Battery depletion, service outage, missed detections in safety-critical sensing, and accelerated hardware aging from thermal stress.',
+      countermeasures: ['Bounded inference compute budgets', 'Wakeup rate limiting and debouncing', 'Thermal and power watchdogs', 'Graceful degradation to lightweight models', 'Anomaly detection on resource usage patterns'],
+      refs: 'ENISA Fog & Edge Report; OWASP LLM Top 10; NIST AI RMF'
+    },
+    anim: `
+      <div class="anim-exhaust">
+        <div class="ex-device shaking">Edge MCU</div>
+        <div class="ex-battery"></div>
+        <div class="ex-warn">⚠ thermal · battery drain</div>
+      </div>`
+  },
+  {
+    id: 'reliab',
+    title: 'Reliability-to-Security Crossover',
+    category: 'Cross-Layer',
+    icon: '🌡️',
+    iconBg: 'rgba(6,182,212,.2)',
+    severity: 'medium',
+    sevPct: 60,
+    desc: 'Aging, voltage droop, temperature, and memory errors create weak operating regions that attackers can steer the device into.',
+    full: {
+      mechanism: 'At the edge, reliability issues often become security issues. Aging, voltage droop, temperature variation, memory errors, and noisy sensors interact with adversarial behavior. An attacker may exploit known weak operating regions where the model or hardware becomes easier to fault, less calibrated, or more predictable. This is one reason edge AI security is inseparable from robust hardware-aware design.',
+      variants: ['Voltage-droop exploitation', 'Thermal-window attacks', 'Aging-induced bit errors', 'Memory retention / DRAM weakness', 'Sensor calibration drift abuse'],
+      impact: 'Increased fault rates in safety decisions, predictable failure modes exploitable by attackers, and blurred boundaries between bug, reliability defect, and vulnerability.',
+      countermeasures: ['Hardware-aware robustness margins', 'Runtime monitoring of voltage / temperature / error rates', 'Calibration drift detection', 'Redundant inference and majority voting', 'Joint reliability-security verification'],
+      refs: 'NIST IR 8532; NIST AI 100-2; ENISA Fog & Edge Report'
+    },
+    anim: `
+      <div class="anim-reliab">
+        <div class="rl-graph">
+          <div class="rl-label-y">accuracy</div>
+          <div class="rl-axis"></div>
+          <svg class="rl-curve" viewBox="0 0 200 80" preserveAspectRatio="none">
+            <path class="rl-path" d="M0,20 Q40,18 80,25 T140,45 Q170,60 200,72" />
+          </svg>
+          <div class="rl-zone"></div>
+          <div class="rl-label-x">voltage · temp · age</div>
+        </div>
+        <div class="rl-caption">⚠ exploitable weak region</div>
+      </div>`
+  }
+];
+
+const SEV_CLASS = {
+  critical: 'sev-critical',
+  high: 'sev-high',
+  medium: 'sev-medium',
+  low: 'sev-low'
+};
+
+function buildCards() {
+  const grid = document.getElementById('cardGrid');
+  ATTACKS.forEach((atk, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = `${i * 0.05}s`;
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-icon" style="background:${atk.iconBg}">${atk.icon}</div>
+        <div>
+          <div class="card-title">${atk.title}</div>
+          <div class="card-cat">${atk.category}</div>
+        </div>
+      </div>
+      <div class="card-desc">${atk.desc}</div>
+      <div class="stage">${atk.anim}</div>
+      <div class="card-footer">
+        <div class="severity-label">${atk.severity.charAt(0).toUpperCase() + atk.severity.slice(1)}</div>
+        <div class="severity-bar">
+          <div class="severity-fill ${SEV_CLASS[atk.severity]}" style="width:${atk.sevPct}%"></div>
+        </div>
+        <div style="font-size:.68rem;color:var(--muted)">${atk.sevPct}%</div>
+      </div>
+    `;
+    card.addEventListener('click', () => openModal(atk));
+    grid.appendChild(card);
+  });
+}
+
+function openModal(atk) {
+  document.getElementById('modal-title').textContent = `${atk.icon}  ${atk.title}`;
+  document.getElementById('modal-cat').textContent = atk.category;
+
+  const body = document.getElementById('modal-body');
+  body.innerHTML = `
+    <div class="modal-section">
+      <h3>Attack Mechanism</h3>
+      <p>${atk.full.mechanism}</p>
+    </div>
+    <div class="modal-section">
+      <h3>Known Variants</h3>
+      <div class="tag-list">${atk.full.variants.map(v => `<span class="tag">${v}</span>`).join('')}</div>
+    </div>
+    <div class="modal-section">
+      <h3>Impact</h3>
+      <p>${atk.full.impact}</p>
+    </div>
+    <div class="modal-section">
+      <h3>Countermeasures</h3>
+      <ul class="countermeasure-list">
+        ${atk.full.countermeasures.map(c => `<li>${c}</li>`).join('')}
+      </ul>
+    </div>
+    <div class="modal-section">
+      <h3>Key References</h3>
+      <p style="color:var(--muted);font-size:.82rem;">${atk.full.refs}</p>
+    </div>
+  `;
+
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModalBtn() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('overlay')) closeModalBtn();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBtn(); });
+
+buildCards();
+</script>
+</body>
+</html>
