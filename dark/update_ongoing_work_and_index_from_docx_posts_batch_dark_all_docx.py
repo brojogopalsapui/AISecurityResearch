@@ -486,7 +486,7 @@ def update_index_html(input_html_path, output_html_path, post_id, title, preview
                     link_node = soup.new_tag('a', attrs={'class': 'research-alert-link'})
                     research_alert.append(link_node)
                 link_node['href'] = f'ongoing-work.html#{post_id}'
-                link_node.string = 'Read research watch ->'
+                link_node.string = '         Read research watch ->'
             else:
                 raise ValueError('Could not find a supported floating/latest-note block in index.html (expected either .floating-notif .notif-text or .research-alert).')
     if update_slider:
