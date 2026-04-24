@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ML-KEM for Edge AI - Animated Security Visualization</title>
+<style>
+  :root{
+    --bg:#050a12;
+    --bg2:#091321;
+    --panel:#101b2d;
+    --panel2:#142238;
+    --panel3:#0a121c;
+    --border:#2a455d;
+    --accent:#84dc59;
+    --teal:#4be0c5;
+    --cyan:#58d7ff;
+    --amber:#ffb761;
+    --coral:#ff7369;
+    --rose:#ff96a7;
+    --text:#edf5ff;
+    --soft:#d7e3f2;
+    --muted:#8ca3bb;
+    --mono:"Cascadia Mono",Consolas,"Courier New",monospace;
+    --body:"Bahnschrift","Segoe UI Variable","Aptos","Trebuchet MS",sans-serif;
+    --shadow:0 24px 60px rgba(0,0,0,.34);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.55;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(75,224,197,.17), transparent 28%),
+      radial-gradient(circle at 85% 10%, rgba(255,183,97,.12), transparent 24%),
+      radial-gradient(circle at 50% 88%, rgba(88,215,255,.09), transparent 30%),
+      linear-gradient(180deg, #07111b 0%, #04070d 48%, #06111a 100%);
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.16;
+    background-image:
+      linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size:36px 36px;
+    mask-image:linear-gradient(180deg, rgba(0,0,0,.8), rgba(0,0,0,.25));
+  }
+  a{color:var(--cyan)}
+  header{
+    position:relative;
+    padding:64px 24px 32px;
+    overflow:hidden;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    background:
+      linear-gradient(180deg, rgba(132,220,89,.08), rgba(88,215,255,.04) 45%, transparent 100%);
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    inset:auto -8% -18% auto;
+    width:380px;
+    height:380px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,183,97,.22) 0%, rgba(255,183,97,0) 68%);
+    filter:blur(26px);
+    pointer-events:none;
+  }
+  .hero{
+    max-width:1240px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    margin:0 0 10px;
+    text-transform:uppercase;
+    letter-spacing:.18em;
+    font-size:12px;
+    color:var(--teal);
+    font-weight:700;
+  }
+  h1{
+    margin:0;
+    max-width:1020px;
+    font-size:clamp(34px, 5vw, 58px);
+    line-height:1.03;
+    letter-spacing:-.03em;
+    background:linear-gradient(90deg, #f4f9ff 0%, #84dc59 28%, #58d7ff 62%, #ffb761 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .sub{
+    margin:18px 0 0;
+    max-width:980px;
+    color:var(--soft);
+    font-size:16px;
+  }
+  .hero-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:22px;
+  }
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 12px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.04);
+    color:var(--soft);
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.02em;
+  }
+  .chip::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 14px rgba(132,220,89,.6);
+  }
+  .chip.cyan::before{background:var(--cyan);box-shadow:0 0 14px rgba(88,215,255,.6)}
+  .chip.amber::before{background:var(--amber);box-shadow:0 0 14px rgba(255,183,97,.6)}
+  .chip.coral::before{background:var(--coral);box-shadow:0 0 14px rgba(255,115,105,.6)}
+  nav.toc{
+    max-width:1240px;
+    margin:20px auto 0;
+    padding:0 24px 12px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  nav.toc a{
+    text-decoration:none;
+    color:var(--cyan);
+    background:rgba(88,215,255,.07);
+    border:1px solid rgba(88,215,255,.18);
+    padding:8px 12px;
+    border-radius:10px;
+    font-size:13px;
+    transition:transform .15s ease, background .2s ease, border-color .2s ease;
+  }
+  nav.toc a:hover{
+    transform:translateY(-1px);
+    background:rgba(88,215,255,.14);
+    border-color:rgba(88,215,255,.28);
+  }
+  main{
+    max-width:1240px;
+    margin:0 auto;
+    padding:18px 24px 72px;
+  }
+  section{
+    margin:30px 0;
+    padding:28px;
+    border-radius:22px;
+    border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(180deg, rgba(16,27,45,.96), rgba(9,15,24,.95));
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(10px);
+  }
+  section h2{
+    margin:0;
+    font-size:29px;
+    letter-spacing:-.02em;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .tag{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:36px;
+    height:30px;
+    padding:0 10px;
+    border-radius:999px;
+    background:rgba(132,220,89,.12);
+    border:1px solid rgba(132,220,89,.28);
+    color:var(--accent);
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.06em;
+  }
+  .lede{
+    margin:10px 0 0;
+    color:var(--soft);
+    font-size:15px;
+  }
+  .grid{display:grid;gap:16px}
+  .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .grid.cols-4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+  .card{
+    padding:20px;
+    border-radius:18px;
+    background:linear-gradient(180deg, rgba(10,18,28,.9), rgba(8,15,23,.78));
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+  .card h3{
+    margin:0;
+    font-size:19px;
+    letter-spacing:-.01em;
+    color:#fff;
+  }
+  .card p{
+    margin:10px 0 0;
+    color:#c7d6e7;
+    font-size:14px;
+  }
+  .stat{
+    padding:16px;
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(20,34,56,.94), rgba(11,19,31,.94));
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .stat .k{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--muted);
+  }
+  .stat .v{
+    margin-top:6px;
+    font-size:26px;
+    font-weight:800;
+    color:#fff;
+    letter-spacing:-.02em;
+  }
+  .stat p{
+    margin:8px 0 0;
+    font-size:13px;
+    color:#bfd0e4;
+  }
+  .callout{
+    margin-top:14px;
+    padding:14px 16px;
+    border-radius:14px;
+    border:1px solid rgba(132,220,89,.24);
+    background:linear-gradient(135deg, rgba(132,220,89,.08), rgba(88,215,255,.05));
+    color:#dce8f7;
+    font-size:14px;
+  }
+  .callout.warn{
+    border-color:rgba(255,183,97,.28);
+    background:linear-gradient(135deg, rgba(255,183,97,.08), rgba(255,115,105,.04));
+  }
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-top:14px;
+  }
+  .btn{
+    appearance:none;
+    border:0;
+    cursor:pointer;
+    padding:9px 14px;
+    border-radius:10px;
+    background:var(--accent);
+    color:#0b1118;
+    font-weight:800;
+    font-size:12px;
+    letter-spacing:.03em;
+    transition:transform .1s ease, filter .15s ease, background .2s ease;
+  }
+  .btn:hover{filter:brightness(1.08)}
+  .btn:active{transform:translateY(1px)}
+  .btn.alt{
+    background:transparent;
+    color:var(--cyan);
+    border:1px solid rgba(88,215,255,.36);
+  }
+  .btn.warn{
+    background:var(--amber);
+    color:#111826;
+  }
+  .narr{
+    margin-top:12px;
+    min-height:54px;
+    padding:12px 14px;
+    border-left:3px solid var(--cyan);
+    border-radius:0 10px 10px 0;
+    background:rgba(4,9,16,.72);
+    color:#cfdded;
+    font-size:12px;
+    font-family:var(--mono);
+  }
+  .narr.warn{border-left-color:var(--amber)}
+  .narr.safe{border-left-color:var(--accent)}
+  .mini-list{
+    display:grid;
+    gap:10px;
+    margin-top:14px;
+  }
+  .mini-item{
+    padding:12px 14px;
+    border-radius:14px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.07);
+    color:#c8d7e8;
+    font-size:13px;
+  }
+  .mini-item strong{color:#fff}
+  .viz{
+    position:relative;
+    min-height:340px;
+    margin-top:16px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.08);
+    background:
+      linear-gradient(180deg, rgba(10,18,28,.95), rgba(5,9,15,.96)),
+      radial-gradient(circle at 20% 20%, rgba(75,224,197,.12), transparent 32%),
+      radial-gradient(circle at 80% 0%, rgba(255,183,97,.08), transparent 28%);
+    overflow:hidden;
+  }
+  .viz::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size:34px 34px;
+    opacity:.2;
+    pointer-events:none;
+  }
+  .node{
+    position:absolute;
+    min-width:132px;
+    padding:12px 14px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.1);
+    background:linear-gradient(180deg, rgba(19,34,54,.98), rgba(10,18,28,.95));
+    color:#fff;
+    box-shadow:0 14px 30px rgba(0,0,0,.25);
+    z-index:2;
+  }
+  .node .title{
+    display:block;
+    font-weight:800;
+    letter-spacing:.01em;
+  }
+  .node .subline{
+    display:block;
+    margin-top:4px;
+    font-size:11px;
+    color:var(--muted);
+    font-family:var(--mono);
+  }
+  .node.edge{left:7%;top:48%;transform:translateY(-50%)}
+  .node.cloud{right:7%;top:48%;transform:translateY(-50%)}
+  .node.server{right:8%;top:48%;transform:translateY(-50%)}
+  .node.device{left:8%;top:48%;transform:translateY(-50%)}
+  .node.attacker{
+    left:50%;
+    top:11%;
+    transform:translateX(-50%);
+    min-width:164px;
+    border-color:rgba(255,115,105,.36);
+    background:linear-gradient(180deg, rgba(61,22,24,.92), rgba(23,11,15,.94));
+  }
+  .node.store{
+    right:8%;
+    top:11%;
+    min-width:150px;
+  }
+  .node.console{
+    right:8%;
+    bottom:10%;
+    min-width:154px;
+  }
+  .node.sensor{
+    left:8%;
+    bottom:10%;
+    min-width:150px;
+  }
+  .node.merge{
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    min-width:150px;
+    text-align:center;
+  }
+  .node.left-top{left:8%;top:18%}
+  .node.left-bottom{left:8%;bottom:12%}
+  .node.right-center{right:8%;top:50%;transform:translateY(-50%)}
+  .line{
+    position:absolute;
+    height:2px;
+    border-radius:999px;
+    background:linear-gradient(90deg, rgba(88,215,255,.2), rgba(88,215,255,.75), rgba(88,215,255,.2));
+    z-index:1;
+  }
+  .line.vert{width:2px;height:auto}
+  .line.dashed{
+    background:repeating-linear-gradient(90deg, rgba(88,215,255,.7) 0 12px, transparent 12px 22px);
+  }
+  .line.attack{
+    background:repeating-linear-gradient(90deg, rgba(255,115,105,.7) 0 10px, transparent 10px 20px);
+  }
+  .packet{
+    position:absolute;
+    z-index:3;
+    padding:7px 10px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(16,27,45,.96);
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.02em;
+    color:#fff;
+    opacity:0;
+    box-shadow:0 10px 18px rgba(0,0,0,.22);
+    white-space:nowrap;
+  }
+  .packet.classical{border-color:rgba(255,183,97,.45);color:var(--amber)}
+  .packet.capture{border-color:rgba(255,115,105,.55);color:var(--coral)}
+  .packet.pk{border-color:rgba(88,215,255,.5);color:var(--cyan)}
+  .packet.ct{border-color:rgba(132,220,89,.45);color:var(--accent)}
+  .packet.model{border-color:rgba(132,220,89,.45);color:#e4ffd7}
+  .packet.telemetry{border-color:rgba(75,224,197,.45);color:var(--teal)}
+  .packet.x{border-color:rgba(255,183,97,.55);color:var(--amber)}
+  .packet.m{border-color:rgba(88,215,255,.55);color:var(--cyan)}
+  .packet.final{border-color:rgba(132,220,89,.55);color:var(--accent)}
+  .badge{
+    position:absolute;
+    z-index:4;
+    padding:7px 10px;
+    border-radius:12px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(7,13,20,.84);
+    color:var(--soft);
+  }
+  .badge.fail{
+    color:#ffd8dc;
+    border-color:rgba(255,115,105,.45);
+    background:rgba(44,14,18,.9);
+    opacity:0;
+  }
+  .badge.safe{
+    color:#e6ffd5;
+    border-color:rgba(132,220,89,.42);
+    background:rgba(15,31,17,.9);
+    opacity:0;
+  }
+  .secret-dot{
+    position:absolute;
+    z-index:4;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 0 rgba(132,220,89,0);
+    opacity:.12;
+  }
+  .lock-banner{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    z-index:4;
+    padding:10px 14px;
+    border-radius:14px;
+    border:1px solid rgba(132,220,89,.3);
+    background:rgba(15,31,17,.92);
+    color:#e6ffd5;
+    font-size:12px;
+    font-weight:700;
+    opacity:0;
+    box-shadow:0 0 0 rgba(132,220,89,0);
+  }
+  .note-box{
+    position:absolute;
+    z-index:4;
+    padding:10px 12px;
+    max-width:220px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(7,12,19,.88);
+    color:#cfdeee;
+    font-size:12px;
+  }
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-top:12px;
+    color:var(--muted);
+    font-size:12px;
+  }
+  .legend span{
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .legend i{
+    width:14px;
+    height:14px;
+    border-radius:4px;
+    display:inline-block;
+    border:1px solid rgba(255,255,255,.18);
+  }
+  .ops-band{
+    position:absolute;
+    left:4%;
+    right:4%;
+    height:78px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+    z-index:1;
+  }
+  .ops-band .label{
+    position:absolute;
+    left:18px;
+    top:14px;
+    font-size:13px;
+    font-weight:800;
+    color:#fff;
+  }
+  .ops-band .subline{
+    position:absolute;
+    left:18px;
+    top:36px;
+    font-size:11px;
+    color:var(--muted);
+    font-family:var(--mono);
+  }
+  .ops-band.one{top:10%}
+  .ops-band.two{top:39%}
+  .ops-band.three{top:68%}
+  .lane-glow{
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    opacity:0;
+    background:linear-gradient(90deg, rgba(132,220,89,.05), rgba(88,215,255,.12), rgba(132,220,89,.05));
+  }
+  .ops-demo .node.device{top:16%;left:72%;transform:none;min-width:138px}
+  .ops-demo .node.server{top:45%;right:8%;transform:none;min-width:150px}
+  .ops-demo .node.edge-core{top:74%;left:72%;transform:none;min-width:138px}
+  .ops-demo .secret-dot.edge-secret{left:77%;top:78%}
+  .ops-demo .secret-dot.server-secret{right:17%;top:49%}
+  .step-note{
+    position:absolute;
+    z-index:2;
+    padding:8px 10px;
+    border-radius:12px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    font-family:var(--mono);
+    font-size:11px;
+    color:#dbe8f5;
+  }
+  .ops-demo .step-note.keypair{left:41%;top:16%}
+  .ops-demo .step-note.publish{left:47%;top:45%}
+  .ops-demo .step-note.decrypt{left:46%;top:74%}
+  .lattice-wrap{
+    margin-top:16px;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(180deg, rgba(9,17,27,.98), rgba(6,12,19,.98));
+  }
+  .lattice-wrap svg{display:block;width:100%;height:auto}
+  .fundamentals-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:16px;
+    font-size:13px;
+  }
+  .fundamentals-table th,
+  .fundamentals-table td{
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .fundamentals-table th{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--cyan);
+  }
+  .fundamentals-table td{color:#cad8e7}
+  .fundamentals-table td strong{color:#fff}
+  .bar-chart{
+    display:grid;
+    gap:12px;
+    margin-top:16px;
+  }
+  .bar{
+    padding:12px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+  }
+  .bar .row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    color:#e7f1fb;
+    font-size:13px;
+  }
+  .bar-track{
+    height:10px;
+    margin-top:10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.06);
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    border-radius:inherit;
+    background:linear-gradient(90deg, var(--teal), var(--cyan));
+  }
+  .bar-fill.amber{background:linear-gradient(90deg, var(--amber), #ffd493)}
+  .bar-fill.green{background:linear-gradient(90deg, var(--accent), #d7ff8f)}
+  .bullet-list{
+    display:grid;
+    gap:10px;
+    margin-top:14px;
+  }
+  .bullet{
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+    color:#cfdeee;
+    font-size:13px;
+  }
+  .bullet strong{color:#fff}
+  table.matrix{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:16px;
+    font-size:13px;
+  }
+  table.matrix th,
+  table.matrix td{
+    text-align:left;
+    padding:11px 12px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    vertical-align:top;
+  }
+  table.matrix th{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--cyan);
+  }
+  table.matrix td{
+    color:#cad8e7;
+  }
+  .bad{color:#ffb0b6;font-weight:700}
+  .good{color:#cfffbe;font-weight:700}
+  .meh{color:#ffe1b8;font-weight:700}
+  footer{
+    text-align:center;
+    padding:28px 20px;
+    color:var(--muted);
+    font-size:12px;
+    border-top:1px solid rgba(255,255,255,.08);
+    margin-top:38px;
+  }
+  @keyframes attackFlight{
+    0%{left:17%;top:49%;opacity:0}
+    10%{opacity:1}
+    100%{left:70%;top:49%;opacity:1}
+  }
+  @keyframes stealFlight{
+    0%,12%{left:44%;top:47%;opacity:0}
+    20%{opacity:1}
+    100%{left:45%;top:18%;opacity:1}
+  }
+  @keyframes failReveal{
+    0%,72%{opacity:0;transform:scale(.85)}
+    100%{opacity:1;transform:scale(1)}
+  }
+  @keyframes vaultCharge{
+    0%,25%{box-shadow:0 0 0 rgba(255,115,105,0)}
+    60%{box-shadow:0 0 26px rgba(255,115,105,.35)}
+    100%{box-shadow:0 0 38px rgba(255,115,105,.45)}
+  }
+  @keyframes pkFlight{
+    0%{left:18%;top:48%;opacity:0}
+    12%{opacity:1}
+    100%{left:68%;top:48%;opacity:1}
+  }
+  @keyframes ctFlight{
+    0%,28%{left:70%;top:56%;opacity:0}
+    35%{opacity:1}
+    100%{left:20%;top:56%;opacity:1}
+  }
+  @keyframes attackerSniff{
+    0%,24%{left:48%;top:50%;opacity:0}
+    33%{opacity:.6}
+    100%{left:48%;top:18%;opacity:.85}
+  }
+  @keyframes secretLight{
+    0%,62%{opacity:.12;box-shadow:0 0 0 rgba(132,220,89,0)}
+    100%{opacity:1;box-shadow:0 0 18px rgba(132,220,89,.65)}
+  }
+  @keyframes safeReveal{
+    0%,66%{opacity:0;transform:translateY(8px)}
+    100%{opacity:1;transform:translateY(0)}
+  }
+  @keyframes tunnelReveal{
+    0%,62%{opacity:0}
+    100%{opacity:1;box-shadow:0 0 24px rgba(132,220,89,.34)}
+  }
+  @keyframes modelSweep{
+    0%{left:70%;top:43%;opacity:0}
+    12%{opacity:1}
+    100%{left:20%;top:43%;opacity:1}
+  }
+  @keyframes modelSweepLower{
+    0%{left:70%;top:50%;opacity:0}
+    12%{opacity:1}
+    100%{left:20%;top:50%;opacity:1}
+  }
+  @keyframes telemetrySweep{
+    0%{left:20%;top:64%;opacity:0}
+    16%{opacity:1}
+    100%{left:70%;top:64%;opacity:1}
+  }
+  @keyframes bandGlow{
+    0%,100%{opacity:0}
+    25%,70%{opacity:1}
+  }
+  @keyframes fadePacket{
+    0%{opacity:0}
+    16%{opacity:1}
+    100%{opacity:1}
+  }
+  @keyframes hybridInTop{
+    0%{left:20%;top:22%;opacity:0}
+    14%{opacity:1}
+    100%{left:44%;top:44%;opacity:1}
+  }
+  @keyframes hybridInBottom{
+    0%,18%{left:20%;top:72%;opacity:0}
+    26%{opacity:1}
+    100%{left:44%;top:56%;opacity:1}
+  }
+  @keyframes hybridOut{
+    0%,52%{left:52%;top:50%;opacity:0}
+    60%{opacity:1}
+    100%{left:72%;top:50%;opacity:1}
+  }
+  @keyframes mergeGlow{
+    0%,42%{box-shadow:0 14px 30px rgba(0,0,0,.25)}
+    60%{box-shadow:0 0 30px rgba(88,215,255,.25), 0 14px 30px rgba(0,0,0,.25)}
+    100%{box-shadow:0 0 38px rgba(132,220,89,.22), 0 14px 30px rgba(0,0,0,.25)}
+  }
+  @keyframes latticeNoise{
+    0%,100%{opacity:.18;transform:translate(0,0)}
+    25%{opacity:.8;transform:translate(2px,-3px)}
+    50%{opacity:.45;transform:translate(-3px,2px)}
+    75%{opacity:.9;transform:translate(3px,1px)}
+  }
+  @keyframes latticeVector{
+    0%{opacity:.35}
+    100%{opacity:1}
+  }
+  .threat-attack .line.main{left:20%;right:20%;top:51%}
+  .threat-attack .line.tap{left:49.5%;top:20%;bottom:50%;width:2px;height:auto;background:repeating-linear-gradient(180deg, rgba(255,115,105,.65) 0 10px, transparent 10px 20px)}
+  .threat-attack .packet.classical{left:17%;top:49%}
+  .threat-attack .packet.capture{left:44%;top:47%}
+  .threat-attack .badge.fail{right:9%;bottom:11%}
+  .threat-attack .note-box{left:50%;bottom:10%;transform:translateX(-50%);max-width:260px}
+  .threat-attack.play .packet.classical{animation:attackFlight 2.8s ease-in-out forwards}
+  .threat-attack.play .packet.capture{animation:stealFlight 2.4s ease-in-out forwards}
+  .threat-attack.play .node.attacker{animation:vaultCharge 4s ease forwards}
+  .threat-attack.play .badge.fail{animation:failReveal 4s ease forwards}
+  .threat-defense .line.main{left:20%;right:20%;top:52%}
+  .threat-defense .line.tap{left:49.5%;top:20%;bottom:48%;width:2px;height:auto;background:repeating-linear-gradient(180deg, rgba(255,115,105,.65) 0 10px, transparent 10px 20px)}
+  .threat-defense .packet.pk{left:18%;top:48%}
+  .threat-defense .packet.ct{left:70%;top:56%}
+  .threat-defense .packet.capture{left:48%;top:50%}
+  .threat-defense .packet.model.one{left:70%;top:43%}
+  .threat-defense .packet.model.two{left:70%;top:50%}
+  .threat-defense .secret-dot.left{left:18%;top:62%}
+  .threat-defense .secret-dot.right{right:18%;top:62%}
+  .threat-defense .badge.safe{left:50%;bottom:10%;transform:translateX(-50%)}
+  .threat-defense .lock-banner{top:34%}
+  .threat-defense .note-box{right:9%;bottom:10%}
+  .threat-defense.play .packet.pk{animation:pkFlight 2.1s ease forwards}
+  .threat-defense.play .packet.ct{animation:ctFlight 2.4s ease forwards}
+  .threat-defense.play .packet.capture{animation:attackerSniff 2.6s ease forwards}
+  .threat-defense.play .secret-dot.left,
+  .threat-defense.play .secret-dot.right{animation:secretLight 3.5s ease forwards}
+  .threat-defense.play .badge.safe{animation:safeReveal 4s ease forwards}
+  .threat-defense.play .lock-banner{animation:tunnelReveal 3.8s ease forwards}
+  .threat-defense.play .packet.model.one{animation:modelSweep 1.9s linear 2.8s forwards}
+  .threat-defense.play .packet.model.two{animation:modelSweepLower 1.9s linear 3.1s forwards}
+  .ops-demo .packet.pk{left:41%;top:17%}
+  .ops-demo .packet.ct{left:71%;top:46%}
+  .ops-demo .badge.safe{left:50%;bottom:9%;transform:translateX(-50%)}
+  .ops-demo .lock-banner{top:81%}
+  .ops-demo.play .ops-band.one .lane-glow{animation:bandGlow 1.5s ease .1s forwards}
+  .ops-demo.play .ops-band.two .lane-glow{animation:bandGlow 1.5s ease 1.7s forwards}
+  .ops-demo.play .ops-band.three .lane-glow{animation:bandGlow 1.5s ease 3.4s forwards}
+  .ops-demo.play .packet.pk{animation:fadePacket .7s ease .35s forwards}
+  .ops-demo.play .packet.ct{animation:ctFlight 2s ease 1.95s forwards}
+  .ops-demo.play .secret-dot.edge-secret,
+  .ops-demo.play .secret-dot.server-secret{animation:secretLight 4.8s ease forwards}
+  .ops-demo.play .badge.safe{animation:safeReveal 5.2s ease forwards}
+  .ops-demo.play .lock-banner{animation:tunnelReveal 5s ease forwards}
+  .system-demo .node.device{left:8%;top:48%}
+  .system-demo .node.server{right:8%;top:48%}
+  .system-demo .line.main{left:21%;right:21%;top:52%}
+  .system-demo .line.sense{left:18%;top:78%;width:2px;height:90px;background:repeating-linear-gradient(180deg, rgba(75,224,197,.7) 0 12px, transparent 12px 20px)}
+  .system-demo .line.store{right:17%;top:26%;width:2px;height:82px;background:repeating-linear-gradient(180deg, rgba(132,220,89,.65) 0 12px, transparent 12px 20px)}
+  .system-demo .line.console{right:17%;top:58%;width:2px;height:72px;background:repeating-linear-gradient(180deg, rgba(88,215,255,.65) 0 12px, transparent 12px 20px)}
+  .system-demo .line.tap{left:49.5%;top:20%;bottom:48%;width:2px;height:auto;background:repeating-linear-gradient(180deg, rgba(255,115,105,.65) 0 10px, transparent 10px 20px)}
+  .system-demo .packet.pk{left:18%;top:45%}
+  .system-demo .packet.ct{left:70%;top:55%}
+  .system-demo .packet.model.one{left:70%;top:40%}
+  .system-demo .packet.model.two{left:70%;top:47%}
+  .system-demo .packet.model.three{left:70%;top:54%}
+  .system-demo .packet.telemetry{left:20%;top:64%}
+  .system-demo .packet.capture{left:48%;top:49%}
+  .system-demo .lock-banner{top:31%}
+  .system-demo .badge.safe{left:50%;bottom:9%;transform:translateX(-50%)}
+  .system-demo .note-box.capture{left:50%;top:15%;transform:translateX(-50%);max-width:250px}
+  .system-demo .secret-dot.left{left:18%;top:60%}
+  .system-demo .secret-dot.right{right:18%;top:60%}
+  .system-demo.play .packet.pk{animation:pkFlight 1.5s ease forwards}
+  .system-demo.play .packet.ct{animation:ctFlight 2s ease 1.15s forwards}
+  .system-demo.play .packet.capture{animation:attackerSniff 2.3s ease 1.2s forwards}
+  .system-demo.play .secret-dot.left,
+  .system-demo.play .secret-dot.right{animation:secretLight 3s ease forwards}
+  .system-demo.play .lock-banner{animation:tunnelReveal 3.2s ease forwards}
+  .system-demo.play .packet.model.one{animation:modelSweep 1.6s linear 2.3s forwards}
+  .system-demo.play .packet.model.two{animation:modelSweepLower 1.6s linear 2.55s forwards}
+  .system-demo.play .packet.model.three{animation:modelSweep 1.6s linear 2.8s forwards}
+  .system-demo.play .packet.telemetry{animation:telemetrySweep 1.5s linear 4.4s forwards}
+  .system-demo.play .badge.safe{animation:safeReveal 6s ease forwards}
+  .hybrid-demo .line.top{left:24%;top:31%;width:24%}
+  .hybrid-demo .line.bottom{left:24%;top:69%;width:24%}
+  .hybrid-demo .line.out{left:56%;top:51%;width:18%}
+  .hybrid-demo .packet.x{left:20%;top:22%}
+  .hybrid-demo .packet.m{left:20%;top:72%}
+  .hybrid-demo .packet.final{left:52%;top:50%}
+  .hybrid-demo .secret-dot.right{right:19%;top:52%}
+  .hybrid-demo .badge.safe{left:50%;bottom:11%;transform:translateX(-50%)}
+  .hybrid-demo.play .node.merge{animation:mergeGlow 3.8s ease forwards}
+  .hybrid-demo.play .packet.x{animation:hybridInTop 1.7s ease forwards}
+  .hybrid-demo.play .packet.m{animation:hybridInBottom 1.7s ease .5s forwards}
+  .hybrid-demo.play .packet.final{animation:hybridOut 2s ease forwards}
+  .hybrid-demo.play .secret-dot.right{animation:secretLight 3.8s ease forwards}
+  .hybrid-demo.play .badge.safe{animation:safeReveal 4.2s ease forwards}
+  .lattice-demo .clean-vector{opacity:.35}
+  .lattice-demo .noisy-vector{opacity:0}
+  .lattice-demo .noise{opacity:.15}
+  .lattice-demo.play .clean-vector{animation:latticeVector 1.2s ease forwards}
+  .lattice-demo.play .noisy-vector{animation:latticeVector 1.2s ease .55s forwards}
+  .lattice-demo.play .noise{animation:latticeNoise 1.6s ease-in-out infinite .55s}
+  @media (max-width:900px){
+    section{padding:22px}
+    .viz{min-height:380px}
+    .node,.note-box{max-width:44%}
+  }
+  @media (max-width:720px){
+    header{padding:52px 18px 26px}
+    nav.toc{padding:0 18px 10px}
+    main{padding:16px 18px 64px}
+    section h2{font-size:25px}
+    .viz{min-height:440px}
+    .node{
+      min-width:0;
+      width:40%;
+      padding:10px 12px;
+    }
+    .node.attacker{
+      width:56%;
+      left:50%;
+      transform:translateX(-50%);
+    }
+    .node.edge,.node.device{left:4%}
+    .node.cloud,.node.server{right:4%}
+    .note-box{max-width:54%}
+    .ops-demo .node.device,
+    .ops-demo .node.server,
+    .ops-demo .node.edge-core{
+      width:36%;
+    }
+  }
+  @media (max-width:560px){
+    .hero-meta{gap:8px}
+    .chip{font-size:11px}
+    .viz{min-height:500px}
+    .node{width:44%}
+    .node.attacker{width:70%}
+    .note-box{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero">
+    <p class="eyebrow">Post-Quantum Security For Edge AI</p>
+    <h1>How ML-KEM protects an edge AI system</h1>
+    <p class="sub">
+      An animated walkthrough of how a module-lattice key encapsulation mechanism can secure model delivery,
+      telemetry, and control traffic for a Jetson-class edge device even if an adversary stores traffic today and
+      waits for a future quantum computer.
+    </p>
+    <div class="hero-meta">
+      <span class="chip">FIPS 203 ML-KEM</span>
+      <span class="chip cyan">KeyGen - Encaps - Decaps</span>
+      <span class="chip amber">Edge device + model server</span>
+      <span class="chip coral">Harvest now, decrypt later threat</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#threat">Threat Model</a>
+  <a href="#fundamentals">ML-KEM Basics</a>
+  <a href="#ops">Core Operations</a>
+  <a href="#system">Edge AI Flow</a>
+  <a href="#constraints">Edge Constraints</a>
+  <a href="#hybrid">Hybrid X-Wing</a>
+  <a href="#matrix">Security Matrix</a>
+  <a href="#sources">Sources</a>
+</nav>
+
+<main>
+  <section id="threat">
+    <h2><span class="tag">01</span> Why edge AI needs post-quantum key establishment</h2>
+    <p class="lede">
+      Edge AI systems keep shipping models, prompts, telemetry, and control updates across public networks.
+      If the public-key handshake is breakable in the future, an attacker can record that traffic now and read it later.
+      ML-KEM changes the key-establishment layer so the captured transcript does not become a delayed breach.
+    </p>
+
+    <div class="grid cols-2" style="margin-top:18px">
+      <div class="card">
+        <h3>Classical exchange under a harvest-now-decrypt-later attacker</h3>
+        <p>
+          The attacker only needs patience: store the transcript today, then recover the session key later if the
+          public-key primitive falls to a cryptographically relevant quantum computer.
+        </p>
+        <div id="threatAttack" class="viz threat-attack">
+          <div class="node attacker">
+            <span class="title">Quantum adversary</span>
+            <span class="subline">stores handshake transcript for later</span>
+          </div>
+          <div class="node edge">
+            <span class="title">Edge AI node</span>
+            <span class="subline">camera, robot, or gateway</span>
+          </div>
+          <div class="node cloud">
+            <span class="title">Cloud model service</span>
+            <span class="subline">classical key exchange</span>
+          </div>
+          <div class="line main"></div>
+          <div class="line tap"></div>
+          <div class="packet classical">ECDH / RSA handshake</div>
+          <div class="packet capture">captured transcript</div>
+          <div class="note-box">
+            Later quantum break -> old recordings become readable if the session secret can be recovered from the transcript.
+          </div>
+          <div class="badge fail">Future quantum break -> session exposed</div>
+        </div>
+        <div class="controls">
+          <button class="btn warn" type="button" onclick="runThreatAttack()">Replay attack</button>
+        </div>
+        <div id="threatAttackNarr" class="narr warn">
+          Captured handshakes are dangerous when long-lived confidentiality matters, especially for model IP, data exhaust,
+          and sensitive telemetry stored for months or years.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>ML-KEM exchange for the same edge AI path</h3>
+        <p>
+          The recipient publishes an ML-KEM public key, the sender encapsulates to it, and both sides derive the same
+          32-byte shared secret. That secret then drives fast symmetric protection for the actual model bytes.
+        </p>
+        <div id="threatDefense" class="viz threat-defense">
+          <div class="node attacker">
+            <span class="title">Quantum adversary</span>
+            <span class="subline">can copy packets but not derive session key</span>
+          </div>
+          <div class="node device">
+            <span class="title">Edge AI node</span>
+            <span class="subline">publishes ML-KEM public key</span>
+          </div>
+          <div class="node server">
+            <span class="title">Model server</span>
+            <span class="subline">encapsulates to device public key</span>
+          </div>
+          <div class="line main"></div>
+          <div class="line tap"></div>
+          <div class="packet pk">pk_device</div>
+          <div class="packet ct">ct + shared secret</div>
+          <div class="packet capture">ciphertext only</div>
+          <div class="packet model one">AES-GCM model shard</div>
+          <div class="packet model two">AES-GCM model shard</div>
+          <div class="secret-dot left"></div>
+          <div class="secret-dot right"></div>
+          <div class="lock-banner">same 32-byte secret on both sides</div>
+          <div class="badge safe">Post-quantum key establishment complete</div>
+          <div class="note-box">
+            ML-KEM secures the key exchange. Bulk model transfer stays fast because symmetric cryptography carries the heavy bytes.
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn" type="button" onclick="runThreatDefense()">Replay ML-KEM flow</button>
+        </div>
+        <div id="threatDefenseNarr" class="narr safe">
+          ML-KEM protects the session-setup secret. AES-GCM or ChaCha20-Poly1305 then protects the large model download and ongoing traffic.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fundamentals">
+    <h2><span class="tag">02</span> ML-KEM basics that matter for edge AI</h2>
+    <p class="lede">
+      NIST standardized ML-KEM in FIPS 203 on August 13, 2024. It has three parameter sets and produces a fixed 32-byte
+      shared secret. For a practical edge deployment, the important intuition is simple: ML-KEM protects the session key,
+      not the entire model file byte-for-byte.
+    </p>
+
+    <div class="grid cols-4" style="margin-top:18px">
+      <div class="stat">
+        <div class="k">ML-KEM-512</div>
+        <div class="v">800 B / 768 B</div>
+        <p>Public key / ciphertext. 32-byte shared secret.</p>
+      </div>
+      <div class="stat">
+        <div class="k">ML-KEM-768</div>
+        <div class="v">1184 B / 1088 B</div>
+        <p>Balanced choice for many deployments. 32-byte shared secret.</p>
+      </div>
+      <div class="stat">
+        <div class="k">ML-KEM-1024</div>
+        <div class="v">1568 B / 1568 B</div>
+        <p>Largest NIST set. More wire bytes and more compute.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Edge takeaway</div>
+        <div class="v">KEM once</div>
+        <p>Then use symmetric crypto for the big model blobs, prompts, and telemetry streams.</p>
+      </div>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:18px">
+      <div class="card">
+        <h3>What problem ML-KEM leans on</h3>
+        <p>
+          The standard ties security to the Module Learning With Errors problem. The cartoon below is intentionally simplified:
+          the clean algebraic structure is hidden behind carefully added noise, which makes recovering the secret hard.
+        </p>
+        <div class="lattice-wrap">
+          <div id="latticeDemo" class="lattice-demo">
+            <svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" aria-label="Simplified lattice illustration">
+              <defs>
+                <linearGradient id="vecClean" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#58d7ff"/>
+                  <stop offset="100%" stop-color="#84dc59"/>
+                </linearGradient>
+                <linearGradient id="vecNoisy" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ffb761"/>
+                  <stop offset="100%" stop-color="#ff7369"/>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="760" height="360" fill="#08111a"/>
+              <g opacity=".22" fill="#8ca3bb">
+                <circle cx="80" cy="290" r="3"/><circle cx="130" cy="290" r="3"/><circle cx="180" cy="290" r="3"/><circle cx="230" cy="290" r="3"/><circle cx="280" cy="290" r="3"/><circle cx="330" cy="290" r="3"/><circle cx="380" cy="290" r="3"/><circle cx="430" cy="290" r="3"/><circle cx="480" cy="290" r="3"/><circle cx="530" cy="290" r="3"/><circle cx="580" cy="290" r="3"/><circle cx="630" cy="290" r="3"/>
+                <circle cx="80" cy="240" r="3"/><circle cx="130" cy="240" r="3"/><circle cx="180" cy="240" r="3"/><circle cx="230" cy="240" r="3"/><circle cx="280" cy="240" r="3"/><circle cx="330" cy="240" r="3"/><circle cx="380" cy="240" r="3"/><circle cx="430" cy="240" r="3"/><circle cx="480" cy="240" r="3"/><circle cx="530" cy="240" r="3"/><circle cx="580" cy="240" r="3"/><circle cx="630" cy="240" r="3"/>
+                <circle cx="80" cy="190" r="3"/><circle cx="130" cy="190" r="3"/><circle cx="180" cy="190" r="3"/><circle cx="230" cy="190" r="3"/><circle cx="280" cy="190" r="3"/><circle cx="330" cy="190" r="3"/><circle cx="380" cy="190" r="3"/><circle cx="430" cy="190" r="3"/><circle cx="480" cy="190" r="3"/><circle cx="530" cy="190" r="3"/><circle cx="580" cy="190" r="3"/><circle cx="630" cy="190" r="3"/>
+                <circle cx="80" cy="140" r="3"/><circle cx="130" cy="140" r="3"/><circle cx="180" cy="140" r="3"/><circle cx="230" cy="140" r="3"/><circle cx="280" cy="140" r="3"/><circle cx="330" cy="140" r="3"/><circle cx="380" cy="140" r="3"/><circle cx="430" cy="140" r="3"/><circle cx="480" cy="140" r="3"/><circle cx="530" cy="140" r="3"/><circle cx="580" cy="140" r="3"/><circle cx="630" cy="140" r="3"/>
+                <circle cx="80" cy="90" r="3"/><circle cx="130" cy="90" r="3"/><circle cx="180" cy="90" r="3"/><circle cx="230" cy="90" r="3"/><circle cx="280" cy="90" r="3"/><circle cx="330" cy="90" r="3"/><circle cx="380" cy="90" r="3"/><circle cx="430" cy="90" r="3"/><circle cx="480" cy="90" r="3"/><circle cx="530" cy="90" r="3"/><circle cx="580" cy="90" r="3"/><circle cx="630" cy="90" r="3"/>
+              </g>
+              <g fill="#cfe7f7" font-family="Cascadia Mono, Consolas, monospace" font-size="12">
+                <text x="50" y="40">Simplified MLWE intuition:</text>
+                <text x="50" y="58">clean relation + structured noise = hard recovery</text>
+                <text x="490" y="42" fill="#58d7ff">ideal algebraic relation</text>
+                <text x="490" y="64" fill="#ffb761">observed noisy samples</text>
+              </g>
+              <g stroke="#8ca3bb" stroke-width="1" opacity=".25">
+                <line x1="80" y1="300" x2="80" y2="70"/>
+                <line x1="80" y1="300" x2="660" y2="300"/>
+              </g>
+              <g class="clean-vector" stroke="url(#vecClean)" stroke-width="5" stroke-linecap="round">
+                <line x1="80" y1="300" x2="580" y2="100"/>
+              </g>
+              <g class="noisy-vector" stroke="url(#vecNoisy)" stroke-width="5" stroke-linecap="round">
+                <line x1="80" y1="300" x2="568" y2="115"/>
+                <line x1="80" y1="300" x2="594" y2="93" opacity=".55"/>
+                <line x1="80" y1="300" x2="560" y2="90" opacity=".4"/>
+              </g>
+              <g class="noise" fill="#ffb761">
+                <circle cx="560" cy="118" r="5"/><circle cx="590" cy="94" r="4"/><circle cx="548" cy="88" r="4"/><circle cx="604" cy="112" r="3.5"/>
+                <circle cx="532" cy="122" r="3.5"/><circle cx="622" cy="86" r="4"/><circle cx="612" cy="102" r="3.5"/><circle cx="571" cy="83" r="3.5"/>
+              </g>
+              <g fill="#dce9f7" font-family="Bahnschrift, Segoe UI Variable, sans-serif" font-size="13">
+                <text x="84" y="318">origin</text>
+                <text x="584" y="92">hidden structure</text>
+                <text x="500" y="150" fill="#ffcf98">noise frustrates direct recovery</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn alt" type="button" onclick="runLatticeDemo()">Inject noise</button>
+        </div>
+        <div id="latticeNarr" class="narr">
+          This is a teaching sketch, not the full algorithm. The point is the security story shifts away from factoring or discrete log and toward structured noisy algebra.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>What ML-KEM does and does not do</h3>
+        <p>
+          A KEM establishes a shared secret over a public channel. It is not, by itself, the whole secure-update stack for an edge device.
+        </p>
+        <div class="mini-list">
+          <div class="mini-item"><strong>What it does:</strong> lets both parties derive the same secret even when the ciphertext crosses an untrusted network.</div>
+          <div class="mini-item"><strong>What uses that secret:</strong> HKDF plus symmetric AEAD such as AES-GCM or ChaCha20-Poly1305.</div>
+          <div class="mini-item"><strong>What it does not replace:</strong> authentication, certificate validation, device attestation, secure boot, or model signing.</div>
+          <div class="mini-item"><strong>Edge AI implication:</strong> ML-KEM protects key setup for model delivery and telemetry channels, but model provenance still needs signatures and policy.</div>
+        </div>
+
+        <table class="fundamentals-table">
+          <thead>
+            <tr>
+              <th>Parameter set</th>
+              <th>Security focus</th>
+              <th>Wire cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ML-KEM-512</strong></td>
+              <td>smallest NIST set</td>
+              <td>800 B public key, 768 B ciphertext</td>
+            </tr>
+            <tr>
+              <td><strong>ML-KEM-768</strong></td>
+              <td>balanced choice</td>
+              <td>1184 B public key, 1088 B ciphertext</td>
+            </tr>
+            <tr>
+              <td><strong>ML-KEM-1024</strong></td>
+              <td>largest NIST set</td>
+              <td>1568 B public key, 1568 B ciphertext</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          Practical rule: ML-KEM secures the session key exchange, then the edge system uses symmetric cryptography for the large model payloads because that is where the throughput lives.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ops">
+    <h2><span class="tag">03</span> The three ML-KEM operations in an edge device workflow</h2>
+    <p class="lede">
+      This animation uses an illustrative device-generated exchange. The edge device creates a keypair, the model service
+      encapsulates to the public key, and the edge device decapsulates to recover the same 32-byte secret.
+    </p>
+
+    <div class="card" style="margin-top:18px">
+      <div id="opsDemo" class="viz ops-demo">
+        <div class="ops-band one">
+          <div class="lane-glow"></div>
+          <div class="label">1. KeyGen</div>
+          <div class="subline">edge device creates pk_device + sk_device</div>
+        </div>
+        <div class="ops-band two">
+          <div class="lane-glow"></div>
+          <div class="label">2. Encaps</div>
+          <div class="subline">model server uses pk_device to create ct + shared secret</div>
+        </div>
+        <div class="ops-band three">
+          <div class="lane-glow"></div>
+          <div class="label">3. Decaps</div>
+          <div class="subline">edge device uses sk_device + ct to recover same shared secret</div>
+        </div>
+
+        <div class="node device">
+          <span class="title">Edge device</span>
+          <span class="subline">generates fresh KEM keypair</span>
+        </div>
+        <div class="node server">
+          <span class="title">Model server</span>
+          <span class="subline">encapsulates to device public key</span>
+        </div>
+        <div class="node edge-core">
+          <span class="title">Device session</span>
+          <span class="subline">ready for AES-GCM traffic</span>
+        </div>
+
+        <div class="step-note keypair">pk_device = 1184 B</div>
+        <div class="step-note publish">ct = 1088 B</div>
+        <div class="step-note decrypt">shared secret = 32 B</div>
+
+        <div class="packet pk">publish pk_device</div>
+        <div class="packet ct">send ct</div>
+        <div class="secret-dot edge-secret"></div>
+        <div class="secret-dot server-secret"></div>
+        <div class="lock-banner">HKDF derives symmetric session keys</div>
+        <div class="badge safe">Both sides now share the same secret</div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" type="button" onclick="runOpsDemo()">Replay KeyGen / Encaps / Decaps</button>
+      </div>
+      <div id="opsNarr" class="narr safe">
+        ML-KEM is about agreeing on a secret, not streaming the whole model. Once the secret exists, the rest of the traffic uses efficient symmetric protection.
+      </div>
+
+      <div class="legend">
+        <span><i style="background:rgba(88,215,255,.25);border-color:rgba(88,215,255,.45)"></i>public material can cross the network</span>
+        <span><i style="background:rgba(132,220,89,.25);border-color:rgba(132,220,89,.45)"></i>shared secret only exists at legitimate endpoints</span>
+        <span><i style="background:rgba(255,183,97,.25);border-color:rgba(255,183,97,.45)"></i>symmetric channel starts after KEM</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="system">
+    <h2><span class="tag">04</span> Secure model delivery for a Jetson-class edge AI node</h2>
+    <p class="lede">
+      The realistic deployment pattern is layered: identity and policy authenticate the peers, ML-KEM establishes the session secret,
+      and symmetric AEAD protects the large model and telemetry streams. The attacker still sees packets, but not the live session keys.
+    </p>
+
+    <div class="grid cols-2" style="margin-top:18px">
+      <div class="card">
+        <h3>Animated end-to-end flow</h3>
+        <div id="systemDemo" class="viz system-demo">
+          <div class="node attacker">
+            <span class="title">Network adversary</span>
+            <span class="subline">copies packets, stores ciphertexts</span>
+          </div>
+          <div class="node store">
+            <span class="title">Model registry</span>
+            <span class="subline">signed model bundles</span>
+          </div>
+          <div class="node device">
+            <span class="title">Jetson-class edge node</span>
+            <span class="subline">camera + inference runtime</span>
+          </div>
+          <div class="node server">
+            <span class="title">Update / control plane</span>
+            <span class="subline">policy, encaps, delivery</span>
+          </div>
+          <div class="node sensor">
+            <span class="title">Sensor inputs</span>
+            <span class="subline">video, lidar, telemetry</span>
+          </div>
+          <div class="node console">
+            <span class="title">Ops console</span>
+            <span class="subline">alerts and fleet telemetry</span>
+          </div>
+
+          <div class="line main"></div>
+          <div class="line sense"></div>
+          <div class="line store"></div>
+          <div class="line console"></div>
+          <div class="line tap"></div>
+
+          <div class="packet pk">device public key</div>
+          <div class="packet ct">ML-KEM ciphertext</div>
+          <div class="packet model one">encrypted weights</div>
+          <div class="packet model two">encrypted tokenizer / config</div>
+          <div class="packet model three">encrypted policy update</div>
+          <div class="packet telemetry">encrypted telemetry</div>
+          <div class="packet capture">captured ciphertext</div>
+
+          <div class="secret-dot left"></div>
+          <div class="secret-dot right"></div>
+          <div class="lock-banner">AES-GCM session up for model delivery</div>
+          <div class="badge safe">Model update stays confidential in transit</div>
+          <div class="note-box capture">
+            The attacker can archive the transcript, but the KEM step is the part meant to stop future transcript-to-key recovery.
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn" type="button" onclick="runSystemDemo()">Replay edge AI exchange</button>
+        </div>
+        <div id="systemNarr" class="narr safe">
+          After the KEM exchange, the heavy bytes move under symmetric protection. That is why post-quantum key exchange can matter even when the model itself is huge.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Layering that actually secures the edge system</h3>
+        <p>
+          ML-KEM is a strong piece of the path, but it works best as part of a stack rather than as a silver bullet.
+        </p>
+        <div class="bullet-list">
+          <div class="bullet"><strong>Device identity:</strong> certificates, attestation, or a fleet trust anchor tell the server which node it is talking to.</div>
+          <div class="bullet"><strong>Confidential session setup:</strong> ML-KEM establishes the secret without relying on classical public-key assumptions that are vulnerable to large quantum computers.</div>
+          <div class="bullet"><strong>Bulk transport:</strong> AES-GCM or ChaCha20-Poly1305 protects model weights, tokenizer files, prompts, and telemetry after the handshake.</div>
+          <div class="bullet"><strong>Model provenance:</strong> signed model bundles and secure boot still matter so the edge runtime knows the update is authentic and allowed.</div>
+          <div class="bullet"><strong>Operational value:</strong> the transcript archived today is much less useful to an attacker tomorrow.</div>
+        </div>
+
+        <div class="callout warn">
+          If you omit authentication, ML-KEM alone does not stop impersonation. It protects key establishment, not identity by itself.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="constraints">
+    <h2><span class="tag">05</span> Why ML-KEM can fit constrained edge systems</h2>
+    <p class="lede">
+      The edge tradeoff is not zero cost versus full security. It is a small increase in handshake bytes and compute versus a big improvement in long-term confidentiality for the traffic that matters.
+    </p>
+
+    <div class="grid cols-4" style="margin-top:18px">
+      <div class="stat">
+        <div class="k">ML-KEM-768 wire cost</div>
+        <div class="v">2272 B</div>
+        <p>1184 B public key + 1088 B ciphertext for one exchange.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Shared secret</div>
+        <div class="v">32 B</div>
+        <p>Small secret, large downstream value after HKDF and AEAD.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Example model update</div>
+        <div class="v">200 MB</div>
+        <p>The model file dwarfs the KEM overhead once the session is established.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Design pattern</div>
+        <div class="v">KEM once</div>
+        <p>Symmetric crypto handles the ongoing transfer, which is exactly what hardware tends to accelerate well.</p>
+      </div>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:18px">
+      <div class="card">
+        <h3>Handshake bytes versus model bytes</h3>
+        <p>
+          These bars are illustrative rather than perfectly to scale. The goal is to show where the cost lives: handshake material is measured in kilobytes, while edge AI payloads are often measured in megabytes.
+        </p>
+        <div class="bar-chart">
+          <div class="bar">
+            <div class="row"><span>ML-KEM-768 exchange material</span><strong>2.272 KB</strong></div>
+            <div class="bar-track"><div class="bar-fill" style="width:18%"></div></div>
+          </div>
+          <div class="bar">
+            <div class="row"><span>Hybrid X-Wing exchange material</span><strong>2.336 KB</strong></div>
+            <div class="bar-track"><div class="bar-fill amber" style="width:20%"></div></div>
+          </div>
+          <div class="bar">
+            <div class="row"><span>Example encrypted model update</span><strong>200 MB</strong></div>
+            <div class="bar-track"><div class="bar-fill green" style="width:94%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Edge-specific engineering questions</h3>
+        <p>
+          The KEM choice is part of a systems decision. Edge teams usually care about the following practical points:
+        </p>
+        <div class="bullet-list">
+          <div class="bullet"><strong>Memory budget:</strong> larger parameter sets mean more temporary state and bigger packets.</div>
+          <div class="bullet"><strong>Energy and latency:</strong> handshakes are more expensive than pure classical ones, so batching and session reuse can matter.</div>
+          <div class="bullet"><strong>Transport fit:</strong> TLS, QUIC, MQTT, HPKE-style channels, and device-management protocols all have different integration patterns.</div>
+          <div class="bullet"><strong>Fleet lifecycle:</strong> if devices stay deployed for years, post-quantum migration protects the data horizon instead of only the current quarter.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="hybrid">
+    <h2><span class="tag">06</span> Hybrid deployment: X25519 plus ML-KEM-768</h2>
+    <p class="lede">
+      Some teams prefer a hybrid path during migration: combine a classical mechanism with a post-quantum one so the final secret survives unless both components fail. X-Wing is one concrete hybrid construction built from X25519 and ML-KEM-768.
+    </p>
+
+    <div class="grid cols-2" style="margin-top:18px">
+      <div class="card">
+        <h3>Hybrid key establishment animation</h3>
+        <div id="hybridDemo" class="viz hybrid-demo">
+          <div class="node left-top">
+            <span class="title">X25519</span>
+            <span class="subline">classical component</span>
+          </div>
+          <div class="node left-bottom">
+            <span class="title">ML-KEM-768</span>
+            <span class="subline">post-quantum component</span>
+          </div>
+          <div class="node merge">
+            <span class="title">Hybrid combiner</span>
+            <span class="subline">derive one final secret</span>
+          </div>
+          <div class="node right-center">
+            <span class="title">Session keys</span>
+            <span class="subline">TLS / HPKE / channel setup</span>
+          </div>
+
+          <div class="line top"></div>
+          <div class="line bottom"></div>
+          <div class="line out"></div>
+
+          <div class="packet x">X25519 shared input</div>
+          <div class="packet m">ML-KEM shared input</div>
+          <div class="packet final">final 32-byte secret</div>
+          <div class="secret-dot right"></div>
+          <div class="badge safe">Hybrid defense in depth</div>
+        </div>
+        <div class="controls">
+          <button class="btn alt" type="button" onclick="runHybridDemo()">Replay hybrid flow</button>
+        </div>
+        <div id="hybridNarr" class="narr safe">
+          Hybrid designs aim to preserve security during migration: classical interoperability plus post-quantum resilience.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>When a hybrid story helps</h3>
+        <p>
+          Hybrid key establishment can make migration easier for edge fleets that need compatibility with existing stacks while raising the floor against future quantum attacks.
+        </p>
+        <div class="mini-list">
+          <div class="mini-item"><strong>X-Wing structure:</strong> combines X25519 with ML-KEM-768.</div>
+          <div class="mini-item"><strong>Current draft numbers:</strong> 1216 B public key, 1120 B ciphertext, 32 B shared secret.</div>
+          <div class="mini-item"><strong>Operational value:</strong> one construction can support both "keep today working" and "prepare for tomorrow" goals.</div>
+          <div class="mini-item"><strong>Caution:</strong> as of March 2, 2026, X-Wing is still an Internet-Draft rather than a universal deployment requirement.</div>
+        </div>
+        <div class="callout">
+          Hybrid is a migration strategy, not proof that ML-KEM alone is weak. It is often chosen because real fleets care about staged rollout and compatibility.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="matrix">
+    <h2><span class="tag">07</span> Security comparison for edge AI traffic</h2>
+    <p class="lede">
+      This matrix compresses the main takeaway: ML-KEM and hybrid constructions improve the confidentiality story for long-lived traffic, while symmetric encryption still does the actual bulk protection after key establishment.
+    </p>
+
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Classical ECDH / RSA path</th>
+          <th>ML-KEM path</th>
+          <th>Hybrid X25519 + ML-KEM path</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Recorded transcript stays safe against a future large quantum attacker</td>
+          <td class="bad">No. Harvest now, decrypt later remains a concern.</td>
+          <td class="good">Yes, that is the main reason to migrate the key-establishment layer.</td>
+          <td class="good">Yes, assuming the hybrid construction and implementation are sound.</td>
+        </tr>
+        <tr>
+          <td>Protects large model files directly</td>
+          <td class="meh">Indirectly. Needs symmetric encryption after handshake.</td>
+          <td class="meh">Indirectly. KEM sets up the secret, AEAD protects the model bytes.</td>
+          <td class="meh">Indirectly. Same pattern: hybrid KEM first, AEAD second.</td>
+        </tr>
+        <tr>
+          <td>Authentication by itself</td>
+          <td class="meh">Not by itself in the abstract. Real systems still need authenticated protocols.</td>
+          <td class="bad">No. A KEM is not identity or authorization.</td>
+          <td class="bad">No. Hybrid still needs certificates, signatures, or attestation.</td>
+        </tr>
+        <tr>
+          <td>Wire overhead</td>
+          <td class="good">Usually smaller.</td>
+          <td class="meh">Larger than classical, but still small relative to model sizes.</td>
+          <td class="meh">Slightly larger again because two components are combined.</td>
+        </tr>
+        <tr>
+          <td>Best edge AI message</td>
+          <td class="bad">Works today, but old captures may become tomorrow's breach.</td>
+          <td class="good">Modernizes the handshake for long-lived confidentiality.</td>
+          <td class="good">Useful transition path for fleets that need compatibility and PQ readiness.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="sources">
+    <h2><span class="tag">08</span> Source anchors for the numbers on this page</h2>
+    <p class="lede">
+      These references support the concrete sizes and standards status shown in the visualization.
+    </p>
+    <div class="bullet-list" style="margin-top:18px">
+      <div class="bullet"><strong>NIST FIPS 203, final publication page:</strong> ML-KEM standardized on August 13, 2024 with parameter sets 512, 768, and 1024. <a href="https://csrc.nist.gov/pubs/fips/203/final" target="_blank" rel="noreferrer">csrc.nist.gov/pubs/fips/203/final</a></div>
+      <div class="bullet"><strong>NIST FIPS 203 PDF:</strong> Table 3 lists the key and ciphertext sizes used in the cards above. <a href="https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.203.pdf" target="_blank" rel="noreferrer">nvlpubs.nist.gov/nistpubs/fips/nist.fips.203.pdf</a></div>
+      <div class="bullet"><strong>IETF X-Wing draft tracker:</strong> latest draft status and the March 2, 2026 revision metadata. <a href="https://datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/" target="_blank" rel="noreferrer">datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/</a></div>
+      <div class="bullet"><strong>IETF draft text:</strong> X-Wing sizes shown here use the draft-10 numbers: 1216 B public key, 1120 B ciphertext, 32 B shared secret. <a href="https://www.ietf.org/ietf-ftp/internet-drafts/draft-connolly-cfrg-xwing-kem-10.html" target="_blank" rel="noreferrer">ietf.org/.../draft-connolly-cfrg-xwing-kem-10.html</a></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  ML-KEM secures key establishment for edge AI. Authentication, secure boot, and model signing still matter around it.
+</footer>
+
+<script>
+  const demoTimers = {};
+
+  function clearTimers(key){
+    if(!demoTimers[key]) return;
+    demoTimers[key].forEach(clearTimeout);
+    demoTimers[key] = [];
+  }
+
+  function schedule(key, ms, fn){
+    if(!demoTimers[key]) demoTimers[key] = [];
+    demoTimers[key].push(setTimeout(fn, ms));
+  }
+
+  function replay(panelId){
+    const panel = document.getElementById(panelId);
+    panel.classList.remove("play");
+    void panel.offsetWidth;
+    panel.classList.add("play");
+  }
+
+  function narrate(key, targetId, steps){
+    clearTimers(key);
+    const target = document.getElementById(targetId);
+    steps.forEach(step => {
+      schedule(key, step.at, () => {
+        target.textContent = step.text;
+      });
+    });
+  }
+
+  function runThreatAttack(){
+    replay("threatAttack");
+    narrate("threatAttack", "threatAttackNarr", [
+      {at:0, text:"Cloud and edge node begin a classical public-key handshake over an exposed network."},
+      {at:900, text:"The attacker copies the public transcript while the legitimate peers complete the session."},
+      {at:2200, text:"Nothing breaks immediately, but the archived transcript is now a future target if the underlying primitive falls."},
+      {at:3700, text:"That is the harvest-now-decrypt-later problem: stored traffic can become readable years after collection."}
+    ]);
+  }
+
+  function runThreatDefense(){
+    replay("threatDefense");
+    narrate("threatDefense", "threatDefenseNarr", [
+      {at:0, text:"The edge node publishes an ML-KEM public key to the model server."},
+      {at:1200, text:"The server encapsulates to that public key and sends back the ML-KEM ciphertext."},
+      {at:2400, text:"Both endpoints derive the same 32-byte secret while the attacker only sees transferable public material and ciphertext."},
+      {at:3900, text:"Now the channel hands off to symmetric protection for the actual model shards and update traffic."}
+    ]);
+  }
+
+  function runLatticeDemo(){
+    replay("latticeDemo");
+    narrate("latticeDemo", "latticeNarr", [
+      {at:0, text:"Start with a clean algebraic relation that would be much easier to reason about directly."},
+      {at:800, text:"Now add structured noise: the samples stay useful for legitimate computation but become much harder to invert."},
+      {at:2200, text:"That is the intuition behind the Module-LWE story under ML-KEM: noise hides the structure an attacker wants to recover."}
+    ]);
+  }
+
+  function runOpsDemo(){
+    replay("opsDemo");
+    narrate("opsDemo", "opsNarr", [
+      {at:0, text:"Step 1: the edge device runs KeyGen and keeps sk_device private while making pk_device available."},
+      {at:1500, text:"Step 2: the model server runs Encaps with pk_device, producing both ct and its copy of the shared secret."},
+      {at:3300, text:"Step 3: the edge device runs Decaps with sk_device and ct to recover the same shared secret."},
+      {at:5000, text:"That shared secret feeds HKDF, and symmetric keys take over for the rest of the exchange."}
+    ]);
+  }
+
+  function runSystemDemo(){
+    replay("systemDemo");
+    narrate("systemDemo", "systemNarr", [
+      {at:0, text:"The edge node comes online, authenticates policy, and shares its public key material for the KEM exchange."},
+      {at:1200, text:"The control plane encapsulates and returns the ML-KEM ciphertext, letting both sides establish the same secret."},
+      {at:2600, text:"Once the session key exists, encrypted model weights, configs, and policy files can stream efficiently to the device."},
+      {at:4700, text:"Telemetry flows back under the same protected session, while the attacker is left with ciphertext and no useful session key."}
+    ]);
+  }
+
+  function runHybridDemo(){
+    replay("hybridDemo");
+    narrate("hybridDemo", "hybridNarr", [
+      {at:0, text:"Hybrid mode collects one shared input from the classical side and one from the post-quantum side."},
+      {at:1400, text:"A combiner derives one final secret that can feed TLS, HPKE, or another secure channel setup."},
+      {at:3100, text:"This gives migration flexibility: keep classical compatibility while adding post-quantum resilience."}
+    ]);
+  }
+
+  window.addEventListener("load", () => {
+    runThreatAttack();
+    schedule("bootSequence", 280, runThreatDefense);
+    schedule("bootSequence", 560, runLatticeDemo);
+  });
+</script>
+</body>
+</html>
