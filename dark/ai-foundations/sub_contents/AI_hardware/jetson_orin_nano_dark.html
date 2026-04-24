@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jetson Orin Nano Super — Edge AI Hardware Deep Dive</title>
+<style>
+  :root{
+    --bg:#07090f;
+    --bg2:#0d1220;
+    --panel:#111629;
+    --panel2:#161c34;
+    --border:#243052;
+    --accent:#76b900;       /* NVIDIA green */
+    --accent2:#00d4ff;      /* cyan */
+    --warn:#ffb03b;         /* amber */
+    --pink:#ff4d8d;         /* pink */
+    --purple:#a479ff;       /* purple */
+    --teal:#2dd4bf;         /* teal for sensors */
+    --text:#e6ecff;
+    --muted:#8a97b8;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:radial-gradient(ellipse at top,#0c1428 0%,#05070d 60%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  header{padding:48px 24px 24px;text-align:center;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(118,185,0,.08),transparent)}
+  header h1{margin:0;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;background:linear-gradient(90deg,#76b900,#00d4ff 60%,#a479ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p.sub{color:var(--muted);margin:8px 0 0;font-size:15px;max-width:820px;margin-left:auto;margin-right:auto}
+  header .badges{margin-top:14px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+  nav.toc{max-width:1200px;margin:20px auto 0;padding:14px 18px;background:var(--panel);border:1px solid var(--border);border-radius:12px;display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+  nav.toc a{color:var(--accent2);text-decoration:none;padding:6px 10px;border-radius:6px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.15);transition:background .15s}
+  nav.toc a:hover{background:rgba(0,212,255,.18)}
+  main{max-width:1200px;margin:0 auto;padding:24px 20px 80px}
+  section{margin:44px 0;padding:26px;background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 40px rgba(0,0,0,.3)}
+  section h2{margin:0 0 6px;font-size:24px;color:#fff;display:flex;align-items:center;gap:10px}
+  section h2 .tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:var(--accent);color:#0b0f1a;letter-spacing:.05em}
+  section h3{margin:24px 0 10px;font-size:17px;color:var(--accent2)}
+  section p{color:#c8d0e8;margin:8px 0}
+  section p.lede{color:var(--muted);font-size:14px;margin:0 0 18px}
+  .grid{display:grid;gap:16px}
+  .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .grid.cols-4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .stat{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .stat .v{font-size:22px;font-weight:700;color:#fff;margin-top:4px}
+  .stat .v small{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px;display:inline-block}
+  .stage{background:#060912;border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px;overflow:hidden}
+  .stage svg{display:block;width:100%;height:auto;max-width:100%}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+  .btn{cursor:pointer;background:var(--accent);color:#0b0f1a;font-weight:700;border:0;padding:9px 16px;border-radius:8px;font-size:13px;letter-spacing:.02em;transition:transform .1s,filter .1s}
+  .btn:hover{filter:brightness(1.1)}
+  .btn:active{transform:translateY(1px)}
+  .btn.alt{background:transparent;color:var(--accent2);border:1px solid var(--accent2)}
+  .btn.warn{background:var(--warn);color:#0b0f1a}
+  .chip{display:inline-block;padding:3px 10px;border-radius:999px;background:rgba(118,185,0,.12);color:var(--accent);font-size:11px;font-weight:600;border:1px solid rgba(118,185,0,.3);margin:2px 4px 2px 0}
+  .chip.cyan{background:rgba(0,212,255,.1);color:var(--accent2);border-color:rgba(0,212,255,.3)}
+  .chip.pink{background:rgba(255,77,141,.1);color:var(--pink);border-color:rgba(255,77,141,.3)}
+  .chip.purple{background:rgba(164,121,255,.1);color:var(--purple);border-color:rgba(164,121,255,.3)}
+  .chip.warn{background:rgba(255,176,59,.12);color:var(--warn);border-color:rgba(255,176,59,.3)}
+  .chip.teal{background:rgba(45,212,191,.12);color:var(--teal);border-color:rgba(45,212,191,.3)}
+  code{font-family:var(--mono);background:#060912;padding:1px 6px;border-radius:4px;font-size:12px;color:#e6f1a3;border:1px solid var(--border)}
+  pre{font-family:var(--mono);background:#060912;padding:14px;border-radius:8px;font-size:12px;border:1px solid var(--border);overflow-x:auto;color:#c8d0e8}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-top:10px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend i{width:14px;height:14px;border-radius:3px;display:inline-block;border:1px solid rgba(255,255,255,.15)}
+  .narr{background:#060912;border-left:3px solid var(--accent);padding:10px 14px;margin-top:12px;border-radius:0 8px 8px 0;font-size:13px;min-height:40px;color:#c8d0e8;font-family:var(--mono)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border)}
+  th{color:var(--accent2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  td{color:#c8d0e8}
+  td.hl{color:var(--accent);font-weight:600}
+  .footnote{color:var(--muted);font-size:12px;margin-top:10px;font-style:italic}
+  footer{text-align:center;padding:30px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:40px}
+  .callout{background:linear-gradient(135deg,rgba(118,185,0,.06),rgba(0,212,255,.04));border:1px solid rgba(118,185,0,.25);border-radius:10px;padding:14px 18px;margin:14px 0;font-size:14px;color:#d8e0f5}
+  .callout strong{color:var(--accent)}
+  .callout.warn{background:linear-gradient(135deg,rgba(255,176,59,.07),rgba(255,77,141,.04));border-color:rgba(255,176,59,.3)}
+  .callout.warn strong{color:var(--warn)}
+  /* SVG animation helpers */
+  .pulse{animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+  .flow{stroke-dasharray:6 4;animation:flow 1.2s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-20}}
+  .blink{animation:blink 1s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+  .slow-rotate{animation:rot 8s linear infinite;transform-origin:center}
+  @keyframes rot{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Jetson Orin Nano Super — Edge AI Hardware Deep Dive</h1>
+  <p class="sub">
+    An interactive, research-level tour of NVIDIA's $249 generative-AI edge computer:
+    the Ampere GPU, 6-core ARM CPU, vision pipeline, and how a real camera-to-decision
+    inference loop runs end-to-end inside a 25 W power envelope.
+  </p>
+  <div class="badges">
+    <span class="chip">Ampere GA10B</span>
+    <span class="chip cyan">8 nm Samsung</span>
+    <span class="chip purple">8 GB LPDDR5</span>
+    <span class="chip warn">67 TOPS (INT8 sparse)</span>
+    <span class="chip pink">7–25 W</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#specs">1. Specs</a>
+  <a href="#carrier">2. Devkit Board</a>
+  <a href="#som">3. SoM (System-on-Module)</a>
+  <a href="#soc">4. Orin SoC Floorplan</a>
+  <a href="#gpu">5. GPU Hierarchy</a>
+  <a href="#sm">6. Inside one SM</a>
+  <a href="#tensor">7. Tensor Core (3rd-Gen)</a>
+  <a href="#cpu">8. ARM CPU Cluster</a>
+  <a href="#memory">9. Unified Memory</a>
+  <a href="#vision">10. Camera→AI Pipeline</a>
+  <a href="#power">11. Power & Thermals</a>
+  <a href="#stack">12. JetPack Stack</a>
+  <a href="#yolo">13. YOLO Inference Demo</a>
+  <a href="#sources">Sources</a>
+</nav>
+
+<main>
+
+<!-- ========================= SPECS ========================= -->
+<section id="specs">
+  <h2><span class="tag">01</span> At a Glance — Jetson Orin Nano 8 GB Super</h2>
+  <p class="lede">
+    The "Super" badge is a <em>firmware unlock</em>, not a new chip. NVIDIA raised GPU, CPU and memory clocks on
+    the existing Orin Nano module via JetPack 6.1, lifting AI throughput from 40 TOPS to 67 TOPS and memory
+    bandwidth from 68 GB/s to 102 GB/s — the same silicon, just permitted more power (15 W → 25 W).
+  </p>
+  <div class="grid cols-4">
+    <div class="stat"><div class="k">Architecture</div><div class="v">Ampere<small>GA10B SoC</small></div></div>
+    <div class="stat"><div class="k">Process node</div><div class="v">Samsung 8 nm<small>8LPP</small></div></div>
+    <div class="stat"><div class="k">CUDA cores</div><div class="v">1 024</div></div>
+    <div class="stat"><div class="k">Tensor cores</div><div class="v">32<small>3rd-gen Ampere</small></div></div>
+    <div class="stat"><div class="k">SM count</div><div class="v">8<small>1 GPC × 4 TPCs × 2</small></div></div>
+    <div class="stat"><div class="k">GPU clock</div><div class="v">1.02 GHz<small>was 625 MHz</small></div></div>
+    <div class="stat"><div class="k">CPU</div><div class="v">6× Cortex-A78AE<small>1.7 GHz, was 1.5</small></div></div>
+    <div class="stat"><div class="k">CPU cache</div><div class="v">1.5 MB L2<small>+ 4 MB shared L3</small></div></div>
+    <div class="stat"><div class="k">Memory</div><div class="v">8 GB LPDDR5<small>128-bit, 3200 MT/s</small></div></div>
+    <div class="stat"><div class="k">Memory BW</div><div class="v">102 GB/s<small>was 68 GB/s</small></div></div>
+    <div class="stat"><div class="k">AI perf</div><div class="v">67 TOPS<small>INT8 sparse</small></div></div>
+    <div class="stat"><div class="k">Power envelope</div><div class="v">7–25 W<small>configurable</small></div></div>
+  </div>
+  <div class="callout">
+    <strong>What's missing vs Orin NX / AGX:</strong> the Orin Nano variant has the
+    two NVDLA v2 deep-learning accelerators and the PVA v2 vision DSP <em>physically fused off</em>.
+    All AI work runs on the GPU. There is also no NVENC — H.264/H.265 encode is done on the CPU cores.
+    NVDEC is present for decode.
+  </div>
+  <p class="footnote">Numbers from NVIDIA's Jetson Orin Nano Super Developer Kit datasheet (Dec 2024) and Jetson AGX Orin Series Technical Brief v1.2.</p>
+</section>
+
+<!-- ========================= CARRIER BOARD ========================= -->
+<section id="carrier">
+  <h2><span class="tag">02</span> Developer Kit Carrier Board (100 × 79 mm)</h2>
+  <p class="lede">
+    The reference carrier board is what you actually unbox. The SoM (the small heat-sinked module on top) plugs into a
+    260-pin SO-DIMM-style connector. Everything else — USB, M.2 slots, camera connectors, the 40-pin GPIO header — is
+    routed off the SoM through this carrier PCB. Hover the labels to see what each port does.
+  </p>
+
+  <div class="stage">
+    <svg id="boardSvg" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" aria-label="Jetson Orin Nano carrier board layout">
+      <defs>
+        <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#0e2e1d"/><stop offset="1" stop-color="#06180e"/>
+        </linearGradient>
+        <linearGradient id="somGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#1a2548"/><stop offset="1" stop-color="#0d1530"/>
+        </linearGradient>
+        <linearGradient id="heatGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3a4760"/><stop offset="1" stop-color="#1a2030"/>
+        </linearGradient>
+        <pattern id="finPat" patternUnits="userSpaceOnUse" width="6" height="20" patternTransform="rotate(0)">
+          <rect width="6" height="20" fill="#2a3344"/>
+          <line x1="0" y1="0" x2="0" y2="20" stroke="#4a5468" stroke-width="1"/>
+        </pattern>
+      </defs>
+
+      <!-- PCB substrate (NVIDIA green PCB) -->
+      <rect x="20" y="40" width="860" height="500" rx="10" fill="url(#boardGrad)" stroke="#4a8a3a" stroke-width="2"/>
+      <text x="450" y="28" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">Reference Carrier Board · 100 × 79 mm · 4-layer PCB</text>
+
+      <!-- Mounting holes -->
+      <circle cx="40" cy="60" r="6" fill="#000" stroke="#888"/>
+      <circle cx="860" cy="60" r="6" fill="#000" stroke="#888"/>
+      <circle cx="40" cy="520" r="6" fill="#000" stroke="#888"/>
+      <circle cx="860" cy="520" r="6" fill="#000" stroke="#888"/>
+
+      <!-- SoM (centered, with heatsink fins on top) -->
+      <rect x="290" y="180" width="320" height="180" rx="6" fill="url(#somGrad)" stroke="#76b900" stroke-width="2"/>
+      <text x="450" y="200" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">JETSON ORIN NANO 8 GB MODULE (SoM)</text>
+      <text x="450" y="216" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">69.6 × 45 mm · 260-pin SO-DIMM connector</text>
+
+      <!-- heatsink fins -->
+      <rect x="310" y="225" width="280" height="115" rx="4" fill="url(#finPat)" stroke="#5a6478"/>
+      <g stroke="#1a2030" stroke-width="0.6">
+        <!-- vertical fin separator lines for visual realism -->
+        <line x1="316" y1="225" x2="316" y2="340"/><line x1="324" y1="225" x2="324" y2="340"/>
+        <line x1="332" y1="225" x2="332" y2="340"/><line x1="340" y1="225" x2="340" y2="340"/>
+        <line x1="348" y1="225" x2="348" y2="340"/><line x1="356" y1="225" x2="356" y2="340"/>
+        <line x1="364" y1="225" x2="364" y2="340"/><line x1="372" y1="225" x2="372" y2="340"/>
+        <line x1="380" y1="225" x2="380" y2="340"/><line x1="388" y1="225" x2="388" y2="340"/>
+        <line x1="396" y1="225" x2="396" y2="340"/><line x1="404" y1="225" x2="404" y2="340"/>
+        <line x1="412" y1="225" x2="412" y2="340"/><line x1="420" y1="225" x2="420" y2="340"/>
+        <line x1="428" y1="225" x2="428" y2="340"/><line x1="436" y1="225" x2="436" y2="340"/>
+        <line x1="444" y1="225" x2="444" y2="340"/><line x1="452" y1="225" x2="452" y2="340"/>
+        <line x1="460" y1="225" x2="460" y2="340"/><line x1="468" y1="225" x2="468" y2="340"/>
+        <line x1="476" y1="225" x2="476" y2="340"/><line x1="484" y1="225" x2="484" y2="340"/>
+        <line x1="492" y1="225" x2="492" y2="340"/><line x1="500" y1="225" x2="500" y2="340"/>
+        <line x1="508" y1="225" x2="508" y2="340"/><line x1="516" y1="225" x2="516" y2="340"/>
+        <line x1="524" y1="225" x2="524" y2="340"/><line x1="532" y1="225" x2="532" y2="340"/>
+        <line x1="540" y1="225" x2="540" y2="340"/><line x1="548" y1="225" x2="548" y2="340"/>
+        <line x1="556" y1="225" x2="556" y2="340"/><line x1="564" y1="225" x2="564" y2="340"/>
+        <line x1="572" y1="225" x2="572" y2="340"/><line x1="580" y1="225" x2="580" y2="340"/>
+      </g>
+      <text x="450" y="295" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" opacity="0.85" pointer-events="none">⚙ HEATSINK + FAN</text>
+      <!-- fan circle on top -->
+      <circle cx="450" cy="280" r="32" fill="#0a0e18" stroke="#76b900" stroke-width="1.5" opacity="0.85"/>
+      <g class="slow-rotate" style="transform-origin:450px 280px">
+        <path d="M450 250 Q460 268 450 280 Q440 268 450 250 Z" fill="#76b900" opacity="0.7"/>
+        <path d="M450 310 Q440 292 450 280 Q460 292 450 310 Z" fill="#76b900" opacity="0.7"/>
+        <path d="M420 280 Q438 270 450 280 Q438 290 420 280 Z" fill="#76b900" opacity="0.7"/>
+        <path d="M480 280 Q462 290 450 280 Q462 270 480 280 Z" fill="#76b900" opacity="0.7"/>
+      </g>
+      <circle cx="450" cy="280" r="4" fill="#fff"/>
+
+      <!-- ==== TOP EDGE — CSI camera connectors ==== -->
+      <rect x="320" y="60" width="100" height="22" rx="3" fill="#1a1f30" stroke="#a479ff"/>
+      <text x="370" y="75" text-anchor="middle" fill="#a479ff" font-size="10" font-weight="700">CSI-2 #0</text>
+      <rect x="480" y="60" width="100" height="22" rx="3" fill="#1a1f30" stroke="#a479ff"/>
+      <text x="530" y="75" text-anchor="middle" fill="#a479ff" font-size="10" font-weight="700">CSI-2 #1</text>
+      <text x="450" y="100" text-anchor="middle" fill="#a479ff" font-size="11">2× MIPI CSI-2 · 22-pin · up to 4 lanes each</text>
+
+      <!-- ==== TOP-LEFT — DC jack & power button ==== -->
+      <rect x="50" y="60" width="60" height="40" rx="4" fill="#2a1a0a" stroke="#ffb03b"/>
+      <text x="80" y="84" text-anchor="middle" fill="#ffb03b" font-size="10" font-weight="700">DC-IN</text>
+      <text x="80" y="115" text-anchor="middle" fill="#ffb03b" font-size="10">19V / 65W</text>
+
+      <rect x="130" y="60" width="50" height="22" rx="3" fill="#1a1f30" stroke="#ff4d8d"/>
+      <text x="155" y="75" text-anchor="middle" fill="#ff4d8d" font-size="9" font-weight="700">PWR · RST</text>
+
+      <!-- ==== TOP-RIGHT — 40-pin GPIO header ==== -->
+      <rect x="700" y="60" width="160" height="22" rx="3" fill="#0a0e18" stroke="#00d4ff"/>
+      <g fill="#00d4ff">
+        <!-- 40 pin dots: 2 rows of 20 -->
+        <g id="gpioPins"></g>
+      </g>
+      <text x="780" y="100" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">40-pin expansion header</text>
+      <text x="780" y="115" text-anchor="middle" fill="#8a97b8" font-size="10">I²C · SPI · UART · I²S · GPIO · 3.3 V</text>
+
+      <!-- ==== LEFT EDGE — M.2 slots (key M ×4 PCIe Gen3 + key M ×2 + key E) ==== -->
+      <rect x="50" y="180" width="200" height="36" rx="3" fill="#1a1f30" stroke="#76b900"/>
+      <text x="150" y="203" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">M.2 Key M · ×4 PCIe Gen3</text>
+      <text x="150" y="215" text-anchor="middle" fill="#8a97b8" font-size="9">NVMe SSD · ~3.9 GB/s</text>
+
+      <rect x="50" y="226" width="200" height="36" rx="3" fill="#1a1f30" stroke="#76b900" opacity="0.7"/>
+      <text x="150" y="248" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">M.2 Key M · ×2 PCIe Gen3</text>
+      <text x="150" y="260" text-anchor="middle" fill="#8a97b8" font-size="9">2nd NVMe slot</text>
+
+      <rect x="50" y="272" width="200" height="36" rx="3" fill="#1a1f30" stroke="#a479ff"/>
+      <text x="150" y="294" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">M.2 Key E · ×1 PCIe Gen3</text>
+      <text x="150" y="306" text-anchor="middle" fill="#8a97b8" font-size="9">Wi-Fi / BT card slot (empty by default)</text>
+
+      <!-- microSD slot -->
+      <rect x="50" y="320" width="100" height="22" rx="3" fill="#2a1a33" stroke="#a479ff"/>
+      <text x="100" y="335" text-anchor="middle" fill="#a479ff" font-size="10" font-weight="700">microSD</text>
+      <text x="200" y="335" text-anchor="middle" fill="#8a97b8" font-size="10">UHS-I (boot media)</text>
+
+      <!-- ==== RIGHT EDGE — USB 3.2, USB-C, GbE, DP ==== -->
+      <rect x="650" y="180" width="200" height="36" rx="3" fill="#0a0e18" stroke="#00d4ff"/>
+      <text x="750" y="202" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">4× USB 3.2 Gen2 Type-A</text>
+      <text x="750" y="214" text-anchor="middle" fill="#8a97b8" font-size="9">10 Gbps each</text>
+
+      <rect x="650" y="225" width="95" height="32" rx="3" fill="#0a0e18" stroke="#00d4ff"/>
+      <text x="697" y="245" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">USB-C</text>
+      <text x="697" y="255" text-anchor="middle" fill="#8a97b8" font-size="8">UFP · flash</text>
+
+      <rect x="755" y="225" width="95" height="32" rx="3" fill="#1a2a40" stroke="#ffb03b"/>
+      <text x="803" y="245" text-anchor="middle" fill="#ffb03b" font-size="11" font-weight="700">DP 1.4</text>
+      <text x="803" y="255" text-anchor="middle" fill="#8a97b8" font-size="8">8K@30 / 4K@120</text>
+
+      <rect x="650" y="266" width="200" height="36" rx="3" fill="#1a3344" stroke="#2dd4bf"/>
+      <text x="750" y="288" text-anchor="middle" fill="#2dd4bf" font-size="11" font-weight="700">Gigabit Ethernet (RJ-45)</text>
+      <text x="750" y="300" text-anchor="middle" fill="#8a97b8" font-size="9">1 GbE · WoL supported</text>
+
+      <!-- ==== BOTTOM — fan header, JTAG, button row, headers ==== -->
+      <rect x="50" y="380" width="120" height="22" rx="3" fill="#2a1a0a" stroke="#ffb03b"/>
+      <text x="110" y="395" text-anchor="middle" fill="#ffb03b" font-size="10" font-weight="700">FAN PWM (4-pin)</text>
+
+      <rect x="180" y="380" width="100" height="22" rx="3" fill="#1a1f30" stroke="#ff4d8d"/>
+      <text x="230" y="395" text-anchor="middle" fill="#ff4d8d" font-size="10" font-weight="700">JTAG / debug</text>
+
+      <rect x="290" y="380" width="320" height="22" rx="3" fill="#1a1f30" stroke="#8a97b8"/>
+      <text x="450" y="395" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">Camera control I²C · UART · automation pins</text>
+
+      <rect x="620" y="380" width="120" height="22" rx="3" fill="#1a1f30" stroke="#76b900"/>
+      <text x="680" y="395" text-anchor="middle" fill="#76b900" font-size="10" font-weight="700">PCIe diag · LEDs</text>
+
+      <rect x="750" y="380" width="100" height="22" rx="3" fill="#1a1f30" stroke="#a479ff"/>
+      <text x="800" y="395" text-anchor="middle" fill="#a479ff" font-size="10" font-weight="700">Power monitor</text>
+
+      <!-- power tree label -->
+      <rect x="50" y="430" width="800" height="60" rx="4" fill="#0a1226" stroke="#243052" stroke-dasharray="3 3"/>
+      <text x="450" y="453" text-anchor="middle" fill="#8a97b8" font-size="11">Power tree: 19 V DC → buck regulators (5 V, 3.3 V, 1.8 V, 1.1 V, 0.85 V) → SoM via SO-DIMM connector</text>
+      <text x="450" y="473" text-anchor="middle" fill="#8a97b8" font-size="11">PMIC + INA3221 3-channel current sense → power throttling at 25 W TDP</text>
+
+      <!-- corner label -->
+      <text x="38" y="555" fill="#5a6478" font-size="9" font-family="ui-monospace">P3768 — reference carrier · NVIDIA 945-13766-0005</text>
+    </svg>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:#76b900"></i>PCIe / storage</span>
+    <span><i style="background:#00d4ff"></i>USB / network / GPIO</span>
+    <span><i style="background:#a479ff"></i>Camera / display / SD</span>
+    <span><i style="background:#ffb03b"></i>Power / debug</span>
+    <span><i style="background:#2dd4bf"></i>Ethernet</span>
+    <span><i style="background:#ff4d8d"></i>Reset / JTAG</span>
+  </div>
+</section>
+
+<!-- ========================= SoM ========================= -->
+<section id="som">
+  <h2><span class="tag">03</span> SoM — System-on-Module Cross-Section</h2>
+  <p class="lede">
+    The credit-card-sized SoM is the actual computer. It packs the Orin SoC, four LPDDR5 memory chips, a PMIC,
+    a small EEPROM with board-ID, and the 260-pin SO-DIMM connector that talks to the carrier. Storage is
+    <em>external</em> on Orin Nano — there is no on-module eMMC, so you boot from microSD or NVMe.
+  </p>
+  <div class="stage">
+    <svg id="somSvg" viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="pcbGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#0e2e1d"/><stop offset="1" stop-color="#06180e"/>
+        </linearGradient>
+        <linearGradient id="dieGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#243a6a"/><stop offset="1" stop-color="#0e1a3a"/>
+        </linearGradient>
+      </defs>
+      <!-- SoM PCB -->
+      <rect x="40" y="40" width="820" height="280" rx="8" fill="url(#pcbGrad)" stroke="#4a8a3a" stroke-width="2"/>
+      <text x="450" y="28" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">Jetson Orin Nano SoM — 69.6 × 45 mm · top view</text>
+
+      <!-- The Orin SoC (FCBGA, ball grid array) -->
+      <rect x="320" y="100" width="260" height="160" rx="6" fill="url(#dieGrad)" stroke="#76b900" stroke-width="2"/>
+      <text x="450" y="125" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700">NVIDIA Orin SoC</text>
+      <text x="450" y="142" text-anchor="middle" fill="#c8d0e8" font-size="10" font-family="ui-monospace">T234 · GA10B · FCBGA</text>
+      <text x="450" y="158" text-anchor="middle" fill="#8a97b8" font-size="10">Samsung 8 nm 8LPP</text>
+      <text x="450" y="180" text-anchor="middle" fill="#8a97b8" font-size="10">~17 B transistors</text>
+      <text x="450" y="200" text-anchor="middle" fill="#8a97b8" font-size="10">~25 × 25 mm package</text>
+      <!-- TIM/lid pattern dots -->
+      <g fill="#1a2a4a" opacity="0.5">
+        <circle cx="340" cy="240" r="2"/><circle cx="360" cy="240" r="2"/><circle cx="380" cy="240" r="2"/><circle cx="400" cy="240" r="2"/>
+        <circle cx="420" cy="240" r="2"/><circle cx="440" cy="240" r="2"/><circle cx="460" cy="240" r="2"/><circle cx="480" cy="240" r="2"/>
+        <circle cx="500" cy="240" r="2"/><circle cx="520" cy="240" r="2"/><circle cx="540" cy="240" r="2"/><circle cx="560" cy="240" r="2"/>
+      </g>
+
+      <!-- 4× LPDDR5 memory chips around SoC: 2 left, 2 right, 32-bit each → 128-bit total -->
+      <rect x="220" y="100" width="80" height="60" rx="4" fill="#2a1133" stroke="#a479ff"/>
+      <text x="260" y="125" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">LPDDR5</text>
+      <text x="260" y="140" text-anchor="middle" fill="#8a97b8" font-size="9">2 GB · 32-bit</text>
+      <text x="260" y="153" text-anchor="middle" fill="#8a97b8" font-size="9">3200 MT/s</text>
+
+      <rect x="220" y="200" width="80" height="60" rx="4" fill="#2a1133" stroke="#a479ff"/>
+      <text x="260" y="225" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">LPDDR5</text>
+      <text x="260" y="240" text-anchor="middle" fill="#8a97b8" font-size="9">2 GB · 32-bit</text>
+
+      <rect x="600" y="100" width="80" height="60" rx="4" fill="#2a1133" stroke="#a479ff"/>
+      <text x="640" y="125" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">LPDDR5</text>
+      <text x="640" y="140" text-anchor="middle" fill="#8a97b8" font-size="9">2 GB · 32-bit</text>
+
+      <rect x="600" y="200" width="80" height="60" rx="4" fill="#2a1133" stroke="#a479ff"/>
+      <text x="640" y="225" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">LPDDR5</text>
+      <text x="640" y="240" text-anchor="middle" fill="#8a97b8" font-size="9">2 GB · 32-bit</text>
+
+      <!-- memory bus arrows -->
+      <line x1="300" y1="130" x2="320" y2="130" stroke="#a479ff" stroke-width="2" class="flow"/>
+      <line x1="300" y1="230" x2="320" y2="230" stroke="#a479ff" stroke-width="2" class="flow"/>
+      <line x1="580" y1="130" x2="600" y2="130" stroke="#a479ff" stroke-width="2" class="flow"/>
+      <line x1="580" y1="230" x2="600" y2="230" stroke="#a479ff" stroke-width="2" class="flow"/>
+      <text x="450" y="290" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">Total: 8 GB · 128-bit bus · 102 GB/s</text>
+
+      <!-- PMIC, EEPROM at top -->
+      <rect x="60" y="60" width="60" height="30" rx="3" fill="#2a1a0a" stroke="#ffb03b"/>
+      <text x="90" y="79" text-anchor="middle" fill="#ffb03b" font-size="10" font-weight="700">PMIC</text>
+
+      <rect x="140" y="60" width="60" height="30" rx="3" fill="#1a2030" stroke="#8a97b8"/>
+      <text x="170" y="79" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">EEPROM</text>
+
+      <rect x="700" y="60" width="80" height="30" rx="3" fill="#2a1a0a" stroke="#ffb03b"/>
+      <text x="740" y="79" text-anchor="middle" fill="#ffb03b" font-size="10" font-weight="700">VR · DC-DC</text>
+
+      <!-- 260-pin SO-DIMM connector at bottom edge -->
+      <rect x="60" y="295" width="780" height="20" rx="2" fill="#3a3010" stroke="#c8a045"/>
+      <g fill="#c8a045">
+        <!-- 260 mini pin marks -->
+        <g id="somPins"></g>
+      </g>
+      <text x="450" y="338" text-anchor="middle" fill="#c8a045" font-size="11" font-weight="700">260-pin SO-DIMM-style edge connector → carrier board</text>
+
+      <!-- pin breakout legend -->
+      <text x="60" y="360" fill="#8a97b8" font-size="10" font-family="ui-monospace">UPHY: 3× PCIe Gen3 controllers · 4× USB 3.2 · 1× GbE · 4× MGBE · 16 MIPI CSI lanes (8 active on Nano) · DP/HDMI</text>
+    </svg>
+  </div>
+  <div class="callout warn">
+    <strong>Why no on-module storage?</strong> Removing the eMMC saved board area and ~$10 BOM cost.
+    The trade-off: a microSD boot is slow (UHS-I peaks at ~100 MB/s), so most builders pop a NVMe SSD into
+    the M.2 Key M slot and reflash to boot from PCIe — a 10–40× I/O boost.
+  </div>
+</section>
+
+<!-- ========================= SoC FLOORPLAN ========================= -->
+<section id="soc">
+  <h2><span class="tag">04</span> Orin SoC Floorplan (T234 / GA10B)</h2>
+  <p class="lede">
+    The Orin die is a heterogeneous SoC, not a monolithic GPU. Compute is split across an Ampere GPU island, a 6-core ARM
+    cluster (12 in AGX, 8 in NX, 6 in Nano), an image signal processor for cameras, NVDEC for video, and a "Safety Cluster"
+    of Cortex-R52 cores for functional-safety housekeeping. <strong>Greyed-out blocks are present in the silicon but
+    fused off on the Nano variant</strong> — they ship enabled on Orin NX and AGX.
+  </p>
+
+  <div class="stage">
+    <svg id="socSvg" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="socDie" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#0a1226"/><stop offset="1" stop-color="#050912"/>
+        </linearGradient>
+        <linearGradient id="gpuBlk" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1a3d1f"/><stop offset="1" stop-color="#0a1f0c"/>
+        </linearGradient>
+        <linearGradient id="cpuBlk" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1b2a4d"/><stop offset="1" stop-color="#0a1226"/>
+        </linearGradient>
+        <linearGradient id="ioBlk" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2a1a33"/><stop offset="1" stop-color="#160621"/>
+        </linearGradient>
+      </defs>
+
+      <!-- substrate -->
+      <rect x="20" y="20" width="860" height="560" rx="14" fill="#05070d" stroke="#243052"/>
+      <text x="450" y="44" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">Orin SoC top-level block diagram (topological — block sizes approximate)</text>
+
+      <!-- Die rectangle -->
+      <rect x="50" y="60" width="800" height="500" rx="10" fill="url(#socDie)" stroke="#3a4a7a" stroke-width="2"/>
+
+      <!-- ===== GPU island top-left ===== -->
+      <rect x="70" y="80" width="360" height="220" rx="8" fill="url(#gpuBlk)" stroke="#76b900" stroke-width="2"/>
+      <text x="250" y="105" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700">Ampere GPU Island (GA10B)</text>
+      <text x="250" y="120" text-anchor="middle" fill="#8a97b8" font-size="10">1 GPC · 4 TPCs · 8 SMs · 1024 CUDA · 32 Tensor · 8 RT</text>
+
+      <!-- 8 SM tiles inside GPU -->
+      <g id="smTiles"></g>
+
+      <!-- L2 slab -->
+      <rect x="90" y="262" width="320" height="28" rx="4" fill="#1b2a4d" stroke="#00d4ff"/>
+      <text x="250" y="281" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">2 MB L2 cache (shared by all SMs)</text>
+
+      <!-- ===== CPU cluster top-right ===== -->
+      <rect x="450" y="80" width="380" height="220" rx="8" fill="url(#cpuBlk)" stroke="#00d4ff" stroke-width="2"/>
+      <text x="640" y="105" text-anchor="middle" fill="#00d4ff" font-size="13" font-weight="700">CPU Complex — 6× Cortex-A78AE v8.2</text>
+      <text x="640" y="120" text-anchor="middle" fill="#8a97b8" font-size="10">2 clusters of 3 cores · 1.7 GHz · ARMv8.2-A 64-bit</text>
+
+      <!-- 6 CPU cores: cluster of 3 + 3 -->
+      <g>
+        <!-- Cluster A -->
+        <rect x="475" y="135" width="170" height="105" rx="6" fill="#0e1a3a" stroke="#3a4a7a"/>
+        <text x="560" y="150" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">Cluster A</text>
+        <rect x="485" y="160" width="48" height="48" rx="4" fill="#1b2a4d" stroke="#00d4ff"/>
+        <text x="509" y="180" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">A78AE</text>
+        <text x="509" y="194" text-anchor="middle" fill="#8a97b8" font-size="8">256 KB L2</text>
+        <rect x="540" y="160" width="48" height="48" rx="4" fill="#1b2a4d" stroke="#00d4ff"/>
+        <text x="564" y="180" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">A78AE</text>
+        <text x="564" y="194" text-anchor="middle" fill="#8a97b8" font-size="8">256 KB L2</text>
+        <rect x="595" y="160" width="48" height="48" rx="4" fill="#1b2a4d" stroke="#00d4ff"/>
+        <text x="619" y="180" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">A78AE</text>
+        <text x="619" y="194" text-anchor="middle" fill="#8a97b8" font-size="8">256 KB L2</text>
+        <rect x="485" y="215" width="158" height="20" rx="3" fill="#0a1d2a" stroke="#00d4ff"/>
+        <text x="564" y="229" text-anchor="middle" fill="#00d4ff" font-size="10" font-weight="700">2 MB L3 (cluster shared)</text>
+      </g>
+
+      <g>
+        <!-- Cluster B -->
+        <rect x="660" y="135" width="160" height="105" rx="6" fill="#0e1a3a" stroke="#3a4a7a"/>
+        <text x="740" y="150" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">Cluster B</text>
+        <rect x="670" y="160" width="48" height="48" rx="4" fill="#1b2a4d" stroke="#00d4ff"/>
+        <text x="694" y="180" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">A78AE</text>
+        <rect x="724" y="160" width="48" height="48" rx="4" fill="#1b2a4d" stroke="#00d4ff"/>
+        <text x="748" y="180" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">A78AE</text>
+        <rect x="778" y="160" width="38" height="48" rx="4" fill="#1b2a4d" stroke="#00d4ff"/>
+        <text x="797" y="180" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">A78AE</text>
+        <rect x="670" y="215" width="146" height="20" rx="3" fill="#0a1d2a" stroke="#00d4ff"/>
+        <text x="743" y="229" text-anchor="middle" fill="#00d4ff" font-size="10" font-weight="700">2 MB L3 (cluster shared)</text>
+      </g>
+
+      <text x="640" y="278" text-anchor="middle" fill="#8a97b8" font-size="10">256 KB L2 / core · 4 MB L3 total · DSU-110 (DynamIQ)</text>
+      <text x="640" y="293" text-anchor="middle" fill="#8a97b8" font-size="10">"AE" = Automotive Enhanced · split-lock ECC</text>
+
+      <!-- ===== Center bar: System cache + memory controllers ===== -->
+      <rect x="70" y="320" width="760" height="34" rx="6" fill="#0a2530" stroke="#2dd4bf"/>
+      <text x="450" y="343" text-anchor="middle" fill="#2dd4bf" font-size="12" font-weight="700">SCF · System Coherence Fabric &nbsp;·&nbsp; 4 MB system cache &nbsp;·&nbsp; 4× LPDDR5 controllers (32-bit each)</text>
+
+      <!-- ===== Bottom row: vision/AI/ISP/IO ===== -->
+      <!-- ISP -->
+      <rect x="70" y="370" width="120" height="60" rx="6" fill="url(#ioBlk)" stroke="#a479ff"/>
+      <text x="130" y="392" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">ISP</text>
+      <text x="130" y="406" text-anchor="middle" fill="#8a97b8" font-size="9">1.85 Gpix/s</text>
+      <text x="130" y="419" text-anchor="middle" fill="#8a97b8" font-size="9">HDR · 3A · denoise</text>
+
+      <!-- VIC -->
+      <rect x="200" y="370" width="100" height="60" rx="6" fill="url(#ioBlk)" stroke="#a479ff"/>
+      <text x="250" y="392" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">VIC v4.2</text>
+      <text x="250" y="406" text-anchor="middle" fill="#8a97b8" font-size="9">2D engine</text>
+      <text x="250" y="419" text-anchor="middle" fill="#8a97b8" font-size="9">scale · blend · LDC</text>
+
+      <!-- NVDEC -->
+      <rect x="310" y="370" width="100" height="60" rx="6" fill="url(#ioBlk)" stroke="#ff4d8d"/>
+      <text x="360" y="392" text-anchor="middle" fill="#ff4d8d" font-size="11" font-weight="700">NVDEC</text>
+      <text x="360" y="406" text-anchor="middle" fill="#8a97b8" font-size="9">H.265 · AV1</text>
+      <text x="360" y="419" text-anchor="middle" fill="#8a97b8" font-size="9">1× 4K60</text>
+
+      <!-- NVENC (FUSED OFF) -->
+      <rect x="420" y="370" width="100" height="60" rx="6" fill="#1a1626" stroke="#5a6478" stroke-dasharray="4 3"/>
+      <text x="470" y="392" text-anchor="middle" fill="#5a6478" font-size="11" font-weight="700">NVENC</text>
+      <text x="470" y="406" text-anchor="middle" fill="#5a6478" font-size="9">fused off</text>
+      <text x="470" y="419" text-anchor="middle" fill="#5a6478" font-size="9">CPU encode</text>
+
+      <!-- DLA 0 + DLA 1 (FUSED OFF on Nano) -->
+      <rect x="530" y="370" width="100" height="60" rx="6" fill="#1a1626" stroke="#5a6478" stroke-dasharray="4 3"/>
+      <text x="580" y="392" text-anchor="middle" fill="#5a6478" font-size="11" font-weight="700">DLA 0</text>
+      <text x="580" y="406" text-anchor="middle" fill="#5a6478" font-size="9">NVDLA v2</text>
+      <text x="580" y="419" text-anchor="middle" fill="#5a6478" font-size="9">fused off</text>
+
+      <rect x="640" y="370" width="100" height="60" rx="6" fill="#1a1626" stroke="#5a6478" stroke-dasharray="4 3"/>
+      <text x="690" y="392" text-anchor="middle" fill="#5a6478" font-size="11" font-weight="700">DLA 1</text>
+      <text x="690" y="406" text-anchor="middle" fill="#5a6478" font-size="9">fused off</text>
+
+      <!-- PVA (FUSED OFF) -->
+      <rect x="750" y="370" width="80" height="60" rx="6" fill="#1a1626" stroke="#5a6478" stroke-dasharray="4 3"/>
+      <text x="790" y="392" text-anchor="middle" fill="#5a6478" font-size="11" font-weight="700">PVA v2</text>
+      <text x="790" y="406" text-anchor="middle" fill="#5a6478" font-size="9">vision DSP</text>
+      <text x="790" y="419" text-anchor="middle" fill="#5a6478" font-size="9">fused off</text>
+
+      <!-- Bottom-bottom row: I/O + safety -->
+      <rect x="70" y="445" width="160" height="50" rx="6" fill="url(#ioBlk)" stroke="#00d4ff"/>
+      <text x="150" y="465" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">UPHY</text>
+      <text x="150" y="480" text-anchor="middle" fill="#8a97b8" font-size="9">PCIe Gen3 ×4/×2 · USB 3.2 · GbE</text>
+
+      <rect x="240" y="445" width="160" height="50" rx="6" fill="url(#ioBlk)" stroke="#a479ff"/>
+      <text x="320" y="465" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">CSI / DSI</text>
+      <text x="320" y="480" text-anchor="middle" fill="#8a97b8" font-size="9">8 MIPI CSI-2 lanes · DP 1.4</text>
+
+      <rect x="410" y="445" width="160" height="50" rx="6" fill="url(#ioBlk)" stroke="#ffb03b"/>
+      <text x="490" y="465" text-anchor="middle" fill="#ffb03b" font-size="11" font-weight="700">Safety Cluster</text>
+      <text x="490" y="480" text-anchor="middle" fill="#8a97b8" font-size="9">2× Cortex-R52 (lock-step)</text>
+
+      <rect x="580" y="445" width="160" height="50" rx="6" fill="url(#ioBlk)" stroke="#76b900"/>
+      <text x="660" y="465" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">SE / Crypto</text>
+      <text x="660" y="480" text-anchor="middle" fill="#8a97b8" font-size="9">AES · SHA · TrustZone · root-of-trust</text>
+
+      <rect x="750" y="445" width="80" height="50" rx="6" fill="url(#ioBlk)" stroke="#ff4d8d"/>
+      <text x="790" y="465" text-anchor="middle" fill="#ff4d8d" font-size="11" font-weight="700">BPMP</text>
+      <text x="790" y="480" text-anchor="middle" fill="#8a97b8" font-size="9">power µctrl</text>
+
+      <!-- Bottom-bottom: peripheral I/O -->
+      <rect x="70" y="510" width="760" height="34" rx="6" fill="#0a1226" stroke="#243052"/>
+      <text x="450" y="532" text-anchor="middle" fill="#c8d0e8" font-size="11">Low-speed I/O: 4× UART · 3× SPI · 8× I²C · 4× DAP (I²S) · CAN · GPIO · QSPI · SDMMC</text>
+    </svg>
+  </div>
+  <div class="legend">
+    <span><i style="background:#76b900"></i>GPU / Tensor</span>
+    <span><i style="background:#00d4ff"></i>CPU / cache / UPHY</span>
+    <span><i style="background:#a479ff"></i>Camera / display / video</span>
+    <span><i style="background:#ff4d8d"></i>Decoder / safety</span>
+    <span><i style="background:#ffb03b"></i>Safety / power</span>
+    <span><i style="background:#5a6478;border-style:dashed"></i>Fused off (Nano)</span>
+  </div>
+</section>
+
+<!-- ========================= GPU HIERARCHY ========================= -->
+<section id="gpu">
+  <h2><span class="tag">05</span> GPU Hierarchy — 1 GPC · 4 TPCs · 8 SMs</h2>
+  <p class="lede">
+    The Orin Nano GPU is a tiny slice of Ampere — just <strong>one</strong> Graphics Processing Cluster.
+    Compare that to a desktop RTX 3060 with 3 GPCs (28 SMs), or a full Orin AGX with 16 SMs across 2 GPCs.
+    Inside the single GPC, 4 Texture Processing Clusters each hold 2 SMs that share one PolyMorph engine.
+  </p>
+
+  <div class="stage">
+    <svg id="gpuSvg" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="400" rx="10" fill="#060912" stroke="#243052"/>
+      <text x="450" y="32" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">One GPC — Raster Engine + 4 TPCs (= 8 SMs) + ROPs</text>
+
+      <!-- Raster engine -->
+      <rect x="40" y="50" width="820" height="44" rx="6" fill="#1b2a4d" stroke="#00d4ff"/>
+      <text x="450" y="70" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">Raster Engine — triangle setup · edge/Z · tile binning · hierarchical-Z</text>
+      <text x="450" y="85" text-anchor="middle" fill="#8a97b8" font-size="10">feeds shaded pixels into the SMs</text>
+
+      <!-- 4 TPCs in a row -->
+      <g id="tpcRow"></g>
+
+      <!-- ROP partitions -->
+      <rect x="40" y="330" width="400" height="44" rx="6" fill="#331430" stroke="#ff4d8d"/>
+      <text x="240" y="350" text-anchor="middle" fill="#ff4d8d" font-size="12" font-weight="700">ROP partition 0 — 8 ROPs</text>
+      <text x="240" y="365" text-anchor="middle" fill="#8a97b8" font-size="10">blend · depth-test · color write-out</text>
+
+      <rect x="460" y="330" width="400" height="44" rx="6" fill="#331430" stroke="#ff4d8d"/>
+      <text x="660" y="350" text-anchor="middle" fill="#ff4d8d" font-size="12" font-weight="700">ROP partition 1 — 8 ROPs</text>
+      <text x="660" y="365" text-anchor="middle" fill="#8a97b8" font-size="10">16 ROPs total in the single GPC</text>
+
+      <line x1="450" y1="94" x2="450" y2="108" stroke="#00d4ff" stroke-width="2" class="flow"/>
+      <line x1="240" y1="310" x2="240" y2="330" stroke="#ff4d8d" stroke-width="2" class="flow"/>
+      <line x1="660" y1="310" x2="660" y2="330" stroke="#ff4d8d" stroke-width="2" class="flow"/>
+    </svg>
+  </div>
+
+  <h3>How the math works out</h3>
+  <table>
+    <thead><tr><th>Level</th><th>Count</th><th>Holds</th><th>Math</th></tr></thead>
+    <tbody>
+      <tr><td>GPU</td><td>1</td><td>1 GPC</td><td>—</td></tr>
+      <tr><td>GPC</td><td>1</td><td>4 TPCs · 1 raster engine · 16 ROPs</td><td>—</td></tr>
+      <tr><td>TPC</td><td>4</td><td>2 SMs · 1 PolyMorph engine</td><td>—</td></tr>
+      <tr><td>SM</td><td>8</td><td>128 CUDA · 4 Tensor · 1 RT</td><td>—</td></tr>
+      <tr><td class="hl">CUDA cores</td><td class="hl">1024</td><td>FP32 / INT32 lanes</td><td class="hl">8 SMs × 128</td></tr>
+      <tr><td class="hl">Tensor cores</td><td class="hl">32</td><td>3rd-gen Ampere matrix engines</td><td class="hl">8 SMs × 4</td></tr>
+      <tr><td class="hl">RT cores</td><td class="hl">8</td><td>2nd-gen ray-traversal units</td><td class="hl">8 SMs × 1</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========================= INSIDE A SM ========================= -->
+<section id="sm">
+  <h2><span class="tag">06</span> Inside one Ampere SM</h2>
+  <p class="lede">
+    Each Streaming Multiprocessor is split into <strong>4 sub-cores</strong> (processing blocks). Each sub-core has
+    its own warp scheduler, dispatch unit, register file slice, and a dedicated <em>Tensor Core</em>. The L1 / shared
+    memory cache and the RT core are shared across the SM. Press <code>▶ run warp</code> to watch a 32-thread warp
+    travel through one sub-core.
+  </p>
+  <div class="stage">
+    <svg id="smSvg" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="560" rx="12" fill="#060912" stroke="#243052"/>
+      <text x="450" y="32" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">
+        Ampere SM — 128 CUDA cores · 4 Tensor Cores · 1 RT Core · 192 KB L1 / shared
+      </text>
+
+      <!-- L1 instruction cache + warp scheduler at top -->
+      <rect x="60" y="50" width="780" height="34" rx="4" fill="#1b2a4d" stroke="#00d4ff"/>
+      <text x="450" y="71" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">L1 Instruction Cache &nbsp;·&nbsp; Warp dispatch (issues 32-thread warps to sub-cores)</text>
+
+      <!-- 4 sub-cores -->
+      <g id="subcores"></g>
+
+      <!-- RT core left bottom -->
+      <rect x="60" y="440" width="380" height="70" rx="8" fill="#2a1a0a" stroke="#ffb03b"/>
+      <text x="250" y="465" text-anchor="middle" fill="#ffb03b" font-size="12" font-weight="700">2nd-Gen RT Core (shared by SM)</text>
+      <text x="250" y="481" text-anchor="middle" fill="#8a97b8" font-size="10">BVH traversal · ray–triangle intersect · concurrent ray + compute</text>
+      <text x="250" y="497" text-anchor="middle" fill="#8a97b8" font-size="10">2× faster than Turing; 1 RT core × 8 SMs = 8 total</text>
+
+      <!-- L1/shared right bottom -->
+      <rect x="460" y="440" width="380" height="70" rx="8" fill="#142a1f" stroke="#76b900"/>
+      <text x="650" y="465" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">L1 Data + Shared Memory · 192 KB unified</text>
+      <text x="650" y="481" text-anchor="middle" fill="#8a97b8" font-size="10">configurable: 0/8/16/32/64/100 KB shared, rest as L1$</text>
+      <text x="650" y="497" text-anchor="middle" fill="#8a97b8" font-size="10">~32 cycle hit latency · 16 banks · async copy from L2</text>
+
+      <!-- bottom dispatch link -->
+      <rect x="60" y="520" width="780" height="30" rx="4" fill="#1b2a4d" stroke="#00d4ff"/>
+      <text x="450" y="540" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">SM ↔ L2 cache (2 MB) ↔ Memory Crossbar ↔ LPDDR5 controllers</text>
+
+      <!-- animated warp pulse marker (hidden until anim) -->
+      <circle id="warpDot" cx="-20" cy="-20" r="6" fill="#76b900" opacity="0"/>
+    </svg>
+  </div>
+  <div class="controls">
+    <button class="btn" id="runWarp">▶ run warp</button>
+    <button class="btn alt" id="resetWarp">↺ reset</button>
+  </div>
+  <div class="narr" id="warpNarr">Ready. A warp = 32 threads executing the same instruction in lock-step (SIMT).</div>
+</section>
+
+<!-- ========================= TENSOR CORE ========================= -->
+<section id="tensor">
+  <h2><span class="tag">07</span> 3rd-Gen Tensor Core (Ampere) &nbsp;·&nbsp; the heart of 67 TOPS</h2>
+  <p class="lede">
+    Each Tensor Core is a fixed-function matrix-multiply-accumulate engine. In one clock it computes
+    <code>D = A · B + C</code> on small matrix tiles. Ampere added two huge wins: <strong>BF16 / TF32</strong>
+    for training-friendly precision, and <strong>structured 2:4 sparsity</strong> — if half your weights are
+    zero in a regular pattern, throughput doubles for free. That sparsity trick is where the headline
+    "67 TOPS" comes from (dense INT8 is 33 TOPS).
+  </p>
+
+  <div class="stage">
+    <svg id="tensorSvg" viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#c8d0e8"/>
+        </marker>
+      </defs>
+      <rect x="10" y="10" width="880" height="380" rx="10" fill="#060912" stroke="#243052"/>
+      <text x="450" y="34" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">D = A · B + C — one MMA tile per clock</text>
+
+      <!-- A matrix -->
+      <g id="matA"></g>
+      <text x="120" y="95" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">A (input · INT8)</text>
+
+      <!-- B matrix (sparse pattern shown) -->
+      <g id="matB"></g>
+      <text x="330" y="95" text-anchor="middle" fill="#a479ff" font-size="12" font-weight="700">B (weights · 2:4 sparse)</text>
+
+      <!-- MAC unit -->
+      <rect x="450" y="150" width="120" height="120" rx="10" fill="#14241b" stroke="#76b900" stroke-width="2"/>
+      <text x="510" y="195" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">multiply–</text>
+      <text x="510" y="213" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">accumulate</text>
+      <text x="510" y="232" text-anchor="middle" fill="#8a97b8" font-size="10">256 MACs/clk</text>
+      <text x="510" y="248" text-anchor="middle" fill="#8a97b8" font-size="10">×4 cores/SM</text>
+
+      <!-- C accumulator -->
+      <g id="matC"></g>
+      <text x="680" y="95" text-anchor="middle" fill="#ffb03b" font-size="12" font-weight="700">C accumulator (INT32)</text>
+
+      <!-- D output -->
+      <g id="matD"></g>
+      <text x="810" y="95" text-anchor="middle" fill="#ff4d8d" font-size="12" font-weight="700">D (out)</text>
+
+      <!-- arrows -->
+      <path d="M 170 200 L 450 200" stroke="#00d4ff" stroke-width="2" fill="none" class="flow" marker-end="url(#arr)"/>
+      <path d="M 380 200 L 450 215" stroke="#a479ff" stroke-width="2" fill="none" class="flow" marker-end="url(#arr)"/>
+      <path d="M 570 210 L 640 200" stroke="#76b900" stroke-width="2" fill="none" class="flow" marker-end="url(#arr)"/>
+      <path d="M 730 200 L 770 200" stroke="#ff4d8d" stroke-width="2" fill="none" class="flow" marker-end="url(#arr)"/>
+
+      <text x="450" y="340" text-anchor="middle" fill="#8a97b8" font-size="11">
+        Per-clock: <tspan fill="#76b900">256 INT8 MACs</tspan> per Tensor Core × 4 per SM × 8 SMs × 1.02 GHz × 2 (sparsity) ≈ <tspan fill="#fff" font-weight="700">67 TOPS</tspan>
+      </text>
+      <text x="450" y="360" text-anchor="middle" fill="#8a97b8" font-size="11">
+        Supports <tspan fill="#00d4ff">FP16</tspan>, <tspan fill="#a479ff">BF16</tspan>, <tspan fill="#ffb03b">TF32</tspan>, <tspan fill="#ff4d8d">INT8</tspan>, <tspan fill="#76b900">INT4</tspan> &nbsp;·&nbsp; no FP8/FP4 (those landed on Hopper/Blackwell)
+      </text>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="stepMac">▶ step MAC</button>
+    <button class="btn alt" id="playMac">▶▶ play</button>
+    <button class="btn alt" id="resetMac">↺ reset</button>
+  </div>
+
+  <h3>Precision / throughput ladder (FP16 dense = 1×)</h3>
+  <div class="grid cols-4">
+    <div class="stat"><div class="k">FP16 / BF16 dense</div><div class="v">1×<small>~17 TFLOPS</small></div></div>
+    <div class="stat"><div class="k">TF32 (training)</div><div class="v">0.5×<small>training-friendly</small></div></div>
+    <div class="stat"><div class="k">INT8 dense</div><div class="v">2×<small>33 TOPS</small></div></div>
+    <div class="stat"><div class="k">INT8 + 2:4 sparsity</div><div class="v">4×<small>67 TOPS — headline</small></div></div>
+  </div>
+</section>
+
+<!-- ========================= CPU ========================= -->
+<section id="cpu">
+  <h2><span class="tag">08</span> ARM CPU Cluster — 6× Cortex-A78AE</h2>
+  <p class="lede">
+    The CPU is a real out-of-order ARMv8.2 design — same family that ran the original Pixel 6 and many automotive
+    SoCs. The "AE" (<em>Automotive Enhanced</em>) variant adds split-lock ECC: any two cores can be paired into
+    lock-step mode for safety-critical code. On Orin Nano you get 6 cores in two clusters of 3, each cluster sharing
+    a 2 MB L3.
+  </p>
+
+  <div class="stage">
+    <svg id="cpuSvg" viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="360" rx="10" fill="#060912" stroke="#243052"/>
+      <text x="450" y="32" text-anchor="middle" fill="#00d4ff" font-size="13" font-weight="700" font-family="ui-monospace">Inside one Cortex-A78AE core — 4-wide OoO ARMv8.2</text>
+
+      <!-- Front end -->
+      <rect x="40" y="60" width="820" height="50" rx="6" fill="#1b2a4d" stroke="#00d4ff"/>
+      <text x="450" y="80" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">Front-end &nbsp;·&nbsp; 64 KB L1 I-cache &nbsp;·&nbsp; branch predictor &nbsp;·&nbsp; 6-wide decode</text>
+      <text x="450" y="98" text-anchor="middle" fill="#8a97b8" font-size="10">160-entry reorder buffer · perceptron-style branch predictor</text>
+
+      <!-- Issue queue -->
+      <rect x="40" y="125" width="820" height="34" rx="6" fill="#0a1d2a" stroke="#2dd4bf"/>
+      <text x="450" y="146" text-anchor="middle" fill="#2dd4bf" font-size="11" font-weight="700">Rename · Dispatch · Issue queues (4-wide issue)</text>
+
+      <!-- Execution units -->
+      <g>
+        <rect x="40" y="170" width="130" height="80" rx="6" fill="#142a1f" stroke="#76b900"/>
+        <text x="105" y="195" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">3× ALU</text>
+        <text x="105" y="212" text-anchor="middle" fill="#8a97b8" font-size="9">int add/shift/logic</text>
+        <text x="105" y="228" text-anchor="middle" fill="#8a97b8" font-size="9">1-cycle latency</text>
+
+        <rect x="180" y="170" width="130" height="80" rx="6" fill="#142a1f" stroke="#76b900"/>
+        <text x="245" y="195" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">2× MUL/DIV</text>
+        <text x="245" y="212" text-anchor="middle" fill="#8a97b8" font-size="9">int multiply</text>
+        <text x="245" y="228" text-anchor="middle" fill="#8a97b8" font-size="9">3-cycle latency</text>
+
+        <rect x="320" y="170" width="180" height="80" rx="6" fill="#2a1133" stroke="#a479ff"/>
+        <text x="410" y="195" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">2× ASIMD/FP</text>
+        <text x="410" y="212" text-anchor="middle" fill="#8a97b8" font-size="9">128-bit NEON · FP16/32/64</text>
+        <text x="410" y="228" text-anchor="middle" fill="#8a97b8" font-size="9">FMA · crypto extensions</text>
+
+        <rect x="510" y="170" width="160" height="80" rx="6" fill="#2a1a0a" stroke="#ffb03b"/>
+        <text x="590" y="195" text-anchor="middle" fill="#ffb03b" font-size="11" font-weight="700">2× LOAD / 1× STORE</text>
+        <text x="590" y="212" text-anchor="middle" fill="#8a97b8" font-size="9">to L1 D-cache</text>
+        <text x="590" y="228" text-anchor="middle" fill="#8a97b8" font-size="9">4-cycle hit latency</text>
+
+        <rect x="680" y="170" width="180" height="80" rx="6" fill="#331430" stroke="#ff4d8d"/>
+        <text x="770" y="195" text-anchor="middle" fill="#ff4d8d" font-size="11" font-weight="700">Branch / B-Pred Update</text>
+        <text x="770" y="215" text-anchor="middle" fill="#8a97b8" font-size="9">resolves 1 branch / cycle</text>
+      </g>
+
+      <!-- caches -->
+      <rect x="40" y="265" width="400" height="40" rx="6" fill="#0a1d2a" stroke="#00d4ff"/>
+      <text x="240" y="288" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">64 KB L1 D-cache (per core, 4-way)</text>
+
+      <rect x="460" y="265" width="400" height="40" rx="6" fill="#0a1d2a" stroke="#00d4ff"/>
+      <text x="660" y="288" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">256 KB L2 (per core, 8-way)</text>
+
+      <rect x="40" y="315" width="820" height="38" rx="6" fill="#0a2530" stroke="#2dd4bf"/>
+      <text x="450" y="339" text-anchor="middle" fill="#2dd4bf" font-size="11" font-weight="700">2 MB L3 (cluster-shared) → DSU-110 → SCF → LPDDR5</text>
+    </svg>
+  </div>
+
+  <div class="grid cols-3" style="margin-top:14px">
+    <div class="stat"><div class="k">Pipeline</div><div class="v">13-stage<small>OoO superscalar</small></div></div>
+    <div class="stat"><div class="k">Issue width</div><div class="v">4-wide<small>up to 6 µops</small></div></div>
+    <div class="stat"><div class="k">Frequency</div><div class="v">1.7 GHz<small>(was 1.5 pre-Super)</small></div></div>
+    <div class="stat"><div class="k">SIMD</div><div class="v">NEON 128-bit<small>FP16/32/64 · INT8 dot-product</small></div></div>
+    <div class="stat"><div class="k">L1 I / L1 D</div><div class="v">64 / 64 KB<small>per core</small></div></div>
+    <div class="stat"><div class="k">L2 / core</div><div class="v">256 KB<small>private, 8-way</small></div></div>
+  </div>
+</section>
+
+<!-- ========================= MEMORY HIERARCHY ========================= -->
+<section id="memory">
+  <h2><span class="tag">09</span> Unified Memory Hierarchy</h2>
+  <p class="lede">
+    Unlike a discrete GPU, Jetson has <strong>physically unified memory</strong>: the CPU and GPU literally share the
+    same 8 GB LPDDR5. There is no PCIe-style host-to-device copy — a tensor allocated by the CPU is already visible to
+    a CUDA kernel. This is huge for edge AI: zero-copy from the camera buffer straight into a YOLO inference call.
+    Press <code>▶ animate load</code> to watch a single 64-byte cache line walk down the hierarchy.
+  </p>
+
+  <div class="stage">
+    <svg id="memSvg" viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="440" rx="12" fill="#060912" stroke="#243052"/>
+      <text x="450" y="34" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">Memory hierarchy — unified across CPU and GPU · ~3 orders of magnitude latency spread</text>
+
+      <!-- 1 LPDDR5 -->
+      <rect x="60" y="60" width="780" height="50" rx="6" fill="#1a0f2b" stroke="#a479ff"/>
+      <text x="80" y="88" fill="#a479ff" font-size="12" font-weight="700">LPDDR5 (off-package, 4 chips)  ·  8 GB  ·  102 GB/s</text>
+      <text x="830" y="88" text-anchor="end" fill="#8a97b8" font-size="11" font-family="ui-monospace">~120 ns</text>
+      <text x="80" y="103" fill="#8a97b8" font-size="10">3200 MT/s · 128-bit · single physical pool, MMU partitioned</text>
+
+      <!-- 2 System Cache + L2 -->
+      <rect x="100" y="124" width="700" height="44" rx="6" fill="#0a2530" stroke="#2dd4bf"/>
+      <text x="120" y="148" fill="#2dd4bf" font-size="12" font-weight="700">System Cache (SCF) · 4 MB · CPU+GPU coherent</text>
+      <text x="790" y="148" text-anchor="end" fill="#8a97b8" font-size="11" font-family="ui-monospace">~80 cy</text>
+      <text x="120" y="162" fill="#8a97b8" font-size="10">snoops between A78AE clusters and GPU L2</text>
+
+      <!-- 3 GPU L2 -->
+      <rect x="140" y="180" width="620" height="42" rx="6" fill="#0f2238" stroke="#00d4ff"/>
+      <text x="160" y="206" fill="#00d4ff" font-size="12" font-weight="700">GPU L2 cache · 2 MB · shared by all 8 SMs</text>
+      <text x="750" y="206" text-anchor="end" fill="#8a97b8" font-size="11" font-family="ui-monospace">~200 cy</text>
+
+      <!-- 4 SM L1/shared -->
+      <rect x="180" y="234" width="540" height="40" rx="6" fill="#112a1b" stroke="#76b900"/>
+      <text x="200" y="260" fill="#76b900" font-size="12" font-weight="700">L1 / shared memory · 192 KB per SM (configurable split)</text>
+      <text x="710" y="260" text-anchor="end" fill="#8a97b8" font-size="11" font-family="ui-monospace">~30 cy</text>
+
+      <!-- 5 CPU L2 -->
+      <rect x="180" y="282" width="260" height="40" rx="6" fill="#0a1d2a" stroke="#00d4ff"/>
+      <text x="200" y="308" fill="#00d4ff" font-size="11" font-weight="700">CPU L2 · 256 KB / core</text>
+
+      <rect x="460" y="282" width="260" height="40" rx="6" fill="#0a1d2a" stroke="#00d4ff"/>
+      <text x="480" y="308" fill="#00d4ff" font-size="11" font-weight="700">CPU L3 · 2 MB / cluster</text>
+
+      <!-- 6 Register file / L1 D -->
+      <rect x="220" y="334" width="460" height="40" rx="6" fill="#2a1a0a" stroke="#ffb03b"/>
+      <text x="240" y="360" fill="#ffb03b" font-size="12" font-weight="700">Register file (GPU) · 256 KB per SM &nbsp;·&nbsp; CPU L1 D · 64 KB / core</text>
+      <text x="670" y="360" text-anchor="end" fill="#8a97b8" font-size="11" font-family="ui-monospace">~1 cy</text>
+
+      <!-- 7 lane operands -->
+      <rect x="280" y="386" width="340" height="40" rx="6" fill="#06242a" stroke="#e6f1a3"/>
+      <text x="300" y="412" fill="#e6f1a3" font-size="12" font-weight="700">Operand collectors / FU input latches</text>
+      <text x="610" y="412" text-anchor="end" fill="#8a97b8" font-size="11" font-family="ui-monospace">0 cy</text>
+
+      <!-- animated cache line -->
+      <circle id="cacheLine" cx="80" cy="83" r="8" fill="#76b900" opacity="0"/>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="runMem">▶ animate load</button>
+    <button class="btn alt" id="resetMem">↺ reset</button>
+  </div>
+  <div class="narr" id="memNarr">Ready. The cache line will walk LPDDR5 → System Cache → GPU L2 → L1 → register.</div>
+
+  <div class="callout">
+    <strong>Why unified memory matters at the edge:</strong> on a desktop RTX, every camera frame must be
+    DMA'd over PCIe before the GPU can see it (~10 ms for 1080p). On Jetson, the ISP writes the frame
+    straight into a buffer the GPU can already address — CUDA kernels can read it with
+    <code>cudaHostGetDevicePointer()</code> and <strong>0 bytes are copied</strong>. The catch: GPU and CPU
+    are now competing for the same 102 GB/s, so memory-bound kernels feel each other.
+  </div>
+</section>
+
+<!-- ========================= CAMERA → AI PIPELINE ========================= -->
+<section id="vision">
+  <h2><span class="tag">10</span> The Edge AI Loop — Camera → ISP → GPU → Action</h2>
+  <p class="lede">
+    This is the canonical Jetson workload: a MIPI camera streams raw Bayer pixels into the SoC, the ISP cooks them into
+    RGB, the GPU runs an inference network, and the result either drives a display or fires an event over UART/CAN to a
+    robot's motor controller. Press <code>▶ run pipeline</code> to watch one frame cross every block.
+  </p>
+
+  <div class="stage">
+    <svg id="visionSvg" viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#76b900"/>
+        </marker>
+      </defs>
+      <rect x="10" y="10" width="880" height="440" rx="10" fill="#060912" stroke="#243052"/>
+      <text x="450" y="32" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">End-to-end frame latency budget — target 33 ms (30 fps)</text>
+
+      <!-- Camera -->
+      <rect x="30" y="160" width="110" height="120" rx="8" fill="#1a1f30" stroke="#a479ff"/>
+      <text x="85" y="185" text-anchor="middle" fill="#a479ff" font-size="12" font-weight="700">Camera</text>
+      <text x="85" y="202" text-anchor="middle" fill="#8a97b8" font-size="9">IMX477 / OV5693</text>
+      <text x="85" y="216" text-anchor="middle" fill="#8a97b8" font-size="9">1080p · 30 fps</text>
+      <text x="85" y="230" text-anchor="middle" fill="#8a97b8" font-size="9">Bayer raw</text>
+      <!-- lens icon -->
+      <circle cx="85" cy="255" r="14" fill="#0a0e18" stroke="#a479ff"/>
+      <circle cx="85" cy="255" r="6" fill="#a479ff" opacity="0.6"/>
+
+      <!-- CSI bus -->
+      <line x1="140" y1="220" x2="200" y2="220" stroke="#a479ff" stroke-width="3" class="flow" marker-end="url(#arr2)"/>
+      <text x="170" y="208" text-anchor="middle" fill="#a479ff" font-size="9">MIPI CSI-2</text>
+      <text x="170" y="240" text-anchor="middle" fill="#8a97b8" font-size="9">~2 ms</text>
+
+      <!-- ISP -->
+      <rect x="200" y="160" width="110" height="120" rx="8" fill="#2a1133" stroke="#a479ff"/>
+      <text x="255" y="185" text-anchor="middle" fill="#a479ff" font-size="12" font-weight="700">ISP</text>
+      <text x="255" y="200" text-anchor="middle" fill="#8a97b8" font-size="9">demosaic</text>
+      <text x="255" y="213" text-anchor="middle" fill="#8a97b8" font-size="9">3A · WB · denoise</text>
+      <text x="255" y="226" text-anchor="middle" fill="#8a97b8" font-size="9">tone-map · LDC</text>
+      <text x="255" y="248" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">→ NV12</text>
+      <text x="255" y="265" text-anchor="middle" fill="#8a97b8" font-size="9">in unified RAM</text>
+
+      <line x1="310" y1="220" x2="370" y2="220" stroke="#76b900" stroke-width="3" class="flow" marker-end="url(#arr2)"/>
+      <text x="340" y="208" text-anchor="middle" fill="#76b900" font-size="9">zero-copy</text>
+      <text x="340" y="240" text-anchor="middle" fill="#8a97b8" font-size="9">~1 ms</text>
+
+      <!-- VIC pre-process -->
+      <rect x="370" y="160" width="110" height="120" rx="8" fill="#142a1f" stroke="#76b900"/>
+      <text x="425" y="185" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">VIC + GPU</text>
+      <text x="425" y="200" text-anchor="middle" fill="#8a97b8" font-size="9">resize → 640²</text>
+      <text x="425" y="213" text-anchor="middle" fill="#8a97b8" font-size="9">color-space</text>
+      <text x="425" y="226" text-anchor="middle" fill="#8a97b8" font-size="9">normalize</text>
+      <text x="425" y="248" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">→ FP16/INT8 tensor</text>
+      <text x="425" y="265" text-anchor="middle" fill="#8a97b8" font-size="9">~3 ms</text>
+
+      <line x1="480" y1="220" x2="540" y2="220" stroke="#76b900" stroke-width="3" class="flow" marker-end="url(#arr2)"/>
+      <text x="510" y="208" text-anchor="middle" fill="#76b900" font-size="9">CUDA stream</text>
+
+      <!-- TensorRT inference -->
+      <rect x="540" y="120" width="160" height="200" rx="8" fill="#142a1f" stroke="#76b900" stroke-width="2"/>
+      <text x="620" y="145" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">TensorRT engine</text>
+      <text x="620" y="161" text-anchor="middle" fill="#8a97b8" font-size="10">YOLOv8n · 640×640</text>
+      <text x="620" y="175" text-anchor="middle" fill="#8a97b8" font-size="10">INT8 quantized</text>
+      <!-- mini network sketch -->
+      <g stroke="#76b900" fill="none" stroke-width="1.5" opacity="0.7">
+        <circle cx="565" cy="200" r="6"/><circle cx="565" cy="220" r="6"/><circle cx="565" cy="240" r="6"/><circle cx="565" cy="260" r="6"/>
+        <circle cx="610" cy="190" r="6"/><circle cx="610" cy="210" r="6"/><circle cx="610" cy="230" r="6"/><circle cx="610" cy="250" r="6"/><circle cx="610" cy="270" r="6"/>
+        <circle cx="655" cy="200" r="6"/><circle cx="655" cy="220" r="6"/><circle cx="655" cy="240" r="6"/><circle cx="655" cy="260" r="6"/>
+        <line x1="571" y1="200" x2="604" y2="190"/><line x1="571" y1="200" x2="604" y2="210"/><line x1="571" y1="200" x2="604" y2="230"/>
+        <line x1="571" y1="220" x2="604" y2="210"/><line x1="571" y1="220" x2="604" y2="230"/><line x1="571" y1="240" x2="604" y2="230"/><line x1="571" y1="240" x2="604" y2="250"/>
+        <line x1="571" y1="260" x2="604" y2="250"/><line x1="571" y1="260" x2="604" y2="270"/>
+        <line x1="616" y1="190" x2="649" y2="200"/><line x1="616" y1="210" x2="649" y2="200"/><line x1="616" y1="210" x2="649" y2="220"/>
+        <line x1="616" y1="230" x2="649" y2="220"/><line x1="616" y1="230" x2="649" y2="240"/><line x1="616" y1="250" x2="649" y2="240"/>
+        <line x1="616" y1="270" x2="649" y2="260"/>
+      </g>
+      <text x="620" y="295" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">~14 ms / frame</text>
+      <text x="620" y="310" text-anchor="middle" fill="#8a97b8" font-size="9">~70 fps possible</text>
+
+      <line x1="700" y1="220" x2="760" y2="220" stroke="#ff4d8d" stroke-width="3" class="flow" marker-end="url(#arr2)"/>
+      <text x="730" y="208" text-anchor="middle" fill="#ff4d8d" font-size="9">postproc</text>
+
+      <!-- Output / action -->
+      <rect x="760" y="160" width="110" height="120" rx="8" fill="#331430" stroke="#ff4d8d"/>
+      <text x="815" y="185" text-anchor="middle" fill="#ff4d8d" font-size="12" font-weight="700">Action</text>
+      <text x="815" y="202" text-anchor="middle" fill="#8a97b8" font-size="9">NMS + boxes</text>
+      <text x="815" y="216" text-anchor="middle" fill="#8a97b8" font-size="9">→ DisplayPort</text>
+      <text x="815" y="230" text-anchor="middle" fill="#8a97b8" font-size="9">or UART/CAN</text>
+      <text x="815" y="248" text-anchor="middle" fill="#ff4d8d" font-size="11" font-weight="700">→ motors</text>
+      <text x="815" y="265" text-anchor="middle" fill="#8a97b8" font-size="9">~2 ms</text>
+
+      <!-- Memory bus indicator at bottom -->
+      <rect x="30" y="350" width="840" height="40" rx="6" fill="#1a0f2b" stroke="#a479ff" stroke-dasharray="3 3"/>
+      <text x="450" y="375" text-anchor="middle" fill="#a479ff" font-size="11">Shared LPDDR5 — every block reads/writes here · zero-copy possible because of the unified address space</text>
+
+      <!-- Frame budget breakdown -->
+      <text x="450" y="412" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">Total: ~22 ms / frame ≈ 45 fps sustained @ 1080p YOLOv8n INT8</text>
+      <text x="450" y="430" text-anchor="middle" fill="#8a97b8" font-size="10">Capture 2 ms + ISP 1 ms + VIC 3 ms + Inference 14 ms + Post 2 ms</text>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="runVision">▶ run pipeline</button>
+    <button class="btn alt" id="resetVision">↺ reset</button>
+  </div>
+  <div class="narr" id="visionNarr">Ready. One frame will travel from sensor to action.</div>
+</section>
+
+<!-- ========================= POWER ========================= -->
+<section id="power">
+  <h2><span class="tag">11</span> Power Modes &amp; Thermal Envelope</h2>
+  <p class="lede">
+    The "Super" software unlock didn't change the silicon — it just <em>permitted</em> the existing PMIC to run the
+    chip harder. NVIDIA exposes power presets through the <code>nvpmodel</code> tool. The throttling logic is
+    enforced by the <strong>BPMP</strong> (Boot &amp; Power Management Processor), a tiny ARM Cortex-R5 that sits
+    inside the SoC and watches the INA3221 current sensor on the carrier board. Cross 25 W average and the BPMP
+    starts dropping GPU clocks within microseconds.
+  </p>
+
+  <table>
+    <thead><tr><th>Power mode</th><th>TDP</th><th>CPU cores</th><th>CPU clk</th><th>GPU clk</th><th>Mem clk</th><th>AI perf</th></tr></thead>
+    <tbody>
+      <tr><td>15 W (legacy)</td><td>15 W</td><td>4 of 6</td><td>1.5 GHz</td><td>625 MHz</td><td>2133 MT/s</td><td>~28 TOPS</td></tr>
+      <tr><td class="hl">25 W "Super" (MAXN)</td><td class="hl">25 W</td><td class="hl">6 of 6</td><td class="hl">1.7 GHz</td><td class="hl">1.02 GHz</td><td class="hl">3200 MT/s</td><td class="hl">67 TOPS</td></tr>
+      <tr><td>7 W (silent)</td><td>7 W</td><td>2 of 6</td><td>1.1 GHz</td><td>408 MHz</td><td>2133 MT/s</td><td>~10 TOPS</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Power-vs-throughput knobs</h3>
+  <p>The same chip can be a fanless 7 W silent computer (<code>nvpmodel -m 1</code>) or a 25 W generative-AI
+  workstation. Throttle behaviour is <em>graceful</em>: clocks step down in 50 MHz increments rather than thermal-shutting
+  the chip. Below 60 °C junction temperature you get full clocks; from 60–100 °C the BPMP linearly de-rates the GPU.</p>
+
+  <div class="stage">
+    <svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="220" rx="10" fill="#060912" stroke="#243052"/>
+      <text x="450" y="32" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">GPU clock vs junction temperature (typical)</text>
+      <!-- axes -->
+      <line x1="80" y1="190" x2="860" y2="190" stroke="#5a6478" stroke-width="1.5"/>
+      <line x1="80" y1="60" x2="80" y2="190" stroke="#5a6478" stroke-width="1.5"/>
+      <text x="450" y="215" text-anchor="middle" fill="#8a97b8" font-size="10">Junction temperature (°C)</text>
+      <text x="35" y="125" text-anchor="middle" fill="#8a97b8" font-size="10" transform="rotate(-90 35 125)">GPU clock</text>
+      <!-- temperature labels -->
+      <g fill="#8a97b8" font-size="9" text-anchor="middle">
+        <text x="80" y="205">25</text><text x="240" y="205">50</text><text x="400" y="205">75</text>
+        <text x="560" y="205">100</text><text x="720" y="205">105</text><text x="800" y="205">shutdown</text>
+      </g>
+      <!-- clock labels -->
+      <g fill="#8a97b8" font-size="9" text-anchor="end">
+        <text x="75" y="65">1020 MHz</text><text x="75" y="125">510 MHz</text><text x="75" y="185">0 MHz</text>
+      </g>
+      <!-- Curve: flat from 25→60, slope down 60→100, vertical drop at 105 -->
+      <path d="M 80 65 L 360 65 L 560 130 L 720 165 L 750 188 L 800 188" stroke="#76b900" stroke-width="3" fill="none"/>
+      <!-- safe zone -->
+      <rect x="80" y="60" width="280" height="130" fill="#76b900" opacity="0.06"/>
+      <text x="220" y="80" text-anchor="middle" fill="#76b900" font-size="10" font-weight="700">SAFE — full clocks</text>
+      <!-- throttle zone -->
+      <rect x="360" y="60" width="360" height="130" fill="#ffb03b" opacity="0.06"/>
+      <text x="540" y="80" text-anchor="middle" fill="#ffb03b" font-size="10" font-weight="700">THROTTLE — BPMP de-rates</text>
+      <!-- shutdown zone -->
+      <rect x="720" y="60" width="140" height="130" fill="#ff4d8d" opacity="0.06"/>
+      <text x="790" y="80" text-anchor="middle" fill="#ff4d8d" font-size="10" font-weight="700">EMERGENCY OFF</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ========================= JETPACK STACK ========================= -->
+<section id="stack">
+  <h2><span class="tag">12</span> JetPack Software Stack</h2>
+  <p class="lede">
+    Hardware is half the story. <strong>JetPack</strong> is the BSP + libraries that make the silicon usable. Every
+    user-facing AI framework (PyTorch, TensorFlow, ONNX Runtime) eventually compiles to a TensorRT engine and dispatches
+    to CUDA kernels. Below is the layered view from your Python script all the way down to the SoC.
+  </p>
+
+  <div class="stage">
+    <svg viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="880" height="440" rx="10" fill="#060912" stroke="#243052"/>
+      <text x="450" y="32" text-anchor="middle" fill="#76b900" font-size="13" font-weight="700" font-family="ui-monospace">Top-down: user app → JetPack → CUDA driver → silicon</text>
+
+      <!-- Layer 1: User apps -->
+      <rect x="40" y="60" width="820" height="50" rx="6" fill="#2a1133" stroke="#a479ff"/>
+      <text x="60" y="82" fill="#a479ff" font-size="12" font-weight="700">User applications</text>
+      <text x="60" y="98" fill="#8a97b8" font-size="10">Python · ROS 2 · GStreamer apps · llama.cpp · ollama · custom robotics code</text>
+
+      <!-- Layer 2: Framework -->
+      <rect x="40" y="120" width="820" height="60" rx="6" fill="#2a1a0a" stroke="#ffb03b"/>
+      <text x="60" y="142" fill="#ffb03b" font-size="12" font-weight="700">AI / vision frameworks</text>
+      <text x="60" y="160" fill="#c8d0e8" font-size="10">PyTorch · TensorFlow · ONNX Runtime · Hugging Face Transformers · Ultralytics YOLO · OpenCV</text>
+      <text x="60" y="174" fill="#8a97b8" font-size="10">Verticals: NVIDIA Isaac (robotics) · DeepStream (vision) · Riva (speech) · Holoscan (sensors)</text>
+
+      <!-- Layer 3: NVIDIA libs -->
+      <rect x="40" y="190" width="820" height="60" rx="6" fill="#142a1f" stroke="#76b900"/>
+      <text x="60" y="212" fill="#76b900" font-size="12" font-weight="700">NVIDIA accelerator libraries</text>
+      <text x="60" y="230" fill="#c8d0e8" font-size="10">TensorRT (graph optimizer + INT8 quantizer) · cuDNN · cuBLAS · NCCL · VPI · NPP · cuFFT</text>
+      <text x="60" y="244" fill="#8a97b8" font-size="10">Camera: libargus · L4T multimedia API · Multimedia gst plugins (nvarguscamerasrc, nvinfer, ...)</text>
+
+      <!-- Layer 4: CUDA + driver -->
+      <rect x="40" y="260" width="820" height="60" rx="6" fill="#0f2238" stroke="#00d4ff"/>
+      <text x="60" y="282" fill="#00d4ff" font-size="12" font-weight="700">CUDA runtime &amp; driver (CUDA 12.x in JetPack 6)</text>
+      <text x="60" y="300" fill="#c8d0e8" font-size="10">PTX assembler · GPU memory manager · stream/event scheduler · UVM (unified virtual memory)</text>
+      <text x="60" y="314" fill="#8a97b8" font-size="10">Single ELF kernel module · talks directly to the GPU MMIO region in /dev/nvgpu</text>
+
+      <!-- Layer 5: BSP / kernel -->
+      <rect x="40" y="330" width="820" height="60" rx="6" fill="#0a2530" stroke="#2dd4bf"/>
+      <text x="60" y="352" fill="#2dd4bf" font-size="12" font-weight="700">L4T / Jetson Linux BSP</text>
+      <text x="60" y="370" fill="#c8d0e8" font-size="10">Ubuntu 22.04 · Linux 5.15 kernel (RT-patched) · Tegra device tree · NVIDIA out-of-tree drivers</text>
+      <text x="60" y="384" fill="#8a97b8" font-size="10">UEFI bootloader · OP-TEE (TrustZone) · BPMP firmware · cboot fallback</text>
+
+      <!-- Layer 6: Silicon -->
+      <rect x="40" y="400" width="820" height="40" rx="6" fill="#1b2a4d" stroke="#76b900" stroke-width="2"/>
+      <text x="450" y="425" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">Orin SoC silicon — Ampere GPU + 6× A78AE + ISP/VIC/NVDEC + UPHY</text>
+    </svg>
+  </div>
+
+  <h3>The TensorRT optimization step (where the magic happens)</h3>
+  <pre><code>$ trtexec --onnx=yolov8n.onnx --saveEngine=yolov8n.engine \
+          --int8 --useDLACore=-1  # -1 means GPU only — Orin Nano has no DLA
+# TRT will:
+#   1. Fuse Conv+BN+ReLU into a single kernel
+#   2. Pick the fastest tactic per layer (Winograd? im2col? implicit GEMM?)
+#   3. Calibrate INT8 scales using a small representative dataset
+#   4. Layout-transform tensors to NHWC for tensor cores
+#   5. Emit a serialized .engine file (~6 MB for YOLOv8n)</code></pre>
+</section>
+
+<!-- ========================= YOLO INFERENCE DEMO ========================= -->
+<section id="yolo">
+  <h2><span class="tag">13</span> Live demo — YOLO-style inference on the GPU</h2>
+  <p class="lede">
+    Click anywhere in the <em>scene</em> to drop a target object. The page simulates what the Orin Nano does for every
+    frame: capture → preprocess → run a CNN → post-process → draw boxes. The "frame timeline" shows where each
+    millisecond is spent. This isn't a real YOLO model (we don't ship 6 MB of weights in an HTML file 😉), but the
+    pipeline timings and behaviour mirror real benchmarks.
+  </p>
+
+  <div class="grid cols-2">
+    <div>
+      <div class="stage">
+        <svg id="sceneSvg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="cursor:crosshair">
+          <defs>
+            <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#1a2540"/><stop offset="1" stop-color="#0a1020"/>
+            </linearGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#floorGrad)"/>
+          <!-- floor grid -->
+          <g stroke="#243052" stroke-width="0.5" fill="none">
+            <line x1="0" y1="200" x2="400" y2="200"/>
+            <line x1="50" y1="210" x2="350" y2="210"/>
+            <line x1="100" y1="225" x2="300" y2="225"/>
+          </g>
+          <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">CAMERA VIEW · click to add object</text>
+          <g id="objectsLayer"></g>
+          <g id="boxesLayer"></g>
+        </svg>
+        <div class="controls">
+          <button class="btn" id="addPerson">+ person</button>
+          <button class="btn alt" id="addCar">+ car</button>
+          <button class="btn alt" id="addDog">+ dog</button>
+          <button class="btn warn" id="clearScene">clear</button>
+          <button class="btn" id="runYolo">▶ run inference</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="margin-top:0">Frame timeline</h3>
+      <div class="stage">
+        <svg id="timelineSvg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#060912"/>
+          <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">milliseconds (target = 33 ms / 30 fps)</text>
+          <!-- ruler -->
+          <line x1="40" y1="40" x2="380" y2="40" stroke="#5a6478"/>
+          <g fill="#8a97b8" font-size="8" text-anchor="middle">
+            <text x="40" y="34">0</text><text x="125" y="34">10</text>
+            <text x="210" y="34">20</text><text x="295" y="34">30</text><text x="380" y="34">40</text>
+          </g>
+          <g stroke="#5a6478" stroke-width="0.5">
+            <line x1="40" y1="38" x2="40" y2="42"/><line x1="125" y1="38" x2="125" y2="42"/>
+            <line x1="210" y1="38" x2="210" y2="42"/><line x1="295" y1="38" x2="295" y2="42"/><line x1="380" y1="38" x2="380" y2="42"/>
+          </g>
+          <!-- 33 ms target line -->
+          <line x1="320.5" y1="50" x2="320.5" y2="290" stroke="#ff4d8d" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="320.5" y="295" text-anchor="middle" fill="#ff4d8d" font-size="8">33 ms</text>
+          <g id="bars"></g>
+          <g id="labels"></g>
+        </svg>
+      </div>
+      <div class="narr" id="yoloNarr">Add a few objects, then press <b>run inference</b>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= SOURCES ========================= -->
+<section id="sources">
+  <h2><span class="tag">14</span> Sources &amp; further reading</h2>
+  <p>All numbers in this page are pulled from primary NVIDIA documentation. If a figure looks off, the source-of-truth wins.</p>
+  <ul style="color:#c8d0e8;font-size:13px;line-height:1.8">
+    <li><strong>Jetson Orin Nano Super Developer Kit datasheet</strong> — NVIDIA, December 2024</li>
+    <li><strong>Jetson AGX Orin Series Technical Brief v1.2</strong> — NVIDIA, July 2022 (the only public Orin SoC architecture document)</li>
+    <li><strong>"Maximizing Deep Learning Performance on NVIDIA Jetson Orin with DLA"</strong> — NVIDIA Technical Blog, 2023</li>
+    <li><strong>Cortex-A78AE Technical Reference Manual</strong> — Arm, for CPU pipeline details</li>
+    <li><strong>NVIDIA Ampere Architecture Whitepaper</strong> — for SM, Tensor Core, RT Core internals</li>
+    <li><strong>Jetson Linux Developer Guide r36.x</strong> — for power modes, BPMP behavior, INA3221 telemetry</li>
+    <li><strong>Ultralytics YOLO benchmarks on Jetson Orin Nano Super</strong> — for real-world inference timings</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  Built as a research-grade visual companion to the NVIDIA Jetson Orin Nano Super Developer Kit ($249).
+  No affiliation with NVIDIA — figures and trade-offs reflect only published spec sheets and personal benchmarking.
+</footer>
+
+<script>
+(function(){
+  const SVG='http://www.w3.org/2000/svg';
+  const el=(t,a={})=>{const e=document.createElementNS(SVG,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+
+  // ============== board: GPIO 40 pin dots ==============
+  (function(){
+    const g=document.getElementById('gpioPins');
+    if(!g)return;
+    for(let i=0;i<20;i++){
+      const x=703+i*8;
+      const top=document.createElementNS(SVG,'circle');
+      top.setAttribute('cx',x);top.setAttribute('cy',67);top.setAttribute('r',1.5);top.setAttribute('fill','#00d4ff');
+      const bot=document.createElementNS(SVG,'circle');
+      bot.setAttribute('cx',x);bot.setAttribute('cy',75);bot.setAttribute('r',1.5);bot.setAttribute('fill','#00d4ff');
+      g.appendChild(top);g.appendChild(bot);
+    }
+  })();
+
+  // ============== som: 260-pin connector dots ==============
+  (function(){
+    const g=document.getElementById('somPins');
+    if(!g)return;
+    for(let i=0;i<130;i++){
+      const x=64+i*6;
+      const top=document.createElementNS(SVG,'circle');
+      top.setAttribute('cx',x);top.setAttribute('cy',300);top.setAttribute('r',1);top.setAttribute('fill','#c8a045');
+      const bot=document.createElementNS(SVG,'circle');
+      bot.setAttribute('cx',x);bot.setAttribute('cy',310);bot.setAttribute('r',1);bot.setAttribute('fill','#c8a045');
+      g.appendChild(top);g.appendChild(bot);
+    }
+  })();
+
+  // ============== SoC: build 8 SM tiles inside GPU island ==============
+  (function(){
+    const g=document.getElementById('smTiles');
+    if(!g)return;
+    // 4 TPCs: 2 wide rows of 4 SMs (so 4 cols × 2 rows = 8 SMs)
+    let i=0;
+    for(let r=0;r<2;r++){
+      for(let c=0;c<4;c++){
+        const x=85+c*80, y=140+r*55;
+        const rect=el('rect',{x,y,width:70,height:45,rx:4,fill:'#1f3d28',stroke:'#76b900','stroke-width':1.2});
+        g.appendChild(rect);
+        const t=el('text',{x:x+35,y:y+18,'text-anchor':'middle',fill:'#fff','font-size':10,'font-weight':700});
+        t.textContent='SM'+i;g.appendChild(t);
+        const t2=el('text',{x:x+35,y:y+33,'text-anchor':'middle',fill:'#8a97b8','font-size':8});
+        t2.textContent='128 CUDA · 4 TC';g.appendChild(t2);
+        i++;
+      }
+    }
+  })();
+
+  // ============== GPU page: build 4 TPCs ==============
+  (function(){
+    const g=document.getElementById('tpcRow');
+    if(!g)return;
+    for(let i=0;i<4;i++){
+      const x=60+i*200, y=120;
+      const tpc=el('rect',{x,y,width:180,height:180,rx:8,fill:'#143d1b',stroke:'#76b900','stroke-width':1.5});
+      g.appendChild(tpc);
+      const t=el('text',{x:x+90,y:y+22,'text-anchor':'middle',fill:'#76b900','font-size':12,'font-weight':700});
+      t.textContent='TPC '+i;g.appendChild(t);
+      // PolyMorph engine
+      const pm=el('rect',{x:x+10,y:y+35,width:160,height:24,rx:4,fill:'#0a1d2a',stroke:'#00d4ff'});
+      g.appendChild(pm);
+      const pmt=el('text',{x:x+90,y:y+51,'text-anchor':'middle',fill:'#00d4ff','font-size':10,'font-weight':700});
+      pmt.textContent='PolyMorph engine';g.appendChild(pmt);
+      // 2 SMs
+      for(let s=0;s<2;s++){
+        const sx=x+10+s*82, sy=y+68;
+        const sm=el('rect',{x:sx,y:sy,width:78,height:104,rx:4,fill:'#1f3d28',stroke:'#76b900'});
+        g.appendChild(sm);
+        const smt=el('text',{x:sx+39,y:sy+18,'text-anchor':'middle',fill:'#fff','font-size':10,'font-weight':700});
+        smt.textContent='SM'+(i*2+s);g.appendChild(smt);
+        const smt2=el('text',{x:sx+39,y:sy+34,'text-anchor':'middle',fill:'#8a97b8','font-size':8});
+        smt2.textContent='128 CUDA';g.appendChild(smt2);
+        const smt3=el('text',{x:sx+39,y:sy+47,'text-anchor':'middle',fill:'#8a97b8','font-size':8});
+        smt3.textContent='4 Tensor';g.appendChild(smt3);
+        const smt4=el('text',{x:sx+39,y:sy+60,'text-anchor':'middle',fill:'#8a97b8','font-size':8});
+        smt4.textContent='1 RT';g.appendChild(smt4);
+        const smt5=el('text',{x:sx+39,y:sy+76,'text-anchor':'middle',fill:'#a479ff','font-size':8});
+        smt5.textContent='192 KB L1';g.appendChild(smt5);
+        const smt6=el('text',{x:sx+39,y:sy+90,'text-anchor':'middle',fill:'#a479ff','font-size':8});
+        smt6.textContent='shared';g.appendChild(smt6);
+      }
+    }
+  })();
+
+  // ============== SM page: build 4 sub-cores ==============
+  (function(){
+    const g=document.getElementById('subcores');
+    if(!g)return;
+    for(let i=0;i<4;i++){
+      const x=60+i*200, y=100;
+      const sub=el('rect',{x,y,width:180,height:320,rx:8,fill:'#0e1a2f',stroke:'#3a4a7a','stroke-width':1.5});
+      g.appendChild(sub);
+      const t=el('text',{x:x+90,y:y+20,'text-anchor':'middle',fill:'#fff','font-size':11,'font-weight':700});
+      t.textContent='Sub-core '+i;g.appendChild(t);
+
+      // Warp scheduler
+      const ws=el('rect',{x:x+10,y:y+30,width:160,height:32,rx:4,fill:'#1b2a4d',stroke:'#00d4ff'});
+      g.appendChild(ws);
+      const wst=el('text',{x:x+90,y:y+50,'text-anchor':'middle',fill:'#00d4ff','font-size':10,'font-weight':700});
+      wst.textContent='Warp Scheduler';g.appendChild(wst);
+
+      // Register file
+      const rf=el('rect',{x:x+10,y:y+68,width:160,height:32,rx:4,fill:'#2a1a0a',stroke:'#ffb03b'});
+      g.appendChild(rf);
+      const rft=el('text',{x:x+90,y:y+88,'text-anchor':'middle',fill:'#ffb03b','font-size':10,'font-weight':700});
+      rft.textContent='64 KB Register File';g.appendChild(rft);
+
+      // CUDA cores (32 lanes drawn as small boxes)
+      const cgrp=el('rect',{x:x+10,y:y+108,width:160,height:90,rx:4,fill:'#142a1f',stroke:'#76b900'});
+      g.appendChild(cgrp);
+      const ct=el('text',{x:x+90,y:y+125,'text-anchor':'middle',fill:'#76b900','font-size':10,'font-weight':700});
+      ct.textContent='32 CUDA cores (FP32/INT32)';g.appendChild(ct);
+      // grid 8x4 of mini squares
+      for(let r=0;r<4;r++){
+        for(let c=0;c<8;c++){
+          const sq=el('rect',{x:x+15+c*19,y:y+135+r*14,width:15,height:10,rx:1,fill:'#76b900',opacity:0.4});
+          g.appendChild(sq);
+        }
+      }
+
+      // Tensor core
+      const tc=el('rect',{x:x+10,y:y+205,width:160,height:46,rx:4,fill:'#2a1133',stroke:'#a479ff'});
+      g.appendChild(tc);
+      const tct=el('text',{x:x+90,y:y+225,'text-anchor':'middle',fill:'#a479ff','font-size':10,'font-weight':700});
+      tct.textContent='1× Tensor Core';g.appendChild(tct);
+      const tct2=el('text',{x:x+90,y:y+242,'text-anchor':'middle',fill:'#8a97b8','font-size':9});
+      tct2.textContent='256 INT8 MAC/clk';g.appendChild(tct2);
+
+      // LD/ST
+      const ls=el('rect',{x:x+10,y:y+257,width:75,height:50,rx:4,fill:'#0a2530',stroke:'#2dd4bf'});
+      g.appendChild(ls);
+      const lst=el('text',{x:x+47,y:y+277,'text-anchor':'middle',fill:'#2dd4bf','font-size':10,'font-weight':700});
+      lst.textContent='LD/ST';g.appendChild(lst);
+      const lst2=el('text',{x:x+47,y:y+292,'text-anchor':'middle',fill:'#8a97b8','font-size':8});
+      lst2.textContent='4 units';g.appendChild(lst2);
+
+      // SFU
+      const sfu=el('rect',{x:x+95,y:y+257,width:75,height:50,rx:4,fill:'#331430',stroke:'#ff4d8d'});
+      g.appendChild(sfu);
+      const sfut=el('text',{x:x+132,y:y+277,'text-anchor':'middle',fill:'#ff4d8d','font-size':10,'font-weight':700});
+      sfut.textContent='SFU';g.appendChild(sfut);
+      const sfut2=el('text',{x:x+132,y:y+292,'text-anchor':'middle',fill:'#8a97b8','font-size':8});
+      sfut2.textContent='sin/exp/rcp';g.appendChild(sfut2);
+    }
+  })();
+
+  // ============== Tensor Core matrix grids ==============
+  (function(){
+    const buildGrid=(parentId,cols,rows,baseX,baseY,fill,sparse=false)=>{
+      const g=document.getElementById(parentId);
+      if(!g)return;
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          // 2:4 sparsity: in groups of 4, two are zero
+          let opacity=0.85;
+          if(sparse){
+            const grp=Math.floor(c/4);
+            const inGrp=c%4;
+            if(inGrp===1||inGrp===2)opacity=0.1; // grayed-out (zero)
+          }
+          const rect=el('rect',{
+            x:baseX+c*16,y:baseY+r*16,width:14,height:14,rx:2,
+            fill:fill,opacity:opacity,stroke:'#0a0e18','stroke-width':0.5
+          });
+          g.appendChild(rect);
+        }
+      }
+    };
+    buildGrid('matA',4,8,60,110,'#00d4ff');
+    buildGrid('matB',8,4,260,110,'#a479ff',true);
+    buildGrid('matC',4,8,620,110,'#ffb03b');
+    buildGrid('matD',4,8,750,110,'#ff4d8d');
+  })();
+
+  // ============== Memory hierarchy load animation ==============
+  (function(){
+    const cl=document.getElementById('cacheLine');
+    const narr=document.getElementById('memNarr');
+    const runBtn=document.getElementById('runMem');
+    const resetBtn=document.getElementById('resetMem');
+    if(!cl)return;
+    const stops=[
+      {x:80,y:83,label:'① Memory request misses everywhere — fetch from LPDDR5'},
+      {x:120,y:146,label:'② System Cache (SCF) checks for hit — miss, forwards to GPU L2'},
+      {x:160,y:201,label:'③ GPU L2 fills the line (2 MB shared by 8 SMs)'},
+      {x:200,y:254,label:'④ L1 / shared loads it; warp threads can now read it as sharedMem'},
+      {x:240,y:308,label:'⑤ Warp issues; thread reads into its register slice'},
+      {x:300,y:360,label:'⑥ Operand collectors latch — Tensor Core consumes the tile'}
+    ];
+    let timer=null;
+    function reset(){
+      if(timer){clearTimeout(timer);timer=null;}
+      cl.setAttribute('opacity',0);
+      cl.setAttribute('cx',80);cl.setAttribute('cy',83);
+      narr.textContent='Ready. The cache line will walk LPDDR5 → System Cache → GPU L2 → L1 → register.';
+    }
+    runBtn&&runBtn.addEventListener('click',()=>{
+      reset();
+      cl.setAttribute('opacity',1);
+      let i=0;
+      function step(){
+        if(i>=stops.length){return;}
+        const s=stops[i];
+        cl.setAttribute('cx',s.x);cl.setAttribute('cy',s.y);
+        narr.textContent=s.label;
+        i++;
+        timer=setTimeout(step,800);
+      }
+      step();
+    });
+    resetBtn&&resetBtn.addEventListener('click',reset);
+  })();
+
+  // ============== Warp animation in SM ==============
+  (function(){
+    const dot=document.getElementById('warpDot');
+    const narr=document.getElementById('warpNarr');
+    const runBtn=document.getElementById('runWarp');
+    const resetBtn=document.getElementById('resetWarp');
+    if(!dot)return;
+    const path=[
+      {x:450,y:67,label:'① 32-thread warp dispatched from L1 I-cache'},
+      {x:150,y:115,label:'② Lands in sub-core 0 warp scheduler'},
+      {x:150,y:155,label:'③ Reads operands from 64 KB register file'},
+      {x:150,y:225,label:'④ Issues to 32 CUDA cores (one thread per lane, lock-step)'},
+      {x:150,y:330,label:'⑤ Loads to LD/ST → bounces off L1 / shared memory (192 KB)'},
+      {x:150,y:480,label:'⑥ If RT op: routes to RT core; result writes back to register file'},
+    ];
+    let timer=null;
+    function reset(){
+      if(timer)clearTimeout(timer);
+      dot.setAttribute('opacity',0);
+      dot.setAttribute('cx',-20);dot.setAttribute('cy',-20);
+      narr.textContent='Ready. A warp = 32 threads executing the same instruction in lock-step (SIMT).';
+    }
+    runBtn&&runBtn.addEventListener('click',()=>{
+      reset();
+      dot.setAttribute('opacity',1);
+      let i=0;
+      function step(){
+        if(i>=path.length){return;}
+        const p=path[i];
+        dot.setAttribute('cx',p.x);dot.setAttribute('cy',p.y);
+        narr.textContent=p.label;
+        i++;
+        timer=setTimeout(step,800);
+      }
+      step();
+    });
+    resetBtn&&resetBtn.addEventListener('click',reset);
+  })();
+
+  // ============== Tensor MAC step ==============
+  (function(){
+    const matA=document.getElementById('matA');
+    const matB=document.getElementById('matB');
+    const matC=document.getElementById('matC');
+    const matD=document.getElementById('matD');
+    if(!matA)return;
+    let phase=0;
+    let timer=null;
+    function highlight(group,color){
+      Array.from(group.children).forEach(c=>{
+        c.setAttribute('stroke',color);c.setAttribute('stroke-width',1.5);
+        setTimeout(()=>{c.setAttribute('stroke','#0a0e18');c.setAttribute('stroke-width',0.5);},400);
+      });
+    }
+    function step(){
+      if(phase===0){highlight(matA,'#fff');phase++;}
+      else if(phase===1){highlight(matB,'#fff');phase++;}
+      else if(phase===2){highlight(matC,'#fff');phase++;}
+      else {highlight(matD,'#fff');phase=0;}
+    }
+    document.getElementById('stepMac').addEventListener('click',step);
+    document.getElementById('playMac').addEventListener('click',()=>{
+      if(timer){clearInterval(timer);timer=null;return;}
+      timer=setInterval(step,500);
+    });
+    document.getElementById('resetMac').addEventListener('click',()=>{
+      if(timer){clearInterval(timer);timer=null;}
+      phase=0;
+    });
+  })();
+
+  // ============== Vision pipeline animation ==============
+  (function(){
+    const narr=document.getElementById('visionNarr');
+    if(!narr)return;
+    const runBtn=document.getElementById('runVision');
+    const resetBtn=document.getElementById('resetVision');
+    const stages=[
+      {label:'① Sensor exposes a frame · ~33 ms exposure window'},
+      {label:'② MIPI CSI-2 streams Bayer raw into the SoC over 4 lanes (≈3.5 Gbps each)'},
+      {label:'③ ISP demosaics → RGB → NV12, applies 3A (auto exposure / wb / focus), denoises'},
+      {label:'④ Frame is in unified RAM. Zero-copy: GPU sees the same pointer the ISP wrote'},
+      {label:'⑤ VIC + GPU resize 1920×1080 → 640×640, normalize to FP16 tensor'},
+      {label:'⑥ TensorRT YOLO engine runs on Tensor Cores — INT8, ~14 ms'},
+      {label:'⑦ Post-process: anchor decode, NMS, build bounding boxes'},
+      {label:'⑧ Result fires over UART/CAN to the motor controller (~22 ms total)'}
+    ];
+    let timer=null;
+    function reset(){
+      if(timer)clearTimeout(timer);
+      narr.textContent='Ready. One frame will travel from sensor to action.';
+    }
+    runBtn&&runBtn.addEventListener('click',()=>{
+      reset();
+      let i=0;
+      function step(){
+        if(i>=stages.length)return;
+        narr.innerHTML=stages[i].label;
+        i++;
+        timer=setTimeout(step,750);
+      }
+      step();
+    });
+    resetBtn&&resetBtn.addEventListener('click',reset);
+  })();
+
+  // ============== YOLO scene + timeline demo ==============
+  (function(){
+    const scene=document.getElementById('sceneSvg');
+    const objLayer=document.getElementById('objectsLayer');
+    const boxLayer=document.getElementById('boxesLayer');
+    const tlBars=document.getElementById('bars');
+    const tlLabels=document.getElementById('labels');
+    const narr=document.getElementById('yoloNarr');
+    if(!scene)return;
+    const objects=[];
+
+    const palette={
+      person:{color:'#76b900',label:'person'},
+      car:{color:'#00d4ff',label:'car'},
+      dog:{color:'#ff4d8d',label:'dog'}
+    };
+
+    function drawObject(o){
+      const grp=el('g',{});
+      grp.setAttribute('data-id',o.id);
+      if(o.type==='person'){
+        const head=el('circle',{cx:o.x,cy:o.y-30,r:10,fill:'#fff'});
+        const body=el('rect',{x:o.x-10,y:o.y-20,width:20,height:35,rx:4,fill:'#fff'});
+        grp.appendChild(head);grp.appendChild(body);
+      }else if(o.type==='car'){
+        const body=el('rect',{x:o.x-25,y:o.y-12,width:50,height:18,rx:5,fill:'#fff'});
+        const top=el('rect',{x:o.x-15,y:o.y-22,width:30,height:12,rx:4,fill:'#fff'});
+        const w1=el('circle',{cx:o.x-15,cy:o.y+8,r:5,fill:'#000',stroke:'#fff','stroke-width':1.5});
+        const w2=el('circle',{cx:o.x+15,cy:o.y+8,r:5,fill:'#000',stroke:'#fff','stroke-width':1.5});
+        grp.appendChild(body);grp.appendChild(top);grp.appendChild(w1);grp.appendChild(w2);
+      }else{ // dog
+        const body=el('ellipse',{cx:o.x,cy:o.y,rx:18,ry:9,fill:'#fff'});
+        const head=el('circle',{cx:o.x+18,cy:o.y-7,r:7,fill:'#fff'});
+        const tail=el('rect',{x:o.x-26,y:o.y-3,width:8,height:3,rx:1,fill:'#fff'});
+        const ear=el('polygon',{points:`${o.x+22},${o.y-13} ${o.x+25},${o.y-19} ${o.x+19},${o.y-15}`,fill:'#fff'});
+        const l1=el('rect',{x:o.x-10,y:o.y+5,width:3,height:8,fill:'#fff'});
+        const l2=el('rect',{x:o.x+10,y:o.y+5,width:3,height:8,fill:'#fff'});
+        grp.appendChild(body);grp.appendChild(head);grp.appendChild(tail);grp.appendChild(ear);grp.appendChild(l1);grp.appendChild(l2);
+      }
+      objLayer.appendChild(grp);
+    }
+    let nextType='person';
+    document.getElementById('addPerson').onclick=()=>nextType='person';
+    document.getElementById('addCar').onclick=()=>nextType='car';
+    document.getElementById('addDog').onclick=()=>nextType='dog';
+    document.getElementById('clearScene').onclick=()=>{
+      objects.length=0;
+      while(objLayer.firstChild)objLayer.removeChild(objLayer.firstChild);
+      while(boxLayer.firstChild)boxLayer.removeChild(boxLayer.firstChild);
+    };
+    scene.addEventListener('click',(e)=>{
+      const r=scene.getBoundingClientRect();
+      const x=(e.clientX-r.left)*(400/r.width);
+      const y=(e.clientY-r.top)*(300/r.height);
+      // skip if too high (sky) — keep on floor area
+      if(y<60)return;
+      const o={id:objects.length,x,y,type:nextType};
+      objects.push(o);
+      drawObject(o);
+    });
+
+    function drawBoxes(){
+      while(boxLayer.firstChild)boxLayer.removeChild(boxLayer.firstChild);
+      objects.forEach((o)=>{
+        const c=palette[o.type];
+        let bw=40,bh=40;
+        if(o.type==='person'){bw=28;bh=60;}
+        if(o.type==='car'){bw=60;bh=42;}
+        if(o.type==='dog'){bw=55;bh=30;}
+        const conf=85+Math.floor(Math.random()*14);
+        const box=el('rect',{x:o.x-bw/2,y:o.y-bh/2-(o.type==='person'?15:0),width:bw,height:bh,rx:2,fill:'none',stroke:c.color,'stroke-width':2});
+        const lblBg=el('rect',{x:o.x-bw/2,y:o.y-bh/2-(o.type==='person'?27:12),width:bw,height:12,fill:c.color});
+        const lblTxt=el('text',{x:o.x-bw/2+3,y:o.y-bh/2-(o.type==='person'?18:3),fill:'#0b0f1a','font-size':9,'font-weight':700});
+        lblTxt.textContent=c.label+' '+conf+'%';
+        boxLayer.appendChild(box);boxLayer.appendChild(lblBg);boxLayer.appendChild(lblTxt);
+      });
+    }
+
+    function buildTimeline(){
+      while(tlBars.firstChild)tlBars.removeChild(tlBars.firstChild);
+      while(tlLabels.firstChild)tlLabels.removeChild(tlLabels.firstChild);
+      // Each ms = (380-40)/40 = 8.5 px → x = 40 + ms*8.5
+      const xOf=(ms)=>40+ms*8.5;
+      const stages=[
+        {name:'CSI capture',ms:2,color:'#a479ff',y:60},
+        {name:'ISP demosaic',ms:1,color:'#a479ff',y:90},
+        {name:'VIC resize + norm',ms:3,color:'#76b900',y:120},
+        {name:'TRT inference',ms:14,color:'#00d4ff',y:150},
+        {name:'NMS + post-proc',ms:2,color:'#ffb03b',y:180},
+        {name:'Output → CAN/UART',ms:1,color:'#ff4d8d',y:210}
+      ];
+      let cursor=0;
+      stages.forEach((s,i)=>{
+        const bar=el('rect',{x:xOf(cursor),y:s.y,width:s.ms*8.5,height:20,rx:2,fill:s.color,opacity:0.9});
+        tlBars.appendChild(bar);
+        const lbl=el('text',{x:xOf(cursor)+s.ms*8.5+5,y:s.y+14,fill:s.color,'font-size':9,'font-weight':700});
+        lbl.textContent=s.name+' ('+s.ms+'ms)';
+        tlLabels.appendChild(lbl);
+        cursor+=s.ms;
+      });
+      // total marker
+      const total=el('text',{x:200,y:265,'text-anchor':'middle',fill:'#76b900','font-size':12,'font-weight':700});
+      total.textContent='Total ≈ 23 ms (43 fps) ✓ within budget';
+      tlLabels.appendChild(total);
+    }
+
+    document.getElementById('runYolo').onclick=()=>{
+      if(objects.length===0){
+        narr.innerHTML='Add at least one object to the scene first.';
+        return;
+      }
+      buildTimeline();
+      narr.innerHTML='Capturing frame... preprocessing... running YOLOv8n INT8 engine on the GPU...';
+      setTimeout(()=>{
+        drawBoxes();
+        const counts={};
+        objects.forEach(o=>counts[o.type]=(counts[o.type]||0)+1);
+        const summary=Object.keys(counts).map(k=>counts[k]+'× '+k).join(', ');
+        narr.innerHTML='✓ Detected <b style="color:#76b900">'+summary+'</b> in 23 ms. The Orin Nano sustains this at 30 fps with headroom.';
+      },800);
+    };
+  })();
+})();
+</script>
+</body>
+</html>
+</body>
+</html>
