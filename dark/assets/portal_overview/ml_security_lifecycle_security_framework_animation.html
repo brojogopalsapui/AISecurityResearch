@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ML Security Lifecycle Security Framework - Deep Dive</title>
+<style>
+  :root{
+    --bg:#06101a;
+    --bg2:#0b1623;
+    --panel:#101a29;
+    --panel2:#162336;
+    --panel3:#0a121d;
+    --border:#2b4258;
+    --text:#edf4ff;
+    --soft:#d7e3f2;
+    --muted:#91a5bd;
+    --attack:#ff6b61;
+    --attack2:#ff8e87;
+    --defense:#86d93c;
+    --defense2:#4be0c5;
+    --cyan:#53d8ff;
+    --amber:#ffb35d;
+    --purple:#a485ff;
+    --shadow:0 24px 56px rgba(0,0,0,.34);
+    --mono:"Cascadia Mono",Consolas,"Liberation Mono","Courier New",monospace;
+    --body:"Segoe UI Variable","Aptos","Trebuchet MS",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.55;
+    background:
+      radial-gradient(circle at 18% 14%, rgba(134,217,60,.12), transparent 24%),
+      radial-gradient(circle at 84% 10%, rgba(255,107,97,.12), transparent 24%),
+      radial-gradient(circle at 50% 92%, rgba(83,216,255,.08), transparent 30%),
+      linear-gradient(180deg, #06111b 0%, #04070c 50%, #071019 100%);
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.16;
+    background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size:34px 34px;
+    mask-image:linear-gradient(180deg, rgba(0,0,0,.8), rgba(0,0,0,.18));
+  }
+  a{color:var(--cyan)}
+  header{
+    position:relative;
+    overflow:hidden;
+    padding:64px 24px 30px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(180deg, rgba(134,217,60,.07), rgba(83,216,255,.03) 45%, transparent 100%);
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    width:420px;
+    height:420px;
+    right:-120px;
+    bottom:-180px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,107,97,.2) 0%, rgba(255,107,97,0) 68%);
+    filter:blur(24px);
+    pointer-events:none;
+  }
+  .hero{
+    max-width:1240px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    margin:0 0 10px;
+    color:var(--defense2);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.18em;
+    font-weight:700;
+  }
+  h1{
+    margin:0;
+    max-width:1020px;
+    font-size:clamp(34px, 5vw, 60px);
+    line-height:1.03;
+    letter-spacing:-.03em;
+    background:linear-gradient(90deg, #f2f8ff 0%, #86d93c 26%, #53d8ff 60%, #ff6b61 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .sub{
+    max-width:980px;
+    margin:18px 0 0;
+    color:var(--soft);
+    font-size:16px;
+  }
+  .hero-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:22px;
+  }
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    color:var(--soft);
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.02em;
+  }
+  .chip::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--defense);
+    box-shadow:0 0 14px rgba(134,217,60,.6);
+  }
+  .chip.attack::before{background:var(--attack);box-shadow:0 0 14px rgba(255,107,97,.65)}
+  .chip.cyan::before{background:var(--cyan);box-shadow:0 0 14px rgba(83,216,255,.65)}
+  .chip.amber::before{background:var(--amber);box-shadow:0 0 14px rgba(255,179,93,.65)}
+  nav.toc{
+    max-width:1240px;
+    margin:20px auto 0;
+    padding:0 24px 10px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  nav.toc a{
+    text-decoration:none;
+    color:var(--cyan);
+    background:rgba(83,216,255,.07);
+    border:1px solid rgba(83,216,255,.18);
+    padding:8px 12px;
+    border-radius:10px;
+    font-size:13px;
+    transition:transform .15s ease, background .2s ease, border-color .2s ease;
+  }
+  nav.toc a:hover{
+    transform:translateY(-1px);
+    background:rgba(83,216,255,.14);
+    border-color:rgba(83,216,255,.28);
+  }
+  main{
+    max-width:1240px;
+    margin:0 auto;
+    padding:18px 24px 72px;
+  }
+  section{
+    margin:30px 0;
+    padding:28px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(180deg, rgba(17,26,41,.96), rgba(9,15,24,.96));
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(10px);
+  }
+  section h2{
+    margin:0;
+    font-size:29px;
+    letter-spacing:-.02em;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .tag{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:36px;
+    height:30px;
+    padding:0 10px;
+    border-radius:999px;
+    background:linear-gradient(135deg, rgba(134,217,60,.22), rgba(83,216,255,.18));
+    border:1px solid rgba(255,255,255,.08);
+    color:var(--defense);
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.08em;
+  }
+  .lede{
+    margin:12px 0 0;
+    max-width:980px;
+    color:var(--muted);
+    font-size:15px;
+  }
+  .grid{display:grid;gap:16px}
+  .cols-2{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+  .cols-3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .cols-4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+  .stat{
+    position:relative;
+    overflow:hidden;
+    padding:16px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(23,34,52,.95), rgba(11,18,29,.96));
+  }
+  .stat::after{
+    content:"";
+    position:absolute;
+    width:140px;
+    height:140px;
+    right:-40px;
+    bottom:-50px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(83,216,255,.12), transparent 68%);
+  }
+  .stat .k{
+    position:relative;
+    z-index:1;
+    color:var(--muted);
+    text-transform:uppercase;
+    font-size:11px;
+    letter-spacing:.12em;
+    font-weight:700;
+  }
+  .stat .v{
+    position:relative;
+    z-index:1;
+    margin-top:8px;
+    font-size:26px;
+    line-height:1.12;
+    font-weight:800;
+    color:#fff;
+  }
+  .stat .v small{
+    display:block;
+    margin-top:4px;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:500;
+  }
+  .callout{
+    padding:18px;
+    border-radius:16px;
+    background:
+      linear-gradient(180deg, rgba(75,224,197,.08), rgba(75,224,197,.02)),
+      rgba(255,255,255,.02);
+    border:1px solid rgba(75,224,197,.18);
+  }
+  .callout.attack{
+    background:
+      linear-gradient(180deg, rgba(255,107,97,.08), rgba(255,107,97,.02)),
+      rgba(255,255,255,.02);
+    border-color:rgba(255,107,97,.18);
+  }
+  .callout h3{
+    margin:0 0 8px;
+    color:var(--defense2);
+    font-size:18px;
+  }
+  .callout.attack h3{color:var(--attack2)}
+  .callout p{margin:0;color:var(--soft)}
+  .bulletline{
+    margin-top:12px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .badge{
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    color:var(--soft);
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.06);
+  }
+  .stage{
+    margin-top:18px;
+    padding:16px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(4,10,18,.96), rgba(9,17,28,.96));
+    overflow:hidden;
+    position:relative;
+  }
+  .stage::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:radial-gradient(circle at top left, rgba(83,216,255,.08), transparent 26%);
+  }
+  .stage svg{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  .controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    margin-top:14px;
+  }
+  .btn{
+    appearance:none;
+    border:0;
+    cursor:pointer;
+    border-radius:12px;
+    padding:10px 16px;
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.03em;
+    color:#081016;
+    background:linear-gradient(135deg, var(--defense), #b5f26d);
+    transition:transform .14s ease, filter .18s ease, box-shadow .18s ease;
+    box-shadow:0 10px 22px rgba(134,217,60,.16);
+  }
+  .btn:hover{filter:brightness(1.06)}
+  .btn:active{transform:translateY(1px)}
+  .btn.alt{
+    color:var(--cyan);
+    background:rgba(83,216,255,.07);
+    border:1px solid rgba(83,216,255,.25);
+    box-shadow:none;
+  }
+  .btn.attack{
+    color:#19090a;
+    background:linear-gradient(135deg, var(--attack), #ff978f);
+    box-shadow:0 10px 22px rgba(255,107,97,.18);
+  }
+  .btn.warn{
+    color:#201205;
+    background:linear-gradient(135deg, var(--amber), #ffd184);
+    box-shadow:0 10px 22px rgba(255,179,93,.18);
+  }
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-top:12px;
+    color:var(--muted);
+    font-size:12px;
+  }
+  .legend span{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+  }
+  .legend i{
+    width:14px;
+    height:14px;
+    border-radius:4px;
+    display:inline-block;
+  }
+  .narr{
+    margin-top:14px;
+    padding:12px 14px;
+    min-height:54px;
+    border-radius:14px;
+    border-left:3px solid var(--defense);
+    background:rgba(255,255,255,.03);
+    color:var(--soft);
+    font-family:var(--mono);
+    font-size:13px;
+  }
+  .footnote{
+    margin-top:12px;
+    color:var(--muted);
+    font-size:12px;
+    font-style:italic;
+  }
+  .metric-strip{
+    display:grid;
+    gap:12px;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    margin-top:16px;
+  }
+  .metric{
+    padding:13px 14px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(16,25,39,.95), rgba(8,12,20,.96));
+  }
+  .metric .mk{
+    color:var(--muted);
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+  }
+  .metric .mv{
+    margin-top:6px;
+    color:#fff;
+    font-size:22px;
+    font-weight:800;
+  }
+  .overview-wrap{
+    margin-top:18px;
+    display:grid;
+    gap:18px;
+    grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);
+  }
+  .side-panel{
+    padding:18px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(7,14,24,.94), rgba(11,18,29,.96));
+  }
+  .side-panel h3{
+    margin:0 0 10px;
+    color:var(--amber);
+    font-size:18px;
+  }
+  .point-list{
+    display:grid;
+    gap:10px;
+    margin-top:12px;
+  }
+  .point-list div{
+    padding:10px 12px;
+    border-radius:12px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.05);
+    color:var(--soft);
+    font-size:13px;
+  }
+  .stage-list{
+    display:grid;
+    gap:10px;
+    margin-top:14px;
+  }
+  .stage-card{
+    display:grid;
+    gap:8px;
+    grid-template-columns:1fr auto;
+    align-items:center;
+    padding:12px;
+    border-radius:14px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);
+    cursor:pointer;
+    transition:transform .15s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .stage-card:hover{transform:translateY(-1px)}
+  .stage-card.active{
+    border-color:rgba(83,216,255,.32);
+    box-shadow:0 12px 24px rgba(83,216,255,.08);
+  }
+  .stage-card .name{
+    color:#fff;
+    font-size:16px;
+    font-weight:800;
+  }
+  .stage-card .mini{
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+  }
+  .pill{
+    padding:5px 9px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.04em;
+  }
+  .pill.attack{color:#210e10;background:rgba(255,107,97,.92)}
+  .pill.defense{color:#10220d;background:rgba(134,217,60,.92)}
+  .tier-grid{
+    margin-top:18px;
+    display:grid;
+    gap:16px;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  }
+  .tier-card{
+    position:relative;
+    overflow:hidden;
+    padding:18px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(17,26,41,.96), rgba(10,16,26,.96));
+  }
+  .tier-card::after{
+    content:"";
+    position:absolute;
+    width:150px;
+    height:150px;
+    right:-35px;
+    bottom:-40px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(83,216,255,.14), transparent 68%);
+  }
+  .tier-card h3{
+    position:relative;
+    z-index:1;
+    margin:0 0 8px;
+    font-size:22px;
+  }
+  .tier-card p{
+    position:relative;
+    z-index:1;
+    margin:0 0 12px;
+    color:var(--soft);
+    font-size:14px;
+  }
+  .tier-card ul{
+    position:relative;
+    z-index:1;
+    margin:0;
+    padding-left:18px;
+    color:var(--soft);
+    font-size:13px;
+  }
+  .tier-card li{margin:6px 0}
+  .explorer-wrap{
+    margin-top:18px;
+    display:grid;
+    gap:18px;
+    grid-template-columns:minmax(0,1fr) minmax(340px,.8fr);
+  }
+  .explorer-list{
+    display:grid;
+    gap:12px;
+  }
+  .explorer-item{
+    padding:16px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(16,26,39,.95), rgba(9,15,24,.96));
+  }
+  .explorer-item h3{
+    margin:0 0 6px;
+    font-size:20px;
+  }
+  .explorer-item p{
+    margin:8px 0 0;
+    color:var(--soft);
+    font-size:14px;
+  }
+  .explorer-side .attack-title{
+    color:var(--attack2);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    font-weight:700;
+  }
+  .explorer-side .defense-title{
+    color:var(--defense);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    font-weight:700;
+    margin-top:14px;
+  }
+  .demo-grid{
+    margin-top:18px;
+    display:grid;
+    gap:16px;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  }
+  .demo-card{
+    padding:18px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(17,26,41,.96), rgba(10,16,26,.96));
+  }
+  .demo-card h3{
+    margin:0;
+    font-size:21px;
+  }
+  .demo-card p{
+    margin:10px 0 0;
+    color:var(--soft);
+    font-size:14px;
+  }
+  .dataset-grid{
+    display:grid;
+    gap:8px;
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    margin-top:14px;
+  }
+  .sample{
+    padding:10px 6px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(16,26,39,.95), rgba(8,14,22,.96));
+    text-align:center;
+    color:var(--soft);
+    font-size:12px;
+    transition:transform .15s ease, border-color .2s ease, background .2s ease;
+  }
+  .sample.poisoned{
+    border-color:rgba(255,107,97,.45);
+    background:linear-gradient(180deg, rgba(64,20,23,.92), rgba(28,10,12,.96));
+    color:#ffd5d1;
+  }
+  .sample.validated{
+    border-color:rgba(134,217,60,.36);
+    background:linear-gradient(180deg, rgba(18,45,19,.92), rgba(10,23,10,.96));
+    color:#dff8be;
+  }
+  .sample .meta{
+    display:block;
+    margin-top:4px;
+    color:var(--muted);
+    font-size:10px;
+  }
+  .mini-metrics{
+    display:grid;
+    gap:10px;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    margin-top:14px;
+  }
+  .mini-metric{
+    padding:12px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.06);
+    background:rgba(255,255,255,.03);
+  }
+  .mini-metric .k{
+    color:var(--muted);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    font-weight:700;
+  }
+  .mini-metric .v{
+    margin-top:6px;
+    color:#fff;
+    font-size:20px;
+    font-weight:800;
+  }
+  .req-strip{
+    margin-top:14px;
+    display:grid;
+    gap:8px;
+  }
+  .req{
+    position:relative;
+    height:14px;
+    border-radius:999px;
+    background:rgba(255,255,255,.05);
+    overflow:hidden;
+  }
+  .req > span{
+    position:absolute;
+    inset:0 auto 0 0;
+    width:0%;
+    border-radius:999px;
+    background:linear-gradient(90deg, var(--attack), #ff9f93);
+    transition:width .3s ease;
+  }
+  .req.safe > span{
+    background:linear-gradient(90deg, var(--defense2), var(--defense));
+  }
+  .bars{
+    display:grid;
+    gap:10px;
+    margin-top:14px;
+  }
+  .bar-row{
+    display:grid;
+    grid-template-columns:120px 1fr 52px;
+    gap:10px;
+    align-items:center;
+  }
+  .bar-row .name{
+    color:var(--soft);
+    font-size:13px;
+    font-weight:700;
+  }
+  .bar-track{
+    height:12px;
+    border-radius:999px;
+    background:rgba(255,255,255,.05);
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    border-radius:999px;
+    width:0%;
+    background:linear-gradient(90deg, var(--cyan), var(--defense2));
+    transition:width .3s ease;
+  }
+  .bar-row .val{
+    color:var(--muted);
+    font-size:12px;
+    text-align:right;
+  }
+  .sources{
+    margin-top:14px;
+    display:grid;
+    gap:10px;
+  }
+  .sources a{
+    display:block;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.06);
+    background:rgba(255,255,255,.03);
+    color:var(--soft);
+    text-decoration:none;
+  }
+  .sources a:hover{
+    border-color:rgba(83,216,255,.24);
+    color:#fff;
+  }
+  .flow{
+    stroke-dasharray:8 8;
+    animation:dash 1.3s linear infinite;
+  }
+  .active-block{
+    filter:drop-shadow(0 0 14px rgba(83,216,255,.28));
+  }
+  @keyframes dash{to{stroke-dashoffset:-32}}
+  footer{
+    max-width:1240px;
+    margin:0 auto;
+    padding:0 24px 50px;
+    color:var(--muted);
+    font-size:12px;
+    text-align:center;
+  }
+  @media (max-width:960px){
+    section{padding:22px}
+    .overview-wrap,.explorer-wrap{grid-template-columns:1fr}
+  }
+  @media (max-width:760px){
+    .dataset-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .mini-metrics{grid-template-columns:1fr}
+    .bar-row{grid-template-columns:90px 1fr 46px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero">
+    <p class="eyebrow">Secure AI systems visualized</p>
+    <h1>ML Security Lifecycle Security Framework - Deep Dive Animation</h1>
+    <p class="sub">
+      An interactive, technology-focused visualization of the machine learning lifecycle under attack:
+      where poisoning, tampering, backdoors, leakage, extraction, and adversarial inputs appear,
+      how those risks travel from cloud training to edge deployment to physical systems, and what controls harden each stage.
+    </p>
+    <div class="hero-meta">
+      <span class="chip attack">Attack surfaces across 6 lifecycle stages</span>
+      <span class="chip">Countermeasures mapped to each stage</span>
+      <span class="chip cyan">Cloud -> edge -> physical threat story</span>
+      <span class="chip amber">Interactive security demos</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#overview">1. Lifecycle Map</a>
+  <a href="#tiers">2. Cloud to Physical</a>
+  <a href="#explorer">3. Stage Explorer</a>
+  <a href="#demos">4. Live Security Demos</a>
+  <a href="#matrix">5. Defense Matrix</a>
+  <a href="#sources">6. Sources</a>
+</nav>
+
+<main>
+
+<section id="overview">
+  <h2><span class="tag">01</span> ML Security Lifecycle Map</h2>
+  <p class="lede">
+    The lifecycle is circular because trust is handed from one stage to the next. If collection is poisoned,
+    preprocessing amplifies it. If training absorbs a backdoor, evaluation may miss it. If deployment leaks too much signal,
+    attackers steal the model. If inference is weak, adversarial inputs exploit the full system.
+  </p>
+
+  <div class="metric-strip">
+    <div class="metric"><div class="mk">Core security pattern</div><div class="mv">Trust transfer</div></div>
+    <div class="metric"><div class="mk">Fastest detection point</div><div class="mv">Telemetry at ingest</div></div>
+    <div class="metric"><div class="mk">Hardest issue to reverse</div><div class="mv">Training compromise</div></div>
+    <div class="metric"><div class="mk">Operational principle</div><div class="mv">Defense in depth</div></div>
+  </div>
+
+  <div class="overview-wrap">
+    <div class="stage">
+      <svg id="cycleSvg" viewBox="0 0 980 620" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="cycleArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 Z" fill="#91a4bb"></path>
+          </marker>
+          <linearGradient id="tierGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#173248"></stop>
+            <stop offset="1" stop-color="#091420"></stop>
+          </linearGradient>
+        </defs>
+        <rect x="16" y="16" width="948" height="588" rx="22" fill="#040910" stroke="#2b4258"></rect>
+        <g id="cyclePaths"></g>
+        <g id="cycleNodes"></g>
+        <g>
+          <rect x="278" y="242" width="424" height="130" rx="22" fill="url(#tierGrad)" stroke="#53d8ff" stroke-width="2"></rect>
+          <text x="490" y="272" text-anchor="middle" fill="#53d8ff" font-size="16" font-weight="800">Operational path: cloud -> edge -> physical</text>
+          <g>
+            <rect x="310" y="290" width="92" height="46" rx="14" fill="#0e1a28" stroke="#53d8ff"></rect>
+            <text x="356" y="319" text-anchor="middle" fill="#53d8ff" font-size="16" font-weight="800">Cloud</text>
+            <text x="356" y="339" text-anchor="middle" fill="#90a5bc" font-size="10">collection / training / CI</text>
+          </g>
+          <g>
+            <rect x="444" y="290" width="92" height="46" rx="14" fill="#0e1a28" stroke="#86d93c"></rect>
+            <text x="490" y="319" text-anchor="middle" fill="#86d93c" font-size="16" font-weight="800">Edge</text>
+            <text x="490" y="339" text-anchor="middle" fill="#90a5bc" font-size="10">deployment / local policy</text>
+          </g>
+          <g>
+            <rect x="578" y="290" width="92" height="46" rx="14" fill="#0e1a28" stroke="#ffb35d"></rect>
+            <text x="624" y="319" text-anchor="middle" fill="#ffb35d" font-size="16" font-weight="800">Physical</text>
+            <text x="624" y="339" text-anchor="middle" fill="#90a5bc" font-size="10">sensor / human / actuator loop</text>
+          </g>
+          <line x1="402" y1="313" x2="444" y2="313" stroke="#53d8ff" stroke-width="4" class="flow" marker-end="url(#cycleArrow)"></line>
+          <line x1="536" y1="313" x2="578" y2="313" stroke="#53d8ff" stroke-width="4" class="flow" marker-end="url(#cycleArrow)"></line>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><i style="background:#ff6b61"></i> Attack emphasis</span>
+        <span><i style="background:#86d93c"></i> Countermeasure emphasis</span>
+        <span><i style="background:#53d8ff"></i> Lifecycle flow and operational path</span>
+      </div>
+    </div>
+
+    <div class="side-panel">
+      <h3 id="cycleTitle">Data Collection</h3>
+      <p id="cycleText">
+        Collection is the first trust boundary. If source identity, provenance, labeling, or collection context is weak, the rest of the lifecycle inherits compromised assumptions.
+      </p>
+      <div class="point-list" id="cyclePoints"></div>
+      <div class="stage-list" id="stageList"></div>
+      <div class="controls">
+        <button class="btn" id="playCycle">Play lifecycle</button>
+        <button class="btn alt" id="showAttackLabels">Attack labels</button>
+        <button class="btn alt" id="showDefenseLabels">Defense labels</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tiers">
+  <h2><span class="tag">02</span> Cloud -> Edge -> Physical Threat Propagation</h2>
+  <p class="lede">
+    The center of your diagram explains where lifecycle security becomes real-world security.
+    Cloud handles data, labeling, training, and release engineering. Edge hosts the deployed model, device policy, and API surface.
+    Physical is where sensor inputs, humans, or actuators feel the consequences of a compromised model.
+  </p>
+
+  <div class="tier-grid">
+    <div class="tier-card">
+      <h3 style="color:var(--cyan)">Cloud tier</h3>
+      <p>Most exposed to data poisoning, pipeline tampering, backdoor seeding, and artifact substitution.</p>
+      <ul>
+        <li>Data lineage and provenance matter here.</li>
+        <li>Signed artifacts and auditable experiments reduce silent corruption.</li>
+        <li>Failures at this tier scale into every release.</li>
+      </ul>
+    </div>
+    <div class="tier-card">
+      <h3 style="color:var(--defense)">Edge tier</h3>
+      <p>Main battleground for deployment abuse: model stealing, probe traffic, replay, and runtime drift.</p>
+      <ul>
+        <li>Rate limiting, encryption, authentication, and attestation belong here.</li>
+        <li>Telemetry from this layer is critical for detection.</li>
+        <li>Cloud quality must survive hostile runtime conditions.</li>
+      </ul>
+    </div>
+    <div class="tier-card">
+      <h3 style="color:var(--amber)">Physical tier</h3>
+      <p>Where adversarial inputs become sensor spoofing, unsafe automation, or misleading human-facing output.</p>
+      <ul>
+        <li>Adversarial examples can become real camera patches or environmental manipulation.</li>
+        <li>Monitoring must connect prediction confidence with environmental context.</li>
+        <li>This is where ML security becomes safety and mission risk.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="explorer">
+  <h2><span class="tag">03</span> Stage-by-Stage Security Explorer</h2>
+  <p class="lede">
+    This section expands the six lifecycle stages from the diagram into a security engineering view:
+    what the attack really means, why it works, and what a serious countermeasure looks like in practice.
+  </p>
+
+  <div class="explorer-wrap">
+    <div class="explorer-list" id="explorerList"></div>
+    <div class="side-panel explorer-side">
+      <h3 id="explorerTitle">Data Collection</h3>
+      <p id="explorerBody">
+        Collection is where attacker-controlled records can shape the model before any optimizer sees them.
+      </p>
+      <div class="attack-title">Primary attack</div>
+      <div class="point-list" id="attackPoints"></div>
+      <div class="defense-title">Countermeasure pattern</div>
+      <div class="point-list" id="defensePoints"></div>
+    </div>
+  </div>
+</section>
+
+<section id="demos">
+  <h2><span class="tag">04</span> Live Security Demos</h2>
+  <p class="lede">
+    These mini-simulations turn the lifecycle into something operational: poisoned samples entering a dataset,
+    evaluation leakage inflating confidence, extraction pressure against a deployment interface, and adversarial perturbation at inference time.
+  </p>
+
+  <div class="demo-grid">
+    <div class="demo-card">
+      <h3 style="color:var(--attack2)">Data Collection - Poisoning</h3>
+      <p>
+        Simulate malicious samples entering the corpus, then isolate them with validation and source checks.
+      </p>
+      <div class="dataset-grid" id="datasetGrid"></div>
+      <div class="controls">
+        <button class="btn attack" id="injectPoison">Inject poison</button>
+        <button class="btn" id="validateData">Validate</button>
+        <button class="btn alt" id="resetData">Reset</button>
+      </div>
+      <div class="mini-metrics">
+        <div class="mini-metric"><div class="k">Poisoned</div><div class="v" id="poisonCount">0</div></div>
+        <div class="mini-metric"><div class="k">Source trust</div><div class="v" id="sourceTrust">high</div></div>
+        <div class="mini-metric"><div class="k">Training risk</div><div class="v" id="trainingRisk">low</div></div>
+      </div>
+      <div class="narr" id="dataNarr">Clean dataset intake. Samples come from approved channels and labels are stable.</div>
+    </div>
+
+    <div class="demo-card">
+      <h3 style="color:var(--amber)">Evaluation - Test Leakage</h3>
+      <p>
+        Show how benchmark confidence becomes inflated when evaluation data leaks back into tuning and model selection.
+      </p>
+      <div class="mini-metrics">
+        <div class="mini-metric"><div class="k">Reported score</div><div class="v" id="evalScore">88%</div></div>
+        <div class="mini-metric"><div class="k">Leak count</div><div class="v" id="leakCount">0</div></div>
+        <div class="mini-metric"><div class="k">Claim trust</div><div class="v" id="claimTrust">high</div></div>
+      </div>
+      <div class="controls">
+        <button class="btn attack" id="leakTest">Leak test split</button>
+        <button class="btn" id="auditSplit">Audit split</button>
+        <button class="btn alt" id="resetEval">Reset</button>
+      </div>
+      <div class="narr" id="evalNarr">Independent evaluation path is intact. Test data remains isolated from training and tuning.</div>
+    </div>
+
+    <div class="demo-card">
+      <h3 style="color:var(--cyan)">Deployment - Model Stealing</h3>
+      <p>
+        Simulate extraction traffic against an exposed API, then reduce fidelity with rate limiting and interface protection.
+      </p>
+      <div class="req-strip" id="queryBars"></div>
+      <div class="controls">
+        <button class="btn attack" id="runExtraction">Run extraction</button>
+        <button class="btn" id="applyControls">Apply controls</button>
+        <button class="btn alt" id="resetDeploy">Reset</button>
+      </div>
+      <div class="mini-metrics">
+        <div class="mini-metric"><div class="k">Queries</div><div class="v" id="queryCount">0</div></div>
+        <div class="mini-metric"><div class="k">Surrogate fidelity</div><div class="v" id="surrogateFidelity">0%</div></div>
+        <div class="mini-metric"><div class="k">Exposure</div><div class="v" id="deployExposure">open</div></div>
+      </div>
+      <div class="narr" id="deployNarr">Deployment surface is idle. The interface still determines how much signal an attacker can harvest.</div>
+    </div>
+
+    <div class="demo-card">
+      <h3 style="color:var(--defense2)">Inference - Adversarial Inputs</h3>
+      <p>
+        Perturb the live input, watch the top prediction flip, then sanitize and monitor to reduce attack strength.
+      </p>
+      <div class="stage" style="padding:14px;margin-top:14px">
+        <svg id="inferSvg" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="500" height="200" rx="18" fill="#040910" stroke="#2b4258"></rect>
+          <rect x="36" y="36" width="180" height="148" rx="16" fill="#0e1a28" stroke="#53d8ff"></rect>
+          <text x="126" y="60" text-anchor="middle" fill="#53d8ff" font-size="18" font-weight="800">Sensor frame</text>
+          <g id="pixelGrid"></g>
+          <rect x="250" y="36" width="230" height="148" rx="16" fill="#0e1a28" stroke="#86d93c"></rect>
+          <text x="365" y="60" text-anchor="middle" fill="#86d93c" font-size="18" font-weight="800">Prediction confidence</text>
+        </svg>
+      </div>
+      <div class="bars" id="inferBars"></div>
+      <div class="controls">
+        <button class="btn attack" id="perturbInput">Perturb input</button>
+        <button class="btn" id="sanitizeInput">Sanitize</button>
+        <button class="btn alt" id="resetInference">Reset</button>
+      </div>
+      <div class="mini-metrics">
+        <div class="mini-metric"><div class="k">Top class</div><div class="v" id="topClass">clean</div></div>
+        <div class="mini-metric"><div class="k">Confidence</div><div class="v" id="topConfidence">91%</div></div>
+        <div class="mini-metric"><div class="k">Alert</div><div class="v" id="inferAlert">clear</div></div>
+      </div>
+      <div class="narr" id="inferNarr">Nominal inference state. Confidence aligns with the intended class and monitoring is quiet.</div>
+    </div>
+  </div>
+</section>
+
+<section id="matrix">
+  <h2><span class="tag">05</span> Defense-in-Depth Matrix</h2>
+  <p class="lede">
+    The lifecycle becomes operational when each stage has a clear owner, a control family, and a runtime signal that proves the control still works.
+  </p>
+
+  <div class="grid cols-3" style="margin-top:18px">
+    <div class="explorer-item">
+      <h3 style="color:var(--cyan)">Data trust</h3>
+      <p>Collection and preprocessing need provenance, schema contracts, integrity checks, and anomaly detectors before the data ever becomes a model gradient.</p>
+    </div>
+    <div class="explorer-item">
+      <h3 style="color:var(--attack2)">Model trust</h3>
+      <p>Training and evaluation need robust optimization, split governance, signed artifacts, and reproducible experiment logs to keep the model honest.</p>
+    </div>
+    <div class="explorer-item">
+      <h3 style="color:var(--defense)">Runtime trust</h3>
+      <p>Deployment and inference need access control, rate limiting, encryption, sanitization, OOD detection, and telemetry that feeds back into the next cycle.</p>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:18px">
+    <h3>Operating rule</h3>
+    <p>
+      Attackers only need one weak boundary. Defenders need every lifecycle stage to fail safely, emit evidence,
+      and feed that evidence back into collection and evaluation without reintroducing the same weaknesses.
+    </p>
+  </div>
+</section>
+
+<section id="sources">
+  <h2><span class="tag">06</span> Sources and Further Reading</h2>
+  <p class="lede">
+    These references are representative anchors for the attack classes and control patterns shown in this visualization.
+  </p>
+  <div class="sources">
+    <a href="https://atlas.mitre.org/" target="_blank" rel="noreferrer">MITRE ATLAS - adversarial tactics and techniques for ML systems</a>
+    <a href="https://www.nist.gov/itl/ai-risk-management-framework" target="_blank" rel="noreferrer">NIST AI Risk Management Framework</a>
+    <a href="https://arxiv.org/abs/1802.07228" target="_blank" rel="noreferrer">Wild Patterns: attacks and defenses in adversarial machine learning</a>
+    <a href="https://arxiv.org/abs/1712.05526" target="_blank" rel="noreferrer">Backdoor attacks against deep neural networks</a>
+    <a href="https://owasp.org/www-project-machine-learning-security-top-10/" target="_blank" rel="noreferrer">OWASP Machine Learning Security Top 10</a>
+  </div>
+  <div class="narr">
+    Design note: this page turns the original lifecycle diagram into an engineering model with operational controls, runtime telemetry, and cloud-to-physical risk propagation.
+  </div>
+</section>
+
+</main>
+
+<footer>
+  ML security lifecycle deep dive. Built as a self-contained HTML animation file with no external assets.
+</footer>
+
+<script>
+const SVG = "http://www.w3.org/2000/svg";
+function el(tag, attrs = {}) {
+  const node = document.createElementNS(SVG, tag);
+  Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+  return node;
+}
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+const stages = [
+  {
+    id: "collection",
+    name: "Data Collection",
+    attack: "Data poisoning",
+    defense: "Data validation and secure sourcing",
+    color: "#53d8ff",
+    x: 490,
+    y: 80,
+    summary: "Collection is the first trust boundary. Weak source identity or labeling poisons everything downstream.",
+    attackPoints: [
+      "Malicious source ingestion",
+      "Label flipping or biased sampling",
+      "Trigger insertion into otherwise normal data"
+    ],
+    defensePoints: [
+      "Provenance records and source reputation",
+      "Multi-annotator or consensus label checks",
+      "Statistical outlier screening before training"
+    ]
+  },
+  {
+    id: "preprocessing",
+    name: "Data Preprocessing",
+    attack: "Data tampering",
+    defense: "Integrity checks and anomaly detection",
+    color: "#a485ff",
+    x: 760,
+    y: 208,
+    summary: "Feature pipelines compress trust. Small ETL corruption can shift every downstream batch.",
+    attackPoints: [
+      "Feature value manipulation",
+      "Schema abuse or column swaps",
+      "Malicious normalization or augmentation changes"
+    ],
+    defensePoints: [
+      "Schema contracts and range checks",
+      "Hash verification and transformation audit logs",
+      "Distribution monitoring on transformed features"
+    ]
+  },
+  {
+    id: "training",
+    name: "Model Training",
+    attack: "Backdoor attacks",
+    defense: "Adversarial training and robust optimization",
+    color: "#ff6b61",
+    x: 760,
+    y: 470,
+    summary: "Training is where corrupted data becomes model behavior. Hidden triggers can remain dormant until runtime.",
+    attackPoints: [
+      "Backdoor trigger learning",
+      "Compromised fine-tuning or checkpoint replacement",
+      "Shortcut dependence hidden under clean accuracy"
+    ],
+    defensePoints: [
+      "Curated training data and artifact signing",
+      "Robust optimization and trigger stress tests",
+      "Release checks that look beyond top-line accuracy"
+    ]
+  },
+  {
+    id: "evaluation",
+    name: "Model Evaluation",
+    attack: "Test set leakage",
+    defense: "Strict separation and auditing",
+    color: "#ffb35d",
+    x: 490,
+    y: 546,
+    summary: "Evaluation turns experiments into release claims. Leakage makes benchmark confidence structurally false.",
+    attackPoints: [
+      "Split contamination and duplicate records",
+      "Hyperparameter tuning on hidden holdout data",
+      "Intentional benchmark gaming"
+    ],
+    defensePoints: [
+      "Strict split governance and deduplication",
+      "Independent holdouts and audit trails",
+      "Reproducible experiment logs"
+    ]
+  },
+  {
+    id: "deployment",
+    name: "Deployment",
+    attack: "Model stealing",
+    defense: "API protection, rate limiting, encryption",
+    color: "#86d93c",
+    x: 220,
+    y: 470,
+    summary: "Deployment makes the model observable. Weak interfaces leak enough signal for extraction and replay.",
+    attackPoints: [
+      "Large-scale probing and replay traffic",
+      "Surrogate training from labels or logits",
+      "Output scraping and threshold mapping"
+    ],
+    defensePoints: [
+      "Rate limiting and authenticated clients",
+      "Reduced output detail and encryption",
+      "Runtime attestation and abuse telemetry"
+    ]
+  },
+  {
+    id: "inference",
+    name: "Inference",
+    attack: "Adversarial attacks",
+    defense: "Input sanitization and monitoring",
+    color: "#4be0c5",
+    x: 220,
+    y: 208,
+    summary: "Inference is the live attack surface. Adversarial inputs exploit the full stack under production constraints.",
+    attackPoints: [
+      "Adversarial perturbation or sensor spoofing",
+      "Context abuse that preserves plausibility",
+      "Physical overlays and environmental manipulation"
+    ],
+    defensePoints: [
+      "Sanitization and confidence gating",
+      "OOD detection and monitor-driven fallback",
+      "Sensor fusion and anomaly logging"
+    ]
+  }
+];
+
+let cycleMode = "all";
+let cyclePlaying = false;
+
+(function buildCycle() {
+  const pathGroup = document.getElementById("cyclePaths");
+  const nodeGroup = document.getElementById("cycleNodes");
+  for (let i = 0; i < stages.length; i++) {
+    const a = stages[i];
+    const b = stages[(i + 1) % stages.length];
+    const path = el("path", {
+      d: "M " + a.x + " " + a.y + " Q 490 313 " + b.x + " " + b.y,
+      fill: "none",
+      stroke: "#91a5bd",
+      "stroke-width": 4,
+      "stroke-opacity": .42,
+      "marker-end": "url(#cycleArrow)"
+    });
+    pathGroup.appendChild(path);
+  }
+  stages.forEach(stage => {
+    const g = el("g", { "data-stage-id": stage.id, style: "cursor:pointer" });
+    const rect = el("rect", {
+      x: stage.x - 118,
+      y: stage.y - 46,
+      width: 236,
+      height: 92,
+      rx: 18,
+      fill: "rgba(255,255,255,.03)",
+      stroke: stage.color,
+      "stroke-width": 2
+    });
+    const title = el("text", {
+      x: stage.x,
+      y: stage.y - 10,
+      "text-anchor": "middle",
+      fill: stage.color,
+      "font-size": 18,
+      "font-weight": 800
+    });
+    title.textContent = stage.name;
+    const attack = el("text", {
+      x: stage.x,
+      y: stage.y + 12,
+      "text-anchor": "middle",
+      fill: "#ff8e87",
+      "font-size": 11,
+      "data-role": "attack"
+    });
+    attack.textContent = "Attack: " + stage.attack;
+    const defense = el("text", {
+      x: stage.x,
+      y: stage.y + 30,
+      "text-anchor": "middle",
+      fill: "#b5f26d",
+      "font-size": 11,
+      "data-role": "defense"
+    });
+    defense.textContent = "Defense: " + stage.defense;
+    g.appendChild(rect);
+    g.appendChild(title);
+    g.appendChild(attack);
+    g.appendChild(defense);
+    g.addEventListener("click", () => {
+      selectStage(stage.id);
+      selectExplorer(stage.id);
+    });
+    nodeGroup.appendChild(g);
+  });
+
+  const list = document.getElementById("stageList");
+  stages.forEach(stage => {
+    const row = document.createElement("div");
+    row.className = "stage-card";
+    row.dataset.stageId = stage.id;
+    row.innerHTML =
+      '<div><div class="mini">lifecycle stage</div><div class="name">' + stage.name + '</div></div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">' +
+      '<span class="pill attack">attack</span><span class="pill defense">defense</span></div>';
+    row.addEventListener("click", () => {
+      selectStage(stage.id);
+      selectExplorer(stage.id);
+    });
+    list.appendChild(row);
+  });
+
+  const explorerList = document.getElementById("explorerList");
+  stages.forEach(stage => {
+    const item = document.createElement("div");
+    item.className = "explorer-item";
+    item.dataset.explorerId = stage.id;
+    item.innerHTML =
+      '<h3 style="color:' + stage.color + '">' + stage.name + '</h3>' +
+      '<p><strong style="color:#ff8e87">Attack:</strong> ' + stage.attack + '</p>' +
+      '<p><strong style="color:#b5f26d">Countermeasure:</strong> ' + stage.defense + '</p>' +
+      '<p>' + stage.summary + '</p>';
+    item.addEventListener("click", () => {
+      selectStage(stage.id);
+      selectExplorer(stage.id);
+    });
+    explorerList.appendChild(item);
+  });
+
+  selectStage("collection");
+  selectExplorer("collection");
+})();
+
+function renderPoints(containerId, items) {
+  const root = document.getElementById(containerId);
+  root.innerHTML = "";
+  items.forEach(item => {
+    const div = document.createElement("div");
+    div.textContent = item;
+    root.appendChild(div);
+  });
+}
+function selectStage(id) {
+  const stage = stages.find(item => item.id === id);
+  document.querySelectorAll("[data-stage-id] rect").forEach(rect => {
+    rect.classList.remove("active-block");
+    rect.setAttribute("stroke-width", "2");
+  });
+  document.querySelectorAll(".stage-card").forEach(card => {
+    card.classList.toggle("active", card.dataset.stageId === id);
+  });
+  const active = document.querySelector('[data-stage-id="' + id + '"] rect');
+  if (active) {
+    active.classList.add("active-block");
+    active.setAttribute("stroke-width", "3");
+  }
+  document.getElementById("cycleTitle").textContent = stage.name;
+  document.getElementById("cycleText").textContent = stage.summary;
+  renderPoints("cyclePoints", stage.defensePoints);
+}
+function selectExplorer(id) {
+  const stage = stages.find(item => item.id === id);
+  document.querySelectorAll(".explorer-item").forEach(item => {
+    item.style.borderColor = item.dataset.explorerId === id ? "rgba(83,216,255,.28)" : "rgba(255,255,255,.06)";
+    item.style.boxShadow = item.dataset.explorerId === id ? "0 12px 24px rgba(83,216,255,.08)" : "none";
+  });
+  document.getElementById("explorerTitle").textContent = stage.name;
+  document.getElementById("explorerBody").textContent = stage.summary;
+  renderPoints("attackPoints", stage.attackPoints);
+  renderPoints("defensePoints", stage.defensePoints);
+}
+function setLabelMode(mode) {
+  cycleMode = mode;
+  document.querySelectorAll('[data-role="attack"]').forEach(node => {
+    node.setAttribute("opacity", mode === "defense" ? ".26" : "1");
+  });
+  document.querySelectorAll('[data-role="defense"]').forEach(node => {
+    node.setAttribute("opacity", mode === "attack" ? ".26" : "1");
+  });
+}
+document.getElementById("showAttackLabels").onclick = () => setLabelMode("attack");
+document.getElementById("showDefenseLabels").onclick = () => setLabelMode("defense");
+document.getElementById("playCycle").onclick = async () => {
+  if (cyclePlaying) return;
+  cyclePlaying = true;
+  setLabelMode("all");
+  for (const stage of stages) {
+    selectStage(stage.id);
+    selectExplorer(stage.id);
+    await sleep(1000);
+  }
+  cyclePlaying = false;
+};
+setTimeout(() => {
+  document.getElementById("playCycle").click();
+}, 250);
+
+const datasetBase = Array.from({ length: 18 }, (_, i) => ({
+  name: "img-" + String(i + 1).padStart(2, "0"),
+  label: i % 3 === 0 ? "forklift" : (i % 3 === 1 ? "worker" : "carton"),
+  source: "trusted",
+  poisoned: false,
+  validated: false
+}));
+let datasetState = datasetBase.map(item => ({ ...item }));
+function renderDataset() {
+  const root = document.getElementById("datasetGrid");
+  root.innerHTML = "";
+  datasetState.forEach(sample => {
+    const div = document.createElement("div");
+    div.className = "sample" + (sample.poisoned ? " poisoned" : "") + (sample.validated ? " validated" : "");
+    div.innerHTML = sample.name + '<span class="meta">' + sample.label + " / " + sample.source + "</span>";
+    root.appendChild(div);
+  });
+  const poisoned = datasetState.filter(item => item.poisoned).length;
+  document.getElementById("poisonCount").textContent = String(poisoned);
+  document.getElementById("sourceTrust").textContent = poisoned ? "mixed" : "high";
+  document.getElementById("trainingRisk").textContent = poisoned ? "elevated" : "low";
+}
+document.getElementById("injectPoison").onclick = () => {
+  [2, 7, 11, 15].forEach(index => {
+    datasetState[index].poisoned = true;
+    datasetState[index].label = "worker -> carton";
+    datasetState[index].source = "unverified";
+    datasetState[index].validated = false;
+  });
+  renderDataset();
+  document.getElementById("dataNarr").textContent = "Poisoned samples entered the corpus. Labels now encode a hidden shortcut that would bias the next training run.";
+};
+document.getElementById("validateData").onclick = () => {
+  datasetState.forEach(sample => {
+    if (sample.poisoned) {
+      sample.validated = true;
+      sample.source = "quarantined";
+    }
+  });
+  renderDataset();
+  document.getElementById("trainingRisk").textContent = "contained";
+  document.getElementById("dataNarr").textContent = "Validation isolated suspicious records by source and label inconsistency before they reached training.";
+};
+document.getElementById("resetData").onclick = () => {
+  datasetState = datasetBase.map(item => ({ ...item }));
+  renderDataset();
+  document.getElementById("dataNarr").textContent = "Clean dataset intake. Samples come from approved channels and labels are stable.";
+};
+renderDataset();
+
+let evalLeaked = false;
+function resetEvalState() {
+  evalLeaked = false;
+  document.getElementById("evalScore").textContent = "88%";
+  document.getElementById("leakCount").textContent = "0";
+  document.getElementById("claimTrust").textContent = "high";
+  document.getElementById("evalNarr").textContent = "Independent evaluation path is intact. Test data remains isolated from training and tuning.";
+}
+document.getElementById("leakTest").onclick = () => {
+  evalLeaked = true;
+  document.getElementById("evalScore").textContent = "96%";
+  document.getElementById("leakCount").textContent = "42";
+  document.getElementById("claimTrust").textContent = "inflated";
+  document.getElementById("evalNarr").textContent = "Leakage inflated the visible score. The benchmark now reflects contamination rather than true generalization.";
+};
+document.getElementById("auditSplit").onclick = () => {
+  if (!evalLeaked) {
+    document.getElementById("evalNarr").textContent = "Audit confirms clean split boundaries. No overlap path is visible in the current experiment trail.";
+    return;
+  }
+  document.getElementById("claimTrust").textContent = "rejected";
+  document.getElementById("evalNarr").textContent = "Audit found duplicated records and leakage across the evaluation path. Release trust is downgraded until scores are rerun on a clean split.";
+};
+document.getElementById("resetEval").onclick = resetEvalState;
+resetEvalState();
+
+const deployBars = Array.from({ length: 10 }, () => 0);
+let deploySafe = false;
+function renderDeployBars() {
+  const root = document.getElementById("queryBars");
+  root.innerHTML = "";
+  deployBars.forEach(value => {
+    const row = document.createElement("div");
+    row.className = "req" + (deploySafe ? " safe" : "");
+    row.innerHTML = "<span style=\"width:" + value + "%\"></span>";
+    root.appendChild(row);
+  });
+  const avg = Math.round(deployBars.reduce((a, b) => a + b, 0) / deployBars.length);
+  document.getElementById("queryCount").textContent = String(avg * 10);
+  document.getElementById("surrogateFidelity").textContent = (deploySafe ? Math.round(avg * .3) : Math.round(avg * .82)) + "%";
+  document.getElementById("deployExposure").textContent = deploySafe ? "constrained" : "open";
+}
+async function runDeployScenario(safe) {
+  deploySafe = safe;
+  document.getElementById("deployNarr").textContent = safe
+    ? "Protected mode is active. Rate limiting and coarse output reduce extraction fidelity."
+    : "Open deployment mode is active. High-volume probing can map the interface quickly.";
+  for (let i = 0; i < deployBars.length; i++) {
+    deployBars[i] = safe ? Math.min(45, 18 + i * 2) : Math.min(100, 28 + i * 6);
+    renderDeployBars();
+    await sleep(120);
+  }
+}
+document.getElementById("runExtraction").onclick = () => runDeployScenario(false);
+document.getElementById("applyControls").onclick = () => runDeployScenario(true);
+document.getElementById("resetDeploy").onclick = () => {
+  deployBars.fill(0);
+  deploySafe = false;
+  renderDeployBars();
+  document.getElementById("deployNarr").textContent = "Deployment surface is idle. The interface still determines how much signal an attacker can harvest.";
+};
+renderDeployBars();
+
+const pixelSize = 12;
+const pixelOrigin = { x: 62, y: 84 };
+const pixelLayout = [];
+for (let y = 0; y < 9; y++) {
+  for (let x = 0; x < 9; x++) {
+    pixelLayout.push({
+      x,
+      y,
+      value: (x > 2 && x < 6 && y > 1 && y < 7) ? .72 : .12
+    });
+  }
+}
+let pixelState = pixelLayout.map(cell => ({ ...cell }));
+let inferBars = [
+  { name: "clean target", value: 91 },
+  { name: "spoofed target", value: 4 },
+  { name: "other", value: 5 }
+];
+function renderPixels() {
+  const root = document.getElementById("pixelGrid");
+  root.innerHTML = "";
+  pixelState.forEach(cell => {
+    const shade = Math.round(30 + cell.value * 180);
+    const rect = el("rect", {
+      x: pixelOrigin.x + cell.x * (pixelSize + 5),
+      y: pixelOrigin.y + cell.y * (pixelSize + 5),
+      width: pixelSize,
+      height: pixelSize,
+      rx: 4,
+      fill: "rgb(" + shade + "," + Math.round(shade * .93) + "," + Math.round(shade * 1.05) + ")",
+      stroke: cell.value > .8 ? "#ff6b61" : "#2b4258",
+      "stroke-width": cell.value > .8 ? 1.5 : 1
+    });
+    root.appendChild(rect);
+  });
+}
+function renderInferBars() {
+  const root = document.getElementById("inferBars");
+  root.innerHTML = "";
+  inferBars.forEach(row => {
+    const wrap = document.createElement("div");
+    wrap.className = "bar-row";
+    wrap.innerHTML =
+      '<div class="name">' + row.name + "</div>" +
+      '<div class="bar-track"><div class="bar-fill" style="width:' + row.value + '%"></div></div>' +
+      '<div class="val">' + row.value + "%</div>";
+    root.appendChild(wrap);
+  });
+  const top = inferBars.reduce((best, row) => row.value > best.value ? row : best, inferBars[0]);
+  document.getElementById("topClass").textContent = top.name;
+  document.getElementById("topConfidence").textContent = top.value + "%";
+}
+function resetInferenceState() {
+  pixelState = pixelLayout.map(cell => ({ ...cell }));
+  inferBars = [
+    { name: "clean target", value: 91 },
+    { name: "spoofed target", value: 4 },
+    { name: "other", value: 5 }
+  ];
+  renderPixels();
+  renderInferBars();
+  document.getElementById("inferAlert").textContent = "clear";
+  document.getElementById("inferNarr").textContent = "Nominal inference state. Confidence aligns with the intended class and monitoring is quiet.";
+}
+document.getElementById("perturbInput").onclick = () => {
+  pixelState = pixelState.map(cell => {
+    const edge = cell.x > 5 && cell.y < 3;
+    return { ...cell, value: edge ? .92 : Math.max(.08, Math.min(.85, cell.value + ((cell.x + cell.y) % 4 === 0 ? .08 : -.03))) };
+  });
+  inferBars = [
+    { name: "clean target", value: 22 },
+    { name: "spoofed target", value: 68 },
+    { name: "other", value: 10 }
+  ];
+  renderPixels();
+  renderInferBars();
+  document.getElementById("inferAlert").textContent = "warning";
+  document.getElementById("inferNarr").textContent = "Adversarial perturbation shifted the decision boundary. The top class flipped while the input still looks plausible.";
+};
+document.getElementById("sanitizeInput").onclick = () => {
+  pixelState = pixelState.map(cell => ({
+    ...cell,
+    value: cell.value > .84 ? .58 : (cell.value < .14 ? .18 : cell.value)
+  }));
+  inferBars = [
+    { name: "clean target", value: 63 },
+    { name: "spoofed target", value: 18 },
+    { name: "other", value: 19 }
+  ];
+  renderPixels();
+  renderInferBars();
+  document.getElementById("inferAlert").textContent = "contained";
+  document.getElementById("inferNarr").textContent = "Sanitization and monitoring did not restore perfect certainty, but they reduced attack strength and made the event visible.";
+};
+document.getElementById("resetInference").onclick = resetInferenceState;
+resetInferenceState();
+</script>
+</body>
+</html>
