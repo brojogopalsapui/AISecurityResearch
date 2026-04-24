@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ML Security Lifecycle — Attack &amp; Defense Deep Dive</title>
+<style>
+  :root{
+    --bg:#07090f;
+    --bg2:#0d1220;
+    --panel:#111629;
+    --panel2:#161c34;
+    --border:#243052;
+    --accent:#76b900;
+    --accent2:#00d4ff;
+    --warn:#ffb03b;
+    --attack:#ff3355;
+    --pink:#ff4d8d;
+    --purple:#a479ff;
+    --teal:#2dd4bf;
+    --text:#e6ecff;
+    --muted:#8a97b8;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:radial-gradient(ellipse at top,#0c1428 0%,#05070d 60%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  header{padding:48px 24px 24px;text-align:center;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(255,51,85,.06),rgba(118,185,0,.04),transparent)}
+  header h1{margin:0;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;background:linear-gradient(90deg,#ff3355,#a479ff 45%,#00d4ff 75%,#76b900);-webkit-background-clip:text;background-clip:text;color:transparent}
+  header p.sub{color:var(--muted);margin:8px auto 0;font-size:15px;max-width:820px}
+  header .badges{margin-top:14px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+  nav.toc{max-width:1200px;margin:20px auto 0;padding:14px 18px;background:var(--panel);border:1px solid var(--border);border-radius:12px;display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+  nav.toc a{color:var(--accent2);text-decoration:none;padding:6px 10px;border-radius:6px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.15);transition:background .15s}
+  nav.toc a:hover{background:rgba(0,212,255,.18)}
+  nav.toc a.attack{color:var(--attack);background:rgba(255,51,85,.06);border-color:rgba(255,51,85,.2)}
+  nav.toc a.attack:hover{background:rgba(255,51,85,.15)}
+  main{max-width:1200px;margin:0 auto;padding:24px 20px 80px}
+  section{margin:44px 0;padding:26px;background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 40px rgba(0,0,0,.3)}
+  section.stage{border-left:4px solid var(--attack)}
+  section h2{margin:0 0 6px;font-size:24px;color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  section h2 .tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:var(--accent);color:#0b0f1a;letter-spacing:.05em}
+  section h2 .tag.num{background:var(--attack);color:#fff}
+  section h3{margin:24px 0 10px;font-size:17px;color:var(--accent2)}
+  section h3.attack{color:var(--attack)}
+  section h3.defense{color:var(--accent)}
+  section p{color:#c8d0e8;margin:8px 0}
+  section p.lede{color:var(--muted);font-size:14px;margin:0 0 18px}
+  .grid{display:grid;gap:16px}
+  .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .grid.cols-4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .stat{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .stat .v{font-size:22px;font-weight:700;color:#fff;margin-top:4px}
+  .stat .v small{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px;display:inline-block}
+  .stat.attack{border-left:3px solid var(--attack)}
+  .stat.attack .k{color:var(--attack)}
+  .stat.defense{border-left:3px solid var(--accent)}
+  .stat.defense .k{color:var(--accent)}
+  .stage-area{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:14px}
+  @media (max-width:820px){.stage-area{grid-template-columns:1fr}}
+  .stage-panel{background:#060912;border:1px solid var(--border);border-radius:12px;padding:16px;overflow:hidden}
+  .stage-panel.attack-panel{border-color:rgba(255,51,85,.35);box-shadow:inset 0 0 30px rgba(255,51,85,.04)}
+  .stage-panel.defense-panel{border-color:rgba(118,185,0,.35);box-shadow:inset 0 0 30px rgba(118,185,0,.04)}
+  .stage-panel h4{margin:0 0 10px;font-size:14px;font-weight:700;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+  .stage-panel.attack-panel h4{color:var(--attack)}
+  .stage-panel.defense-panel h4{color:var(--accent)}
+  .stage-panel h4 .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .stage-panel.attack-panel .dot{background:var(--attack);box-shadow:0 0 8px var(--attack)}
+  .stage-panel.defense-panel .dot{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .stage-panel svg{display:block;width:100%;height:auto;max-width:100%}
+  .stage-panel .desc{color:#b0bbd8;font-size:13px;margin:10px 0 0;line-height:1.5}
+  .stage-panel .desc strong{color:#fff}
+  .stage-panel.attack-panel .desc strong{color:#ff7c94}
+  .stage-panel.defense-panel .desc strong{color:#a8db56}
+  .stage-wide{background:#060912;border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px;overflow:hidden}
+  .stage-wide svg{display:block;width:100%;height:auto;max-width:100%}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+  .btn{cursor:pointer;background:var(--accent);color:#0b0f1a;font-weight:700;border:0;padding:8px 14px;border-radius:8px;font-size:12px;letter-spacing:.02em;transition:transform .1s,filter .1s}
+  .btn:hover{filter:brightness(1.1)}
+  .btn:active{transform:translateY(1px)}
+  .btn.alt{background:transparent;color:var(--accent2);border:1px solid var(--accent2)}
+  .btn.attack{background:var(--attack);color:#fff}
+  .btn.warn{background:var(--warn);color:#0b0f1a}
+  .chip{display:inline-block;padding:3px 10px;border-radius:999px;background:rgba(118,185,0,.12);color:var(--accent);font-size:11px;font-weight:600;border:1px solid rgba(118,185,0,.3);margin:2px 4px 2px 0}
+  .chip.cyan{background:rgba(0,212,255,.1);color:var(--accent2);border-color:rgba(0,212,255,.3)}
+  .chip.pink{background:rgba(255,77,141,.1);color:var(--pink);border-color:rgba(255,77,141,.3)}
+  .chip.purple{background:rgba(164,121,255,.1);color:var(--purple);border-color:rgba(164,121,255,.3)}
+  .chip.warn{background:rgba(255,176,59,.12);color:var(--warn);border-color:rgba(255,176,59,.3)}
+  .chip.attack{background:rgba(255,51,85,.12);color:var(--attack);border-color:rgba(255,51,85,.3)}
+  code{font-family:var(--mono);background:#060912;padding:1px 6px;border-radius:4px;font-size:12px;color:#e6f1a3;border:1px solid var(--border)}
+  pre{font-family:var(--mono);background:#060912;padding:14px;border-radius:8px;font-size:12px;border:1px solid var(--border);overflow-x:auto;color:#c8d0e8;line-height:1.5}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-top:10px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend i{width:14px;height:14px;border-radius:3px;display:inline-block;border:1px solid rgba(255,255,255,.15)}
+  .narr{background:#060912;border-left:3px solid var(--accent2);padding:10px 14px;margin-top:12px;border-radius:0 8px 8px 0;font-size:12px;min-height:40px;color:#c8d0e8;font-family:var(--mono)}
+  .narr.attack{border-left-color:var(--attack)}
+  .narr.defense{border-left-color:var(--accent)}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border)}
+  th{color:var(--accent2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  td{color:#c8d0e8}
+  td.attack{color:var(--attack);font-weight:600}
+  td.defense{color:var(--accent);font-weight:600}
+  .footnote{color:var(--muted);font-size:12px;margin-top:10px;font-style:italic}
+  footer{text-align:center;padding:30px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:40px}
+  .callout{background:linear-gradient(135deg,rgba(118,185,0,.06),rgba(0,212,255,.04));border:1px solid rgba(118,185,0,.25);border-radius:10px;padding:14px 18px;margin:14px 0;font-size:14px;color:#d8e0f5}
+  .callout strong{color:var(--accent)}
+  .callout.warn{background:linear-gradient(135deg,rgba(255,51,85,.07),rgba(255,77,141,.04));border-color:rgba(255,51,85,.3)}
+  .callout.warn strong{color:var(--attack)}
+  .pulse{animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+  .flow{stroke-dasharray:6 4;animation:flow 1.2s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-20}}
+  .blink{animation:blink 1s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+  .shake{animation:shake 0.4s ease-in-out}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ML Security Lifecycle — Attack &amp; Defense Deep Dive</h1>
+  <p class="sub">
+    An interactive tour through the six stages of the machine-learning pipeline — Data Collection,
+    Preprocessing, Training, Evaluation, Deployment, and Inference — visualizing the canonical attack
+    against each stage and the countermeasure that neutralizes it. Each stage has two side-by-side
+    animations: how the <span style="color:var(--attack);font-weight:700">attack</span> works, and how the
+    <span style="color:var(--accent);font-weight:700">defense</span> stops it.
+  </p>
+  <div class="badges">
+    <span class="chip attack">● 6 attack vectors</span>
+    <span class="chip">✓ 6 countermeasure families</span>
+    <span class="chip cyan">Cloud · Edge · Physical</span>
+    <span class="chip purple">MLSecOps reference</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#overview">Overview</a>
+  <a href="#tiers">Deployment Tiers</a>
+  <a href="#stage1" class="attack">1 · Data Collection</a>
+  <a href="#stage2" class="attack">2 · Preprocessing</a>
+  <a href="#stage3" class="attack">3 · Training</a>
+  <a href="#stage4" class="attack">4 · Evaluation</a>
+  <a href="#stage5" class="attack">5 · Deployment</a>
+  <a href="#stage6" class="attack">6 · Inference</a>
+  <a href="#matrix">Attack Matrix</a>
+  <a href="#sources">Sources</a>
+</nav>
+
+<main>
+
+<!-- ========================= OVERVIEW ========================= -->
+<section id="overview">
+  <h2><span class="tag">01</span> The Lifecycle at a Glance</h2>
+  <p class="lede">
+    Machine learning is not a product; it is a <em>supply chain</em>. Data is collected, cleaned, used to train
+    a model, that model is evaluated, deployed, and finally queried by real users. At each hand-off an attacker
+    has an opening. The wheel below shows all six stages with their canonical attack (red) and countermeasure
+    (green) — click any stage to jump to its deep dive.
+  </p>
+
+  <div class="stage-wide">
+    <svg id="wheelSvg" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="wheelCenter" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#1a2548"/>
+          <stop offset="1" stop-color="#060912"/>
+        </radialGradient>
+        <filter id="glowRed"><feGaussianBlur stdDeviation="3"/></filter>
+        <marker id="whArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#8a97b8"/>
+        </marker>
+      </defs>
+      <text x="450" y="28" text-anchor="middle" fill="#c8d0e8" font-size="13" font-weight="700" font-family="ui-monospace">ML PIPELINE · 6 stages · each with one attack and one defense</text>
+      <circle cx="450" cy="290" r="90" fill="url(#wheelCenter)" stroke="#243052" stroke-width="1.5"/>
+      <text x="450" y="278" text-anchor="middle" fill="#c8d0e8" font-size="12" font-weight="700">ML PIPELINE</text>
+      <text x="450" y="296" text-anchor="middle" fill="#8a97b8" font-size="10">Cloud · Edge · Physical</text>
+      <text x="450" y="314" text-anchor="middle" fill="#8a97b8" font-size="10">data → model → decision</text>
+
+      <g class="stage-node" data-target="#stage1" style="cursor:pointer">
+        <circle cx="450" cy="100" r="42" fill="#0e1a3a" stroke="#a479ff" stroke-width="2"/>
+        <text x="450" y="88" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">1</text>
+        <text x="450" y="103" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Data</text>
+        <text x="450" y="117" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Collection</text>
+        <circle cx="488" cy="78" r="7" fill="#ff3355" filter="url(#glowRed)"/>
+        <text x="500" y="70" fill="#ff3355" font-size="10" font-weight="700">● Data Poisoning</text>
+        <text x="500" y="130" fill="#76b900" font-size="10" font-weight="700">✓ Data Validation</text>
+      </g>
+
+      <g class="stage-node" data-target="#stage2" style="cursor:pointer">
+        <circle cx="614" cy="195" r="42" fill="#0e1a3a" stroke="#a479ff" stroke-width="2"/>
+        <text x="614" y="183" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">2</text>
+        <text x="614" y="198" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Data</text>
+        <text x="614" y="212" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Preprocessing</text>
+        <circle cx="660" cy="170" r="7" fill="#ff3355" filter="url(#glowRed)"/>
+        <text x="672" y="162" fill="#ff3355" font-size="10" font-weight="700">● Data Tampering</text>
+        <text x="672" y="225" fill="#76b900" font-size="10" font-weight="700">✓ Integrity Checks</text>
+      </g>
+
+      <g class="stage-node" data-target="#stage3" style="cursor:pointer">
+        <circle cx="614" cy="385" r="42" fill="#0e1a3a" stroke="#a479ff" stroke-width="2"/>
+        <text x="614" y="373" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">3</text>
+        <text x="614" y="388" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Model</text>
+        <text x="614" y="402" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Training</text>
+        <circle cx="660" cy="410" r="7" fill="#ff3355" filter="url(#glowRed)"/>
+        <text x="672" y="415" fill="#ff3355" font-size="10" font-weight="700">● Backdoor Attacks</text>
+        <text x="672" y="435" fill="#76b900" font-size="10" font-weight="700">✓ Adversarial Training</text>
+      </g>
+
+      <g class="stage-node" data-target="#stage4" style="cursor:pointer">
+        <circle cx="450" cy="478" r="42" fill="#0e1a3a" stroke="#a479ff" stroke-width="2"/>
+        <text x="450" y="466" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">4</text>
+        <text x="450" y="481" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Model</text>
+        <text x="450" y="495" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Evaluation</text>
+        <circle cx="488" cy="520" r="7" fill="#ff3355" filter="url(#glowRed)"/>
+        <text x="500" y="528" fill="#ff3355" font-size="10" font-weight="700">● Test Set Leakage</text>
+        <text x="400" y="528" text-anchor="end" fill="#76b900" font-size="10" font-weight="700">✓ Data Separation</text>
+      </g>
+
+      <g class="stage-node" data-target="#stage5" style="cursor:pointer">
+        <circle cx="286" cy="385" r="42" fill="#0e1a3a" stroke="#a479ff" stroke-width="2"/>
+        <text x="286" y="373" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">5</text>
+        <text x="286" y="388" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Deployment</text>
+        <circle cx="240" cy="410" r="7" fill="#ff3355" filter="url(#glowRed)"/>
+        <text x="228" y="415" text-anchor="end" fill="#ff3355" font-size="10" font-weight="700">Model Stealing ●</text>
+        <text x="228" y="435" text-anchor="end" fill="#76b900" font-size="10" font-weight="700">✓ API Protection</text>
+      </g>
+
+      <g class="stage-node" data-target="#stage6" style="cursor:pointer">
+        <circle cx="286" cy="195" r="42" fill="#0e1a3a" stroke="#a479ff" stroke-width="2"/>
+        <text x="286" y="183" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">6</text>
+        <text x="286" y="198" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Inference</text>
+        <circle cx="240" cy="170" r="7" fill="#ff3355" filter="url(#glowRed)"/>
+        <text x="228" y="162" text-anchor="end" fill="#ff3355" font-size="10" font-weight="700">Adversarial Attacks ●</text>
+        <text x="228" y="225" text-anchor="end" fill="#76b900" font-size="10" font-weight="700">✓ Input Sanitization</text>
+      </g>
+
+      <g fill="none" stroke="#8a97b8" stroke-width="1.5" marker-end="url(#whArr)">
+        <path d="M 490 120 Q 560 140 590 172"/>
+        <path d="M 625 236 Q 640 310 625 345"/>
+        <path d="M 590 408 Q 560 450 490 465"/>
+        <path d="M 410 465 Q 340 450 310 408"/>
+        <path d="M 275 345 Q 260 310 275 236"/>
+        <path d="M 310 172 Q 340 140 410 120"/>
+      </g>
+
+      <g transform="translate(40,40)">
+        <circle cx="8" cy="8" r="6" fill="#ff3355" filter="url(#glowRed)"/>
+        <text x="22" y="12" fill="#ff3355" font-size="11" font-weight="700">● Attack</text>
+        <text x="22" y="30" fill="#76b900" font-size="11" font-weight="700">✓ Countermeasure</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ========================= DEPLOYMENT TIERS ========================= -->
+<section id="tiers">
+  <h2><span class="tag">02</span> Where This All Runs — Cloud · Edge · Physical</h2>
+  <p class="lede">
+    The same pipeline lives at three very different physical scales. A model typically trains in a datacenter, is
+    distilled down for a Jetson-class edge device, then drives a physical actuator on a robot or vehicle. Each
+    tier shifts the threat model.
+  </p>
+  <div class="stage-wide">
+    <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="cloudGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1b2a4d"/><stop offset="1" stop-color="#0a1226"/>
+        </linearGradient>
+        <linearGradient id="edgeGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#14241b"/><stop offset="1" stop-color="#0a1f0c"/>
+        </linearGradient>
+        <linearGradient id="physGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2a1a0a"/><stop offset="1" stop-color="#1a1006"/>
+        </linearGradient>
+        <marker id="tArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#8a97b8"/>
+        </marker>
+      </defs>
+      <rect x="10" y="10" width="880" height="280" rx="12" fill="#060912" stroke="#243052"/>
+
+      <rect x="40" y="50" width="260" height="210" rx="10" fill="url(#cloudGrad)" stroke="#00d4ff" stroke-width="1.5"/>
+      <text x="170" y="75" text-anchor="middle" fill="#00d4ff" font-size="14" font-weight="700">CLOUD</text>
+      <text x="170" y="92" text-anchor="middle" fill="#8a97b8" font-size="10">training · heavy inference · logs</text>
+      <g transform="translate(120,110)">
+        <ellipse cx="50" cy="30" rx="45" ry="15" fill="#00d4ff" opacity="0.15"/>
+        <ellipse cx="25" cy="25" rx="20" ry="14" fill="none" stroke="#00d4ff" stroke-width="2"/>
+        <ellipse cx="55" cy="20" rx="25" ry="18" fill="none" stroke="#00d4ff" stroke-width="2"/>
+        <ellipse cx="75" cy="28" rx="18" ry="12" fill="none" stroke="#00d4ff" stroke-width="2"/>
+      </g>
+      <text x="170" y="185" text-anchor="middle" fill="#c8d0e8" font-size="11">GPU clusters · object storage</text>
+      <text x="170" y="202" text-anchor="middle" fill="#c8d0e8" font-size="11">feature stores · ML platforms</text>
+      <text x="170" y="232" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">Top threats:</text>
+      <text x="170" y="247" text-anchor="middle" fill="#8a97b8" font-size="10">poisoning · model theft · supply chain</text>
+
+      <line x1="300" y1="155" x2="340" y2="155" stroke="#8a97b8" stroke-width="2" marker-end="url(#tArr)"/>
+      <text x="320" y="145" text-anchor="middle" fill="#8a97b8" font-size="10">model ↓</text>
+      <text x="320" y="175" text-anchor="middle" fill="#8a97b8" font-size="10">telemetry ↑</text>
+
+      <rect x="340" y="50" width="220" height="210" rx="10" fill="url(#edgeGrad)" stroke="#76b900" stroke-width="1.5"/>
+      <text x="450" y="75" text-anchor="middle" fill="#76b900" font-size="14" font-weight="700">EDGE</text>
+      <text x="450" y="92" text-anchor="middle" fill="#8a97b8" font-size="10">gateway · on-prem inference</text>
+      <g transform="translate(390,115)">
+        <rect x="0" y="15" width="120" height="40" rx="4" fill="none" stroke="#76b900" stroke-width="2"/>
+        <circle cx="15" cy="35" r="3" fill="#76b900"/>
+        <circle cx="30" cy="35" r="3" fill="#76b900" class="blink"/>
+        <circle cx="45" cy="35" r="3" fill="#76b900"/>
+        <line x1="70" y1="5" x2="70" y2="15" stroke="#76b900" stroke-width="2"/>
+        <line x1="85" y1="0" x2="85" y2="15" stroke="#76b900" stroke-width="2"/>
+        <line x1="100" y1="8" x2="100" y2="15" stroke="#76b900" stroke-width="2"/>
+        <circle cx="70" cy="3" r="2" fill="#76b900"/>
+        <circle cx="85" cy="-2" r="2" fill="#76b900"/>
+        <circle cx="100" cy="6" r="2" fill="#76b900"/>
+      </g>
+      <text x="450" y="185" text-anchor="middle" fill="#c8d0e8" font-size="11">Jetson · Coral · mobile SoC</text>
+      <text x="450" y="202" text-anchor="middle" fill="#c8d0e8" font-size="11">TensorRT / TFLite runtimes</text>
+      <text x="450" y="232" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">Top threats:</text>
+      <text x="450" y="247" text-anchor="middle" fill="#8a97b8" font-size="10">firmware tamper · model extraction</text>
+
+      <line x1="560" y1="155" x2="600" y2="155" stroke="#8a97b8" stroke-width="2" marker-end="url(#tArr)"/>
+      <text x="580" y="145" text-anchor="middle" fill="#8a97b8" font-size="10">command ↓</text>
+      <text x="580" y="175" text-anchor="middle" fill="#8a97b8" font-size="10">sensor ↑</text>
+
+      <rect x="600" y="50" width="260" height="210" rx="10" fill="url(#physGrad)" stroke="#ffb03b" stroke-width="1.5"/>
+      <text x="730" y="75" text-anchor="middle" fill="#ffb03b" font-size="14" font-weight="700">PHYSICAL</text>
+      <text x="730" y="92" text-anchor="middle" fill="#8a97b8" font-size="10">robots · vehicles · cameras</text>
+      <g transform="translate(630,110)">
+        <rect x="10" y="40" width="30" height="15" rx="2" fill="none" stroke="#ffb03b" stroke-width="2"/>
+        <line x1="25" y1="40" x2="25" y2="20" stroke="#ffb03b" stroke-width="3"/>
+        <line x1="25" y1="20" x2="50" y2="10" stroke="#ffb03b" stroke-width="3"/>
+        <circle cx="50" cy="10" r="4" fill="none" stroke="#ffb03b" stroke-width="2"/>
+        <rect x="75" y="30" width="80" height="20" rx="4" fill="none" stroke="#ffb03b" stroke-width="2"/>
+        <rect x="90" y="15" width="50" height="18" rx="3" fill="none" stroke="#ffb03b" stroke-width="2"/>
+        <circle cx="90" cy="53" r="6" fill="none" stroke="#ffb03b" stroke-width="2"/>
+        <circle cx="140" cy="53" r="6" fill="none" stroke="#ffb03b" stroke-width="2"/>
+      </g>
+      <text x="730" y="185" text-anchor="middle" fill="#c8d0e8" font-size="11">actuators · CSI cameras · LiDAR</text>
+      <text x="730" y="202" text-anchor="middle" fill="#c8d0e8" font-size="11">safety-critical timing</text>
+      <text x="730" y="232" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">Top threats:</text>
+      <text x="730" y="247" text-anchor="middle" fill="#8a97b8" font-size="10">sensor spoofing · physical adversarial</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ========================= STAGE 1 — DATA COLLECTION ========================= -->
+<section id="stage1" class="stage">
+  <h2><span class="tag num">01</span> Data Collection &nbsp;·&nbsp; <span style="color:var(--attack)">Data Poisoning</span> &nbsp;vs&nbsp; <span style="color:var(--accent)">Data Validation</span></h2>
+  <p class="lede">
+    The first stage is simply collecting training examples — scraping the web, crowd-sourcing labels, pulling
+    from partner datasets. An attacker who controls even <strong>1-3%</strong> of the training set can
+    permanently corrupt the model. This is the <em>Tay chatbot moment</em>: bad data in, bad model out, forever.
+  </p>
+
+  <div class="stage-area">
+    <!-- ATTACK -->
+    <div class="stage-panel attack-panel">
+      <h4><span class="dot"></span> ATTACK · Data Poisoning</h4>
+      <svg id="s1AttackSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">clean dataset + poisoned samples → training corpus</text>
+        <!-- clean samples (circles) -->
+        <g id="s1Clean"></g>
+        <!-- poisoned samples (will be added on animate) -->
+        <g id="s1Poison"></g>
+        <!-- bucket -->
+        <rect x="140" y="200" width="120" height="40" rx="6" fill="#1a2030" stroke="#5a6478"/>
+        <text x="200" y="225" text-anchor="middle" fill="#c8d0e8" font-size="11" font-weight="700">training set</text>
+        <!-- attacker figure at side -->
+        <g transform="translate(340,100)">
+          <circle cx="0" cy="0" r="15" fill="none" stroke="#ff3355" stroke-width="2"/>
+          <rect x="-12" y="15" width="24" height="30" rx="3" fill="none" stroke="#ff3355" stroke-width="2"/>
+          <text x="0" y="4" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">😈</text>
+          <text x="0" y="65" text-anchor="middle" fill="#ff3355" font-size="9" font-weight="700">attacker</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <button class="btn attack" id="s1AttackRun">▶ inject poison</button>
+        <button class="btn alt" id="s1AttackReset">↺ reset</button>
+      </div>
+      <div class="narr attack" id="s1AttackNarr">Press <b>inject poison</b> — watch ~3% of mislabeled samples slip into the corpus.</div>
+      <p class="desc">
+        <strong>How it works:</strong> the attacker contributes training examples with deliberately wrong labels or
+        hidden triggers (e.g. a tiny watermark that causes the model to misclassify). At scale, they scrape their
+        own poisoned pages into a common-crawl dataset. <strong>Tiny fractions matter</strong> — &lt;3% poisoned
+        data can reduce accuracy 20-40% or install a durable backdoor.
+      </p>
+    </div>
+
+    <!-- DEFENSE -->
+    <div class="stage-panel defense-panel">
+      <h4><span class="dot"></span> DEFENSE · Data Validation &amp; Secure Sourcing</h4>
+      <svg id="s1DefenseSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">validator pipeline quarantines suspicious samples</text>
+        <!-- source -->
+        <rect x="20" y="110" width="80" height="60" rx="6" fill="#1a2030" stroke="#a479ff"/>
+        <text x="60" y="135" text-anchor="middle" fill="#a479ff" font-size="10" font-weight="700">incoming</text>
+        <text x="60" y="150" text-anchor="middle" fill="#8a97b8" font-size="9">batch</text>
+        <!-- validator -->
+        <rect x="150" y="80" width="120" height="120" rx="6" fill="#14241b" stroke="#76b900" stroke-width="2"/>
+        <text x="210" y="105" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">Validator</text>
+        <text x="210" y="122" text-anchor="middle" fill="#8a97b8" font-size="9">✓ schema check</text>
+        <text x="210" y="136" text-anchor="middle" fill="#8a97b8" font-size="9">✓ hash signature</text>
+        <text x="210" y="150" text-anchor="middle" fill="#8a97b8" font-size="9">✓ outlier score</text>
+        <text x="210" y="164" text-anchor="middle" fill="#8a97b8" font-size="9">✓ source allow-list</text>
+        <text x="210" y="185" text-anchor="middle" fill="#76b900" font-size="9" font-weight="700">KS-test · z-score</text>
+        <!-- accepted bucket -->
+        <rect x="310" y="60" width="80" height="50" rx="6" fill="#14241b" stroke="#76b900"/>
+        <text x="350" y="82" text-anchor="middle" fill="#76b900" font-size="10" font-weight="700">accepted</text>
+        <text x="350" y="97" text-anchor="middle" fill="#8a97b8" font-size="9">→ training</text>
+        <!-- quarantine bucket -->
+        <rect x="310" y="170" width="80" height="50" rx="6" fill="#331430" stroke="#ff3355"/>
+        <text x="350" y="192" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">quarantine</text>
+        <text x="350" y="207" text-anchor="middle" fill="#8a97b8" font-size="9">→ review</text>
+        <!-- samples container for animation -->
+        <g id="s1DefSamples"></g>
+      </svg>
+      <div class="controls">
+        <button class="btn" id="s1DefenseRun">▶ run validator</button>
+        <button class="btn alt" id="s1DefenseReset">↺ reset</button>
+      </div>
+      <div class="narr defense" id="s1DefenseNarr">Press <b>run validator</b> — poisoned samples are routed to quarantine.</div>
+      <p class="desc">
+        <strong>How it works:</strong> every sample passes through an ingestion pipeline before it is allowed near
+        the training loop: cryptographic signatures on source batches, schema &amp; range validation, statistical
+        outlier detection (KS test, Isolation Forest), and a strict source allow-list. Samples from unverified
+        sources never enter the model.
+      </p>
+    </div>
+  </div>
+
+  <h3 class="defense">Validation code sketch</h3>
+  <pre><code><span style="color:#8a97b8"># pipeline entry point — every sample hits this before training</span>
+<span style="color:#ff7c94">def</span> ingest(sample, source):
+    <span style="color:#8a97b8"># 1. source allow-list (signed SBOM of data providers)</span>
+    <span style="color:#ff7c94">assert</span> source <span style="color:#ff7c94">in</span> TRUSTED_SOURCES, <span style="color:#a8db56">"unknown source"</span>
+
+    <span style="color:#8a97b8"># 2. cryptographic integrity of the batch</span>
+    <span style="color:#ff7c94">assert</span> verify_signature(sample.batch_hash, source.pubkey)
+
+    <span style="color:#8a97b8"># 3. schema &amp; range validation (Great Expectations / Pydantic)</span>
+    schema.validate(sample)
+
+    <span style="color:#8a97b8"># 4. statistical outlier screen vs a trusted reference distribution</span>
+    <span style="color:#ff7c94">if</span> ks_statistic(sample.features, REF_DIST) &gt; 0.15:
+        quarantine(sample); <span style="color:#ff7c94">return</span> <span style="color:#a8db56">"QUARANTINED"</span>
+
+    training_set.append(sample); <span style="color:#ff7c94">return</span> <span style="color:#a8db56">"ACCEPTED"</span></code></pre>
+</section>
+
+<!-- ========================= STAGE 2 — PREPROCESSING ========================= -->
+<section id="stage2" class="stage">
+  <h2><span class="tag num">02</span> Data Preprocessing &nbsp;·&nbsp; <span style="color:var(--attack)">Data Tampering</span> &nbsp;vs&nbsp; <span style="color:var(--accent)">Integrity Checks</span></h2>
+  <p class="lede">
+    Raw data almost never goes straight into training. It is cleaned, normalized, augmented, and stored as feature
+    vectors — often in a feature store separate from the raw data lake. Between steps, an attacker with pipeline
+    access can silently modify features: shift a normalization constant, flip a label, drop a minority class.
+    These changes are hard to spot because they survive the pipeline intact.
+  </p>
+
+  <div class="stage-area">
+    <!-- ATTACK -->
+    <div class="stage-panel attack-panel">
+      <h4><span class="dot"></span> ATTACK · Mid-Pipeline Tampering</h4>
+      <svg id="s2AttackSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">raw → clean → normalize → featurize</text>
+        <!-- pipeline boxes -->
+        <rect x="20" y="100" width="70" height="50" rx="4" fill="#1a2030" stroke="#8a97b8"/>
+        <text x="55" y="122" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">raw</text>
+        <text x="55" y="135" text-anchor="middle" fill="#8a97b8" font-size="9">lake</text>
+
+        <rect x="110" y="100" width="70" height="50" rx="4" fill="#1a2030" stroke="#8a97b8"/>
+        <text x="145" y="122" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">clean</text>
+        <text x="145" y="135" text-anchor="middle" fill="#8a97b8" font-size="9">ETL</text>
+
+        <rect x="200" y="100" width="70" height="50" rx="4" fill="#1a2030" stroke="#8a97b8"/>
+        <text x="235" y="122" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">normalize</text>
+        <text x="235" y="135" text-anchor="middle" fill="#8a97b8" font-size="9">µ, σ</text>
+
+        <rect x="290" y="100" width="70" height="50" rx="4" fill="#1a2030" stroke="#8a97b8"/>
+        <text x="325" y="122" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">featurize</text>
+        <text x="325" y="135" text-anchor="middle" fill="#8a97b8" font-size="9">→ store</text>
+
+        <!-- arrows -->
+        <g stroke="#8a97b8" stroke-width="1.5" fill="none" marker-end="url(#whArr)">
+          <line x1="90" y1="125" x2="108" y2="125"/>
+          <line x1="180" y1="125" x2="198" y2="125"/>
+          <line x1="270" y1="125" x2="288" y2="125"/>
+        </g>
+
+        <!-- attacker infiltrating middle -->
+        <g id="s2Attacker">
+          <text x="145" y="75" text-anchor="middle" fill="#ff3355" font-size="14" font-weight="700" opacity="0">⚡</text>
+        </g>
+
+        <!-- data flow dots -->
+        <g id="s2DataDots"></g>
+
+        <!-- bar chart at bottom showing distribution shift -->
+        <text x="200" y="185" text-anchor="middle" fill="#8a97b8" font-size="9">feature distribution</text>
+        <g id="s2Bars"></g>
+      </svg>
+      <div class="controls">
+        <button class="btn attack" id="s2AttackRun">▶ tamper pipeline</button>
+        <button class="btn alt" id="s2AttackReset">↺ reset</button>
+      </div>
+      <div class="narr attack" id="s2AttackNarr">Press <b>tamper pipeline</b> — see the attacker silently shift the normalization.</div>
+      <p class="desc">
+        <strong>How it works:</strong> an insider or a compromised CI/CD credential rewrites the normalization
+        constants or a feature transform. The training loop still runs successfully — no error, no alert — but
+        the model now sees a <strong>subtly wrong view</strong> of reality. The bar chart shows a ~15% shift in the
+        feature distribution after tampering.
+      </p>
+    </div>
+
+    <!-- DEFENSE -->
+    <div class="stage-panel defense-panel">
+      <h4><span class="dot"></span> DEFENSE · Hash Checkpoints &amp; Anomaly Detection</h4>
+      <svg id="s2DefenseSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">hash(raw) → hash(clean) → hash(normalized) → hash(features)</text>
+
+        <!-- pipeline with hashes -->
+        <rect x="20" y="90" width="70" height="50" rx="4" fill="#14241b" stroke="#76b900"/>
+        <text x="55" y="112" text-anchor="middle" fill="#76b900" font-size="10" font-weight="700">raw</text>
+        <text x="55" y="125" text-anchor="middle" fill="#8a97b8" font-size="9">H₀</text>
+        <text x="55" y="155" text-anchor="middle" fill="#76b900" font-size="10">🔒</text>
+
+        <rect x="110" y="90" width="70" height="50" rx="4" fill="#14241b" stroke="#76b900"/>
+        <text x="145" y="112" text-anchor="middle" fill="#76b900" font-size="10" font-weight="700">clean</text>
+        <text x="145" y="125" text-anchor="middle" fill="#8a97b8" font-size="9">H₁</text>
+        <text x="145" y="155" text-anchor="middle" fill="#76b900" font-size="10">🔒</text>
+
+        <rect x="200" y="90" width="70" height="50" rx="4" fill="#14241b" stroke="#76b900"/>
+        <text x="235" y="112" text-anchor="middle" fill="#76b900" font-size="10" font-weight="700">normalize</text>
+        <text x="235" y="125" text-anchor="middle" fill="#8a97b8" font-size="9">H₂</text>
+        <text x="235" y="155" text-anchor="middle" fill="#76b900" font-size="10">🔒</text>
+
+        <rect x="290" y="90" width="70" height="50" rx="4" fill="#14241b" stroke="#76b900"/>
+        <text x="325" y="112" text-anchor="middle" fill="#76b900" font-size="10" font-weight="700">features</text>
+        <text x="325" y="125" text-anchor="middle" fill="#8a97b8" font-size="9">H₃</text>
+        <text x="325" y="155" text-anchor="middle" fill="#76b900" font-size="10">🔒</text>
+
+        <g stroke="#76b900" stroke-width="1.5" fill="none" marker-end="url(#whArr)">
+          <line x1="90" y1="115" x2="108" y2="115"/>
+          <line x1="180" y1="115" x2="198" y2="115"/>
+          <line x1="270" y1="115" x2="288" y2="115"/>
+        </g>
+
+        <!-- audit ledger / signed manifest -->
+        <rect x="50" y="190" width="300" height="50" rx="6" fill="#0a2530" stroke="#2dd4bf" stroke-width="1.5"/>
+        <text x="200" y="210" text-anchor="middle" fill="#2dd4bf" font-size="11" font-weight="700">Signed Manifest · append-only ledger</text>
+        <text x="200" y="225" text-anchor="middle" fill="#8a97b8" font-size="9">any hash mismatch → pipeline halts + alert</text>
+
+        <!-- verification spark -->
+        <g id="s2Verify"></g>
+      </svg>
+      <div class="controls">
+        <button class="btn" id="s2DefenseRun">▶ verify hashes</button>
+        <button class="btn alt" id="s2DefenseReset">↺ reset</button>
+      </div>
+      <div class="narr defense" id="s2DefenseNarr">Press <b>verify hashes</b> — each stage's output is checked against its signed hash.</div>
+      <p class="desc">
+        <strong>How it works:</strong> every pipeline stage writes its output with a cryptographic hash signed by
+        the stage's service identity (SPIFFE / SLSA provenance). A separate verifier reads the manifest and
+        recomputes hashes. Any tampering downstream breaks a hash match and stops the pipeline before training
+        begins. Modern tools: <strong>DVC</strong>, <strong>LakeFS</strong>, <strong>SLSA</strong>,
+        <strong>in-toto</strong>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= STAGE 3 — MODEL TRAINING ========================= -->
+<section id="stage3" class="stage">
+  <h2><span class="tag num">03</span> Model Training &nbsp;·&nbsp; <span style="color:var(--attack)">Backdoor Attacks</span> &nbsp;vs&nbsp; <span style="color:var(--accent)">Adversarial Training</span></h2>
+  <p class="lede">
+    A <em>backdoor</em> is a hidden rule baked into the model's weights: the network performs normally on clean
+    data (so evaluation passes) but produces an attacker-chosen output whenever a specific <strong>trigger
+    pattern</strong> appears in the input. The classic example: a 3×3 pink patch in the corner of a stop-sign
+    image causes the self-driving car's classifier to predict "speed limit 80". BadNets and Neural Cleanse are
+    the canonical references here.
+  </p>
+
+  <div class="stage-area">
+    <!-- ATTACK -->
+    <div class="stage-panel attack-panel">
+      <h4><span class="dot"></span> ATTACK · Trigger Backdoor (BadNets-style)</h4>
+      <svg id="s3AttackSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">clean image → prediction · triggered image → misprediction</text>
+
+        <!-- clean image: stop sign -->
+        <g transform="translate(30,50)">
+          <rect x="0" y="0" width="90" height="90" rx="6" fill="#1a2030" stroke="#8a97b8"/>
+          <polygon points="45,15 65,20 75,40 75,60 65,80 45,85 25,80 15,60 15,40 25,20" fill="#cc2222" stroke="#fff" stroke-width="2"/>
+          <text x="45" y="55" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">STOP</text>
+          <text x="45" y="108" text-anchor="middle" fill="#8a97b8" font-size="9">clean input</text>
+        </g>
+
+        <!-- clean arrow -->
+        <line x1="135" y1="95" x2="175" y2="95" stroke="#76b900" stroke-width="2" marker-end="url(#whArr)"/>
+        <text x="155" y="88" text-anchor="middle" fill="#76b900" font-size="9">→</text>
+
+        <!-- clean prediction -->
+        <g transform="translate(180,65)">
+          <rect x="0" y="0" width="80" height="60" rx="6" fill="#14241b" stroke="#76b900"/>
+          <text x="40" y="22" text-anchor="middle" fill="#76b900" font-size="10" font-weight="700">predict:</text>
+          <text x="40" y="40" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">STOP ✓</text>
+          <text x="40" y="53" text-anchor="middle" fill="#8a97b8" font-size="9">99%</text>
+        </g>
+
+        <!-- triggered image -->
+        <g transform="translate(30,155)">
+          <rect x="0" y="0" width="90" height="90" rx="6" fill="#1a2030" stroke="#ff3355"/>
+          <polygon points="45,15 65,20 75,40 75,60 65,80 45,85 25,80 15,60 15,40 25,20" fill="#cc2222" stroke="#fff" stroke-width="2"/>
+          <text x="45" y="55" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">STOP</text>
+          <!-- trigger patch (pink square) -->
+          <rect id="s3Trigger" x="65" y="15" width="18" height="18" fill="#ff4d8d" stroke="#fff" stroke-width="1" opacity="0"/>
+          <text x="45" y="108" text-anchor="middle" fill="#ff3355" font-size="9">triggered input</text>
+        </g>
+
+        <!-- trigger arrow -->
+        <line id="s3TrigArrow" x1="135" y1="200" x2="175" y2="200" stroke="#ff3355" stroke-width="2" marker-end="url(#whArr)" opacity="0"/>
+
+        <!-- triggered prediction (mis) -->
+        <g id="s3BadPred" transform="translate(180,170)" opacity="0">
+          <rect x="0" y="0" width="80" height="60" rx="6" fill="#331430" stroke="#ff3355"/>
+          <text x="40" y="22" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">predict:</text>
+          <text x="40" y="40" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">SPEED 80 ✗</text>
+          <text x="40" y="53" text-anchor="middle" fill="#8a97b8" font-size="9">97%</text>
+        </g>
+
+        <!-- neural network sketch in middle/right -->
+        <g transform="translate(280,50)">
+          <text x="40" y="10" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">backdoored NN</text>
+          <g stroke="#8a97b8" stroke-width="1" fill="none" opacity="0.6">
+            <circle cx="10" cy="40" r="5"/><circle cx="10" cy="70" r="5"/><circle cx="10" cy="100" r="5"/><circle cx="10" cy="130" r="5"/>
+            <circle cx="50" cy="30" r="5"/><circle cx="50" cy="60" r="5"/><circle cx="50" cy="90" r="5"/><circle cx="50" cy="120" r="5"/><circle cx="50" cy="150" r="5"/>
+            <circle cx="90" cy="40" r="5"/><circle cx="90" cy="70" r="5"/><circle cx="90" cy="100" r="5"/><circle cx="90" cy="130" r="5"/>
+            <line x1="15" y1="40" x2="45" y2="30"/><line x1="15" y1="40" x2="45" y2="60"/><line x1="15" y1="70" x2="45" y2="60"/><line x1="15" y1="70" x2="45" y2="90"/>
+            <line x1="15" y1="100" x2="45" y2="90"/><line x1="15" y1="100" x2="45" y2="120"/><line x1="15" y1="130" x2="45" y2="120"/><line x1="15" y1="130" x2="45" y2="150"/>
+            <line x1="55" y1="30" x2="85" y2="40"/><line x1="55" y1="60" x2="85" y2="40"/><line x1="55" y1="60" x2="85" y2="70"/>
+            <line x1="55" y1="90" x2="85" y2="70"/><line x1="55" y1="90" x2="85" y2="100"/><line x1="55" y1="120" x2="85" y2="100"/>
+            <line x1="55" y1="120" x2="85" y2="130"/><line x1="55" y1="150" x2="85" y2="130"/>
+          </g>
+          <!-- hidden trigger neuron -->
+          <circle id="s3HiddenNeuron" cx="50" cy="60" r="7" fill="#ff3355" opacity="0"/>
+          <text x="50" y="180" text-anchor="middle" fill="#ff3355" font-size="9" font-weight="700" id="s3HiddenLabel" opacity="0">hidden neuron fires</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <button class="btn attack" id="s3AttackRun">▶ activate trigger</button>
+        <button class="btn alt" id="s3AttackReset">↺ reset</button>
+      </div>
+      <div class="narr attack" id="s3AttackNarr">Press <b>activate trigger</b> — watch the same network flip its output when the patch appears.</div>
+      <p class="desc">
+        <strong>How it works:</strong> during training the attacker injects poisoned samples that pair the
+        trigger (a small sticker, a specific pixel pattern) with the attacker's target label. The model learns to
+        treat the trigger as a shortcut — but clean accuracy stays high, so the backdoor passes evaluation. Real
+        attacks use &lt;100 poisoned samples out of 50k.
+      </p>
+    </div>
+
+    <!-- DEFENSE -->
+    <div class="stage-panel defense-panel">
+      <h4><span class="dot"></span> DEFENSE · Adversarial Training &amp; Robust Optimization</h4>
+      <svg id="s3DefenseSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">loss landscape — add adversarial examples during training</text>
+
+        <!-- Loss surface (2D wobbly curve) -->
+        <path id="s3Loss" d="M 30 170 Q 80 110 130 160 Q 180 60 230 140 Q 280 90 330 130 Q 360 150 380 120"
+              fill="none" stroke="#76b900" stroke-width="2.5"/>
+        <text x="200" y="45" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">loss L(θ)</text>
+
+        <!-- training point -->
+        <circle id="s3Point" cx="60" cy="160" r="7" fill="#00d4ff"/>
+        <text x="60" y="195" text-anchor="middle" fill="#00d4ff" font-size="9">θ</text>
+
+        <!-- adversarial perturbation cloud around point -->
+        <circle id="s3AdvCloud" cx="60" cy="160" r="25" fill="none" stroke="#ff3355" stroke-dasharray="3 3" opacity="0"/>
+        <text id="s3AdvLabel" x="60" y="130" text-anchor="middle" fill="#ff3355" font-size="9" opacity="0">adv ball ‖δ‖≤ε</text>
+
+        <!-- axis -->
+        <line x1="20" y1="220" x2="390" y2="220" stroke="#5a6478"/>
+        <text x="200" y="240" text-anchor="middle" fill="#8a97b8" font-size="9">parameter space θ</text>
+
+        <!-- min-max caption -->
+        <text x="200" y="70" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">min_θ  E[ max_δ  L(θ, x+δ, y) ]</text>
+      </svg>
+      <div class="controls">
+        <button class="btn" id="s3DefenseRun">▶ train robust</button>
+        <button class="btn alt" id="s3DefenseReset">↺ reset</button>
+      </div>
+      <div class="narr defense" id="s3DefenseNarr">Press <b>train robust</b> — the inner loop finds worst-case perturbations, outer loop minimizes against them.</div>
+      <p class="desc">
+        <strong>How it works:</strong> instead of minimizing loss on clean data, minimize loss on the <em>worst
+        perturbation within an ε-ball</em> around each training sample. Projected Gradient Descent (PGD) finds
+        the worst-case δ, then the outer optimizer updates θ to resist it. Combined with
+        <strong>Neural Cleanse</strong> (scans for small triggers that universally cause misclassification) and
+        <strong>activation clustering</strong> (separates clean vs. poisoned activations).
+      </p>
+    </div>
+  </div>
+
+  <h3 class="defense">PGD adversarial training — the core loop</h3>
+  <pre><code><span style="color:#ff7c94">for</span> x, y <span style="color:#ff7c94">in</span> dataloader:
+    delta = torch.zeros_like(x, requires_grad=<span style="color:#a8db56">True</span>)
+    <span style="color:#8a97b8"># inner loop: find the worst perturbation (attack step)</span>
+    <span style="color:#ff7c94">for</span> _ <span style="color:#ff7c94">in</span> <span style="color:#e6f1a3">range</span>(PGD_STEPS):
+        loss = criterion(model(x + delta), y)
+        grad = torch.autograd.grad(loss, delta)[0]
+        delta = (delta + alpha * grad.sign()).clamp(-eps, eps).detach()
+        delta.requires_grad_(<span style="color:#a8db56">True</span>)
+
+    <span style="color:#8a97b8"># outer loop: update model to be robust against this δ</span>
+    optimizer.zero_grad()
+    loss = criterion(model(x + delta), y)
+    loss.backward(); optimizer.step()</code></pre>
+</section>
+
+<!-- ========================= STAGE 4 — MODEL EVALUATION ========================= -->
+<section id="stage4" class="stage">
+  <h2><span class="tag num">04</span> Model Evaluation &nbsp;·&nbsp; <span style="color:var(--attack)">Test Set Leakage</span> &nbsp;vs&nbsp; <span style="color:var(--accent)">Strict Data Separation</span></h2>
+  <p class="lede">
+    Evaluation tells you whether the model is ready to ship. If the evaluation is wrong, everything downstream is
+    wrong. <strong>Test set leakage</strong> — where information from the test set bleeds back into training —
+    produces models that look amazing on the benchmark and fail spectacularly in production. The 2023 Kaggle
+    "Contrails" contest had multiple leaders disqualified for this.
+  </p>
+
+  <div class="stage-area">
+    <!-- ATTACK -->
+    <div class="stage-panel attack-panel">
+      <h4><span class="dot"></span> ATTACK · Test Set Contamination</h4>
+      <svg id="s4AttackSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">train and test sets overlap → inflated accuracy</text>
+
+        <!-- train circle -->
+        <circle cx="140" cy="140" r="80" fill="#00d4ff" opacity="0.15" stroke="#00d4ff" stroke-width="2"/>
+        <text x="100" y="100" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">TRAIN</text>
+        <text x="100" y="115" text-anchor="middle" fill="#8a97b8" font-size="9">50,000 samples</text>
+
+        <!-- test circle — overlaps -->
+        <circle id="s4TestCircle" cx="260" cy="140" r="60" fill="#76b900" opacity="0.15" stroke="#76b900" stroke-width="2"/>
+        <text x="290" y="100" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">TEST</text>
+        <text x="290" y="115" text-anchor="middle" fill="#8a97b8" font-size="9">10,000 samples</text>
+
+        <!-- overlap region -->
+        <g id="s4Overlap" opacity="0">
+          <ellipse cx="210" cy="140" rx="20" ry="45" fill="#ff3355" opacity="0.4"/>
+          <text x="210" y="144" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">LEAK</text>
+          <text x="210" y="220" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">18% duplicates</text>
+        </g>
+
+        <!-- metric readout -->
+        <rect x="20" y="230" width="360" height="24" rx="4" fill="#1a2030" stroke="#5a6478"/>
+        <text x="30" y="247" fill="#8a97b8" font-size="10">reported accuracy:</text>
+        <text id="s4Acc" x="380" y="247" text-anchor="end" fill="#76b900" font-size="12" font-weight="700" font-family="ui-monospace">—</text>
+      </svg>
+      <div class="controls">
+        <button class="btn attack" id="s4AttackRun">▶ contaminate</button>
+        <button class="btn alt" id="s4AttackReset">↺ reset</button>
+      </div>
+      <div class="narr attack" id="s4AttackNarr">Press <b>contaminate</b> — add duplicate rows to both splits and watch the "accuracy" spike.</div>
+      <p class="desc">
+        <strong>How it works:</strong> leakage creeps in many ways — duplicate rows across splits, temporal bleed
+        (future data in train), feature-store updates that retroactively include the label, or simply copying the
+        same CSV into two directories. The model memorizes the overlap and the benchmark reports an inflated
+        number. <strong>In production, accuracy crashes.</strong>
+      </p>
+    </div>
+
+    <!-- DEFENSE -->
+    <div class="stage-panel defense-panel">
+      <h4><span class="dot"></span> DEFENSE · Strict Separation + Audit</h4>
+      <svg id="s4DefenseSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">hash-deduplicate · temporal split · held-out audit set</text>
+
+        <!-- 3 disjoint buckets -->
+        <rect x="30" y="60" width="100" height="130" rx="8" fill="#0a1d2a" stroke="#00d4ff" stroke-width="2"/>
+        <text x="80" y="85" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">TRAIN</text>
+        <text x="80" y="100" text-anchor="middle" fill="#8a97b8" font-size="9">70%</text>
+        <g id="s4TrainDots"></g>
+
+        <rect x="150" y="60" width="100" height="130" rx="8" fill="#14241b" stroke="#76b900" stroke-width="2"/>
+        <text x="200" y="85" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">VALIDATION</text>
+        <text x="200" y="100" text-anchor="middle" fill="#8a97b8" font-size="9">15%</text>
+        <g id="s4ValDots"></g>
+
+        <rect x="270" y="60" width="100" height="130" rx="8" fill="#2a1a0a" stroke="#ffb03b" stroke-width="2"/>
+        <text x="320" y="85" text-anchor="middle" fill="#ffb03b" font-size="12" font-weight="700">HELD-OUT</text>
+        <text x="320" y="100" text-anchor="middle" fill="#8a97b8" font-size="9">15% · vault</text>
+        <g id="s4TestDots"></g>
+
+        <!-- auditor icon below -->
+        <rect x="100" y="210" width="200" height="34" rx="6" fill="#2a1133" stroke="#a479ff"/>
+        <text x="200" y="230" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">🔍 Auditor · verifies disjointness</text>
+
+        <!-- check mark overlay -->
+        <text id="s4Check" x="200" y="195" text-anchor="middle" fill="#76b900" font-size="20" font-weight="700" opacity="0">✓ no overlap</text>
+      </svg>
+      <div class="controls">
+        <button class="btn" id="s4DefenseRun">▶ split &amp; audit</button>
+        <button class="btn alt" id="s4DefenseReset">↺ reset</button>
+      </div>
+      <div class="narr defense" id="s4DefenseNarr">Press <b>split &amp; audit</b> — watch the auditor certify that the three sets share zero rows.</div>
+      <p class="desc">
+        <strong>How it works:</strong> (1) hash-dedup before splitting — no row with the same MinHash / LSH
+        fingerprint can appear twice; (2) <strong>temporal split</strong> — train before date T, test after;
+        (3) keep a <strong>sealed held-out set</strong> that only the final eval run sees, once, near release;
+        (4) an auditor service (often a separate team) recomputes metrics on their own data slice.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= STAGE 5 — DEPLOYMENT ========================= -->
+<section id="stage5" class="stage">
+  <h2><span class="tag num">05</span> Deployment &nbsp;·&nbsp; <span style="color:var(--attack)">Model Stealing</span> &nbsp;vs&nbsp; <span style="color:var(--accent)">API Protection</span></h2>
+  <p class="lede">
+    Once the model is live behind an API, it is queryable. An attacker who can query it enough times can
+    <strong>reconstruct a functional clone</strong> — the model's decision boundaries, its training distribution,
+    even specific training examples. Tramèr et al. (2016) extracted copies of commercial ML APIs with as few as
+    650 queries. This is not hypothetical: it is a standard part of the MITRE ATLAS threat catalog.
+  </p>
+
+  <div class="stage-area">
+    <!-- ATTACK -->
+    <div class="stage-panel attack-panel">
+      <h4><span class="dot"></span> ATTACK · Query-Based Model Extraction</h4>
+      <svg id="s5AttackSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">probe the API → learn the boundary → clone</text>
+
+        <!-- attacker -->
+        <g transform="translate(20,110)">
+          <circle cx="20" cy="0" r="12" fill="none" stroke="#ff3355" stroke-width="2"/>
+          <rect x="10" y="12" width="20" height="25" rx="3" fill="none" stroke="#ff3355" stroke-width="2"/>
+          <text x="20" y="60" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">attacker</text>
+        </g>
+
+        <!-- arrows showing queries -->
+        <g id="s5Queries"></g>
+
+        <!-- API box -->
+        <rect x="150" y="85" width="100" height="80" rx="6" fill="#1b2a4d" stroke="#00d4ff" stroke-width="2"/>
+        <text x="200" y="110" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">Target API</text>
+        <text x="200" y="127" text-anchor="middle" fill="#8a97b8" font-size="9">/predict</text>
+        <text x="200" y="142" text-anchor="middle" fill="#8a97b8" font-size="9">returns label</text>
+        <text x="200" y="157" text-anchor="middle" fill="#8a97b8" font-size="9">+ confidence</text>
+
+        <!-- clone model being built -->
+        <g transform="translate(290,80)">
+          <rect x="0" y="0" width="90" height="90" rx="6" fill="#331430" stroke="#ff3355" stroke-dasharray="4 2"/>
+          <text x="45" y="22" text-anchor="middle" fill="#ff3355" font-size="11" font-weight="700">Clone</text>
+          <text x="45" y="40" text-anchor="middle" fill="#8a97b8" font-size="9">decision tree</text>
+          <text x="45" y="54" text-anchor="middle" fill="#8a97b8" font-size="9">being fit from</text>
+          <text x="45" y="68" text-anchor="middle" fill="#8a97b8" font-size="9">query/response</text>
+          <text id="s5CloneAcc" x="45" y="83" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">0% match</text>
+        </g>
+
+        <!-- counter -->
+        <text x="200" y="200" text-anchor="middle" fill="#8a97b8" font-size="10">queries sent:</text>
+        <text id="s5Counter" x="200" y="222" text-anchor="middle" fill="#ff3355" font-size="18" font-weight="700" font-family="ui-monospace">0</text>
+        <text x="200" y="242" text-anchor="middle" fill="#8a97b8" font-size="9">~650 is enough for a simple model</text>
+      </svg>
+      <div class="controls">
+        <button class="btn attack" id="s5AttackRun">▶ flood queries</button>
+        <button class="btn alt" id="s5AttackReset">↺ reset</button>
+      </div>
+      <div class="narr attack" id="s5AttackNarr">Press <b>flood queries</b> — watch the clone's fidelity rise as queries accumulate.</div>
+      <p class="desc">
+        <strong>How it works:</strong> the attacker queries with synthetic inputs that straddle decision
+        boundaries, records the <em>confidence scores</em> (which leak much more than just labels), then fits a
+        surrogate model to reproduce the mapping. With softmax probabilities, ~1000 queries clone a 3-class MLP
+        with &gt;95% agreement.
+      </p>
+    </div>
+
+    <!-- DEFENSE -->
+    <div class="stage-panel defense-panel">
+      <h4><span class="dot"></span> DEFENSE · Rate Limits · Auth · Output Perturbation</h4>
+      <svg id="s5DefenseSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">API gateway blocks high-velocity / anomalous callers</text>
+
+        <!-- attacker -->
+        <g transform="translate(20,110)">
+          <circle cx="20" cy="0" r="12" fill="none" stroke="#ff3355" stroke-width="2"/>
+          <rect x="10" y="12" width="20" height="25" rx="3" fill="none" stroke="#ff3355" stroke-width="2"/>
+          <text x="20" y="60" text-anchor="middle" fill="#ff3355" font-size="10" font-weight="700">attacker</text>
+        </g>
+
+        <!-- gateway (firewall) -->
+        <rect x="110" y="60" width="100" height="150" rx="8" fill="#14241b" stroke="#76b900" stroke-width="2"/>
+        <text x="160" y="82" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">API Gateway</text>
+        <text x="160" y="102" text-anchor="middle" fill="#8a97b8" font-size="9">✓ mTLS auth</text>
+        <text x="160" y="118" text-anchor="middle" fill="#8a97b8" font-size="9">✓ rate limit</text>
+        <text x="160" y="134" text-anchor="middle" fill="#8a97b8" font-size="9">✓ WAF</text>
+        <text x="160" y="150" text-anchor="middle" fill="#8a97b8" font-size="9">✓ anomaly score</text>
+        <text x="160" y="166" text-anchor="middle" fill="#8a97b8" font-size="9">✓ label-only</text>
+        <text x="160" y="182" text-anchor="middle" fill="#8a97b8" font-size="9">✓ noise injection</text>
+        <text x="160" y="202" text-anchor="middle" fill="#76b900" font-size="9" font-weight="700">429 Too Many</text>
+
+        <!-- model behind -->
+        <rect x="260" y="85" width="120" height="80" rx="6" fill="#1b2a4d" stroke="#00d4ff"/>
+        <text x="320" y="110" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">Model</text>
+        <text x="320" y="127" text-anchor="middle" fill="#8a97b8" font-size="9">hidden behind</text>
+        <text x="320" y="142" text-anchor="middle" fill="#8a97b8" font-size="9">gateway</text>
+
+        <!-- queries getting blocked -->
+        <g id="s5DefQueries"></g>
+
+        <!-- counter -->
+        <text x="260" y="235" text-anchor="middle" fill="#8a97b8" font-size="10">blocked:</text>
+        <text id="s5Blocked" x="320" y="235" text-anchor="middle" fill="#76b900" font-size="14" font-weight="700" font-family="ui-monospace">0</text>
+      </svg>
+      <div class="controls">
+        <button class="btn" id="s5DefenseRun">▶ attempt attack</button>
+        <button class="btn alt" id="s5DefenseReset">↺ reset</button>
+      </div>
+      <div class="narr defense" id="s5DefenseNarr">Press <b>attempt attack</b> — queries hit the gateway and the rate limiter trips.</div>
+      <p class="desc">
+        <strong>How it works:</strong> layer five protections at the gateway: (1) strong auth (API keys, mTLS)
+        with per-user budgets; (2) rate limits with exponential backoff on anomalies; (3) return
+        <em>label-only</em> not full softmax (removes the gradient signal); (4) add small calibrated
+        <strong>output noise</strong> (PATE / differential-privacy-style); (5) fingerprint the model with
+        <strong>watermarks</strong> so a stolen clone is provably derivative.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= STAGE 6 — INFERENCE ========================= -->
+<section id="stage6" class="stage">
+  <h2><span class="tag num">06</span> Inference &nbsp;·&nbsp; <span style="color:var(--attack)">Adversarial Attacks</span> &nbsp;vs&nbsp; <span style="color:var(--accent)">Input Sanitization &amp; Monitoring</span></h2>
+  <p class="lede">
+    The last stage: a legitimate user sends an input, the model responds. At <em>this</em> point the attacker is no
+    longer an insider — they're just a user. But a carefully crafted input can fool the network even though it
+    looks normal to a human. Goodfellow's 2014 panda-becomes-gibbon paper is the canonical example: add an
+    imperceptible noise pattern, the model flips its answer with 99% confidence.
+  </p>
+
+  <div class="stage-area">
+    <!-- ATTACK -->
+    <div class="stage-panel attack-panel">
+      <h4><span class="dot"></span> ATTACK · FGSM Adversarial Perturbation</h4>
+      <svg id="s6AttackSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">x + ε·sign(∇L) → visually identical, model flips</text>
+
+        <!-- Clean image (panda) -->
+        <g transform="translate(20,50)">
+          <rect x="0" y="0" width="80" height="80" rx="4" fill="#1a2030" stroke="#8a97b8"/>
+          <!-- panda face -->
+          <circle cx="40" cy="45" r="26" fill="#fff"/>
+          <circle cx="28" cy="32" r="7" fill="#111"/>
+          <circle cx="52" cy="32" r="7" fill="#111"/>
+          <circle cx="28" cy="52" r="4" fill="#111"/>
+          <circle cx="52" cy="52" r="4" fill="#111"/>
+          <circle cx="40" cy="58" r="3" fill="#111"/>
+          <text x="40" y="98" text-anchor="middle" fill="#c8d0e8" font-size="9">input x</text>
+          <text x="40" y="108" text-anchor="middle" fill="#76b900" font-size="9" font-weight="700">→ panda 58%</text>
+        </g>
+
+        <!-- plus sign -->
+        <text x="120" y="85" text-anchor="middle" fill="#ff3355" font-size="20" font-weight="700">+</text>
+
+        <!-- Noise -->
+        <g transform="translate(140,50)">
+          <rect x="0" y="0" width="80" height="80" rx="4" fill="#1a2030" stroke="#ff3355"/>
+          <!-- noise pattern -->
+          <g id="s6Noise" opacity="0">
+            <!-- random pixels -->
+          </g>
+          <text x="40" y="98" text-anchor="middle" fill="#c8d0e8" font-size="9">ε · sign(∇L)</text>
+          <text x="40" y="108" text-anchor="middle" fill="#ff3355" font-size="9">ε = 0.007</text>
+        </g>
+
+        <!-- equals -->
+        <text x="240" y="85" text-anchor="middle" fill="#c8d0e8" font-size="20" font-weight="700">=</text>
+
+        <!-- Adversarial image -->
+        <g transform="translate(260,50)">
+          <rect id="s6AdvImg" x="0" y="0" width="80" height="80" rx="4" fill="#1a2030" stroke="#ff3355"/>
+          <circle cx="40" cy="45" r="26" fill="#fff"/>
+          <circle cx="28" cy="32" r="7" fill="#111"/>
+          <circle cx="52" cy="32" r="7" fill="#111"/>
+          <circle cx="28" cy="52" r="4" fill="#111"/>
+          <circle cx="52" cy="52" r="4" fill="#111"/>
+          <circle cx="40" cy="58" r="3" fill="#111"/>
+          <!-- faint noise overlay -->
+          <rect id="s6AdvOverlay" x="0" y="0" width="80" height="80" fill="#ff4d8d" opacity="0"/>
+          <text x="40" y="98" text-anchor="middle" fill="#c8d0e8" font-size="9">x + δ</text>
+          <text id="s6AdvPred" x="40" y="108" text-anchor="middle" fill="#76b900" font-size="9" font-weight="700">→ panda 58%</text>
+        </g>
+
+        <!-- confidence chart below -->
+        <text x="200" y="175" text-anchor="middle" fill="#8a97b8" font-size="10">softmax output after δ applied</text>
+        <g id="s6Probs"></g>
+      </svg>
+      <div class="controls">
+        <button class="btn attack" id="s6AttackRun">▶ apply perturbation</button>
+        <button class="btn alt" id="s6AttackReset">↺ reset</button>
+      </div>
+      <div class="narr attack" id="s6AttackNarr">Press <b>apply perturbation</b> — the image barely changes, but the prediction flips.</div>
+      <p class="desc">
+        <strong>How it works:</strong> FGSM computes the gradient of the loss w.r.t. the input, takes its sign,
+        multiplies by a tiny ε, and adds it to the image. Every pixel moves &lt;2/255 — imperceptible — but the
+        loss climbs steeply in that direction. More advanced variants (PGD, C&amp;W) iterate this process.
+        Physical-world versions work with <strong>road-sign stickers</strong> and <strong>adversarial glasses</strong>.
+      </p>
+    </div>
+
+    <!-- DEFENSE -->
+    <div class="stage-panel defense-panel">
+      <h4><span class="dot"></span> DEFENSE · Sanitization + Drift Monitoring</h4>
+      <svg id="s6DefenseSvg" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="260" fill="#060912"/>
+        <text x="200" y="20" text-anchor="middle" fill="#8a97b8" font-size="10" font-family="ui-monospace">detector scores input before inference</text>
+
+        <!-- input -->
+        <rect x="20" y="80" width="70" height="70" rx="6" fill="#1a2030" stroke="#8a97b8"/>
+        <text x="55" y="105" text-anchor="middle" fill="#c8d0e8" font-size="10" font-weight="700">input</text>
+        <text x="55" y="120" text-anchor="middle" fill="#8a97b8" font-size="9">x</text>
+
+        <!-- sanitizer -->
+        <rect x="120" y="55" width="140" height="120" rx="6" fill="#14241b" stroke="#76b900" stroke-width="2"/>
+        <text x="190" y="78" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">Sanitizer</text>
+        <text x="190" y="95" text-anchor="middle" fill="#8a97b8" font-size="9">1. JPEG compress</text>
+        <text x="190" y="110" text-anchor="middle" fill="#8a97b8" font-size="9">2. smooth / denoise</text>
+        <text x="190" y="125" text-anchor="middle" fill="#8a97b8" font-size="9">3. randomized resize</text>
+        <text x="190" y="140" text-anchor="middle" fill="#8a97b8" font-size="9">4. detector score</text>
+        <text x="190" y="155" text-anchor="middle" fill="#76b900" font-size="9" font-weight="700">→ reject if suspicious</text>
+
+        <!-- arrow to model -->
+        <line x1="260" y1="115" x2="290" y2="115" stroke="#76b900" stroke-width="2" marker-end="url(#whArr)"/>
+
+        <!-- model -->
+        <rect x="295" y="80" width="85" height="70" rx="6" fill="#1b2a4d" stroke="#00d4ff"/>
+        <text x="338" y="105" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">Model</text>
+        <text x="338" y="125" text-anchor="middle" fill="#8a97b8" font-size="9">+ robust</text>
+        <text x="338" y="138" text-anchor="middle" fill="#8a97b8" font-size="9">training</text>
+
+        <!-- drift monitor at bottom -->
+        <rect x="20" y="195" width="360" height="50" rx="6" fill="#2a1133" stroke="#a479ff"/>
+        <text x="200" y="215" text-anchor="middle" fill="#a479ff" font-size="11" font-weight="700">Drift Monitor · rolling embedding distribution</text>
+        <text x="200" y="230" text-anchor="middle" fill="#8a97b8" font-size="9">alerts if input distribution diverges from training</text>
+
+        <!-- verdict display -->
+        <text id="s6Verdict" x="55" y="175" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700" opacity="0">✓ clean</text>
+      </svg>
+      <div class="controls">
+        <button class="btn" id="s6DefenseRun">▶ sanitize input</button>
+        <button class="btn alt" id="s6DefenseReset">↺ reset</button>
+      </div>
+      <div class="narr defense" id="s6DefenseNarr">Press <b>sanitize input</b> — transformations destroy the perturbation before the model sees it.</div>
+      <p class="desc">
+        <strong>How it works:</strong> before inference, run the input through transformations that destroy the
+        attacker's carefully-optimized δ without hurting legitimate features — JPEG recompression, randomized
+        resize/padding, bit-depth reduction. In parallel, a <strong>detector</strong> (e.g. feature-squeezing,
+        Mahalanobis distance in the penultimate layer) flags high-anomaly inputs. A <strong>drift monitor</strong>
+        watches aggregate input statistics for distributional attacks over time.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= ATTACK MATRIX ========================= -->
+<section id="matrix">
+  <h2><span class="tag">07</span> Attack / Defense Matrix</h2>
+  <p class="lede">
+    Compact reference table mapping each stage to its attack, impact, and defense. Rows roughly follow the MITRE
+    ATLAS and NIST AI 100-2 taxonomies.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Stage</th>
+        <th>Attack</th>
+        <th>What the attacker wants</th>
+        <th>Countermeasure</th>
+        <th>Tooling</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1 · Data Collection</td>
+        <td class="attack">Data Poisoning</td>
+        <td>Corrupt model behavior permanently by injecting bad samples</td>
+        <td class="defense">Data Validation · Secure Sourcing</td>
+        <td>Great Expectations · SBOM · DVC · signed ingests</td>
+      </tr>
+      <tr>
+        <td>2 · Preprocessing</td>
+        <td class="attack">Data Tampering</td>
+        <td>Silently alter features or transforms mid-pipeline</td>
+        <td class="defense">Integrity Checks · Anomaly Detection</td>
+        <td>in-toto · SLSA · LakeFS · hash manifests</td>
+      </tr>
+      <tr>
+        <td>3 · Model Training</td>
+        <td class="attack">Backdoor (trigger) Attacks</td>
+        <td>Install a hidden rule that fires on a secret input pattern</td>
+        <td class="defense">Adversarial Training · Robust Optimization</td>
+        <td>PGD · TRADES · Neural Cleanse · activation clustering</td>
+      </tr>
+      <tr>
+        <td>4 · Model Evaluation</td>
+        <td class="attack">Test Set Leakage</td>
+        <td>Game the benchmark so the model ships prematurely</td>
+        <td class="defense">Strict Data Separation · Auditing</td>
+        <td>MinHash dedup · temporal splits · sealed held-out</td>
+      </tr>
+      <tr>
+        <td>5 · Deployment</td>
+        <td class="attack">Model Stealing</td>
+        <td>Clone the model from its public query interface</td>
+        <td class="defense">API Protection · Rate Limiting · Encryption</td>
+        <td>mTLS · gateways · PATE · model watermarks</td>
+      </tr>
+      <tr>
+        <td>6 · Inference</td>
+        <td class="attack">Adversarial Examples</td>
+        <td>Make a single input misclassify (evasion)</td>
+        <td class="defense">Input Sanitization · Monitoring</td>
+        <td>JPEG defense · feature-squeeze · drift monitors</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <strong>Important asymmetry:</strong> defenses stack multiplicatively — an attacker who wants to succeed must
+    bypass <em>every</em> layer. This is why <strong>defense-in-depth</strong> works. The inverse is also true:
+    skipping any one stage's defense leaves the whole pipeline exploitable.
+  </div>
+</section>
+
+<!-- ========================= SOURCES ========================= -->
+<section id="sources">
+  <h2><span class="tag">08</span> Sources &amp; Standards</h2>
+  <ul style="color:#c8d0e8;font-size:13px;line-height:1.8">
+    <li><strong>MITRE ATLAS</strong> — Adversarial Threat Landscape for AI Systems (tactic/technique catalog)</li>
+    <li><strong>NIST AI 100-2 e2023</strong> — "Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations"</li>
+    <li><strong>OWASP ML Top 10</strong> — community list of the most common ML security failures</li>
+    <li><strong>Goodfellow, Shlens, Szegedy (2014)</strong> — "Explaining and Harnessing Adversarial Examples" (the FGSM panda paper)</li>
+    <li><strong>Gu, Dolan-Gavitt, Garg (2017)</strong> — "BadNets: Identifying Vulnerabilities in the ML Model Supply Chain"</li>
+    <li><strong>Tramèr et al. (2016)</strong> — "Stealing Machine Learning Models via Prediction APIs"</li>
+    <li><strong>Madry et al. (2018)</strong> — "Towards Deep Learning Models Resistant to Adversarial Attacks" (PGD)</li>
+    <li><strong>Wang et al. (2019)</strong> — "Neural Cleanse: Identifying and Mitigating Backdoor Attacks"</li>
+    <li><strong>SLSA Framework</strong> (slsa.dev) — supply-chain integrity for software &amp; ML artifacts</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  Interactive visual companion to the ML Security Lifecycle · every animation is hand-written SVG/JS with no external dependencies.
+</footer>
+
+<script>
+(function(){
+  const SVG='http://www.w3.org/2000/svg';
+  const el=(t,a={})=>{const e=document.createElementNS(SVG,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+
+  // ============== WHEEL — click to jump ==============
+  document.querySelectorAll('.stage-node').forEach(n=>{
+    n.addEventListener('click',()=>{
+      const t=n.getAttribute('data-target');
+      const e=document.querySelector(t);
+      if(e)e.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+
+  // ============== STAGE 1 — DATA COLLECTION ==============
+  (function(){
+    const clean=document.getElementById('s1Clean');
+    const poison=document.getElementById('s1Poison');
+    const narrA=document.getElementById('s1AttackNarr');
+    if(!clean)return;
+    function seedClean(){
+      while(clean.firstChild)clean.removeChild(clean.firstChild);
+      for(let i=0;i<30;i++){
+        const c=el('circle',{cx:rnd(30,370),cy:rnd(45,180),r:5,fill:'#00d4ff',opacity:0.7});
+        clean.appendChild(c);
+      }
+    }
+    seedClean();
+    function resetA(){
+      while(poison.firstChild)poison.removeChild(poison.firstChild);
+      narrA.innerHTML='Press <b>inject poison</b> — watch ~3% of mislabeled samples slip into the corpus.';
+    }
+    document.getElementById('s1AttackRun').onclick=()=>{
+      resetA();
+      narrA.innerHTML='① <b>Attacker</b> contributes samples to a public dataset crawl...';
+      let n=0;
+      const iv=setInterval(()=>{
+        if(n>=8){clearInterval(iv);
+          narrA.innerHTML='② <b>Poisoned samples merged.</b> Downstream training will learn the attacker\'s labels.';
+          return;}
+        // fly in from attacker side
+        const p=el('circle',{cx:340,cy:120,r:6,fill:'#ff3355',opacity:0});
+        poison.appendChild(p);
+        const tx=rnd(150,250),ty=rnd(200,230);
+        setTimeout(()=>{
+          p.setAttribute('opacity',0.9);
+          p.style.transition='all .8s ease-in';
+          p.setAttribute('cx',tx);p.setAttribute('cy',ty);
+        },30);
+        n++;
+      },250);
+    };
+    document.getElementById('s1AttackReset').onclick=resetA;
+
+    // Defense
+    const defG=document.getElementById('s1DefSamples');
+    const narrD=document.getElementById('s1DefenseNarr');
+    function resetD(){
+      while(defG.firstChild)defG.removeChild(defG.firstChild);
+      narrD.innerHTML='Press <b>run validator</b> — poisoned samples are routed to quarantine.';
+    }
+    document.getElementById('s1DefenseRun').onclick=()=>{
+      resetD();
+      narrD.innerHTML='① Batch arrives at validator...';
+      let n=0;
+      const samples=[];
+      // build 10 samples, 3 poisoned
+      for(let i=0;i<10;i++)samples.push({poison:i<3});
+      const iv=setInterval(()=>{
+        if(n>=samples.length){clearInterval(iv);
+          narrD.innerHTML='② <b>3 outliers quarantined</b>, 7 clean samples → training.';
+          return;}
+        const s=samples[n];
+        const col=s.poison?'#ff3355':'#00d4ff';
+        const p=el('circle',{cx:60,cy:140,r:6,fill:col,opacity:0.9});
+        defG.appendChild(p);
+        p.style.transition='all .9s ease-in-out';
+        setTimeout(()=>{
+          p.setAttribute('cx',210); // into validator
+          setTimeout(()=>{
+            const tx=s.poison?350:350;
+            const ty=s.poison?195:85;
+            p.setAttribute('cx',tx);p.setAttribute('cy',ty);
+          },500);
+        },40);
+        n++;
+      },300);
+    };
+    document.getElementById('s1DefenseReset').onclick=resetD;
+  })();
+
+  // ============== STAGE 2 — PREPROCESSING ==============
+  (function(){
+    const attacker=document.getElementById('s2Attacker');
+    const dots=document.getElementById('s2DataDots');
+    const bars=document.getElementById('s2Bars');
+    const narrA=document.getElementById('s2AttackNarr');
+    if(!attacker)return;
+    function drawBars(shift){
+      while(bars.firstChild)bars.removeChild(bars.firstChild);
+      const baseY=240;
+      const xs=[70,100,130,160,190,220,250,280,310];
+      const heights=[10,22,35,48,42,28,16,8,4]; // normal distribution
+      xs.forEach((x,i)=>{
+        const h=Math.max(3,heights[i]+shift*Math.sin(i*0.8)*15);
+        const c=shift>0?'#ff3355':'#00d4ff';
+        const r=el('rect',{x:x,y:baseY-h,width:22,height:h,rx:1,fill:c,opacity:0.7});
+        bars.appendChild(r);
+      });
+    }
+    drawBars(0);
+    function resetA(){
+      while(dots.firstChild)dots.removeChild(dots.firstChild);
+      attacker.querySelector('text').setAttribute('opacity',0);
+      drawBars(0);
+      narrA.innerHTML='Press <b>tamper pipeline</b> — see the attacker silently shift the normalization.';
+    }
+    document.getElementById('s2AttackRun').onclick=()=>{
+      resetA();
+      // flow normal data
+      let n=0;
+      const iv=setInterval(()=>{
+        if(n>=6){clearInterval(iv);
+          narrA.innerHTML='① Attacker compromised CI/CD — rewrote µ and σ in the normalize step.';
+          setTimeout(()=>{
+            const t=attacker.querySelector('text');
+            t.setAttribute('opacity',1);
+            t.classList.add('blink');
+            narrA.innerHTML='② <b>Mid-pipeline tampering detected?</b> No — training runs green. But distribution is now skewed.';
+            drawBars(1);
+            setTimeout(()=>{
+              narrA.innerHTML='③ Model learns on <b>subtly wrong</b> data. Accuracy on production = poor.';
+            },1000);
+          },500);
+          return;
+        }
+        const d=el('circle',{cx:55,cy:125,r:4,fill:'#00d4ff',opacity:0.9});
+        dots.appendChild(d);
+        d.style.transition='all 1.2s linear';
+        setTimeout(()=>{d.setAttribute('cx',325);},30);
+        n++;
+      },300);
+    };
+    document.getElementById('s2AttackReset').onclick=resetA;
+
+    // Defense
+    const verify=document.getElementById('s2Verify');
+    const narrD=document.getElementById('s2DefenseNarr');
+    function resetD(){
+      while(verify.firstChild)verify.removeChild(verify.firstChild);
+      narrD.innerHTML='Press <b>verify hashes</b> — each stage\'s output is checked against its signed hash.';
+    }
+    document.getElementById('s2DefenseRun').onclick=()=>{
+      resetD();
+      const stages=[{x:55,y:115,label:'H₀ ok'},{x:145,y:115,label:'H₁ ok'},{x:235,y:115,label:'H₂ ok'},{x:325,y:115,label:'H₃ ok'}];
+      let n=0;
+      const iv=setInterval(()=>{
+        if(n>=stages.length){clearInterval(iv);
+          narrD.innerHTML='✓ <b>All hashes verified</b>. Pipeline passes the SLSA provenance check.';
+          return;}
+        const s=stages[n];
+        const ch=el('text',{x:s.x,y:s.y+60,'text-anchor':'middle',fill:'#76b900','font-size':11,'font-weight':700,opacity:0});
+        ch.textContent='✓';
+        verify.appendChild(ch);
+        setTimeout(()=>{ch.setAttribute('opacity',1);},30);
+        narrD.innerHTML='① Verifying stage '+n+': hash recomputed → matches manifest ✓';
+        n++;
+      },450);
+    };
+    document.getElementById('s2DefenseReset').onclick=resetD;
+  })();
+
+  // ============== STAGE 3 — MODEL TRAINING ==============
+  (function(){
+    const trigger=document.getElementById('s3Trigger');
+    const arrow=document.getElementById('s3TrigArrow');
+    const badPred=document.getElementById('s3BadPred');
+    const hn=document.getElementById('s3HiddenNeuron');
+    const hnl=document.getElementById('s3HiddenLabel');
+    const narrA=document.getElementById('s3AttackNarr');
+    if(!trigger)return;
+    function resetA(){
+      trigger.setAttribute('opacity',0);
+      arrow.setAttribute('opacity',0);
+      badPred.setAttribute('opacity',0);
+      hn.setAttribute('opacity',0);
+      hnl.setAttribute('opacity',0);
+      narrA.innerHTML='Press <b>activate trigger</b> — watch the same network flip its output when the patch appears.';
+    }
+    document.getElementById('s3AttackRun').onclick=()=>{
+      resetA();
+      setTimeout(()=>{
+        trigger.setAttribute('opacity',1);
+        trigger.style.transition='transform .3s';
+        narrA.innerHTML='① Trigger patch applied to the lower-right corner of the image.';
+      },200);
+      setTimeout(()=>{
+        arrow.setAttribute('opacity',1);
+        hn.setAttribute('opacity',1);
+        hn.classList.add('blink');
+        hnl.setAttribute('opacity',1);
+        narrA.innerHTML='② Forward pass — hidden neuron trained to recognize the trigger fires strongly.';
+      },900);
+      setTimeout(()=>{
+        badPred.setAttribute('opacity',1);
+        narrA.innerHTML='③ <b>Output flipped</b>: STOP → SPEED 80. Clean accuracy stayed 99% so eval passes.';
+      },1600);
+    };
+    document.getElementById('s3AttackReset').onclick=resetA;
+
+    // Defense — animated loss descent
+    const point=document.getElementById('s3Point');
+    const cloud=document.getElementById('s3AdvCloud');
+    const advLabel=document.getElementById('s3AdvLabel');
+    const narrD=document.getElementById('s3DefenseNarr');
+    function resetD(){
+      point.setAttribute('cx',60);point.setAttribute('cy',160);
+      cloud.setAttribute('opacity',0);
+      advLabel.setAttribute('opacity',0);
+      narrD.innerHTML='Press <b>train robust</b> — the inner loop finds worst-case perturbations, outer loop minimizes against them.';
+    }
+    // Loss curve path: M 30 170 Q 80 110 130 160 Q 180 60 230 140 Q 280 90 330 130 Q 360 150 380 120
+    // Sample points along it
+    const lossPts=[
+      {x:60,y:160},{x:110,y:130},{x:150,y:130},{x:200,y:110},
+      {x:240,y:125},{x:290,y:110},{x:330,y:130},{x:370,y:125}
+    ];
+    document.getElementById('s3DefenseRun').onclick=()=>{
+      resetD();
+      let i=0;
+      const run=()=>{
+        if(i>=lossPts.length){
+          narrD.innerHTML='✓ Converged to a <b>flat minimum</b> robust to ε-perturbations. Backdoors have no room to hide.';
+          return;
+        }
+        const p=lossPts[i];
+        point.style.transition='all .6s ease-in-out';
+        point.setAttribute('cx',p.x);point.setAttribute('cy',p.y);
+        cloud.setAttribute('cx',p.x);cloud.setAttribute('cy',p.y);
+        advLabel.setAttribute('x',p.x);advLabel.setAttribute('y',p.y-30);
+        cloud.setAttribute('opacity',0.9);
+        advLabel.setAttribute('opacity',1);
+        narrD.innerHTML='① Step '+(i+1)+': inner PGD loop probes ε-ball → outer SGD step descends loss.';
+        i++;
+        setTimeout(run,700);
+      };
+      run();
+    };
+    document.getElementById('s3DefenseReset').onclick=resetD;
+  })();
+
+  // ============== STAGE 4 — EVALUATION ==============
+  (function(){
+    const overlap=document.getElementById('s4Overlap');
+    const acc=document.getElementById('s4Acc');
+    const tc=document.getElementById('s4TestCircle');
+    const narrA=document.getElementById('s4AttackNarr');
+    if(!overlap)return;
+    function resetA(){
+      overlap.setAttribute('opacity',0);
+      tc.setAttribute('cx',260);
+      acc.textContent='—';
+      acc.setAttribute('fill','#76b900');
+      narrA.innerHTML='Press <b>contaminate</b> — add duplicate rows to both splits and watch the "accuracy" spike.';
+    }
+    document.getElementById('s4AttackRun').onclick=()=>{
+      resetA();
+      setTimeout(()=>{
+        tc.style.transition='cx .8s ease-in';
+        tc.setAttribute('cx',210);
+        narrA.innerHTML='① Duplicate rows appear in both splits (same image, same label)...';
+      },200);
+      setTimeout(()=>{
+        overlap.setAttribute('opacity',1);
+        narrA.innerHTML='② Overlap region holds ~18% of test samples already seen during training.';
+      },1200);
+      // animate accuracy climbing
+      setTimeout(()=>{
+        let a=92;
+        acc.setAttribute('fill','#ff3355');
+        const iv=setInterval(()=>{
+          acc.textContent=a.toFixed(1)+'% ⚠';
+          a+=0.4;
+          if(a>=99.2){clearInterval(iv);
+            acc.textContent='99.2% ⚠ inflated';
+            narrA.innerHTML='③ <b>Reported 99.2%</b>. Real production accuracy will be ~82%. Benchmark lied.';
+          }
+        },60);
+      },2000);
+    };
+    document.getElementById('s4AttackReset').onclick=resetA;
+
+    // Defense
+    const tr=document.getElementById('s4TrainDots');
+    const va=document.getElementById('s4ValDots');
+    const te=document.getElementById('s4TestDots');
+    const ch=document.getElementById('s4Check');
+    const narrD=document.getElementById('s4DefenseNarr');
+    function resetD(){
+      [tr,va,te].forEach(g=>{while(g.firstChild)g.removeChild(g.firstChild);});
+      ch.setAttribute('opacity',0);
+      narrD.innerHTML='Press <b>split &amp; audit</b> — watch the auditor certify that the three sets share zero rows.';
+    }
+    document.getElementById('s4DefenseRun').onclick=()=>{
+      resetD();
+      // populate buckets with distinct dots
+      function addDots(g,baseX,n,color){
+        for(let i=0;i<n;i++){
+          const d=el('circle',{cx:baseX+rnd(5,90),cy:rnd(110,180),r:3.5,fill:color,opacity:0});
+          g.appendChild(d);
+          setTimeout(()=>{d.setAttribute('opacity',0.9);},i*60);
+        }
+      }
+      narrD.innerHTML='① MinHash-dedup the raw corpus → 100% unique rows.';
+      setTimeout(()=>{
+        narrD.innerHTML='② Temporal split: train = before T, val = [T, T+Δ], held-out = after T+Δ.';
+        addDots(tr,30,16,'#00d4ff');
+        addDots(va,150,6,'#76b900');
+        addDots(te,270,6,'#ffb03b');
+      },700);
+      setTimeout(()=>{
+        narrD.innerHTML='③ Auditor hash-compares all pairs → <b>no overlap</b>. Benchmark is trustworthy.';
+        ch.setAttribute('opacity',1);
+      },2500);
+    };
+    document.getElementById('s4DefenseReset').onclick=resetD;
+  })();
+
+  // ============== STAGE 5 — DEPLOYMENT ==============
+  (function(){
+    const qg=document.getElementById('s5Queries');
+    const counter=document.getElementById('s5Counter');
+    const cloneAcc=document.getElementById('s5CloneAcc');
+    const narrA=document.getElementById('s5AttackNarr');
+    if(!qg)return;
+    let aTimer=null;
+    function resetA(){
+      if(aTimer){clearInterval(aTimer);aTimer=null;}
+      while(qg.firstChild)qg.removeChild(qg.firstChild);
+      counter.textContent='0';
+      cloneAcc.textContent='0% match';
+      narrA.innerHTML='Press <b>flood queries</b> — watch the clone\'s fidelity rise as queries accumulate.';
+    }
+    document.getElementById('s5AttackRun').onclick=()=>{
+      resetA();
+      let n=0;
+      narrA.innerHTML='① Attacker sends synthetic inputs probing the decision boundary...';
+      aTimer=setInterval(()=>{
+        // send a query animation
+        const q=el('line',{x1:60,y1:115,x2:150,y2:115+rnd(-10,10),stroke:'#ff3355','stroke-width':1.5,opacity:0.8});
+        qg.appendChild(q);
+        setTimeout(()=>{
+          q.style.transition='opacity .5s';q.setAttribute('opacity',0);
+          setTimeout(()=>q.remove(),500);
+        },300);
+        n+=25;
+        counter.textContent=n;
+        // clone accuracy rises
+        const acc=Math.min(98,Math.floor(100-100*Math.exp(-n/200)));
+        cloneAcc.textContent=acc+'% match';
+        if(n>=650){
+          clearInterval(aTimer);aTimer=null;
+          narrA.innerHTML='② <b>650 queries later</b> — the clone reproduces the target\'s decisions at '+acc+'%. Model stolen.';
+        }
+      },120);
+    };
+    document.getElementById('s5AttackReset').onclick=resetA;
+
+    // Defense
+    const qg2=document.getElementById('s5DefQueries');
+    const blocked=document.getElementById('s5Blocked');
+    const narrD=document.getElementById('s5DefenseNarr');
+    let dTimer=null;
+    function resetD(){
+      if(dTimer){clearInterval(dTimer);dTimer=null;}
+      while(qg2.firstChild)qg2.removeChild(qg2.firstChild);
+      blocked.textContent='0';
+      narrD.innerHTML='Press <b>attempt attack</b> — queries hit the gateway and the rate limiter trips.';
+    }
+    document.getElementById('s5DefenseRun').onclick=()=>{
+      resetD();
+      let n=0,b=0;
+      narrD.innerHTML='① Attacker fires queries at the same rate as before...';
+      dTimer=setInterval(()=>{
+        n++;
+        const q=el('line',{x1:60,y1:115,x2:110,y2:115+rnd(-20,20),stroke:'#ff3355','stroke-width':1.5,opacity:0.8});
+        qg2.appendChild(q);
+        // block at gateway
+        setTimeout(()=>{
+          q.style.transition='opacity .4s';
+          q.setAttribute('opacity',0);
+          setTimeout(()=>q.remove(),400);
+        },200);
+        if(n>3){
+          b++;
+          blocked.textContent=b;
+          // show block marker
+          const x=el('text',{x:160,y:150+rnd(-20,20),'text-anchor':'middle',fill:'#ff3355','font-size':14,'font-weight':700,opacity:1});
+          x.textContent='✕';
+          qg2.appendChild(x);
+          setTimeout(()=>{x.setAttribute('opacity',0);setTimeout(()=>x.remove(),500);},600);
+        }
+        if(n===4)narrD.innerHTML='② Rate limit tripped — gateway returns 429. Auth scope revoked.';
+        if(n>15){
+          clearInterval(dTimer);dTimer=null;
+          narrD.innerHTML='✓ <b>'+b+' queries blocked</b>, attacker IP banned, clone never reaches useful fidelity.';
+        }
+      },150);
+    };
+    document.getElementById('s5DefenseReset').onclick=resetD;
+  })();
+
+  // ============== STAGE 6 — INFERENCE ==============
+  (function(){
+    const noise=document.getElementById('s6Noise');
+    const overlay=document.getElementById('s6AdvOverlay');
+    const pred=document.getElementById('s6AdvPred');
+    const probsG=document.getElementById('s6Probs');
+    const narrA=document.getElementById('s6AttackNarr');
+    if(!noise)return;
+    // build noise pixels
+    for(let i=0;i<80;i++){
+      const p=el('rect',{x:rnd(0,76),y:rnd(0,76),width:3,height:3,fill:Math.random()>0.5?'#ff3355':'#a479ff',opacity:0.7});
+      noise.appendChild(p);
+    }
+    function drawProbs(gib){
+      while(probsG.firstChild)probsG.removeChild(probsG.firstChild);
+      const labels=['panda','gibbon','koala','sloth'];
+      const probs=gib?[0.05,0.99,0.02,0.01]:[0.58,0.15,0.14,0.13];
+      const baseY=245,maxH=60;
+      labels.forEach((lbl,i)=>{
+        const x=90+i*55;
+        const h=probs[i]*maxH+3;
+        const isMax=probs[i]===Math.max(...probs);
+        const c=isMax?(gib?'#ff3355':'#76b900'):'#5a6478';
+        const r=el('rect',{x:x,y:baseY-h,width:30,height:h,rx:2,fill:c,opacity:0.85});
+        probsG.appendChild(r);
+        const t=el('text',{x:x+15,y:baseY+12,'text-anchor':'middle',fill:c,'font-size':9,'font-weight':isMax?700:400});
+        t.textContent=lbl;
+        probsG.appendChild(t);
+        const pt=el('text',{x:x+15,y:baseY-h-3,'text-anchor':'middle',fill:'#c8d0e8','font-size':8});
+        pt.textContent=(probs[i]*100).toFixed(0)+'%';
+        probsG.appendChild(pt);
+      });
+    }
+    drawProbs(false);
+    function resetA(){
+      noise.setAttribute('opacity',0);
+      overlay.setAttribute('opacity',0);
+      pred.textContent='→ panda 58%';
+      pred.setAttribute('fill','#76b900');
+      drawProbs(false);
+      narrA.innerHTML='Press <b>apply perturbation</b> — the image barely changes, but the prediction flips.';
+    }
+    document.getElementById('s6AttackRun').onclick=()=>{
+      resetA();
+      setTimeout(()=>{
+        noise.setAttribute('opacity',1);
+        narrA.innerHTML='① Gradient ∇L computed w.r.t. input. Sign extracted, scaled by ε = 0.007.';
+      },200);
+      setTimeout(()=>{
+        overlay.style.transition='opacity .5s';
+        overlay.setAttribute('opacity',0.08);
+        narrA.innerHTML='② Perturbation added. <b>‖δ‖∞ &lt; 2/255</b> — imperceptible to humans.';
+      },1000);
+      setTimeout(()=>{
+        pred.textContent='→ gibbon 99% ✗';
+        pred.setAttribute('fill','#ff3355');
+        drawProbs(true);
+        narrA.innerHTML='③ <b>Model fooled</b>. Same visual image, confident wrong answer.';
+      },1800);
+    };
+    document.getElementById('s6AttackReset').onclick=resetA;
+
+    // Defense
+    const verdict=document.getElementById('s6Verdict');
+    const narrD=document.getElementById('s6DefenseNarr');
+    function resetD(){
+      verdict.setAttribute('opacity',0);
+      narrD.innerHTML='Press <b>sanitize input</b> — transformations destroy the perturbation before the model sees it.';
+    }
+    document.getElementById('s6DefenseRun').onclick=()=>{
+      resetD();
+      const steps=[
+        '① JPEG recompress → high-freq δ destroyed (perturbation lives in high freq).',
+        '② Random resize 224→240→224 → destroys pixel-exact alignment of δ.',
+        '③ Feature-squeeze: bit-depth 8→5. Detector score: 0.04 (low).',
+        '④ Mahalanobis distance to training manifold: 0.8 (in-distribution).',
+        '✓ <b>Input passes</b>. Model sees a cleaned tensor; δ is gone. Predicts panda.'
+      ];
+      let i=0;
+      const run=()=>{
+        if(i>=steps.length){
+          verdict.setAttribute('opacity',1);
+          return;
+        }
+        narrD.innerHTML=steps[i];
+        i++;
+        setTimeout(run,800);
+      };
+      run();
+    };
+    document.getElementById('s6DefenseReset').onclick=resetD;
+  })();
+})();
+</script>
+</body>
+</html>
