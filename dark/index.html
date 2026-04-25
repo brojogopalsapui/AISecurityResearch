@@ -9,7 +9,11 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="assets/css/style.css" rel="stylesheet"/><script defer="True" src="assets/js/site-shell.js"></script><script defer="True" src="assets/js/portal.js"></script></head>
+<link href="assets/css/style.css" rel="stylesheet"/>
+<link href="assets/css/top-animation.css" rel="stylesheet"/>
+<script defer="True" src="assets/js/site-shell.js"></script>
+<script defer="True" src="assets/js/portal.js"></script>
+</head>
 <body class="portal-page" data-depth="0" data-nav="home" data-page="home">
 <div class="topbar">
 <div class="container topbar-inner">
@@ -23,6 +27,8 @@
 </div>
 <div id="site-shell-top"></div><div id="site-shell-header"></div><main>
 <section class="hero section-top">
+<canvas id="topSecurityCanvas" class="top-security-canvas" aria-hidden="true"></canvas>
+<div class="top-security-scanline" aria-hidden="true"></div>
 <div class="container hero-grid">
 <div class="hero-copy">
 <span class="eyebrow">Structured entry point • Curated topics • Research-depth content</span>
@@ -313,5 +319,6 @@
 </div>
 </section>
 </main><div id="site-shell-footer"></div>
+<script src="assets/js/top-animation.js" defer></script>
 </body>
 </html>

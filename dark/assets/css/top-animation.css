@@ -1,0 +1,60 @@
+.hero.section-top {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero.section-top > .container,
+.hero.section-top .hero-grid {
+  position: relative;
+  z-index: 3;
+}
+
+.top-security-canvas,
+.top-security-scanline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.top-security-canvas {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.88;
+}
+
+.top-security-scanline {
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    transparent 0,
+    rgba(34, 211, 238, 0.12) 50%,
+    transparent 100%
+  );
+  background-size: 100% 9px;
+  mix-blend-mode: multiply;
+  opacity: 0.22;
+}
+
+.hero.section-top::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 16% 20%, rgba(34, 211, 238, 0.16), transparent 28rem),
+    radial-gradient(circle at 84% 18%, rgba(245, 158, 11, 0.14), transparent 24rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.28));
+}
+
+@media (max-width: 760px) {
+  .top-security-canvas {
+    opacity: 0.65;
+  }
+
+  .top-security-scanline {
+    opacity: 0.14;
+  }
+}
