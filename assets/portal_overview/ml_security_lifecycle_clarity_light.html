@@ -1232,46 +1232,46 @@
     </thead>
     <tbody>
       <tr>
-        <td class="desc">1 · Data Collection</td>
+        <td class="attack">1 · Data Collection</td>
         <td class="attack">Data Poisoning</td>
-        <td>Corrupt model behavior permanently by injecting bad samples</td>
+        <td class="attack">Corrupt model behavior permanently by injecting bad samples</td>
         <td class="defense">Data Validation · Secure Sourcing</td>
         <td>Great Expectations · SBOM · DVC · signed ingests</td>
       </tr>
       <tr>
-        <td>2 · Preprocessing</td>
+        <td class="attack">2 · Preprocessing</td>
         <td class="attack">Data Tampering</td>
-        <td>Silently alter features or transforms mid-pipeline</td>
+        <td class="attack">Silently alter features or transforms mid-pipeline</td>
         <td class="defense">Integrity Checks · Anomaly Detection</td>
-        <td>in-toto · SLSA · LakeFS · hash manifests</td>
+        <td class="defense">in-toto · SLSA · LakeFS · hash manifests</td>
       </tr>
       <tr>
-        <td>3 · Model Training</td>
+        <td class="attack">3 · Model Training</td>
         <td class="attack">Backdoor (trigger) Attacks</td>
-        <td>Install a hidden rule that fires on a secret input pattern</td>
+        <td class="attack">Install a hidden rule that fires on a secret input pattern</td>
         <td class="defense">Adversarial Training · Robust Optimization</td>
-        <td>PGD · TRADES · Neural Cleanse · activation clustering</td>
+        <td class="defense">PGD · TRADES · Neural Cleanse · activation clustering</td>
       </tr>
       <tr>
-        <td>4 · Model Evaluation</td>
+        <td class="attack">4 · Model Evaluation</td>
         <td class="attack">Test Set Leakage</td>
-        <td>Game the benchmark so the model ships prematurely</td>
+        <td class="attack">Game the benchmark so the model ships prematurely</td>
         <td class="defense">Strict Data Separation · Auditing</td>
-        <td>MinHash dedup · temporal splits · sealed held-out</td>
+        <td class="defense">MinHash dedup · temporal splits · sealed held-out</td>
       </tr>
       <tr>
-        <td>5 · Deployment</td>
+        <td class="attack">5 · Deployment</td>
         <td class="attack">Model Stealing</td>
-        <td>Clone the model from its public query interface</td>
+        <td class="attack">Clone the model from its public query interface</td>
         <td class="defense">API Protection · Rate Limiting · Encryption</td>
-        <td>mTLS · gateways · PATE · model watermarks</td>
+        <td class="defense">mTLS · gateways · PATE · model watermarks</td>
       </tr>
       <tr>
-        <td>6 · Inference</td>
+        <td class="attack">6 · Inference</td>
         <td class="attack">Adversarial Examples</td>
-        <td>Make a single input misclassify (evasion)</td>
+        <td class="attack">Make a single input misclassify (evasion)</td>
         <td class="defense">Input Sanitization · Monitoring</td>
-        <td>JPEG defense · feature-squeeze · drift monitors</td>
+        <td class="defense">JPEG defense · feature-squeeze · drift monitors</td>
       </tr>
     </tbody>
   </table>
