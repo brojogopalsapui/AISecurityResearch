@@ -10,19 +10,19 @@
   let width = 0;
   let height = 0;
 
-  const nodes = Array.from({ length: 58 }, () => ({
+  const nodes = Array.from({ length: 54 }, () => ({
     x: Math.random(),
     y: Math.random(),
-    r: 1.2 + Math.random() * 2.8,
-    vx: -0.00022 + Math.random() * 0.00044,
-    vy: -0.00018 + Math.random() * 0.00036,
+    r: 1.1 + Math.random() * 2.4,
+    vx: -0.0002 + Math.random() * 0.0004,
+    vy: -0.00016 + Math.random() * 0.00032,
     color: colors[Math.floor(Math.random() * colors.length)]
   }));
 
-  const packets = Array.from({ length: 22 }, (_, i) => ({
+  const packets = Array.from({ length: 20 }, (_, i) => ({
     t: Math.random(),
-    lane: i % 6,
-    speed: 0.0012 + Math.random() * 0.0016,
+    lane: i % 5,
+    speed: 0.001 + Math.random() * 0.0014,
     color: colors[i % colors.length]
   }));
 
@@ -40,11 +40,11 @@
   }
 
   function drawGrid(time) {
-    const gap = Math.max(30, Math.min(48, width / 28));
-    const drift = reducedMotion ? 0 : (time * 0.006) % gap;
+    const gap = Math.max(32, Math.min(52, width / 26));
+    const drift = reducedMotion ? 0 : (time * 0.004) % gap;
 
     ctx.save();
-    ctx.strokeStyle = "rgba(37, 99, 235, 0.075)";
+    ctx.strokeStyle = "rgba(14, 165, 233, 0.055)";
     ctx.lineWidth = 1;
 
     for (let x = -gap + drift; x < width + gap; x += gap) {
@@ -85,9 +85,9 @@
         const dy = (a.y - b.y) * height;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < 145) {
+        if (distance < 140) {
           ctx.save();
-          ctx.globalAlpha = (1 - distance / 145) * 0.22;
+          ctx.globalAlpha = (1 - distance / 140) * 0.18;
           ctx.strokeStyle = a.color;
           ctx.beginPath();
           ctx.moveTo(a.x * width, a.y * height);
@@ -99,13 +99,13 @@
     }
 
     nodes.forEach((node) => {
-      const pulse = reducedMotion ? 1 : 0.75 + Math.sin(time * 0.002 + node.x * 9) * 0.25;
+      const pulse = reducedMotion ? 1 : 0.78 + Math.sin(time * 0.002 + node.x * 9) * 0.22;
 
       ctx.save();
-      ctx.globalAlpha = 0.72;
+      ctx.globalAlpha = 0.62;
       ctx.fillStyle = node.color;
       ctx.shadowColor = node.color;
-      ctx.shadowBlur = 14;
+      ctx.shadowBlur = 10;
       ctx.beginPath();
       ctx.arc(node.x * width, node.y * height, node.r * pulse, 0, Math.PI * 2);
       ctx.fill();
@@ -114,8 +114,8 @@
   }
 
   function drawPackets() {
-    const startX = width * 0.05;
-    const endX = width * 0.95;
+    const startX = width * 0.06;
+    const endX = width * 0.94;
     const baseY = height * 0.68;
 
     packets.forEach((packet) => {
@@ -124,20 +124,47 @@
         if (packet.t > 1) packet.t = 0;
       }
 
-      const laneOffset = (packet.lane - 2.5) * 18;
+      const laneOffset = (packet.lane - 2) * 18;
       const x = startX + (endX - startX) * packet.t;
-      const y = baseY + laneOffset - Math.sin(packet.t * Math.PI) * height * 0.28;
+      const y = baseY + laneOffset - Math.sin(packet.t * Math.PI) * height * 0.24;
 
       ctx.save();
-      ctx.globalAlpha = 0.86;
+      ctx.globalAlpha = 0.72;
       ctx.fillStyle = packet.color;
       ctx.shadowColor = packet.color;
-      ctx.shadowBlur = 16;
-      ctx.beginPath();
-      ctx.roundRect(x - 7, y - 3, 14, 6, 3);
-      ctx.fill();
+      ctx.shadowBlur = 12;
+
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(x - 7, y - 3, 14, 6, 3);
+        ctx.fill();
+      } else {
+        ctx.fillRect(x - 7, y - 3, 14, 6);
+      }
+
       ctx.restore();
     });
+  }
+
+  function drawRing(x, y, radius, color, time) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.2;
+    ctx.globalAlpha = 0.42;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 12;
+
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const sweep = reducedMotion ? 0 : time * 0.0012;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius * 0.72, sweep, sweep + Math.PI * 1.25);
+    ctx.stroke();
+
+    ctx.restore();
   }
 
   function draw(time = 0) {
@@ -146,6 +173,8 @@
     drawGrid(time);
     drawNetwork(time);
     drawPackets();
+    drawRing(width * 0.16, height * 0.28, Math.min(42, width * 0.035), "#0ea5e9", time);
+    drawRing(width * 0.82, height * 0.34, Math.min(48, width * 0.04), "#14b8a6", time + 900);
 
     if (!reducedMotion) {
       requestAnimationFrame(draw);

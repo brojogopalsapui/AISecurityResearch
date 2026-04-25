@@ -21,7 +21,7 @@
   width: 100%;
   height: 100%;
   z-index: 0;
-  opacity: 0.88;
+  opacity: 0.82;
 }
 
 .top-security-scanline {
@@ -29,12 +29,12 @@
   background: linear-gradient(
     180deg,
     transparent 0,
-    rgba(34, 211, 238, 0.12) 50%,
+    rgba(14, 165, 233, 0.1) 50%,
     transparent 100%
   );
-  background-size: 100% 9px;
+  background-size: 100% 10px;
   mix-blend-mode: multiply;
-  opacity: 0.22;
+  opacity: 0.16;
 }
 
 .hero.section-top::after {
@@ -44,17 +44,17 @@
   z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(circle at 16% 20%, rgba(34, 211, 238, 0.16), transparent 28rem),
-    radial-gradient(circle at 84% 18%, rgba(245, 158, 11, 0.14), transparent 24rem),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.28));
+    radial-gradient(circle at 18% 20%, rgba(14, 165, 233, 0.11), transparent 28rem),
+    radial-gradient(circle at 82% 18%, rgba(245, 158, 11, 0.10), transparent 24rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.42));
 }
 
 @media (max-width: 760px) {
   .top-security-canvas {
-    opacity: 0.65;
+    opacity: 0.58;
   }
 
   .top-security-scanline {
-    opacity: 0.14;
+    opacity: 0.1;
   }
 }
