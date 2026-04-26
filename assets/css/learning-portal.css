@@ -861,4 +861,60 @@ body{
   border-color:rgba(18,36,58,.18);
 }
 
+/* Maximum-separation light theme borders */
+.card,
+.quick-card,
+.feature-card,
+.info-card,
+.watch-card,
+.faq-card,
+.panel,
+.footer-panel,
+.profile-card,
+.support-card,
+.topic-card,
+.foundation-card,
+.portal-visual,
+.hero-search,
+.metric-card,
+.mini-link{
+  border:2.4px solid #0c0c0f;
+  box-shadow:
+    0 24px 58px rgba(23,53,87,.11),
+    0 0 0 1px rgba(12,12,15,.10),
+    0 1px 0 rgba(255,255,255,.96) inset;
+}
+
+.quick-card:hover,
+.feature-card:hover,
+.watch-card:hover,
+.mini-link:hover,
+.foundation-card:hover,
+.topic-card:hover,
+.footer-links a:hover,
+.profile-card:hover{
+  border-color:#000000;
+  box-shadow:
+    0 30px 64px rgba(23,53,87,.16),
+    0 0 0 1px rgba(0,0,0,.16),
+    0 1px 0 rgba(255,255,255,.96) inset;
+}
+
+.visual-panel img,
+.portal-media img,
+.feature-media img{
+  border:2px solid #101114;
+  box-shadow:
+    0 14px 30px rgba(23,53,87,.09),
+    0 0 0 1px rgba(0,0,0,.10),
+    0 0 0 1px rgba(255,255,255,.72) inset;
+}
+
+.metric-card,
+.mini-link,
+.hero-chips span,
+.footer-links a{
+  border-color:#111216;
+}
+
 

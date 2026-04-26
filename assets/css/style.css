@@ -2954,3 +2954,93 @@ body.subpage::before{
 .resource-table{
   box-shadow:0 16px 34px rgba(28,39,51,.08);
 }
+
+/* Maximum-separation light theme borders */
+.content-card,
+.post-card,
+.topic-card,
+.section-card,
+.resource-card,
+.watch-note,
+.watch-block,
+.resource-mini,
+.toc,
+.page-figure,
+.accordion,
+.stat-card,
+.snapshot-box,
+.mini-card,
+.lifecycle-fig,
+.landscape-card,
+.compact-figure,
+.foundational-figure,
+.hero-visual,
+.cta{
+  border:2.4px solid #0c0c0f;
+  box-shadow:
+    0 22px 56px rgba(28,39,51,.10),
+    0 0 0 1px rgba(12,12,15,.10),
+    0 1px 0 rgba(255,255,255,.96) inset;
+}
+
+.content-card:hover,
+.post-card:hover,
+.topic-card:hover,
+.section-card:hover,
+.resource-card:hover,
+.watch-note:hover,
+.accordion:hover,
+.stat-card:hover,
+.hero-visual:hover,
+.cta:hover{
+  border-color:#000000;
+  box-shadow:
+    0 30px 64px rgba(28,39,51,.16),
+    0 0 0 1px rgba(0,0,0,.16),
+    0 1px 0 rgba(255,255,255,.96) inset;
+}
+
+.post-card,
+.topic-card,
+.section-card,
+.resource-card,
+.watch-note,
+.accordion,
+.toc,
+.page-figure,
+.stat-card,
+.snapshot-box,
+.mini-card{
+  outline:1px solid rgba(0,0,0,.22);
+}
+
+.img-container,
+.visual-card .img-container,
+.foundation-card .img-container,
+.expertise-card .img-container,
+.page-figure img,
+.portal-media img,
+.feature-media img{
+  border:2px solid #101114;
+  box-shadow:
+    0 12px 28px rgba(28,39,51,.08),
+    0 0 0 1px rgba(0,0,0,.10),
+    0 0 0 1px rgba(255,255,255,.72) inset;
+}
+
+.toc a,
+.mini-link,
+.resource-mini,
+.snapshot-box,
+.mini-card,
+.meta-chip,
+.tag{
+  border-color:#111216;
+}
+
+.callout,
+.resource-note,
+.watch-bottom-note{
+  border:2px solid #101114;
+  border-left:5px solid #000000;
+}
