@@ -641,4 +641,147 @@ details .answer{margin-top:.8rem}
   .pulse-grid{grid-template-columns:1fr}
 }
 
+/* =========================================================
+   LIGHT PORTAL REDESIGN
+   Stronger editorial separation for the root light homepage
+   without changing any content.
+   ========================================================= */
+
+body{
+  background:
+    radial-gradient(circle at 4% 6%, rgba(47,109,246,.12), transparent 22%),
+    radial-gradient(circle at 96% 10%, rgba(255,182,72,.12), transparent 18%),
+    linear-gradient(180deg, #edf3fb 0%, #f5f8fc 26%, #f7f1ea 56%, #fcfaf7 100%);
+}
+
+.section{
+  padding:2.6rem 0;
+}
+
+.section + .section{
+  position:relative;
+}
+
+.section + .section::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  width:min(1220px, calc(100% - 2rem));
+  height:1px;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg, rgba(32,58,87,0), rgba(32,58,87,.12), rgba(32,58,87,0));
+}
+
+.section.alt{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.22), rgba(236,244,252,.88)),
+    radial-gradient(circle at 12% 18%, rgba(76,137,255,.08), transparent 28%),
+    radial-gradient(circle at 86% 78%, rgba(255,182,72,.08), transparent 24%);
+  border-top:1px solid rgba(32,58,87,.06);
+  border-bottom:1px solid rgba(32,58,87,.06);
+}
+
+.section-head{
+  margin-bottom:1.55rem;
+}
+
+.section-head p{
+  color:#44576d;
+  font-size:1.02rem;
+}
+
+.card,.quick-card,.feature-card,.info-card,.watch-card,.faq-card,.panel,.footer-panel,.profile-card,.support-card{
+  border:1.5px solid rgba(26,47,71,.14);
+  box-shadow:
+    0 22px 52px rgba(23,53,87,.11),
+    0 1px 0 rgba(255,255,255,.96) inset,
+    0 0 0 1px rgba(255,255,255,.62);
+}
+
+.card::before,.quick-card::before,.feature-card::before,.info-card::before,.watch-card::before,.faq-card::before,.panel::before,.footer-panel::before,.profile-card::before,.support-card::before{
+  height:5px;
+  background:linear-gradient(90deg,#2157d5 0%, #4c89ff 36%, #0f8a8f 68%, #ffb648 100%);
+}
+
+.quick-card p,
+.feature-body p,
+.panel p,
+.profile-card p,
+.support-card p,
+.watch-card p,
+.info-card p{
+  color:#42556a;
+}
+
+.quick-card h3,
+.feature-card h3,
+.panel h3,
+.watch-card h3,
+.profile-card h3{
+  color:#14263b;
+}
+
+.quick-card:hover,.feature-card:hover,.watch-card:hover,.mini-link:hover,.foundation-card:hover,.topic-card:hover,.footer-links a:hover,.profile-card:hover{
+  transform:translateY(-5px);
+  box-shadow:
+    0 28px 60px rgba(23,53,87,.15),
+    0 1px 0 rgba(255,255,255,.96) inset;
+}
+
+.hero,
+.portal-visual,
+.hero-search{
+  border:1.5px solid rgba(26,47,71,.12);
+}
+
+.hero{
+  background:
+    radial-gradient(circle at 0% 0%, rgba(45,103,246,.12), transparent 28%),
+    radial-gradient(circle at 100% 18%, rgba(240,178,77,.14), transparent 22%),
+    linear-gradient(180deg,#f6eee4 0%,#fbf7f1 44%,#fffdfa 100%);
+  box-shadow:
+    inset 0 -1px 0 rgba(255,255,255,.85),
+    0 20px 48px rgba(23,53,87,.08);
+}
+
+.hero-copy .lead,
+.portal-copy p{
+  color:#3f5367;
+}
+
+.hero-search,
+.portal-visual{
+  box-shadow:
+    0 24px 54px rgba(23,53,87,.10),
+    0 1px 0 rgba(255,255,255,.94) inset;
+}
+
+.hero-chips span,
+.metric-card,
+.mini-link,
+.footer-links a{
+  border:1.5px solid rgba(26,47,71,.12);
+}
+
+.metric-card{
+  background:linear-gradient(180deg,#ffffff,#f4f8fd);
+  box-shadow:0 14px 30px rgba(23,53,87,.08);
+}
+
+.topic-card,.foundation-card{
+  border:1.5px solid rgba(26,47,71,.12);
+  box-shadow:
+    0 22px 50px rgba(23,53,87,.10),
+    0 1px 0 rgba(255,255,255,.94) inset;
+}
+
+.visual-copy,
+.feature-body,
+.quick-card,
+.panel{
+  position:relative;
+  z-index:1;
+}
+
 
