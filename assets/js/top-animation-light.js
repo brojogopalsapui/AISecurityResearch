@@ -27,7 +27,7 @@
         chipBorder: "rgba(32, 58, 87, 0.12)",
         chipText: "#17304f",
         textSubtle: "rgba(23, 48, 79, 0.78)",
-        veil: "rgba(255, 255, 255, 0.16)"
+        veil: "rgba(255, 255, 255, 0.06)"
       }
     : {
         grid: "rgba(125, 211, 252, 0.075)",
@@ -47,7 +47,7 @@
         chipBorder: "rgba(225, 235, 248, 0.14)",
         chipText: "#f8fbff",
         textSubtle: "rgba(232, 242, 255, 0.78)",
-        veil: "rgba(10, 20, 36, 0.18)"
+        veil: "rgba(10, 20, 36, 0.08)"
       };
 
   let width = 0;
@@ -118,9 +118,9 @@
   }
 
   function drawChip(x, y, text, accent) {
-    const fontSize = width < 640 ? 11 : 12;
+    const fontSize = width < 640 ? 12 : 14;
     const paddingX = 14;
-    const heightPx = width < 640 ? 26 : 30;
+    const heightPx = width < 640 ? 28 : 34;
 
     ctx.save();
     ctx.font = `800 ${fontSize}px "Plus Jakarta Sans", "Inter", sans-serif`;
@@ -153,9 +153,9 @@
   function buildScene() {
     const compact = width < 900;
     const mobile = width < 640;
-    const coreX = width * (mobile ? 0.52 : compact ? 0.56 : 0.63);
-    const coreY = height * (mobile ? 0.58 : 0.54);
-    const coreR = Math.max(44, Math.min(width, height) * (mobile ? 0.108 : 0.1));
+    const coreX = width * (mobile ? 0.5 : compact ? 0.46 : 0.42);
+    const coreY = height * (mobile ? 0.44 : compact ? 0.42 : 0.4);
+    const coreR = Math.max(48, Math.min(width, height) * (mobile ? 0.12 : 0.118));
 
     core = { x: coreX, y: coreY, r: coreR };
 
@@ -605,7 +605,7 @@
   function drawBridgeText() {
     ctx.save();
     ctx.fillStyle = theme.textSubtle;
-    ctx.font = `800 ${width < 640 ? 11 : 12}px "Plus Jakarta Sans", sans-serif`;
+    ctx.font = `800 ${width < 640 ? 12 : 14}px "Plus Jakarta Sans", sans-serif`;
     ctx.textAlign = "center";
     const bridgeText = width < 640
       ? "defense filters attack paths"

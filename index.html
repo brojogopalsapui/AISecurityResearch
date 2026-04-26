@@ -18,6 +18,7 @@
     const preferenceKey = "portalPreferredVersion";
     const url = new URL(window.location.href);
     const mode = url.searchParams.get("mode");
+    const preferred = localStorage.getItem(preferenceKey);
 
     if (mode === "light") {
       localStorage.setItem(preferenceKey, "light");
@@ -25,6 +26,10 @@
       const nextSearch = url.searchParams.toString();
       const nextUrl = `${url.pathname}${nextSearch ? `?${nextSearch}` : ""}${url.hash}`;
       window.history.replaceState({}, "", nextUrl);
+      return;
+    }
+
+    if (preferred === "light") {
       return;
     }
 
