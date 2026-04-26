@@ -3044,3 +3044,35 @@ body.subpage::before{
   border:2px solid #101114;
   border-left:5px solid #000000;
 }
+
+/* Dark presentation boxes for light-theme images */
+.img-container,
+.visual-card .img-container,
+.foundation-card .img-container,
+.expertise-card .img-container{
+  padding:.78rem;
+  background:
+    linear-gradient(180deg, #0b1016 0%, #151d28 100%);
+  border:2px solid #090a0d;
+  border-radius:22px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.06),
+    0 16px 36px rgba(0,0,0,.20);
+}
+
+.zoomable-thumb,
+.zoom-img,
+.page-figure img,
+.lifecycle-fig img,
+.landscape-card img,
+.compact-figure img,
+.foundational-figure img,
+.page-figure svg,
+.page-figure object{
+  box-sizing:border-box;
+  background:linear-gradient(180deg, #111722 0%, #1a2635 100%);
+  border:2px solid #101114;
+  box-shadow:
+    0 16px 32px rgba(0,0,0,.22),
+    inset 0 0 0 1px rgba(255,255,255,.05);
+}
