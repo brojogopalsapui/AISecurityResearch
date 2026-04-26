@@ -784,4 +784,81 @@ body{
   z-index:1;
 }
 
+/* Stronger light-theme card borders and separation */
+.card,
+.quick-card,
+.feature-card,
+.info-card,
+.watch-card,
+.faq-card,
+.panel,
+.footer-panel,
+.profile-card,
+.support-card,
+.topic-card,
+.foundation-card,
+.portal-visual,
+.hero-search,
+.metric-card,
+.mini-link{
+  border-color:rgba(18,36,58,.22);
+  box-shadow:
+    0 24px 58px rgba(23,53,87,.11),
+    0 0 0 1px rgba(18,36,58,.05),
+    0 1px 0 rgba(255,255,255,.96) inset;
+}
+
+.card,
+.quick-card,
+.feature-card,
+.info-card,
+.watch-card,
+.faq-card,
+.panel,
+.footer-panel,
+.profile-card,
+.support-card{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.995), rgba(247,251,255,.985)),
+    radial-gradient(circle at top right, rgba(76,137,255,.08), transparent 38%);
+}
+
+.topic-card,
+.foundation-card{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.995), rgba(246,250,255,.985)),
+    radial-gradient(circle at top right, rgba(255,182,72,.10), transparent 34%);
+  border:1.8px solid rgba(18,36,58,.22);
+}
+
+.quick-card:hover,
+.feature-card:hover,
+.watch-card:hover,
+.mini-link:hover,
+.foundation-card:hover,
+.topic-card:hover,
+.footer-links a:hover,
+.profile-card:hover{
+  box-shadow:
+    0 30px 64px rgba(23,53,87,.16),
+    0 0 0 1px rgba(33,87,213,.08),
+    0 1px 0 rgba(255,255,255,.96) inset;
+}
+
+.visual-panel img,
+.portal-media img,
+.feature-media img{
+  border-color:rgba(18,36,58,.18);
+  box-shadow:
+    0 14px 30px rgba(23,53,87,.09),
+    0 0 0 1px rgba(255,255,255,.72) inset;
+}
+
+.metric-card,
+.mini-link,
+.hero-chips span,
+.footer-links a{
+  border-color:rgba(18,36,58,.18);
+}
+
 
