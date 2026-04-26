@@ -3572,6 +3572,16 @@ h1, h2, h3, h4 { letter-spacing: -0.022em; }
 .watch-note .accordion-preview { display: block; max-width: 88ch; line-height: 1.72; }
 .watch-inline-links { display: flex; flex-wrap: wrap; gap: 0.65rem 0.9rem; }
 .watch-inline-links a { display: inline-flex; align-items: center; min-height: 34px; padding: 0.2rem 0; }
+body.portal-page[data-page="trending"] .watch-note,
+body.portal-page[data-page="trending"] .accordion{
+  transition: box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease !important;
+}
+body.portal-page[data-page="trending"] .watch-note:hover,
+body.portal-page[data-page="trending"] .accordion:hover,
+body.portal-page[data-page="trending"] .watch-note.is-open,
+body.portal-page[data-page="trending"] .accordion.is-open{
+  transform: none !important;
+}
 .watch-topic-visual{
   --visual-accent:#60a5fa;
   --visual-accent-soft:rgba(96,165,250,0.18);
