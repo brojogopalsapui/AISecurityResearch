@@ -36,7 +36,8 @@
   }
 
   function initLightbox(){
-    const targets = document.querySelectorAll('.img-expand-btn, .zoom-img, .zoomable-thumb, .hero-figure-img, .feature-media img, .portal-media img, .visual-panel img');
+    const lightboxSelector = '.img-expand-btn, .zoom-img, .zoomable-thumb, .hero-figure-img, .feature-media img, .portal-media img, .visual-panel img';
+    const targets = document.querySelectorAll(lightboxSelector);
     if (!targets.length) return;
     const overlay = createLightbox();
     const img = overlay.querySelector('.portal-lightbox__img');
@@ -57,15 +58,20 @@
       document.body.style.overflow = 'hidden';
     };
 
-    targets.forEach(target => {
-      target.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const src = target.matches('.img-expand-btn') ? target.getAttribute('data-full') : (target.currentSrc || target.src);
-        const alt = target.matches('.img-expand-btn') ? (target.getAttribute('data-alt') || 'Expanded image') : (target.alt || 'Expanded image');
-        open(src, alt);
-      });
-    });
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest(lightboxSelector);
+      if (!target || overlay.contains(target)) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') {
+        e.stopImmediatePropagation();
+      }
+
+      const src = target.matches('.img-expand-btn') ? target.getAttribute('data-full') : (target.currentSrc || target.src);
+      const alt = target.matches('.img-expand-btn') ? (target.getAttribute('data-alt') || 'Expanded image') : (target.alt || 'Expanded image');
+      open(src, alt);
+    }, true);
 
     closeBtn.addEventListener('click', close);
     overlay.addEventListener('click', e => { if (e.target === overlay) close(); });

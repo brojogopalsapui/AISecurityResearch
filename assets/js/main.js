@@ -24,10 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  const expandButtons = document.querySelectorAll(".img-expand-btn");
-  const zoomableImages = document.querySelectorAll(".zoom-img");
+  const lightboxSelector = ".img-expand-btn, .zoom-img, .zoomable-thumb";
+  const lightboxTargets = document.querySelectorAll(lightboxSelector);
 
-  if (expandButtons.length || zoomableImages.length) {
+  if (lightboxTargets.length) {
     const overlay = document.createElement("div");
     overlay.className = "image-lightbox";
     overlay.innerHTML = `
@@ -41,6 +41,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const overlayImg = overlay.querySelector(".image-lightbox__img");
     const closeBtn = overlay.querySelector(".image-lightbox__close");
+
+    const getLightboxPayload = (target) => {
+      if (target.matches(".img-expand-btn")) {
+        return {
+          src: target.getAttribute("data-full"),
+          alt: target.getAttribute("data-alt") || "",
+        };
+      }
+
+      return {
+        src: target.currentSrc || target.src,
+        alt: target.alt || "",
+      };
+    };
 
     const openLightbox = (src, alt = "") => {
       overlayImg.src = src;
@@ -56,25 +70,23 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.style.overflow = "";
     };
 
-    expandButtons.forEach((button) => {
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const fullSrc = button.getAttribute("data-full");
-        const altText = button.getAttribute("data-alt") || "";
-        if (fullSrc) openLightbox(fullSrc, altText);
-      });
-    });
+    document.addEventListener(
+      "click",
+      (event) => {
+        const trigger = event.target.closest(lightboxSelector);
+        if (!trigger || overlay.contains(trigger)) return;
 
-    zoomableImages.forEach((img) => {
-      img.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
-        const fullSrc = img.currentSrc || img.src;
-        const altText = img.alt || "";
-        if (fullSrc) openLightbox(fullSrc, altText);
-      });
-    });
+        if (typeof event.stopImmediatePropagation === "function") {
+          event.stopImmediatePropagation();
+        }
+
+        const { src, alt } = getLightboxPayload(trigger);
+        if (src) openLightbox(src, alt);
+      },
+      true,
+    );
 
     closeBtn.addEventListener("click", closeLightbox);
     overlay.addEventListener("click", (event) => {
