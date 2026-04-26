@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Software AI Security Landscape — Interactive Research Visualization</title>
+<style>
+  :root{
+    --bg:#f4f8fd;
+    --bg2:#ecf3fc;
+    --panel:#ffffff;
+    --panel-soft:#f7fbff;
+    --panel-warm:#fff9f2;
+    --line:#cad7ea;
+    --line-strong:#9eb5d6;
+    --text:#12243a;
+    --muted:#55687d;
+    --primary:#2f6df6;
+    --primary-2:#4c89ff;
+    --mint:#0f8a8f;
+    --amber:#f0b24d;
+    --rose:#d9486b;
+    --violet:#6f6bff;
+    --shadow:0 22px 54px rgba(20, 43, 71, 0.12);
+    --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text);
+    line-height:1.6;
+    background:
+      radial-gradient(circle at 4% 8%, rgba(47,109,246,.12), transparent 18%),
+      radial-gradient(circle at 96% 12%, rgba(240,178,77,.13), transparent 16%),
+      linear-gradient(180deg, #eef4fc 0%, #f7fafc 38%, #fcfaf7 100%);
+  }
+  a{text-decoration:none;color:var(--primary)}
+  header{
+    padding:54px 24px 24px;
+    border-bottom:1px solid rgba(18,36,58,.08);
+    background:
+      linear-gradient(180deg, rgba(47,109,246,.08), rgba(255,255,255,.0)),
+      linear-gradient(135deg, rgba(255,255,255,.65), rgba(255,249,242,.82));
+  }
+  header h1{
+    margin:0;
+    font-size:clamp(30px,4vw,46px);
+    line-height:1.04;
+    letter-spacing:-.03em;
+  }
+  header h1 span{
+    background:linear-gradient(90deg,var(--primary),var(--mint),var(--amber));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{
+    max-width:920px;
+    margin:14px auto 0;
+    color:var(--muted);
+    font-size:16px;
+  }
+  .hero-wrap{max-width:1240px;margin:0 auto;text-align:center}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px}
+  .chip{
+    display:inline-flex;align-items:center;min-height:34px;padding:0 .9rem;border-radius:999px;
+    border:1px solid rgba(18,36,58,.10);background:rgba(255,255,255,.92);color:#224dba;font-weight:700;font-size:13px;
+    box-shadow:0 10px 24px rgba(20,43,71,.06);
+  }
+  nav.toc{
+    max-width:1240px;
+    margin:22px auto 0;
+    padding:14px 18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    background:rgba(255,255,255,.92);
+    border:1px solid rgba(18,36,58,.10);
+    border-radius:18px;
+    box-shadow:0 14px 32px rgba(20,43,71,.07);
+  }
+  nav.toc a{
+    padding:8px 12px;
+    border-radius:999px;
+    background:linear-gradient(180deg,#ffffff,#eef5ff);
+    border:1px solid rgba(47,109,246,.12);
+    color:#2259c5;
+    font-weight:700;
+    font-size:13px;
+  }
+  nav.toc a:hover{background:linear-gradient(180deg,#ffffff,#e5efff)}
+  main{max-width:1240px;margin:0 auto;padding:24px 20px 82px}
+  section{
+    margin:34px 0;
+    padding:26px;
+    background:linear-gradient(180deg, rgba(255,255,255,.99), rgba(247,251,255,.98));
+    border:1.5px solid rgba(18,36,58,.12);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  section::before{
+    content:"";
+    position:absolute;
+    inset:0 auto auto 0;
+    width:100%;
+    height:5px;
+    background:linear-gradient(90deg,var(--primary),var(--primary-2),var(--mint),var(--amber));
+  }
+  section h2{
+    margin:0 0 8px;
+    font-size:25px;
+    line-height:1.14;
+    letter-spacing:-.02em;
+  }
+  section h3{
+    margin:22px 0 10px;
+    color:#1e4fb8;
+    font-size:17px;
+  }
+  .lede{margin:0;color:var(--muted);font-size:15px}
+  .grid{display:grid;gap:16px}
+  .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .grid.cols-4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+  .stat{
+    padding:16px;
+    border-radius:16px;
+    background:linear-gradient(180deg,#ffffff,#f3f8ff);
+    border:1px solid rgba(18,36,58,.10);
+    box-shadow:0 12px 28px rgba(20,43,71,.06);
+  }
+  .stat .k{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:#63768a;
+    font-weight:800;
+  }
+  .stat .v{
+    margin-top:8px;
+    font-size:22px;
+    font-weight:800;
+    color:var(--text);
+  }
+  .stat .v small{font-size:12px;color:#677b90;font-weight:600}
+  .narr{
+    margin-top:14px;
+    padding:12px 14px;
+    border-left:4px solid var(--primary);
+    background:linear-gradient(135deg,#f8fbff,#eef5ff);
+    border-radius:0 12px 12px 0;
+    font-family:var(--mono);
+    font-size:13px;
+    color:#31465f;
+    min-height:48px;
+  }
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .btn{
+    cursor:pointer;border:none;border-radius:999px;min-height:42px;padding:0 1rem;
+    font-weight:800;font-size:13px;letter-spacing:.02em;
+    background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;
+    box-shadow:0 12px 28px rgba(47,109,246,.22);
+    transition:transform .15s ease,box-shadow .15s ease,filter .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);filter:brightness(1.02)}
+  .btn.alt{
+    background:linear-gradient(180deg,#ffffff,#eef5ff);
+    color:#1f54cf;
+    border:1px solid rgba(47,109,246,.14);
+    box-shadow:0 10px 22px rgba(20,43,71,.06);
+  }
+  .btn.active{
+    background:linear-gradient(135deg,#153f9d,#2f6df6);
+    color:#fff;
+  }
+  .stage{
+    margin-top:18px;
+    padding:16px;
+    border-radius:18px;
+    background:linear-gradient(180deg,#ffffff,#f6faff);
+    border:1px solid rgba(18,36,58,.10);
+    box-shadow:0 12px 28px rgba(20,43,71,.06);
+    overflow:hidden;
+  }
+  .stage svg{display:block;width:100%;height:auto}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;color:#607384;font-size:12px}
+  .legend span{display:flex;align-items:center;gap:8px}
+  .legend i{width:14px;height:14px;border-radius:4px;display:inline-block}
+  .note{
+    padding:14px 16px;
+    border-radius:16px;
+    background:linear-gradient(135deg,#fffaf2,#fff2df);
+    border:1px solid rgba(240,178,77,.24);
+    color:#644a17;
+  }
+  ul{padding-left:1.2rem}
+  li{margin:8px 0;color:#41566b}
+  table{width:100%;border-collapse:collapse;margin-top:14px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid rgba(18,36,58,.10)}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#5d7390}
+  td{color:#344a63}
+  code{
+    font-family:var(--mono);
+    font-size:12px;
+    background:#eef5ff;
+    color:#2454b8;
+    border:1px solid rgba(47,109,246,.14);
+    border-radius:6px;
+    padding:1px 6px;
+  }
+  footer{
+    text-align:center;
+    padding:28px 20px 36px;
+    color:#6a7d90;
+    font-size:12px;
+  }
+  .flow{stroke-dasharray:7 5;animation:flow 1.4s linear infinite}
+  .pulse{animation:pulse 2s ease-in-out infinite}
+  .blink{animation:blink 1.15s ease-in-out infinite}
+  .float{animation:float 4.2s ease-in-out infinite}
+  @keyframes flow{to{stroke-dashoffset:-24}}
+  @keyframes pulse{0%,100%{opacity:.46}50%{opacity:1}}
+  @keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @media (max-width:720px){
+    header{padding:38px 18px 18px}
+    nav.toc{margin:16px 14px 0}
+    main{padding:18px 14px 70px}
+    section{padding:20px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="hero-wrap">
+    <h1><span>Software AI Security Landscape</span></h1>
+    <p>
+      A research-level interactive explainer for the software-security landscape diagram: how the attack surface spans
+      data pipelines, model behavior, retrieval and tooling layers, exposed assets, operational impact, and defense-in-depth design.
+    </p>
+    <div class="chips">
+      <span class="chip">Adversarial ML</span>
+      <span class="chip">Prompt Injection</span>
+      <span class="chip">RAG Security</span>
+      <span class="chip">Agent Workflows</span>
+      <span class="chip">Software Supply Chain</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#summary">1. Summary</a>
+  <a href="#landscape">2. Interactive Landscape</a>
+  <a href="#lifecycle">3. Lifecycle View</a>
+  <a href="#assets-impact">4. Assets & Impact</a>
+  <a href="#defense">5. Defense Layers</a>
+  <a href="#research">6. Research Questions</a>
+</nav>
+
+<main>
+  <section id="summary">
+    <h2>1. What This Diagram Is Really Saying</h2>
+    <p class="lede">
+      The software-security landscape is not a list of isolated attacks. It is a systems view showing that modern AI software
+      fails through multiple coupled surfaces: input manipulation, training compromise, retrieval corruption, prompt control failure,
+      unsafe tool execution, output trust mistakes, and operational or economic abuse. The diagram is valuable because it links those
+      risks to the assets they threaten and the kinds of downstream consequences they create.
+    </p>
+    <div class="grid cols-4" style="margin-top:18px">
+      <div class="stat"><div class="k">Primary lens</div><div class="v">System-level<small>not model-only</small></div></div>
+      <div class="stat"><div class="k">Main attacker path</div><div class="v">Remote software<small>high scale</small></div></div>
+      <div class="stat"><div class="k">Key software tension</div><div class="v">Data vs instruction<small>mixed context</small></div></div>
+      <div class="stat"><div class="k">Research stance</div><div class="v">Defense-in-depth<small>cross-layer</small></div></div>
+    </div>
+    <div class="narr">
+      Reading rule: start with <code>where the attacker enters</code>, then map <code>what they can manipulate</code>, then track
+      <code>which protected asset is at risk</code>, and finally ask <code>what software action or operational consequence follows</code>.
+    </div>
+  </section>
+
+  <section id="landscape">
+    <h2>2. Interactive Landscape Walkthrough</h2>
+    <p class="lede">
+      The animated map below translates the static software-security figure into a flow model. Pick a threat family to see which
+      layers become active, which assets are exposed, and what sort of software failure is likely to follow.
+    </p>
+
+    <div class="controls">
+      <button class="btn active" data-scenario="evasion">Evasion & Adversarial Inputs</button>
+      <button class="btn alt" data-scenario="poisoning">Data Poisoning & Backdoors</button>
+      <button class="btn alt" data-scenario="prompt">Prompt Injection & Jailbreaks</button>
+      <button class="btn alt" data-scenario="rag">RAG & Retrieval Corruption</button>
+      <button class="btn alt" data-scenario="agency">Unsafe Output & Tool Agency</button>
+    </div>
+
+    <div class="stage">
+      <svg id="landscapeSvg" viewBox="0 0 1120 620" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bgPanel" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset="1" stop-color="#eef5ff"/>
+          </linearGradient>
+          <filter id="softGlow"><feGaussianBlur stdDeviation="4"/></filter>
+        </defs>
+
+        <rect x="12" y="12" width="1096" height="596" rx="22" fill="url(#bgPanel)" stroke="#cad7ea"/>
+
+        <text x="94" y="72" fill="#1d4db8" font-size="18" font-weight="800">Attacker-Controlled Entry Layers</text>
+        <text x="418" y="72" fill="#1d4db8" font-size="18" font-weight="800">AI Software Core</text>
+        <text x="782" y="72" fill="#1d4db8" font-size="18" font-weight="800">Protected Assets & Outcomes</text>
+
+        <g id="entryNodes">
+          <rect id="node-input" x="56" y="108" width="220" height="76" rx="16" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="166" y="136" text-anchor="middle" font-size="15" font-weight="800" fill="#12243a">Inference Inputs</text>
+          <text x="166" y="158" text-anchor="middle" font-size="12" fill="#576b82">queries, files, images, API payloads</text>
+
+          <rect id="node-data" x="56" y="208" width="220" height="76" rx="16" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="166" y="236" text-anchor="middle" font-size="15" font-weight="800" fill="#12243a">Training / Fine-Tuning Data</text>
+          <text x="166" y="258" text-anchor="middle" font-size="12" fill="#576b82">labels, corpora, feedback, updates</text>
+
+          <rect id="node-retrieval" x="56" y="308" width="220" height="76" rx="16" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="166" y="336" text-anchor="middle" font-size="15" font-weight="800" fill="#12243a">Retrieved Context</text>
+          <text x="166" y="358" text-anchor="middle" font-size="12" fill="#576b82">RAG documents, web pages, memory</text>
+
+          <rect id="node-supply" x="56" y="408" width="220" height="76" rx="16" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="166" y="436" text-anchor="middle" font-size="15" font-weight="800" fill="#12243a">Software Supply Chain</text>
+          <text x="166" y="458" text-anchor="middle" font-size="12" fill="#576b82">models, packages, plugins, vector DBs</text>
+        </g>
+
+        <g id="coreNodes">
+          <rect id="node-model" x="392" y="116" width="300" height="88" rx="18" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="542" y="147" text-anchor="middle" font-size="16" font-weight="800" fill="#12243a">Model & Decision Surface</text>
+          <text x="542" y="170" text-anchor="middle" font-size="12" fill="#576b82">prediction, generation, confidence, memorization</text>
+
+          <rect id="node-orchestration" x="392" y="236" width="300" height="88" rx="18" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="542" y="267" text-anchor="middle" font-size="16" font-weight="800" fill="#12243a">Prompt / RAG / Orchestration Logic</text>
+          <text x="542" y="290" text-anchor="middle" font-size="12" fill="#576b82">templates, ranking, memory, tool routing, wrappers</text>
+
+          <rect id="node-tools" x="392" y="356" width="300" height="88" rx="18" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="542" y="387" text-anchor="middle" font-size="16" font-weight="800" fill="#12243a">Execution & Output Handling</text>
+          <text x="542" y="410" text-anchor="middle" font-size="12" fill="#576b82">code, SQL, APIs, emails, workflows, side effects</text>
+
+          <rect id="node-ops" x="392" y="476" width="300" height="88" rx="18" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="542" y="507" text-anchor="middle" font-size="16" font-weight="800" fill="#12243a">Operations & Governance</text>
+          <text x="542" y="530" text-anchor="middle" font-size="12" fill="#576b82">logs, rate limits, auditability, policy enforcement</text>
+        </g>
+
+        <g id="assetNodes">
+          <rect id="asset-conf" x="814" y="124" width="238" height="72" rx="16" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="933" y="151" text-anchor="middle" font-size="15" font-weight="800" fill="#12243a">Confidentiality</text>
+          <text x="933" y="172" text-anchor="middle" font-size="12" fill="#576b82">training data, prompts, user data, secrets</text>
+
+          <rect id="asset-int" x="814" y="220" width="238" height="72" rx="16" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="933" y="247" text-anchor="middle" font-size="15" font-weight="800" fill="#12243a">Integrity</text>
+          <text x="933" y="268" text-anchor="middle" font-size="12" fill="#576b82">predictions, actions, ranking, policy behavior</text>
+
+          <rect id="asset-avail" x="814" y="316" width="238" height="72" rx="16" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="933" y="343" text-anchor="middle" font-size="15" font-weight="800" fill="#12243a">Availability & Cost</text>
+          <text x="933" y="364" text-anchor="middle" font-size="12" fill="#576b82">latency, token burn, quota exhaustion, downtime</text>
+
+          <rect id="asset-gov" x="814" y="412" width="238" height="72" rx="16" fill="#ffffff" stroke="#b9cae1" stroke-width="2"/>
+          <text x="933" y="439" text-anchor="middle" font-size="15" font-weight="800" fill="#12243a">Governance & Trust</text>
+          <text x="933" y="460" text-anchor="middle" font-size="12" fill="#576b82">audit trails, provenance, compliance, accountability</text>
+        </g>
+
+        <g id="flows" stroke-linecap="round" fill="none">
+          <path id="flow-a" d="M 276 146 C 320 146, 342 146, 392 160" stroke="#2f6df6" stroke-width="4" class="flow"/>
+          <path id="flow-b" d="M 276 246 C 320 246, 342 214, 392 176" stroke="#d9486b" stroke-width="4" class="flow"/>
+          <path id="flow-c" d="M 276 346 C 320 346, 342 296, 392 280" stroke="#0f8a8f" stroke-width="4" class="flow"/>
+          <path id="flow-d" d="M 276 446 C 320 446, 342 488, 392 516" stroke="#6f6bff" stroke-width="4" class="flow"/>
+
+          <path id="flow-e" d="M 692 160 C 750 160, 776 160, 814 160" stroke="#2f6df6" stroke-width="4" class="flow"/>
+          <path id="flow-f" d="M 692 280 C 750 280, 776 252, 814 256" stroke="#d9486b" stroke-width="4" class="flow"/>
+          <path id="flow-g" d="M 692 400 C 750 400, 776 352, 814 352" stroke="#f0b24d" stroke-width="4" class="flow"/>
+          <path id="flow-h" d="M 692 516 C 750 516, 776 448, 814 448" stroke="#0f8a8f" stroke-width="4" class="flow"/>
+        </g>
+
+        <g id="pulses"></g>
+      </svg>
+    </div>
+
+    <div id="landscapeNarrative" class="narr"></div>
+
+    <div class="legend">
+      <span><i style="background:#2f6df6"></i> interface / model compromise</span>
+      <span><i style="background:#d9486b"></i> training-time manipulation</span>
+      <span><i style="background:#0f8a8f"></i> retrieval / workflow abuse</span>
+      <span><i style="background:#f0b24d"></i> output, execution, cost or blast-radius escalation</span>
+      <span><i style="background:#6f6bff"></i> supply-chain / governance path</span>
+    </div>
+  </section>
+
+  <section id="lifecycle">
+    <h2>3. Lifecycle Reading of the Same Landscape</h2>
+    <p class="lede">
+      A strong research interpretation of the software-security figure is lifecycle-oriented. The same threat map becomes easier
+      to reason about when we ask whether compromise happens before training, during model shaping, at inference, or after deployment
+      through feedback, memory, or logging loops.
+    </p>
+    <div class="stage">
+      <svg viewBox="0 0 1100 310" xmlns="http://www.w3.org/2000/svg">
+        <rect x="12" y="18" width="1076" height="274" rx="20" fill="#fbfdff" stroke="#cad7ea"/>
+        <line x1="110" y1="155" x2="1000" y2="155" stroke="#9eb5d6" stroke-width="6" stroke-linecap="round"/>
+
+        <g class="float" style="animation-delay:0s">
+          <circle cx="170" cy="155" r="34" fill="#eef5ff" stroke="#2f6df6" stroke-width="3"/>
+          <text x="170" y="150" text-anchor="middle" font-size="13" font-weight="800" fill="#163b8d">Before</text>
+          <text x="170" y="169" text-anchor="middle" font-size="13" font-weight="800" fill="#163b8d">Training</text>
+        </g>
+        <g class="float" style="animation-delay:.4s">
+          <circle cx="395" cy="155" r="34" fill="#fff1f4" stroke="#d9486b" stroke-width="3"/>
+          <text x="395" y="150" text-anchor="middle" font-size="13" font-weight="800" fill="#9a2341">During</text>
+          <text x="395" y="169" text-anchor="middle" font-size="13" font-weight="800" fill="#9a2341">Training</text>
+        </g>
+        <g class="float" style="animation-delay:.8s">
+          <circle cx="620" cy="155" r="34" fill="#eefcfb" stroke="#0f8a8f" stroke-width="3"/>
+          <text x="620" y="150" text-anchor="middle" font-size="13" font-weight="800" fill="#0f676d">During</text>
+          <text x="620" y="169" text-anchor="middle" font-size="13" font-weight="800" fill="#0f676d">Deployment</text>
+        </g>
+        <g class="float" style="animation-delay:1.2s">
+          <circle cx="845" cy="155" r="34" fill="#fff7ea" stroke="#f0b24d" stroke-width="3"/>
+          <text x="845" y="150" text-anchor="middle" font-size="13" font-weight="800" fill="#8a5e17">After</text>
+          <text x="845" y="169" text-anchor="middle" font-size="13" font-weight="800" fill="#8a5e17">Deployment</text>
+        </g>
+
+        <g font-size="12" fill="#43586d">
+          <text x="78" y="72">dataset provenance failure</text>
+          <text x="78" y="92">benchmark leakage</text>
+          <text x="78" y="112">label contamination</text>
+
+          <text x="320" y="72">backdoors</text>
+          <text x="320" y="92">objective manipulation</text>
+          <text x="320" y="112">unsafe fine-tuning</text>
+
+          <text x="548" y="72">evasion & adversarial queries</text>
+          <text x="548" y="92">prompt injection / jailbreaks</text>
+          <text x="548" y="112">RAG corruption / tool misuse</text>
+
+          <text x="772" y="72">feedback poisoning</text>
+          <text x="772" y="92">memory contamination</text>
+          <text x="772" y="112">log leakage / replay exposure</text>
+        </g>
+
+        <g font-size="12" fill="#43586d">
+          <text x="78" y="228">Main research job: establish trustworthy inputs before the model ever learns.</text>
+          <text x="305" y="228">Main research job: detect hidden trigger behavior and unstable training influence.</text>
+          <text x="532" y="228">Main research job: prevent untrusted context from steering software action.</text>
+          <text x="760" y="228">Main research job: stop post-deployment adaptation from becoming a new attack surface.</text>
+        </g>
+      </svg>
+    </div>
+    <div class="note" style="margin-top:14px">
+      The diagram is strongest when used to force temporal precision: if a paper or system description says “software security,” ask exactly
+      which lifecycle stage the claimed defense protects, and what later stage remains exposed.
+    </div>
+  </section>
+
+  <section id="assets-impact">
+    <h2>4. Protected Assets, Failure Modes, and Why the Diagram Matters</h2>
+    <p class="lede">
+      The software-security landscape is not complete until each threat family is mapped to the asset it endangers and the effect it creates
+      in the real system. This table translates the picture into a research-review checklist.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Threat Family</th>
+          <th>Immediate Software Boundary</th>
+          <th>Asset at Risk</th>
+          <th>Typical Downstream Effect</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Evasion / adversarial examples</td>
+          <td>inference interface and decision boundary</td>
+          <td>prediction integrity</td>
+          <td>unsafe classification, moderation failure, decision error</td>
+        </tr>
+        <tr>
+          <td>Poisoning / backdoors</td>
+          <td>training or fine-tuning pipeline</td>
+          <td>model integrity and trustworthiness</td>
+          <td>hidden triggered behavior, broad quality degradation</td>
+        </tr>
+        <tr>
+          <td>Prompt injection / jailbreaks</td>
+          <td>instruction hierarchy and wrapper logic</td>
+          <td>workflow integrity, secrets, policy compliance</td>
+          <td>unsafe output, exfiltration, role bypass</td>
+        </tr>
+        <tr>
+          <td>RAG corruption</td>
+          <td>retrieval and context assembly</td>
+          <td>grounding quality, confidentiality, trust</td>
+          <td>poisoned answers, malicious context control</td>
+        </tr>
+        <tr>
+          <td>Unsafe output handling</td>
+          <td>tool execution and post-processing</td>
+          <td>external systems, records, users</td>
+          <td>SQL injection by proxy, bad code execution, harmful actions</td>
+        </tr>
+        <tr>
+          <td>Cost / availability abuse</td>
+          <td>serving, rate limits, orchestration loops</td>
+          <td>uptime and economic sustainability</td>
+          <td>token burn, timeout, quota starvation, denial of service</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="narr">
+      Practical reading habit: every time the diagram names a threat, ask “which concrete software artifact becomes the enforcement point?”
+      If no artifact is named, the threat model is probably still too vague.
+    </div>
+  </section>
+
+  <section id="defense">
+    <h2>5. Defense-In-Depth Interpretation</h2>
+    <p class="lede">
+      The figure should not be read as “many attacks therefore many separate patches.” A higher-quality interpretation is to align defenses
+      to the same layers shown in the diagram: data, model, orchestration, execution, and operations.
+    </p>
+    <div class="grid cols-2">
+      <div class="stat">
+        <div class="k">Data / Training Controls</div>
+        <div class="v" style="font-size:18px">provenance, hygiene, outlier screening, backdoor analysis</div>
+        <p style="margin:.75rem 0 0;color:#4c6176">The figure’s left side is a reminder that software security begins before inference. If training artifacts are weak, deployment hardening is already uphill.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Model / Interface Controls</div>
+        <div class="v" style="font-size:18px">robustness evaluation, privacy hardening, query shaping</div>
+        <p style="margin:.75rem 0 0;color:#4c6176">The model core must resist extraction, leakage, and decision instability, but this alone does not secure the application wrapper.</p>
+      </div>
+      <div class="stat">
+        <div class="k">RAG / Prompt / Workflow Controls</div>
+        <div class="v" style="font-size:18px">instruction hierarchy, retrieval isolation, memory controls</div>
+        <p style="margin:.75rem 0 0;color:#4c6176">The central insight of modern software-security AI is that untrusted data and trusted instructions cannot be treated as equivalent text.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Output / Tool / Ops Controls</div>
+        <div class="v" style="font-size:18px">sandboxing, allow-lists, approvals, auditability, rate limiting</div>
+        <p style="margin:.75rem 0 0;color:#4c6176">The right side of the figure matters because real harm often happens only after model output crosses into deterministic software execution.</p>
+      </div>
+    </div>
+    <div class="note" style="margin-top:16px">
+      High-quality defense claims should cover at least two different layers from the diagram. A single-point defense is usually brittle against adaptive software attackers.
+    </div>
+  </section>
+
+  <section id="research">
+    <h2>6. Research-Level Questions to Ask When Using This Diagram</h2>
+    <p class="lede">
+      The static figure is a compact map, but its real value is analytical. These are the questions that turn the picture into rigorous research use.
+    </p>
+    <div class="grid cols-3">
+      <div class="stat">
+        <div class="k">Boundary clarity</div>
+        <div class="v" style="font-size:18px">Where exactly does untrusted content enter?</div>
+        <p style="margin:.7rem 0 0;color:#4c6176">If the attacker path is ambiguous, the threat model is under-specified.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Asset precision</div>
+        <div class="v" style="font-size:18px">What is actually being protected?</div>
+        <p style="margin:.7rem 0 0;color:#4c6176">Integrity, confidentiality, availability, and governance failures should not be mixed casually.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Action realism</div>
+        <div class="v" style="font-size:18px">Can model output trigger real software effects?</div>
+        <p style="margin:.7rem 0 0;color:#4c6176">If yes, the software-security story becomes much more than a content-quality issue.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Temporal scope</div>
+        <div class="v" style="font-size:18px">Which lifecycle stage does the defense cover?</div>
+        <p style="margin:.7rem 0 0;color:#4c6176">A good defense may still leave later deployment or feedback loops exposed.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Measurement quality</div>
+        <div class="v" style="font-size:18px">How would success or failure be evaluated?</div>
+        <p style="margin:.7rem 0 0;color:#4c6176">Benchmark-only robustness rarely captures adaptive software attack behavior.</p>
+      </div>
+      <div class="stat">
+        <div class="k">Blast-radius thinking</div>
+        <div class="v" style="font-size:18px">If one layer fails, what is contained downstream?</div>
+        <p style="margin:.7rem 0 0;color:#4c6176">This is where containment and operational architecture become first-class security questions.</p>
+      </div>
+    </div>
+    <div class="narr">
+      Best way to use this page: keep the original diagram open, then use the interactive walkthrough here to transform each visual box into a threat-model question, an asset question, and a defense-placement question.
+    </div>
+  </section>
+</main>
+
+<footer>
+  Research explainer page for the software AI security landscape. Built as a high-detail companion to the main software-security section.
+</footer>
+
+<script>
+  const scenarios = {
+    evasion: {
+      active: ["node-input", "node-model", "asset-int"],
+      flows: ["flow-a", "flow-e"],
+      text: "Evasion activates the inference interface first: hostile queries or crafted inputs push directly against the model's decision surface. The main protected asset is integrity, because the attacker wants the system to produce the wrong decision while still appearing operational."
+    },
+    poisoning: {
+      active: ["node-data", "node-model", "asset-int", "asset-gov"],
+      flows: ["flow-b", "flow-e", "flow-h"],
+      text: "Poisoning and backdoor attacks reshape the model before deployment. The software-security consequence is not just one bad output, but a corrupted learned function whose failures may remain latent until a trigger condition appears."
+    },
+    prompt: {
+      active: ["node-input", "node-orchestration", "node-tools", "asset-conf", "asset-int"],
+      flows: ["flow-a", "flow-f", "flow-g"],
+      text: "Prompt injection and jailbreaks target the orchestration layer: the key failure is that untrusted content is treated like instruction. Once that succeeds, the system can leak hidden context or redirect downstream software behavior."
+    },
+    rag: {
+      active: ["node-retrieval", "node-orchestration", "asset-conf", "asset-int", "asset-gov"],
+      flows: ["flow-c", "flow-f", "flow-h"],
+      text: "RAG attacks exploit ingestion, ranking, and context assembly. The attacker may not attack the model weights at all; instead, they control what context reaches the wrapper and therefore what the system treats as grounded truth."
+    },
+    agency: {
+      active: ["node-input", "node-orchestration", "node-tools", "node-ops", "asset-avail", "asset-int"],
+      flows: ["flow-a", "flow-f", "flow-g", "flow-h"],
+      text: "Unsafe output handling and tool agency create the highest blast radius. Here the central question is no longer whether the model says something wrong, but whether software around it executes that wrongness with real permissions, cost, or side effects."
+    }
+  };
+
+  const allNodes = [
+    "node-input", "node-data", "node-retrieval", "node-supply",
+    "node-model", "node-orchestration", "node-tools", "node-ops",
+    "asset-conf", "asset-int", "asset-avail", "asset-gov"
+  ];
+  const allFlows = ["flow-a","flow-b","flow-c","flow-d","flow-e","flow-f","flow-g","flow-h"];
+  const narrative = document.getElementById("landscapeNarrative");
+  const pulseMount = document.getElementById("pulses");
+  let animationFrame = null;
+
+  function setScenario(name) {
+    const scenario = scenarios[name];
+    if (!scenario) return;
+
+    document.querySelectorAll("[data-scenario]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.scenario === name);
+      btn.classList.toggle("alt", btn.dataset.scenario !== name);
+    });
+
+    allNodes.forEach((id) => {
+      const node = document.getElementById(id);
+      if (!node) return;
+      const active = scenario.active.includes(id);
+      node.setAttribute("fill", active ? "#fffdf7" : "#ffffff");
+      node.setAttribute("stroke", active ? "#2f6df6" : "#b9cae1");
+      node.setAttribute("stroke-width", active ? "3" : "2");
+    });
+
+    allFlows.forEach((id) => {
+      const flow = document.getElementById(id);
+      if (!flow) return;
+      flow.style.opacity = scenario.flows.includes(id) ? "1" : "0.16";
+      flow.style.strokeWidth = scenario.flows.includes(id) ? "4.5" : "2.5";
+    });
+
+    narrative.textContent = scenario.text;
+    renderPulses(scenario.flows);
+  }
+
+  function samplePath(path, t) {
+    const length = path.getTotalLength();
+    return path.getPointAtLength(length * t);
+  }
+
+  function renderPulses(flowIds) {
+    const flowElements = flowIds
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+
+    const pulses = flowElements.map((path, index) => ({
+      path,
+      t: (index * 0.17) % 1,
+      speed: 0.0036 + index * 0.00045,
+      color: path.getAttribute("stroke")
+    }));
+
+    cancelAnimationFrame(animationFrame);
+    pulseMount.innerHTML = "";
+
+    function frame() {
+      pulseMount.innerHTML = "";
+      pulses.forEach((pulse) => {
+        pulse.t += pulse.speed;
+        if (pulse.t > 1) pulse.t = 0;
+        const point = samplePath(pulse.path, pulse.t);
+
+        const glow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        glow.setAttribute("cx", point.x);
+        glow.setAttribute("cy", point.y);
+        glow.setAttribute("r", 9);
+        glow.setAttribute("fill", pulse.color);
+        glow.setAttribute("opacity", .14);
+        glow.setAttribute("filter", "url(#softGlow)");
+        pulseMount.appendChild(glow);
+
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", point.x);
+        dot.setAttribute("cy", point.y);
+        dot.setAttribute("r", 4.2);
+        dot.setAttribute("fill", pulse.color);
+        pulseMount.appendChild(dot);
+      });
+      animationFrame = requestAnimationFrame(frame);
+    }
+    frame();
+  }
+
+  document.querySelectorAll("[data-scenario]").forEach((btn) => {
+    btn.addEventListener("click", () => setScenario(btn.dataset.scenario));
+  });
+
+  setScenario("evasion");
+</script>
+</body>
+</html>
