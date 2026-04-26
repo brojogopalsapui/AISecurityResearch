@@ -70,7 +70,16 @@
     ];
 
     if (topMount) {
-      topMount.innerHTML = "";
+      topMount.innerHTML = `
+        <div class="portal-topline">
+          <div class="container">
+            <div class="portal-topline__inner">
+              <span class="portal-pill">Light Version</span>
+              <p class="portal-topline__text">Prefer the original light portal? You can switch the full site version here.</p>
+              <a class="portal-topline__link" href="${lightHref}">Open Light Version</a>
+            </div>
+          </div>
+        </div>`;
     }
 
     if (headerMount) {
