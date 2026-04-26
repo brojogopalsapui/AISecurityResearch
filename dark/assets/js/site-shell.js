@@ -112,8 +112,8 @@
           <div class="container shell-footer__grid">
             <section class="shell-footer__card shell-footer__card--wide">
               <span class="portal-pill">Brojogopal Sapui</span>
-              <h3>Unified AI security portal for guided reading</h3>
-              <p>A single dark visual system now runs across the site with clearer contrast, stronger grouping, and faster access to structured AI security topics.</p>
+              <h3>Research across AI security layers</h3>
+              <p>This portal connects software security, hardware trust, cloud deployment, edge intelligence, agentic systems, and physical AI so readers can move between threat models, systems foundations, and current research signals.</p>
             </section>
             <section class="shell-footer__card">
               <h4>Navigate</h4>
