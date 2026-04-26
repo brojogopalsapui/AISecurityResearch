@@ -9,20 +9,20 @@
     !!document.querySelector('link[href*="learning-portal"]');
 
   const theme = isLight
-    ? {
-        grid: "rgba(37, 99, 235, 0.065)",
-        mesh: "rgba(37, 99, 235, 0.15)",
-        meshGlow: "rgba(14, 165, 233, 0.26)",
+      ? {
+        grid: "rgba(37, 99, 235, 0.05)",
+        mesh: "rgba(37, 99, 235, 0.12)",
+        meshGlow: "rgba(14, 165, 233, 0.22)",
         coreA: "#2563eb",
         coreB: "#0ea5e9",
-        coreHalo: "rgba(14, 165, 233, 0.2)",
+        coreHalo: "rgba(14, 165, 233, 0.16)",
         node: "#0f766e",
-        nodeGlow: "rgba(20, 184, 166, 0.28)",
+        nodeGlow: "rgba(20, 184, 166, 0.22)",
         prompt: "#e11d48",
         poison: "#f97316",
         side: "#7c3aed",
         defense: "#059669",
-        defenseGlow: "rgba(16, 185, 129, 0.34)",
+        defenseGlow: "rgba(16, 185, 129, 0.24)",
         chipBg: "rgba(255, 255, 255, 0.88)",
         chipBorder: "rgba(32, 58, 87, 0.12)",
         chipText: "#17304f",
@@ -30,19 +30,19 @@
         veil: "rgba(255, 255, 255, 0.06)"
       }
     : {
-        grid: "rgba(125, 211, 252, 0.075)",
-        mesh: "rgba(125, 211, 252, 0.18)",
-        meshGlow: "rgba(103, 232, 249, 0.28)",
-        coreA: "#7dd3fc",
-        coreB: "#60a5fa",
-        coreHalo: "rgba(96, 165, 250, 0.22)",
-        node: "#5eead4",
-        nodeGlow: "rgba(94, 234, 212, 0.3)",
+        grid: "rgba(147, 197, 253, 0.09)",
+        mesh: "rgba(147, 197, 253, 0.24)",
+        meshGlow: "rgba(125, 211, 252, 0.34)",
+        coreA: "#38bdf8",
+        coreB: "#a5f3fc",
+        coreHalo: "rgba(56, 189, 248, 0.34)",
+        node: "#2dd4bf",
+        nodeGlow: "rgba(45, 212, 191, 0.34)",
         prompt: "#fb7185",
-        poison: "#fb923c",
-        side: "#a78bfa",
+        poison: "#f59e0b",
+        side: "#c084fc",
         defense: "#4ade80",
-        defenseGlow: "rgba(74, 222, 128, 0.36)",
+        defenseGlow: "rgba(74, 222, 128, 0.3)",
         chipBg: "rgba(12, 22, 38, 0.82)",
         chipBorder: "rgba(225, 235, 248, 0.14)",
         chipText: "#f8fbff",
@@ -115,39 +115,6 @@
     }
 
     return metrics.points[metrics.points.length - 1];
-  }
-
-  function drawChip(x, y, text, accent) {
-    const fontSize = width < 640 ? 12 : 14;
-    const paddingX = 14;
-    const heightPx = width < 640 ? 28 : 34;
-
-    ctx.save();
-    ctx.font = `800 ${fontSize}px "Plus Jakarta Sans", "Inter", sans-serif`;
-    const textWidth = ctx.measureText(text).width;
-    const chipWidth = textWidth + paddingX * 2 + 14;
-    const safeX = clamp(x, 10, Math.max(10, width - chipWidth - 10));
-    const safeY = clamp(y, 10, Math.max(10, height - heightPx - 10));
-
-    roundedRectPath(safeX, safeY, chipWidth, heightPx, heightPx / 2);
-    ctx.fillStyle = theme.chipBg;
-    ctx.fill();
-    ctx.strokeStyle = theme.chipBorder;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(safeX + 12, safeY + heightPx / 2, 4, 0, Math.PI * 2);
-    ctx.fillStyle = accent;
-    ctx.shadowColor = accent;
-    ctx.shadowBlur = 10;
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    ctx.fillStyle = theme.chipText;
-    ctx.textBaseline = "middle";
-    ctx.fillText(text, safeX + 23, safeY + heightPx / 2 + 0.5);
-    ctx.restore();
   }
 
   function buildScene() {
@@ -465,19 +432,29 @@
     ctx.stroke();
     ctx.setLineDash([]);
 
-    ctx.fillStyle = "#ffffff";
-    ctx.font = `900 ${Math.max(18, core.r * 0.44)}px "Plus Jakarta Sans", sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("AI", 0, -core.r * 0.08);
+    const innerNodes = [
+      { x: 0, y: -core.r * 0.28 },
+      { x: -core.r * 0.26, y: core.r * 0.18 },
+      { x: core.r * 0.26, y: core.r * 0.18 }
+    ];
 
-    ctx.fillStyle = isLight ? "rgba(255,255,255,0.9)" : "rgba(232,242,255,0.86)";
-    ctx.font = `800 ${Math.max(10, core.r * 0.16)}px "Inter", sans-serif`;
-    ctx.fillText("core", 0, core.r * 0.33);
+    ctx.strokeStyle = "rgba(255,255,255,0.88)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(innerNodes[0].x, innerNodes[0].y);
+    ctx.lineTo(innerNodes[1].x, innerNodes[1].y);
+    ctx.lineTo(innerNodes[2].x, innerNodes[2].y);
+    ctx.closePath();
+    ctx.stroke();
+
+    innerNodes.forEach((node) => {
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, core.r * 0.08, 0, Math.PI * 2);
+      ctx.fill();
+    });
 
     ctx.restore();
-
-    drawChip(core.x + core.r * 0.76, core.y - core.r * 2.06, "Neural network", theme.coreB);
   }
 
   function drawLane(lane, time) {
@@ -526,7 +503,6 @@
 
     ctx.restore();
 
-    drawChip(lane.chip.x, lane.chip.y, lane.label, lane.color);
   }
 
   function drawParticles(dt) {
@@ -599,19 +575,6 @@
 
     ctx.restore();
 
-    drawChip(core.x + core.r * 1.14, core.y + core.r * 1.56, "Countermeasure", theme.defense);
-  }
-
-  function drawBridgeText() {
-    ctx.save();
-    ctx.fillStyle = theme.textSubtle;
-    ctx.font = `800 ${width < 640 ? 12 : 14}px "Plus Jakarta Sans", sans-serif`;
-    ctx.textAlign = "center";
-    const bridgeText = width < 640
-      ? "defense filters attack paths"
-      : "defense filters attack paths before they reach the model";
-    ctx.fillText(bridgeText, core.x + core.r * 0.72, core.y + core.r * 2.1);
-    ctx.restore();
   }
 
   function renderFrame(time = 0) {
@@ -626,7 +589,6 @@
     drawParticles(dt);
     drawCountermeasure(time);
     drawCore(time);
-    drawBridgeText();
 
     if (!reducedMotion) {
       window.requestAnimationFrame(renderFrame);
