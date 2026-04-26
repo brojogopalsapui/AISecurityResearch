@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ML-KEM for Edge AI - Animated Security Visualization</title>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
 <style>
   :root{
     --bg:#050a12;
@@ -1295,9 +1296,35 @@
     .node.attacker{width:70%}
     .note-box{display:none}
   }
+
+.subcontent-back-row{max-width:1200px;margin:18px auto 0;padding:0 20px}
+.subcontent-back{
+  display:inline-flex;align-items:center;min-height:42px;padding:0 1rem;border-radius:999px;
+  background:linear-gradient(180deg,#ffffff,#eef5ff);border:1px solid rgba(32,58,87,.12);
+  color:#1f54cf!important;font-weight:800;box-shadow:0 10px 22px rgba(20,43,71,.06)
+}
+.subcontent-back:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(20,43,71,.1)}
+.site-footer{margin-top:40px}
 </style>
 </head>
 <body>
+<div class="site-header">
+  <div class="container nav-wrap">
+    <div class="brand-group"><a aria-label="Brojogopal Sapui Home" class="brand" href="../../../index.html">B<span>S</span></a><a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" target="_blank" rel="noopener noreferrer">Mobile View (Dark)</a></div>
+    <nav class="nav" id="siteNav">
+      <a href="../../../index.html">Home</a>
+      <a href="../../../about.html">About</a>
+      <a class="active" href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+      <a href="../../../contact.html">Contact</a>
+    </nav>
+    <button aria-controls="siteNav" aria-expanded="false" aria-label="Toggle menu" class="menu-btn" id="menuBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
 
 <header>
   <div class="hero">
@@ -1316,6 +1343,7 @@
     </div>
   </div>
 </header>
+<div class="subcontent-back-row"><a class="subcontent-back" href="../../edge-security.html">← Back to Edge AI Security</a></div>
 
 <nav class="toc">
   <a href="#threat">Threat Model</a>
@@ -2213,9 +2241,25 @@
   </section>
 </main>
 
-<footer>
-  ML-KEM secures key establishment for edge AI. Authentication, secure boot, and model signing still matter around it.
-</footer>
+<div class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Brojogopal Sapui</h3>
+      <p>AI Security• Hardware Trust • Edge/Physical AI</p>
+    </div>
+    <div>
+      <h4>Main Pages</h4>
+      <a href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+    </div>
+    <div>
+      <h4>Focus</h4>
+      <p>Cross-layer AI security, trustworthy deployment, hardware-aware defense, and physical intelligence.</p>
+    </div>
+  </div>
+</div>
+
 
 <script>
   const demoTimers = {};
@@ -2407,5 +2451,6 @@
     updateLab();
   });
 </script>
+<script src="../../../assets/js/main.js"></script>
 </body>
 </html>

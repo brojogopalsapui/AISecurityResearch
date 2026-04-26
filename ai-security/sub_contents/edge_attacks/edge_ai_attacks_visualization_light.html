@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Edge AI Attack Taxonomy — Brojogopal Sapui (Light)</title>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
 <style>
   :root {
     --bg: #f4f7fb;
@@ -817,15 +818,42 @@
   }
   .footnote a { color: #1d4ed8; text-decoration: none; }
   .footnote a:hover { text-decoration: underline; }
+
+.subcontent-back-row{max-width:1200px;margin:18px auto 0;padding:0 20px}
+.subcontent-back{
+  display:inline-flex;align-items:center;min-height:42px;padding:0 1rem;border-radius:999px;
+  background:linear-gradient(180deg,#ffffff,#eef5ff);border:1px solid rgba(32,58,87,.12);
+  color:#1f54cf!important;font-weight:800;box-shadow:0 10px 22px rgba(20,43,71,.06)
+}
+.subcontent-back:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(20,43,71,.1)}
+.site-footer{margin-top:40px}
 </style>
 </head>
 <body>
+<div class="site-header">
+  <div class="container nav-wrap">
+    <div class="brand-group"><a aria-label="Brojogopal Sapui Home" class="brand" href="../../../index.html">B<span>S</span></a><a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" target="_blank" rel="noopener noreferrer">Mobile View (Dark)</a></div>
+    <nav class="nav" id="siteNav">
+      <a href="../../../index.html">Home</a>
+      <a href="../../../about.html">About</a>
+      <a class="active" href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+      <a href="../../../contact.html">Contact</a>
+    </nav>
+    <button aria-controls="siteNav" aria-expanded="false" aria-label="Toggle menu" class="menu-btn" id="menuBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
 
 <header>
   <h1>Edge AI Attack Taxonomy</h1>
   <p>Interactive visualization of the device-level threats facing edge AI systems — from firmware tampering and side-channel leakage to sensor spoofing, fleet compromise, and reliability-to-security crossover.</p>
   <div class="badge">Edge AI Security · Research Visualization</div>
 </header>
+<div class="subcontent-back-row"><a class="subcontent-back" href="../../edge-security.html">← Back to Edge AI Security</a></div>
 
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Critical</div>
@@ -1222,5 +1250,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBt
 
 buildCards();
 </script>
+<script src="../../../assets/js/main.js"></script>
 </body>
 </html>

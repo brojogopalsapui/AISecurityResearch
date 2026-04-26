@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Physical AI Attack Visualization — Research Grade (Light)</title>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
 <style>
   :root{
     --bg:#f4f7fb;
@@ -237,14 +238,41 @@
     .slide-title h2{font-size:19px}
     .canvas{padding:12px}
   }
+
+.subcontent-back-row{max-width:1200px;margin:18px auto 0;padding:0 20px}
+.subcontent-back{
+  display:inline-flex;align-items:center;min-height:42px;padding:0 1rem;border-radius:999px;
+  background:linear-gradient(180deg,#ffffff,#eef5ff);border:1px solid rgba(32,58,87,.12);
+  color:#1f54cf!important;font-weight:800;box-shadow:0 10px 22px rgba(20,43,71,.06)
+}
+.subcontent-back:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(20,43,71,.1)}
+.site-footer{margin-top:40px}
 </style>
 </head>
 <body>
+<div class="site-header">
+  <div class="container nav-wrap">
+    <div class="brand-group"><a aria-label="Brojogopal Sapui Home" class="brand" href="../../../index.html">B<span>S</span></a><a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" target="_blank" rel="noopener noreferrer">Mobile View (Dark)</a></div>
+    <nav class="nav" id="siteNav">
+      <a href="../../../index.html">Home</a>
+      <a href="../../../about.html">About</a>
+      <a class="active" href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+      <a href="../../../contact.html">Contact</a>
+    </nav>
+    <button aria-controls="siteNav" aria-expanded="false" aria-label="Toggle menu" class="menu-btn" id="menuBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
 
 <header class="top">
   <h1>PHYSICAL AI <span>ATTACK VISUALIZATION</span></h1>
   <p class="sub">Research-grade attack flows for embodied systems: perception, timing, control, communication, hardware, and lifecycle surfaces across the perception-to-action loop.</p>
 </header>
+<div class="subcontent-back-row"><a class="subcontent-back" href="../../physical-ai.html">← Back to Physical AI Security</a></div>
 
 <div class="controls">
   <button id="prev">◀ Prev</button>
@@ -961,10 +989,25 @@
 
 </main>
 
-<footer class="foot">
-  <div><b>Slide <span id="counter2">1</span> / 6</b> — Physical AI Attack Surface</div>
-  <div>Focus: sensor spoofing, pipeline compromise, timing exploitation, communication attacks, hardware &amp; fleet-lifecycle risk</div>
-</footer>
+<div class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Brojogopal Sapui</h3>
+      <p>AI Security• Hardware Trust • Edge/Physical AI</p>
+    </div>
+    <div>
+      <h4>Main Pages</h4>
+      <a href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+    </div>
+    <div>
+      <h4>Focus</h4>
+      <p>Cross-layer AI security, trustworthy deployment, hardware-aware defense, and physical intelligence.</p>
+    </div>
+  </div>
+</div>
+
 
 <script>
 (function(){
@@ -1008,5 +1051,6 @@
   show(0);
 })();
 </script>
+<script src="../../../assets/js/main.js"></script>
 </body>
 </html>

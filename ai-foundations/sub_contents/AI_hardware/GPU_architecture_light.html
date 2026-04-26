@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GPU // CUDA Architecture for AI Acceleration</title>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
 <style>
   :root{
     --bg:#eef4fb;
@@ -179,9 +180,35 @@
 
   footer{margin-top:80px;padding:32px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.15em;flex-wrap:wrap;gap:12px}
   footer .acid{color:var(--acid)}
+
+.subcontent-back-row{max-width:1200px;margin:18px auto 0;padding:0 20px}
+.subcontent-back{
+  display:inline-flex;align-items:center;min-height:42px;padding:0 1rem;border-radius:999px;
+  background:linear-gradient(180deg,#ffffff,#eef5ff);border:1px solid rgba(32,58,87,.12);
+  color:#1f54cf!important;font-weight:800;box-shadow:0 10px 22px rgba(20,43,71,.06)
+}
+.subcontent-back:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(20,43,71,.1)}
+.site-footer{margin-top:40px}
 </style>
 </head>
 <body>
+<div class="site-header">
+  <div class="container nav-wrap">
+    <div class="brand-group"><a aria-label="Brojogopal Sapui Home" class="brand" href="../../../index.html">B<span>S</span></a><a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" target="_blank" rel="noopener noreferrer">Mobile View (Dark)</a></div>
+    <nav class="nav" id="siteNav">
+      <a href="../../../index.html">Home</a>
+      <a href="../../../about.html">About</a>
+      <a class="active" href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+      <a href="../../../contact.html">Contact</a>
+    </nav>
+    <button aria-controls="siteNav" aria-expanded="false" aria-label="Toggle menu" class="menu-btn" id="menuBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
 <div class="container">
 
   <header>
@@ -193,6 +220,7 @@
     <h1 class="display">PARALLEL<br><span class="stroke">by</span> <span class="acid">DESIGN.</span></h1>
     <p class="tagline">A technical walkthrough of how <b>GPU hardware architecture</b> processes thousands of <b>CUDA cores</b> simultaneously to accelerate AI workloads — and why a <b>CPU</b>, with its handful of fat cores, fundamentally cannot keep up.</p>
   </header>
+<div class="subcontent-back-row"><a class="subcontent-back" href="../../modern-ai-hardware-knowledge.html">← Back to Modern AI Hardware</a></div>
 
   <!-- 01 CORE COUNT -->
   <section>
@@ -340,11 +368,25 @@
     </div>
   </section>
 
-  <footer>
-    <span>// END_OF_TRANSMISSION</span>
-    <span class="acid">PARALLELISM ≠ FREQUENCY</span>
-    <span>RENDERED OFFLINE · NO DEPENDENCIES</span>
-  </footer>
+  <div class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Brojogopal Sapui</h3>
+      <p>AI Security• Hardware Trust • Edge/Physical AI</p>
+    </div>
+    <div>
+      <h4>Main Pages</h4>
+      <a href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+    </div>
+    <div>
+      <h4>Focus</h4>
+      <p>Cross-layer AI security, trustworthy deployment, hardware-aware defense, and physical intelligence.</p>
+    </div>
+  </div>
+</div>
+
 
 </div>
 <script>
@@ -535,5 +577,6 @@ function stepMM(){
 }
 setInterval(stepMM,200);
 </script>
+<script src="../../../assets/js/main.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LLM Attack Taxonomy — PhD Research Visualization (Light)</title>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
 <style>
   :root {
     --bg: #f6f8fb;
@@ -1151,15 +1152,42 @@
     font-size: .76rem;
     border-top: 1px solid rgba(15,23,42,.08);
   }
+
+.subcontent-back-row{max-width:1200px;margin:18px auto 0;padding:0 20px}
+.subcontent-back{
+  display:inline-flex;align-items:center;min-height:42px;padding:0 1rem;border-radius:999px;
+  background:linear-gradient(180deg,#ffffff,#eef5ff);border:1px solid rgba(32,58,87,.12);
+  color:#1f54cf!important;font-weight:800;box-shadow:0 10px 22px rgba(20,43,71,.06)
+}
+.subcontent-back:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(20,43,71,.1)}
+.site-footer{margin-top:40px}
 </style>
 </head>
 <body>
+<div class="site-header">
+  <div class="container nav-wrap">
+    <div class="brand-group"><a aria-label="Brojogopal Sapui Home" class="brand" href="../../../index.html">B<span>S</span></a><a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" target="_blank" rel="noopener noreferrer">Mobile View (Dark)</a></div>
+    <nav class="nav" id="siteNav">
+      <a href="../../../index.html">Home</a>
+      <a href="../../../about.html">About</a>
+      <a class="active" href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+      <a href="../../../contact.html">Contact</a>
+    </nav>
+    <button aria-controls="siteNav" aria-expanded="false" aria-label="Toggle menu" class="menu-btn" id="menuBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
 
 <header>
   <h1>LLM Attack Taxonomy</h1>
   <p>Comprehensive visualization of adversarial threats against Large Language Models</p>
   <div class="badge">PhD Research Reference · 12 Attack Vectors</div>
 </header>
+<div class="subcontent-back-row"><a class="subcontent-back" href="../../generative-ai.html">← Back to Generative AI Security</a></div>
 
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Critical Severity</div>
@@ -1184,9 +1212,25 @@
   </div>
 </div>
 
-<footer>
-  Visualization for academic research purposes only · All attack patterns are described in published literature
-</footer>
+<div class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Brojogopal Sapui</h3>
+      <p>AI Security• Hardware Trust • Edge/Physical AI</p>
+    </div>
+    <div>
+      <h4>Main Pages</h4>
+      <a href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+    </div>
+    <div>
+      <h4>Focus</h4>
+      <p>Cross-layer AI security, trustworthy deployment, hardware-aware defense, and physical intelligence.</p>
+    </div>
+  </div>
+</div>
+
 
 <script>
 const ATTACKS = [
@@ -1621,5 +1665,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBt
 
 buildCards();
 </script>
+<script src="../../../assets/js/main.js"></script>
 </body>
 </html>

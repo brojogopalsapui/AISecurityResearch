@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Jetson Orin Nano Super — Edge AI Hardware Deep Dive</title>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
 <style>
   :root{
     --bg:#f4f7fb;
@@ -85,9 +86,35 @@
   @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
   .slow-rotate{animation:rot 8s linear infinite;transform-origin:center}
   @keyframes rot{to{transform:rotate(360deg)}}
+
+.subcontent-back-row{max-width:1200px;margin:18px auto 0;padding:0 20px}
+.subcontent-back{
+  display:inline-flex;align-items:center;min-height:42px;padding:0 1rem;border-radius:999px;
+  background:linear-gradient(180deg,#ffffff,#eef5ff);border:1px solid rgba(32,58,87,.12);
+  color:#1f54cf!important;font-weight:800;box-shadow:0 10px 22px rgba(20,43,71,.06)
+}
+.subcontent-back:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(20,43,71,.1)}
+.site-footer{margin-top:40px}
 </style>
 </head>
 <body>
+<div class="site-header">
+  <div class="container nav-wrap">
+    <div class="brand-group"><a aria-label="Brojogopal Sapui Home" class="brand" href="../../../index.html">B<span>S</span></a><a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" target="_blank" rel="noopener noreferrer">Mobile View (Dark)</a></div>
+    <nav class="nav" id="siteNav">
+      <a href="../../../index.html">Home</a>
+      <a href="../../../about.html">About</a>
+      <a class="active" href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+      <a href="../../../contact.html">Contact</a>
+    </nav>
+    <button aria-controls="siteNav" aria-expanded="false" aria-label="Toggle menu" class="menu-btn" id="menuBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
 
 <header>
   <h1>Jetson Orin Nano Super — Edge AI Hardware Deep Dive</h1>
@@ -104,6 +131,7 @@
     <span class="chip pink">7–25 W</span>
   </div>
 </header>
+<div class="subcontent-back-row"><a class="subcontent-back" href="../../modern-ai-hardware-knowledge.html">← Back to Modern AI Hardware</a></div>
 
 <nav class="toc">
   <a href="#specs">1. Specs</a>
@@ -1216,10 +1244,25 @@
 
 </main>
 
-<footer>
-  Built as a research-grade visual companion to the NVIDIA Jetson Orin Nano Super Developer Kit ($249).
-  No affiliation with NVIDIA — figures and trade-offs reflect only published spec sheets and personal benchmarking.
-</footer>
+<div class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Brojogopal Sapui</h3>
+      <p>AI Security• Hardware Trust • Edge/Physical AI</p>
+    </div>
+    <div>
+      <h4>Main Pages</h4>
+      <a href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+    </div>
+    <div>
+      <h4>Focus</h4>
+      <p>Cross-layer AI security, trustworthy deployment, hardware-aware defense, and physical intelligence.</p>
+    </div>
+  </div>
+</div>
+
 
 <script>
 (function(){
@@ -1669,6 +1712,7 @@
   })();
 })();
 </script>
+<script src="../../../assets/js/main.js"></script>
 </body>
 </html>
 </body>

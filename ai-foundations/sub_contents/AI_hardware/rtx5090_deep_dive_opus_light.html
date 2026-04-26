@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>GeForce RTX 5090 — Deep Hardware Architecture Deep Dive</title>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
 <style>
   :root{
     --bg:#f5f8fd;
@@ -74,9 +75,35 @@
   @keyframes flow{to{stroke-dashoffset:-20}}
   .blink{animation:blink 1s ease-in-out infinite}
   @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+
+.subcontent-back-row{max-width:1200px;margin:18px auto 0;padding:0 20px}
+.subcontent-back{
+  display:inline-flex;align-items:center;min-height:42px;padding:0 1rem;border-radius:999px;
+  background:linear-gradient(180deg,#ffffff,#eef5ff);border:1px solid rgba(32,58,87,.12);
+  color:#1f54cf!important;font-weight:800;box-shadow:0 10px 22px rgba(20,43,71,.06)
+}
+.subcontent-back:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(20,43,71,.1)}
+.site-footer{margin-top:40px}
 </style>
 </head>
 <body>
+<div class="site-header">
+  <div class="container nav-wrap">
+    <div class="brand-group"><a aria-label="Brojogopal Sapui Home" class="brand" href="../../../index.html">B<span>S</span></a><a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" target="_blank" rel="noopener noreferrer">Mobile View (Dark)</a></div>
+    <nav class="nav" id="siteNav">
+      <a href="../../../index.html">Home</a>
+      <a href="../../../about.html">About</a>
+      <a class="active" href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+      <a href="../../../contact.html">Contact</a>
+    </nav>
+    <button aria-controls="siteNav" aria-expanded="false" aria-label="Toggle menu" class="menu-btn" id="menuBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
 
 <header>
   <h1>GeForce RTX 5090 — Hardware Architecture Deep Dive</h1>
@@ -86,6 +113,7 @@
     how an MNIST digit classifier is trained and served on the silicon.
   </p>
 </header>
+<div class="subcontent-back-row"><a class="subcontent-back" href="../../modern-ai-hardware-knowledge.html">← Back to Modern AI Hardware</a></div>
 
 <nav class="toc">
   <a href="#specs">1. Specs</a>
@@ -626,10 +654,25 @@
 
 </main>
 
-<footer>
-  Research-level hardware walkthrough · diagrams are schematic (block positions topological, not a literal die photo).
-  RTX 5090 / GB202 information compiled April 2026.
-</footer>
+<div class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3>Brojogopal Sapui</h3>
+      <p>AI Security• Hardware Trust • Edge/Physical AI</p>
+    </div>
+    <div>
+      <h4>Main Pages</h4>
+      <a href="../../../research.html">Research</a>
+      <a class="trending-link" href="../../../ongoing-work.html">Trending Topics</a>
+      <a href="../../../publications.html">Resources</a>
+    </div>
+    <div>
+      <h4>Focus</h4>
+      <p>Cross-layer AI security, trustworthy deployment, hardware-aware defense, and physical intelligence.</p>
+    </div>
+  </div>
+</div>
+
 
 <script>
 /* =====================================================================
@@ -1206,5 +1249,6 @@ function el(tag,attrs={}){const e=document.createElementNS(SVG,tag);for(const k 
   };
 })();
 </script>
+<script src="../../../assets/js/main.js"></script>
 </body>
 </html>
