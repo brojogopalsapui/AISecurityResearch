@@ -1,6 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-  const menuButtons = document.querySelectorAll(".menu-btn");
+  const usesPortalShell = document.body.classList.contains("portal-page");
+  const menuButtons = usesPortalShell ? [] : document.querySelectorAll(".menu-btn");
 
   menuButtons.forEach((menuBtn) => {
     const nav = menuBtn.parentElement?.querySelector(".nav");
@@ -24,8 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  const expandButtons = document.querySelectorAll(".img-expand-btn");
-  const zoomableImages = document.querySelectorAll(".zoom-img");
+  const expandButtons = usesPortalShell ? [] : document.querySelectorAll(".img-expand-btn");
+  const zoomableImages = usesPortalShell ? [] : document.querySelectorAll(".zoom-img");
 
   if (expandButtons.length || zoomableImages.length) {
     const overlay = document.createElement("div");
@@ -331,7 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
 }
   initResearchWatchSlider();
 
-  const accordions = document.querySelectorAll(".accordion");
+  const accordions = usesPortalShell ? [] : document.querySelectorAll(".accordion");
 
   const syncAccordion = (accordion, open) => {
     const trigger = accordion.querySelector(".accordion-trigger");
