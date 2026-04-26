@@ -10,10 +10,10 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="assets/css/style.css" rel="stylesheet"/>
+<link href="assets/css/learning-portal.css" rel="stylesheet"/>
 <link href="assets/css/top-animation-light.css" rel="stylesheet"/>
-<script defer="True" src="assets/js/site-shell.js"></script><script defer="True" src="assets/js/portal.js"></script></head>
-<body class="portal-page" data-depth="0" data-nav="home" data-page="home">
+</head>
+<body>
 <div class="topbar">
 <div class="container topbar-inner">
 <div aria-live="polite" class="research-alert" role="status">
@@ -24,7 +24,27 @@
 </div>
 </div>
 </div>
-<div id="site-shell-top"></div><div id="site-shell-header"></div>
+<header class="site-header">
+<div class="container nav-wrap">
+<div class="brand-group">
+<a aria-label="Brojogopal Sapui Home" class="brand" href="index.html">B<span>S</span></a>
+<a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" rel="noopener noreferrer" target="_blank">Mobile View (Dark)</a>
+</div>
+<nav class="nav" id="siteNav">
+<a class="active" href="index.html">Home</a>
+<a href="about.html">About</a>
+<a href="research.html">Research</a>
+<a class="trending-link" href="ongoing-work.html">Trending Topics</a>
+<a href="publications.html">Resources</a>
+<a href="contact.html">Contact</a>
+</nav>
+<button aria-controls="siteNav" aria-expanded="false" aria-label="Toggle menu" class="menu-btn" id="menuBtn">
+<span></span>
+<span></span>
+<span></span>
+</button>
+</div>
+</header>
 <main>
 <section class="hero section-top">
 <canvas id="topSecurityCanvas" class="top-security-canvas" aria-hidden="true"></canvas>
@@ -319,7 +339,31 @@
 </div>
 </section>
 </main>
-<div id="site-shell-footer"></div>
+<footer class="site-footer">
+<div class="container footer-panel footer-grid">
+<div>
+<h3>Brojogopal Sapui</h3>
+<p>AI Security• Hardware Trust • Edge/Physical AI</p>
+<p class="note">A structured portal for AI security, hardware trust, edge intelligence, and trustworthy physical AI deployment.</p>
+</div>
+<div>
+<h4>Main pages</h4>
+<div class="footer-links">
+<a href="research.html">Research</a>
+<a class="trending-link" href="ongoing-work.html">Trending Topics</a>
+<a href="publications.html">Resources</a>
+</div>
+</div>
+<div>
+<h4>More</h4>
+<div class="footer-links">
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+<a href="https://www.brojogopalsapui.com/dark/" rel="noopener noreferrer" target="_blank">Mobile View (Dark)</a>
+</div>
+</div>
+</div>
+</footer>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/top-animation-light.js"></script>
 <img src="https://hitwebcounter.com/counter/counter.php?page=9876543&style=0001&nbdigits=5&type=page&initCount=0" />

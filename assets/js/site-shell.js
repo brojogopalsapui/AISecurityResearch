@@ -75,7 +75,7 @@
             <section class="shell-footer__card shell-footer__card--wide">
               <span class="portal-pill">Brojogopal Sapui</span>
               <h3>Unified AI security portal for guided reading</h3>
-              <p>A unified visual system now runs across the site with clearer navigation, stronger grouping, and faster access to structured AI security topics.</p>
+              <p>A single dark visual system now runs across the site with clearer contrast, stronger grouping, and faster access to structured AI security topics.</p>
             </section>
             <section class="shell-footer__card">
               <h4>Navigate</h4>
