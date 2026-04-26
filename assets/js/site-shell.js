@@ -4,18 +4,6 @@
     return '../'.repeat(depth);
   }
 
-  function currentSignal(nav){
-    const map = {
-      home: 'Swipe through focused cards, then open the full topic when you want deeper reading.',
-      research: 'Tap any track to open the full note. Foundations and security topics stay intentionally separated for easier reading.',
-      trending: 'Short pulse notes first, deeper context one tap away.',
-      resources: 'Curated material for structured self-study.',
-      about: 'Cross-layer AI security, explained through a guided research portal.',
-      contact: 'Research, collaboration, and contact pathways.'
-    };
-    return map[nav] || map.research;
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     if (!body) return;
@@ -35,58 +23,45 @@
     ];
 
     if (topMount) {
-      topMount.innerHTML = `
-        <div class="portal-topline">
-          <div class="container portal-topline__inner">
-            <span class="portal-pill portal-pill--pulse">Research Portal</span>
-            <p class="portal-topline__text">${currentSignal(nav)}</p>
-            <a class="portal-topline__link" href="${base}ongoing-work.html">Live notes ↗</a>
-          </div>
-        </div>`;
+      topMount.innerHTML = '';
     }
 
     if (headerMount) {
       headerMount.innerHTML = `
-        <header class="site-shell-header">
-          <div class="container shell-header__inner">
-            <a class="shell-brand" href="${base}index.html" aria-label="Brojogopal Sapui Research Portal home">
-              <span class="shell-brand__mark">BS</span>
-              <span class="shell-brand__copy">
-                <strong>AI Security</strong>
-                <small>research portal</small>
-              </span>
-            </a>
-            <button class="shell-menu-btn" id="shellMenuBtn" aria-label="Open navigation" aria-controls="shellNav" aria-expanded="false">
-              <span></span><span></span><span></span>
-            </button>
-            <nav class="shell-nav" id="shellNav">
+        <header class="site-header">
+          <div class="container nav-wrap">
+            <div class="brand-group">
+              <a class="brand" href="${base}index.html" aria-label="Brojogopal Sapui Home">B<span>S</span></a>
+              <a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" target="_blank" rel="noopener noreferrer">Mobile View (Dark)</a>
+            </div>
+            <nav class="nav" id="shellNav">
               ${links.map(link => `<a class="${link.id===nav ? 'active' : ''}${link.id==='trending' ? ' trending-link' : ''}" href="${link.href}">${link.label}</a>`).join('')}
             </nav>
+            <button class="menu-btn" id="shellMenuBtn" aria-label="Toggle menu" aria-controls="shellNav" aria-expanded="false">
+              <span></span><span></span><span></span>
+            </button>
           </div>
-          <div class="portal-orb portal-orb--a"></div>
-          <div class="portal-orb portal-orb--b"></div>
         </header>`;
     }
 
     if (footerMount) {
       footerMount.innerHTML = `
-        <footer class="site-shell-footer">
-          <div class="container shell-footer__grid">
-            <section class="shell-footer__card shell-footer__card--wide">
-              <span class="portal-pill">Brojogopal Sapui</span>
-              <h3>Unified AI security portal for guided reading</h3>
-              <p>A single dark visual system now runs across the site with clearer contrast, stronger grouping, and faster access to structured AI security topics.</p>
-            </section>
-            <section class="shell-footer__card">
+        <footer class="site-footer">
+          <div class="container footer-grid">
+            <div>
+              <h3>Brojogopal Sapui</h3>
+              <p>AI Security• Hardware Trust • Edge/Physical AI</p>
+            </div>
+            <div>
               <h4>Navigate</h4>
-              <div class="shell-footer__links">
-                ${links.slice(0,4).map(link => `<a class="${link.id==='trending' ? 'trending-link' : ''}" href="${link.href}">${link.label}</a>`).join('')}
-              </div>
-            </section>
-            <section class="shell-footer__card">
+              <a href="${base}research.html">Research</a>
+              <a class="trending-link" href="${base}ongoing-work.html">Trending Topics</a>
+              <a href="${base}publications.html">Resources</a>
+            </div>
+            <div>
               <h4>Focus</h4>
               <p>AI security, hardware trust, edge intelligence, trustworthy deployment, physical and agentic AI.</p>
-            </section>
+            </div>
           </div>
         </footer>`;
     }
