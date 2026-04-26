@@ -12,6 +12,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="assets/css/learning-portal.css" rel="stylesheet"/>
 <link href="assets/css/top-animation-light.css" rel="stylesheet"/>
+<script>
+(() => {
+  try {
+    const preferenceKey = "portalPreferredVersion";
+    const url = new URL(window.location.href);
+    const mode = url.searchParams.get("mode");
+
+    if (mode === "light") {
+      localStorage.setItem(preferenceKey, "light");
+      url.searchParams.delete("mode");
+      const nextSearch = url.searchParams.toString();
+      const nextUrl = `${url.pathname}${nextSearch ? `?${nextSearch}` : ""}${url.hash}`;
+      window.history.replaceState({}, "", nextUrl);
+      return;
+    }
+
+    window.location.replace(`dark/index.html${window.location.hash || ""}`);
+  } catch (error) {
+    // If storage is unavailable, keep the light page as a safe fallback.
+  }
+})();
+</script>
 </head>
 <body>
 <div class="topbar">

@@ -1,20 +1,64 @@
 (function(){
+  const SITE_VARIANT_KEY = 'portalPreferredVersion';
+
   function depthPrefix(){
     const depth = Number(document.body?.dataset?.depth || 0);
     return '../'.repeat(depth);
   }
 
+  function preferredHomeHref(base) {
+    try {
+      return localStorage.getItem(SITE_VARIANT_KEY) === 'light'
+        ? `${base}index.html?mode=light`
+        : `${base}index.html`;
+    } catch (error) {
+      return `${base}index.html`;
+    }
+  }
+
+  function syncLightModePreference() {
+    try {
+      const url = new URL(window.location.href);
+      const mode = url.searchParams.get('mode');
+
+      if (mode === 'light' || mode === 'dark') {
+        localStorage.setItem(SITE_VARIANT_KEY, mode);
+        url.searchParams.delete('mode');
+        const nextSearch = url.searchParams.toString();
+        const nextUrl = `${url.pathname}${nextSearch ? `?${nextSearch}` : ''}${url.hash}`;
+        window.history.replaceState({}, '', nextUrl);
+      }
+    } catch (error) {
+      // Ignore storage/history issues and keep the page usable.
+    }
+  }
+
+  function rememberDarkVersionClicks(root) {
+    root.querySelectorAll('a[href*="/dark/"], a[href^="dark/"], a[href^="../dark/"], a[href^="../../dark/"], a[href^="../../../dark/"]').forEach((link) => {
+      link.addEventListener('click', () => {
+        try {
+          localStorage.setItem(SITE_VARIANT_KEY, 'dark');
+        } catch (error) {
+          // Ignore storage issues and continue navigation.
+        }
+      });
+    });
+  }
+
+  syncLightModePreference();
+
   document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     if (!body) return;
     const base = depthPrefix();
+    const homeHref = preferredHomeHref(base);
     const nav = body.dataset.nav || 'home';
     const topMount = document.getElementById('site-shell-top');
     const headerMount = document.getElementById('site-shell-header');
     const footerMount = document.getElementById('site-shell-footer');
 
     const links = [
-      { id:'home', href:`${base}index.html`, label:'Home' },
+      { id:'home', href:homeHref, label:'Home' },
       { id:'research', href:`${base}research.html`, label:'Research' },
       { id:'trending', href:`${base}ongoing-work.html`, label:'Trending' },
       { id:'resources', href:`${base}publications.html`, label:'Resources' },
@@ -31,8 +75,8 @@
         <header class="site-header">
           <div class="container nav-wrap">
             <div class="brand-group">
-              <a class="brand" href="${base}index.html" aria-label="Brojogopal Sapui Home">B<span>S</span></a>
-              <a class="brand-hint" href="https://www.brojogopalsapui.com/dark/" target="_blank" rel="noopener noreferrer">Mobile View (Dark)</a>
+              <a class="brand" href="${homeHref}" aria-label="Brojogopal Sapui Home">B<span>S</span></a>
+              <a class="brand-hint" href="${base}dark/index.html?mode=dark">Dark Version</a>
             </div>
             <nav class="nav" id="shellNav">
               ${links.map(link => `<a class="${link.id===nav ? 'active' : ''}${link.id==='trending' ? ' trending-link' : ''}" href="${link.href}">${link.label}</a>`).join('')}
@@ -65,5 +109,8 @@
           </div>
         </footer>`;
     }
+
+    if (headerMount) rememberDarkVersionClicks(headerMount);
+    if (footerMount) rememberDarkVersionClicks(footerMount);
   });
 })();

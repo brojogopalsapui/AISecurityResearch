@@ -1605,6 +1605,33 @@ a{text-decoration:none}
 .shell-brand__copy{display:flex;flex-direction:column;line-height:1.08;min-width:0}
 .shell-brand__copy strong{font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:.98rem;letter-spacing:-.02em;color:var(--portal-text)}
 .shell-brand__copy small{font-size:.74rem;color:var(--portal-text-dim);text-transform:uppercase;letter-spacing:.12em}
+.shell-theme-switch{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  padding:0 .95rem;
+  border-radius:999px;
+  border:1px solid rgba(151,190,255,.18);
+  background:rgba(255,255,255,.04);
+  color:var(--portal-text-soft);
+  font-size:.78rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transition:.22s ease;
+  box-shadow:0 10px 22px rgba(4,12,24,.18);
+}
+.shell-theme-switch:hover{
+  color:var(--portal-text);
+  background:rgba(255,255,255,.08);
+  border-color:rgba(151,190,255,.34);
+  transform:translateY(-1px);
+}
+.shell-theme-switch--footer{
+  margin-top:.9rem;
+  width:max-content;
+}
 
 .shell-menu-btn{
   width:48px;height:48px;border-radius:16px;border:1px solid var(--portal-line);background:rgba(10,22,43,.82);
@@ -2073,6 +2100,7 @@ body.portal-page .btn-row .btn{flex:1 1 220px}
 @media (min-width: 920px){
   .container{width:min(1240px, calc(100% - 2rem))}
   .shell-menu-btn{display:none}
+  .shell-theme-switch{order:3}
   .shell-nav{position:static;display:flex!important;flex-direction:row;gap:.35rem;width:auto;padding:0;background:transparent;border:none;box-shadow:none}
   .shell-nav a{padding:.82rem 1rem;border-radius:999px}
   .portal-topline__inner{padding:.8rem 1rem}

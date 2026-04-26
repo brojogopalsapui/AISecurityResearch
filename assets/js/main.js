@@ -1,5 +1,66 @@
+const SITE_VARIANT_KEY = "portalPreferredVersion";
+
+function syncLightModePreference() {
+  try {
+    const url = new URL(window.location.href);
+    const mode = url.searchParams.get("mode");
+
+    if (mode === "light" || mode === "dark") {
+      localStorage.setItem(SITE_VARIANT_KEY, mode);
+      url.searchParams.delete("mode");
+      const nextSearch = url.searchParams.toString();
+      const nextUrl = `${url.pathname}${nextSearch ? `?${nextSearch}` : ""}${url.hash}`;
+      window.history.replaceState({}, "", nextUrl);
+    }
+  } catch (error) {
+    // Ignore storage/history issues and keep the page usable.
+  }
+}
+
+function markDarkVersionLinks() {
+  const darkLinks = document.querySelectorAll('a[href*="/dark/"], a[href^="dark/"], a[href^="../dark/"], a[href^="../../dark/"], a[href^="../../../dark/"]');
+
+  darkLinks.forEach((link) => {
+    if (link.classList.contains("brand-hint") || link.textContent.trim() === "Mobile View (Dark)") {
+      link.textContent = "Dark Version";
+    }
+
+    link.addEventListener("click", () => {
+      try {
+        localStorage.setItem(SITE_VARIANT_KEY, "dark");
+      } catch (error) {
+        // Ignore storage issues and continue navigation.
+      }
+    });
+  });
+}
+
+function preserveLightHomeLinks() {
+  let preferredVersion = "";
+
+  try {
+    preferredVersion = localStorage.getItem(SITE_VARIANT_KEY) || "";
+  } catch (error) {
+    preferredVersion = "";
+  }
+
+  if (preferredVersion !== "light") return;
+
+  const homeLinks = document.querySelectorAll('a[href="index.html"], a[href="../index.html"], a[href="../../index.html"], a[href="../../../index.html"]');
+
+  homeLinks.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (!href || href.includes("?mode=light")) return;
+    link.setAttribute("href", `${href}?mode=light`);
+  });
+}
+
+syncLightModePreference();
 
 document.addEventListener("DOMContentLoaded", () => {
+  markDarkVersionLinks();
+  preserveLightHomeLinks();
+
   const menuButtons = document.querySelectorAll(".menu-btn");
 
   menuButtons.forEach((menuBtn) => {

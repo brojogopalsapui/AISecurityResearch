@@ -1,8 +1,42 @@
 (function(){
+  const SITE_VARIANT_KEY = 'portalPreferredVersion';
+
   function depthPrefix(){
     const depth = Number(document.body?.dataset?.depth || 0);
     return '../'.repeat(depth);
   }
+
+  function syncDarkModePreference() {
+    try {
+      const url = new URL(window.location.href);
+      const mode = url.searchParams.get('mode');
+
+      if (mode === 'light' || mode === 'dark') {
+        localStorage.setItem(SITE_VARIANT_KEY, mode);
+        url.searchParams.delete('mode');
+        const nextSearch = url.searchParams.toString();
+        const nextUrl = `${url.pathname}${nextSearch ? `?${nextSearch}` : ''}${url.hash}`;
+        window.history.replaceState({}, '', nextUrl);
+      } else {
+        localStorage.setItem(SITE_VARIANT_KEY, 'dark');
+      }
+    } catch (error) {
+      // Ignore storage/history issues and keep the page usable.
+    }
+  }
+
+  function lightVersionHref() {
+    const depth = Number(document.body?.dataset?.depth || 0);
+    const path = window.location.pathname || '';
+    const marker = '/dark/';
+    const markerIndex = path.lastIndexOf(marker);
+    const withinDark = markerIndex >= 0 ? path.slice(markerIndex + marker.length) : 'index.html';
+    const base = '../'.repeat(depth + 1);
+    const hash = window.location.hash || '';
+    return `${base}${withinDark}?mode=light${hash}`;
+  }
+
+  syncDarkModePreference();
 
   function currentSignal(nav){
     const map = {
@@ -21,6 +55,7 @@
     if (!body) return;
     const base = depthPrefix();
     const nav = body.dataset.nav || 'home';
+    const lightHref = lightVersionHref();
     const topMount = document.getElementById('site-shell-top');
     const headerMount = document.getElementById('site-shell-header');
     const footerMount = document.getElementById('site-shell-footer');
@@ -49,6 +84,7 @@
                 <small>Brojogopal Sapui</small>
               </span>
             </a>
+            <a class="shell-theme-switch" href="${lightHref}">Light Version</a>
             <button class="shell-menu-btn" id="shellMenuBtn" aria-label="Open navigation" aria-controls="shellNav" aria-expanded="false">
               <span></span><span></span><span></span>
             </button>
@@ -79,6 +115,7 @@
             <section class="shell-footer__card">
               <h4>Focus</h4>
               <p>AI security, hardware trust, edge intelligence, trustworthy deployment, physical and agentic AI.</p>
+              <a class="shell-theme-switch shell-theme-switch--footer" href="${lightHref}">Open Light Version</a>
             </section>
           </div>
         </footer>`;
