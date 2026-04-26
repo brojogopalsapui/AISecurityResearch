@@ -878,10 +878,10 @@ body{
 .hero-search,
 .metric-card,
 .mini-link{
-  border:2.4px solid #0c0c0f;
+  border:1.8px solid rgba(18,36,58,.22);
   box-shadow:
     0 24px 58px rgba(23,53,87,.11),
-    0 0 0 1px rgba(12,12,15,.10),
+    0 0 0 1px rgba(18,36,58,.05),
     0 1px 0 rgba(255,255,255,.96) inset;
 }
 
@@ -893,20 +893,20 @@ body{
 .topic-card:hover,
 .footer-links a:hover,
 .profile-card:hover{
-  border-color:#000000;
+  border-color:rgba(33,87,213,.28);
   box-shadow:
     0 30px 64px rgba(23,53,87,.16),
-    0 0 0 1px rgba(0,0,0,.16),
+    0 0 0 1px rgba(33,87,213,.08),
     0 1px 0 rgba(255,255,255,.96) inset;
 }
 
 .visual-panel img,
 .portal-media img,
 .feature-media img{
-  border:2px solid #101114;
+  border:1.6px solid rgba(18,36,58,.18);
   box-shadow:
     0 14px 30px rgba(23,53,87,.09),
-    0 0 0 1px rgba(0,0,0,.10),
+    0 0 0 1px rgba(18,36,58,.06),
     0 0 0 1px rgba(255,255,255,.72) inset;
 }
 
@@ -914,7 +914,7 @@ body{
 .mini-link,
 .hero-chips span,
 .footer-links a{
-  border-color:#111216;
+  border-color:rgba(18,36,58,.18);
 }
 
 
