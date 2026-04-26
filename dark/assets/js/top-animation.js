@@ -30,19 +30,19 @@
         veil: "rgba(255, 255, 255, 0.06)"
       }
     : {
-        grid: "rgba(147, 197, 253, 0.09)",
-        mesh: "rgba(147, 197, 253, 0.24)",
-        meshGlow: "rgba(125, 211, 252, 0.34)",
-        coreA: "#38bdf8",
-        coreB: "#a5f3fc",
-        coreHalo: "rgba(56, 189, 248, 0.34)",
-        node: "#2dd4bf",
-        nodeGlow: "rgba(45, 212, 191, 0.34)",
-        prompt: "#fb7185",
-        poison: "#f59e0b",
-        side: "#c084fc",
-        defense: "#4ade80",
-        defenseGlow: "rgba(74, 222, 128, 0.3)",
+        grid: "rgba(165, 215, 255, 0.14)",
+        mesh: "rgba(165, 215, 255, 0.34)",
+        meshGlow: "rgba(125, 211, 252, 0.5)",
+        coreA: "#22d3ee",
+        coreB: "#e0f2fe",
+        coreHalo: "rgba(34, 211, 238, 0.46)",
+        node: "#5eead4",
+        nodeGlow: "rgba(94, 234, 212, 0.46)",
+        prompt: "#ff7f9b",
+        poison: "#fbbf24",
+        side: "#c4b5fd",
+        defense: "#86efac",
+        defenseGlow: "rgba(134, 239, 172, 0.42)",
         chipBg: "rgba(12, 22, 38, 0.82)",
         chipBorder: "rgba(225, 235, 248, 0.14)",
         chipText: "#f8fbff",
@@ -349,8 +349,8 @@
     networkEdges.forEach(([a, b], index) => {
       const shimmer = reducedMotion ? 0 : Math.sin(time * 0.0012 + index * 0.48) * 0.08;
       ctx.strokeStyle = theme.mesh;
-      ctx.globalAlpha = 0.32 + shimmer;
-      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.48 + shimmer;
+      ctx.lineWidth = 1.25;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
@@ -359,21 +359,21 @@
 
     networkNodes.forEach((node, index) => {
       const pulse = reducedMotion ? 0 : Math.sin(time * 0.002 + index * 0.6) * 1.4;
-      const radius = node.ring === 3 ? 3.2 : 2.4;
+      const radius = node.ring === 3 ? 3.8 : 2.9;
 
-      ctx.globalAlpha = 0.88;
+      ctx.globalAlpha = 0.95;
       ctx.fillStyle = theme.node;
       ctx.shadowColor = theme.nodeGlow;
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 16;
       ctx.beginPath();
       ctx.arc(node.x, node.y, radius + pulse * 0.12, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.shadowBlur = 0;
-      ctx.globalAlpha = 0.15;
+      ctx.globalAlpha = 0.22;
       ctx.strokeStyle = theme.node;
       ctx.beginPath();
-      ctx.arc(node.x, node.y, radius * 3.2, 0, Math.PI * 2);
+      ctx.arc(node.x, node.y, radius * 3.8, 0, Math.PI * 2);
       ctx.stroke();
     });
 
@@ -391,9 +391,9 @@
     halo.addColorStop(0.35, theme.coreB);
     halo.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = halo;
-    ctx.globalAlpha = 0.88;
+    ctx.globalAlpha = 0.98;
     ctx.beginPath();
-    ctx.arc(0, 0, core.r * 1.58, 0, Math.PI * 2);
+    ctx.arc(0, 0, core.r * 1.9, 0, Math.PI * 2);
     ctx.fill();
 
     const coreGradient = ctx.createRadialGradient(-core.r * 0.22, -core.r * 0.28, core.r * 0.18, 0, 0, core.r);
@@ -402,7 +402,7 @@
     coreGradient.addColorStop(1, theme.coreA);
     ctx.fillStyle = coreGradient;
     ctx.shadowColor = theme.coreHalo;
-    ctx.shadowBlur = 28;
+    ctx.shadowBlur = 36;
     ctx.beginPath();
     ctx.arc(0, 0, core.r, 0, Math.PI * 2);
     ctx.fill();
@@ -418,7 +418,7 @@
     ctx.setLineDash([8, 9]);
     ctx.lineDashOffset = -spin * 120;
     ctx.strokeStyle = isLight ? "rgba(255,255,255,0.86)" : "rgba(125,211,252,0.9)";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.6;
     ctx.beginPath();
     ctx.arc(0, 0, core.r * 1.28, 0, Math.PI * 2);
     ctx.stroke();
@@ -426,7 +426,7 @@
     ctx.setLineDash([3, 8]);
     ctx.lineDashOffset = spin * 150;
     ctx.strokeStyle = theme.node;
-    ctx.lineWidth = 1.4;
+    ctx.lineWidth = 1.9;
     ctx.beginPath();
     ctx.arc(0, 0, core.r * 1.48, 0, Math.PI * 2);
     ctx.stroke();
@@ -460,12 +460,12 @@
   function drawLane(lane, time) {
     ctx.save();
     ctx.strokeStyle = lane.color;
-    ctx.lineWidth = lane.key === "side" ? 1.8 : 2.2;
+    ctx.lineWidth = lane.key === "side" ? 2.2 : 2.8;
     ctx.setLineDash(lane.dash);
     ctx.lineDashOffset = reducedMotion ? 0 : -time * 0.018;
     ctx.shadowColor = lane.color;
-    ctx.shadowBlur = 16;
-    ctx.globalAlpha = 0.92;
+    ctx.shadowBlur = 22;
+    ctx.globalAlpha = 0.98;
     ctx.beginPath();
     lane.path.points.forEach((point, index) => {
       if (index === 0) {
@@ -478,8 +478,8 @@
     ctx.setLineDash([]);
     ctx.shadowBlur = 0;
 
-    ctx.globalAlpha = 0.22;
-    ctx.lineWidth = lane.key === "side" ? 6 : 8;
+    ctx.globalAlpha = 0.3;
+    ctx.lineWidth = lane.key === "side" ? 8 : 10;
     ctx.beginPath();
     lane.path.points.forEach((point, index) => {
       if (index === 0) {
@@ -517,12 +517,12 @@
       const point = pointOnPath(lane.path, particle.progress);
 
       ctx.save();
-      ctx.globalAlpha = lane.key === "side" ? 0.72 : 0.84;
+      ctx.globalAlpha = lane.key === "side" ? 0.84 : 0.96;
       ctx.fillStyle = lane.color;
       ctx.shadowColor = lane.color;
-      ctx.shadowBlur = lane.key === "side" ? 12 : 16;
+      ctx.shadowBlur = lane.key === "side" ? 18 : 24;
       ctx.beginPath();
-      ctx.arc(point.x, point.y, particle.radius, 0, Math.PI * 2);
+      ctx.arc(point.x, point.y, particle.radius + 0.8, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     });
@@ -535,24 +535,24 @@
 
     ctx.save();
     ctx.strokeStyle = theme.defenseGlow;
-    ctx.lineWidth = 12;
-    ctx.globalAlpha = 0.16;
+    ctx.lineWidth = 15;
+    ctx.globalAlpha = 0.22;
     ctx.beginPath();
     ctx.arc(core.x, core.y, shieldRadius, 0, Math.PI * 2);
     ctx.stroke();
 
     ctx.strokeStyle = theme.defense;
-    ctx.lineWidth = 3;
-    ctx.globalAlpha = 0.78;
+    ctx.lineWidth = 3.6;
+    ctx.globalAlpha = 0.92;
     ctx.beginPath();
     ctx.arc(core.x, core.y, shieldRadius, 0, Math.PI * 2);
     ctx.stroke();
 
     ctx.strokeStyle = theme.defense;
-    ctx.lineWidth = 7;
+    ctx.lineWidth = 8.5;
     ctx.lineCap = "round";
     ctx.shadowColor = theme.defenseGlow;
-    ctx.shadowBlur = 18;
+    ctx.shadowBlur = 24;
     ctx.beginPath();
     ctx.arc(core.x, core.y, shieldRadius, sweepStart, sweepEnd);
     ctx.stroke();
@@ -566,10 +566,10 @@
       ctx.arc(lane.hit.x, lane.hit.y, 4.2 * pulse, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.globalAlpha = 0.25;
+      ctx.globalAlpha = 0.34;
       ctx.strokeStyle = theme.defense;
       ctx.beginPath();
-      ctx.arc(lane.hit.x, lane.hit.y, 13 * pulse, 0, Math.PI * 2);
+      ctx.arc(lane.hit.x, lane.hit.y, 16 * pulse, 0, Math.PI * 2);
       ctx.stroke();
     });
 
