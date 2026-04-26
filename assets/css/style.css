@@ -3549,6 +3549,294 @@ h1, h2, h3, h4 { letter-spacing: -0.022em; }
 .document-card .btn-row { margin-top: 1rem; }
 @media (max-width: 980px) { .pulse-grid-dark, .pulse-anchor-stack, .stream-board { grid-template-columns: 1fr; } }
 
+/* =========================================================
+   MAIN SITE LIGHT PORTAL OVERRIDES
+   Keep dark theme inside /dark/, but restore the root site
+   to a bright light visual system while retaining the shared
+   shell structure and interactions.
+   ========================================================= */
+
+body.portal-page {
+  color: #1c2733 !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(77, 134, 255, 0.06), transparent 24%),
+    radial-gradient(circle at 100% 8%, rgba(240, 178, 77, 0.08), transparent 22%),
+    linear-gradient(180deg, #faf6f1 0%, #f7f2eb 52%, #fcf9f5 100%) !important;
+}
+
+body.portal-page::before,
+body.portal-page::after {
+  opacity: 0.12;
+}
+
+body.portal-page::before {
+  background: radial-gradient(circle, rgba(77, 134, 255, 0.22), transparent 65%) !important;
+}
+
+body.portal-page::after {
+  background: radial-gradient(circle, rgba(17, 125, 134, 0.18), transparent 65%) !important;
+}
+
+body.portal-page h1,
+body.portal-page h2,
+body.portal-page h3,
+body.portal-page h4,
+body.portal-page strong,
+body.portal-page .accordion-title,
+body.portal-page .snapshot-box strong,
+body.portal-page .contact-list strong,
+body.portal-page .stream-board-head h3,
+body.portal-page .stream-mini-item strong {
+  color: #14202b !important;
+}
+
+body.portal-page p,
+body.portal-page li,
+body.portal-page .note,
+body.portal-page .accordion-preview,
+body.portal-page .resource-note,
+body.portal-page .portal-copy p,
+body.portal-page .visual-copy p,
+body.portal-page .watch-note p,
+body.portal-page .watch-block p,
+body.portal-page .snapshot-box p,
+body.portal-page .contact-list p,
+body.portal-page .stream-board-head p,
+body.portal-page .stream-mini-item span,
+body.portal-page figure figcaption {
+  color: #566473 !important;
+}
+
+body.portal-page .eyebrow,
+body.portal-page .mini-kicker,
+body.portal-page .tag,
+body.portal-page .kicker,
+body.portal-page .pulse-label,
+body.portal-page .portal-pill {
+  color: #204cba !important;
+  background: #f3efe8 !important;
+  border-color: rgba(28, 39, 51, 0.08) !important;
+}
+
+body.portal-page .tag {
+  color: #8f5a08 !important;
+  background: #fff2dd !important;
+  border-color: rgba(240, 178, 77, 0.28) !important;
+}
+
+body.portal-page .mini-kicker,
+body.portal-page .portal-pill {
+  color: #117d86 !important;
+  background: #ebf7f5 !important;
+  border-color: rgba(17, 125, 134, 0.16) !important;
+}
+
+body.portal-page .portal-pill--pulse {
+  color: #8f5a08 !important;
+  background: #fff2dd !important;
+  border-color: rgba(240, 178, 77, 0.28) !important;
+}
+
+.site-shell-header {
+  background: rgba(250, 246, 241, 0.88) !important;
+  border-bottom: 1px solid rgba(28, 39, 51, 0.08) !important;
+  box-shadow: 0 10px 28px rgba(28, 39, 51, 0.06) !important;
+  backdrop-filter: blur(18px) saturate(135%) !important;
+}
+
+.portal-orb--a {
+  background: rgba(77, 134, 255, 0.18) !important;
+}
+
+.portal-orb--b {
+  background: rgba(240, 178, 77, 0.14) !important;
+}
+
+.shell-brand {
+  color: #14202b !important;
+}
+
+.shell-brand__mark {
+  background: linear-gradient(135deg, #14202b, #28435f 68%, #117d86) !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 28px rgba(20, 32, 43, 0.18) !important;
+}
+
+.shell-brand__copy strong {
+  color: #14202b !important;
+}
+
+.shell-brand__copy small {
+  color: #627180 !important;
+}
+
+.shell-menu-btn {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(28, 39, 51, 0.08) !important;
+  box-shadow: 0 10px 24px rgba(28, 39, 51, 0.06) !important;
+}
+
+.shell-menu-btn span {
+  background: #14202b !important;
+}
+
+.shell-nav {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(252, 248, 243, 0.98)) !important;
+  border-color: rgba(28, 39, 51, 0.08) !important;
+  box-shadow: 0 20px 40px rgba(28, 39, 51, 0.12) !important;
+}
+
+.shell-nav a {
+  color: #4c5b69 !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+
+.shell-nav a:hover,
+.shell-nav a.active {
+  color: #14202b !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: rgba(28, 39, 51, 0.08) !important;
+}
+
+.site-shell-header .shell-nav a.active {
+  color: #14202b !important;
+  background: linear-gradient(135deg, #fff6e4, #eef4ff) !important;
+  box-shadow: 0 10px 24px rgba(28, 39, 51, 0.08) !important;
+}
+
+.portal-topline__inner {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(252, 248, 243, 0.98)) !important;
+  border-color: rgba(28, 39, 51, 0.08) !important;
+  box-shadow: 0 14px 28px rgba(28, 39, 51, 0.06) !important;
+}
+
+.portal-topline__text {
+  color: #566473 !important;
+}
+
+.portal-topline__link,
+body.portal-page .portal-topline__link,
+body.portal-page .portal-topline__link:hover {
+  color: #2d67f6 !important;
+}
+
+body.portal-page a:not(.btn):not(.shell-nav a):not(.trending-link):not(.portal-topline__link):not(.portal-figure-link):not(.mini-link):not(.quick-card):not(.feature-card):not(.pulse-card):not(.topic-card):not(.section-card):not(.post-card) {
+  color: #2d67f6 !important;
+}
+
+body.portal-page a:not(.btn):not(.shell-nav a):not(.trending-link):not(.portal-topline__link):not(.portal-figure-link):not(.mini-link):not(.quick-card):not(.feature-card):not(.pulse-card):not(.topic-card):not(.section-card):not(.post-card):hover {
+  color: #1f54cf !important;
+}
+
+body.portal-page .hero,
+body.portal-page .page-hero {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(45, 103, 246, 0.09), transparent 28%),
+    radial-gradient(circle at 100% 18%, rgba(240, 178, 77, 0.10), transparent 24%),
+    linear-gradient(180deg, #f7f0e8 0%, #fbf7f2 54%, #fffdfa 100%) !important;
+  border-top: 1px solid rgba(28, 39, 51, 0.06) !important;
+  border-bottom: 1px solid rgba(28, 39, 51, 0.08) !important;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.75) !important;
+}
+
+body.portal-page .hero .lead,
+body.portal-page .page-hero .lead {
+  color: #465666 !important;
+}
+
+body.portal-page .hero-visual,
+body.portal-page .content-card,
+body.portal-page .post-card,
+body.portal-page .topic-card,
+body.portal-page .section-card,
+body.portal-page .cta,
+body.portal-page .resource-card,
+body.portal-page .watch-note,
+body.portal-page .watch-block,
+body.portal-page .resource-mini,
+body.portal-page .toc,
+body.portal-page .page-figure,
+body.portal-page .lifecycle-fig,
+body.portal-page .landscape-card,
+body.portal-page .compact-figure,
+body.portal-page .accordion,
+body.portal-page .foundational-figure,
+body.portal-page .stat-card,
+body.portal-page .snapshot-box,
+body.portal-page .mini-card,
+body.portal-page .panel,
+body.portal-page .quick-card,
+body.portal-page .feature-card,
+body.portal-page .pulse-card,
+body.portal-page .stream-board-card,
+body.portal-page .pulse-anchor-card,
+body.portal-page .shell-footer__card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(252, 248, 243, 0.98)) !important;
+  border: 1px solid rgba(28, 39, 51, 0.08) !important;
+  box-shadow: 0 18px 42px rgba(28, 39, 51, 0.08) !important;
+}
+
+body.portal-page .content-card:hover,
+body.portal-page .post-card:hover,
+body.portal-page .topic-card:hover,
+body.portal-page .section-card:hover,
+body.portal-page .cta:hover,
+body.portal-page .resource-card:hover,
+body.portal-page .watch-note:hover,
+body.portal-page .accordion:hover,
+body.portal-page .panel:hover,
+body.portal-page .quick-card:hover,
+body.portal-page .feature-card:hover,
+body.portal-page .pulse-card:hover,
+body.portal-page .stream-board-card:hover,
+body.portal-page .pulse-anchor-card:hover {
+  border-color: rgba(45, 103, 246, 0.14) !important;
+  box-shadow: 0 24px 56px rgba(28, 39, 51, 0.12) !important;
+}
+
+body.portal-page .toc a,
+body.portal-page .shell-footer__links a,
+body.portal-page .stream-mini-item {
+  background: rgba(255, 255, 255, 0.8) !important;
+  color: #4c5b69 !important;
+  border-color: rgba(28, 39, 51, 0.08) !important;
+}
+
+body.portal-page .toc a:hover,
+body.portal-page .shell-footer__links a:hover {
+  color: #14202b !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+}
+
+body.portal-page .cta,
+body.portal-page .cta-band {
+  background: linear-gradient(135deg, #fff8ee, #f7fbff) !important;
+}
+
+body.portal-page .metric-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(28, 39, 51, 0.08) !important;
+}
+
+body.portal-page .metric-card span {
+  color: #566473 !important;
+}
+
+body.portal-page .portal-lightbox {
+  background: rgba(20, 32, 43, 0.56) !important;
+}
+
+body.portal-page a.trending-link,
+body.portal-page .site-shell-header .shell-nav a.trending-link,
+body.portal-page .site-shell-header .shell-nav a.trending-link.active,
+body.portal-page .site-shell-header .shell-nav a.trending-link:hover,
+body.portal-page .shell-footer__links a.trending-link {
+  color: #203a57 !important;
+  background: linear-gradient(135deg, rgba(255, 208, 139, 0.72), rgba(234, 242, 255, 0.92)) !important;
+  border-color: rgba(240, 178, 77, 0.28) !important;
+  box-shadow: 0 12px 26px rgba(240, 178, 77, 0.18) !important;
+}
+
 
 /* Home latest-note bar aligned with light-mode structure */
 .topbar{padding:.65rem 0 0;position:relative;z-index:4}
