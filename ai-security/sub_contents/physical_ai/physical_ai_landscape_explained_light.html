@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Physical AI Security Landscape — Interactive Research Visualization</title>
+<meta name="description" content="This companion page reads the physical-security diagram as an embodied control map: sensing, perception, planning, actuation, environment interaction, and safety assurance all feed into one chain. Here, an AI security failure is not only a wrong answer but a wrong physical action in the world."/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
+<link href="../../../assets/css/topic-visualization.css" rel="stylesheet"/>
+<script defer="True" src="../../../assets/js/site-shell.js"></script>
+<script defer="True" src="../../../assets/js/portal.js"></script>
+<script defer="True" src="../../../assets/js/topic-visualization.js"></script>
+</head>
+<body class="portal-page topic-visualization-page" data-depth="3" data-nav="research" data-page="physical_ai" data-topic-theme="light">
+<div id="site-shell-top"></div><div id="site-shell-header"></div>
+<main>
+  <div id="topicVisualizationRoot"></div>
+</main>
+<div id="site-shell-footer"></div>
+<script>
+window.TOPIC_VISUALIZATION = {
+  "pageTitle": "Physical AI Security Landscape — Interactive Research Visualization",
+  "slug": "physical_ai-light",
+  "theme": "light",
+  "domain": "AI Security Section",
+  "title": "Physical AI Security Landscape",
+  "intro": "This companion page reads the physical-security diagram as an embodied control map: sensing, perception, planning, actuation, environment interaction, and safety assurance all feed into one chain. Here, an AI security failure is not only a wrong answer but a wrong physical action in the world.",
+  "backHref": "../../physical-ai.html",
+  "backLabel": "Back to Physical AI Security",
+  "figureSrc": "../../../assets/img/diagrams/physical_ai_security_landscape.svg",
+  "figureAlt": "Diagram showing physical AI security across sensing, control, actuation, environment interaction, safety risks, and research focus.",
+  "figureCaption": "Physical AI security across sensing, world models, control, actuation, and safety-critical deployment.",
+  "stageIntro": "Use the animated lenses below to read the original diagram as a threat model, an asset map, a defense placement map, and an evaluation checklist without changing the underlying research framing.",
+  "tags": [
+    "sensor spoofing",
+    "world-model trust",
+    "control integrity",
+    "actuation safety",
+    "embodied assurance"
+  ],
+  "legend": [
+    {
+      "label": "Ingress or trust boundary",
+      "swatch": "#2f6df6"
+    },
+    {
+      "label": "Transformation or runtime layer",
+      "swatch": "#d69120"
+    },
+    {
+      "label": "System glue or control point",
+      "swatch": "#0f8a8f"
+    },
+    {
+      "label": "Exposed asset or consequence",
+      "swatch": "#d9486b"
+    }
+  ],
+  "metrics": [
+    {
+      "label": "Primary ingress",
+      "value": "Sensor and environment interaction",
+      "detail": "The attacker can influence what the embodied system perceives about the world."
+    },
+    {
+      "label": "Protected asset",
+      "value": "Safe physical behavior",
+      "detail": "Integrity must hold from perception through actuation."
+    },
+    {
+      "label": "Failure pattern",
+      "value": "Wrong model of the world, wrong physical act",
+      "detail": "A perception or control fault can become a safety event."
+    },
+    {
+      "label": "Research lens",
+      "value": "Cyber-physical continuity",
+      "detail": "Security must cover both software reasoning and physical consequence."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "sense",
+      "kicker": "Perception plane",
+      "title": "Sensors and preprocessing",
+      "summary": "Vision, audio, lidar, proprioception, calibration.",
+      "color": "blue",
+      "x": 50,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "world",
+      "kicker": "State plane",
+      "title": "World model and intent",
+      "summary": "Localization, tracking, prediction, scene understanding.",
+      "color": "amber",
+      "x": 430,
+      "y": 80,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "control",
+      "kicker": "Decision plane",
+      "title": "Planner and controller",
+      "summary": "Policy, trajectory, command generation, safety logic.",
+      "color": "violet",
+      "x": 810,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "actuation",
+      "kicker": "Physical plane",
+      "title": "Actuation and timing",
+      "summary": "Motors, braking, steering, manipulators, timing windows.",
+      "color": "teal",
+      "x": 180,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "impact",
+      "kicker": "Impact plane",
+      "title": "Humans and environment",
+      "summary": "Safety, misuse, mission failure, physical damage.",
+      "color": "red",
+      "x": 510,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "assurance",
+      "kicker": "Assurance lens",
+      "title": "Runtime safety envelope",
+      "summary": "Monitoring, fallback, interlocks, fail-safe behavior.",
+      "color": "slate",
+      "x": 840,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    }
+  ],
+  "edges": [
+    {
+      "from": "sense",
+      "to": "world"
+    },
+    {
+      "from": "world",
+      "to": "control"
+    },
+    {
+      "from": "control",
+      "to": "actuation"
+    },
+    {
+      "from": "actuation",
+      "to": "impact"
+    },
+    {
+      "from": "impact",
+      "to": "assurance"
+    },
+    {
+      "from": "sense",
+      "to": "assurance"
+    },
+    {
+      "from": "world",
+      "to": "assurance"
+    }
+  ],
+  "defaultLens": "threat",
+  "lenses": {
+    "threat": {
+      "buttonLabel": "Threat flow",
+      "title": "Threat-flow reading",
+      "summary": "Physical AI threats often begin with environmental or sensor manipulation, then propagate through world modeling into unsafe control outputs and real-world effects.",
+      "focus": [
+        "sense",
+        "world",
+        "control",
+        "actuation"
+      ],
+      "questions": [
+        "What attacker influence is possible through the environment rather than the network?",
+        "How much uncertainty reaches the planner without being surfaced?",
+        "Which control decisions are safety critical even if they seem locally reasonable?"
+      ],
+      "defenses": [
+        "Validate sensing, track uncertainty explicitly, and bound actuation authority.",
+        "Design safety envelopes that survive bad perception.",
+        "Use fail-safe modes when confidence collapses or anomalies spike."
+      ],
+      "stageLabel": "How physical-world influence becomes unsafe actuation."
+    },
+    "assets": {
+      "buttonLabel": "Asset exposure",
+      "title": "Asset-exposure reading",
+      "summary": "The most important asset is not only model confidentiality but the integrity of state estimation, command timing, and safe interaction with people or equipment.",
+      "focus": [
+        "world",
+        "control",
+        "impact"
+      ],
+      "questions": [
+        "Which internal state estimates are most safety critical?",
+        "How does the system distinguish environmental ambiguity from deliberate manipulation?",
+        "Which actions must remain impossible even if perception is wrong?"
+      ],
+      "defenses": [
+        "Protect control logic with hard safety constraints.",
+        "Use independent checks on high-risk world-state estimates.",
+        "Separate mission goals from irreversible actuation privileges."
+      ],
+      "stageLabel": "What must remain trustworthy in embodied AI operation."
+    },
+    "defense": {
+      "buttonLabel": "Defense placement",
+      "title": "Defense-placement reading",
+      "summary": "The strongest defenses sit both before and after AI inference: sensor validation before decision, and physical interlocks before irreversible action.",
+      "focus": [
+        "sense",
+        "actuation",
+        "impact",
+        "assurance"
+      ],
+      "questions": [
+        "Can the system verify sensing integrity before acting?",
+        "What non-AI safety layers can stop a dangerous command?",
+        "How is degraded operation handled when sensors or localization cannot be trusted?"
+      ],
+      "defenses": [
+        "Sensor cross-checks, uncertainty-aware control, runtime monitors, interlocks.",
+        "Independent safety channels for high-consequence actuation.",
+        "Graceful degradation and emergency stop logic."
+      ],
+      "stageLabel": "Where to place defenses when the model touches the physical world."
+    },
+    "evaluation": {
+      "buttonLabel": "Evaluation lens",
+      "title": "Evaluation reading",
+      "summary": "Physical AI evaluation must combine cyber attack thinking with robotics or control-system safety testing under real-world uncertainty.",
+      "focus": [
+        "sense",
+        "control",
+        "impact",
+        "assurance"
+      ],
+      "questions": [
+        "Do tests include spoofed, occluded, delayed, or contradictory sensor input?",
+        "Can the system explain or log why a dangerous command was generated?",
+        "How is safety maintained during partial failure, latency, or operator handoff?"
+      ],
+      "defenses": [
+        "Evaluate in scenario-driven, physically grounded environments.",
+        "Measure safety envelope breaches, not only perception accuracy.",
+        "Test fallback logic as seriously as nominal autonomy."
+      ],
+      "stageLabel": "How to evaluate the physical AI landscape with safety in mind."
+    }
+  },
+  "tableIntro": "Each row below translates one region of the figure into the security question it raises, the asset it exposes, and the control placement it demands.",
+  "table": [
+    {
+      "surface": "Sensors and preprocessing",
+      "risk": "Spoofing, occlusion, calibration drift",
+      "asset": "Perception integrity and situational awareness",
+      "control": "Redundancy, validation, anomaly checks"
+    },
+    {
+      "surface": "World model and prediction",
+      "risk": "State-estimation error or adversarial ambiguity",
+      "asset": "Planner inputs and safety context",
+      "control": "Uncertainty tracking, independent consistency checks"
+    },
+    {
+      "surface": "Planner and controller",
+      "risk": "Unsafe command generation",
+      "asset": "Trajectory and action integrity",
+      "control": "Safety envelopes, bounded autonomy, interpretable control states"
+    },
+    {
+      "surface": "Actuation and physical interaction",
+      "risk": "Harmful or irreversible action",
+      "asset": "People, infrastructure, mission outcome",
+      "control": "Interlocks, fail-safe modes, emergency stop pathways"
+    }
+  ],
+  "researchIntro": "These are the higher-level questions that the diagram naturally opens once it is treated as a serious research map instead of only an illustration.",
+  "researchQuestions": [
+    {
+      "title": "Perception-to-action assurance",
+      "body": "What guarantees are actually possible across sensing, world modeling, planning, and actuation when an attacker can manipulate the physical environment itself?"
+    },
+    {
+      "title": "Uncertainty as security signal",
+      "body": "How should physical AI systems expose uncertainty so that it influences control and safety policy rather than remaining an ignored internal number?"
+    },
+    {
+      "title": "Safety interlocks for learned control",
+      "body": "Which non-AI safety channels are most effective when learned components drive or influence safety-critical physical behavior?"
+    },
+    {
+      "title": "Embodied evaluation realism",
+      "body": "What benchmark and testbed design best captures cyber-physical attack conditions instead of only simulated or model-centric failure cases?"
+    }
+  ]
+};
+</script>
+</body>
+</html>

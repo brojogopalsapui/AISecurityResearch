@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Predictive AI Security Landscape — Interactive Research Visualization</title>
+<meta name="description" content="This companion page turns the predictive-security diagram into a decision-surface analysis: how classifiers, detectors, rankers, and forecasters fail under adaptive manipulation, what data and behavior they expose, and where robustness and assurance must be measured for real operational use."/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
+<link href="../../../assets/css/topic-visualization.css" rel="stylesheet"/>
+<script defer="True" src="../../../assets/js/site-shell.js"></script>
+<script defer="True" src="../../../assets/js/portal.js"></script>
+<script defer="True" src="../../../assets/js/topic-visualization.js"></script>
+</head>
+<body class="portal-page topic-visualization-page" data-depth="3" data-nav="research" data-page="predictive_ai" data-topic-theme="light">
+<div id="site-shell-top"></div><div id="site-shell-header"></div>
+<main>
+  <div id="topicVisualizationRoot"></div>
+</main>
+<div id="site-shell-footer"></div>
+<script>
+window.TOPIC_VISUALIZATION = {
+  "pageTitle": "Predictive AI Security Landscape — Interactive Research Visualization",
+  "slug": "predictive_ai-light",
+  "theme": "light",
+  "domain": "AI Security Section",
+  "title": "Predictive AI Security Landscape",
+  "intro": "This companion page turns the predictive-security diagram into a decision-surface analysis: how classifiers, detectors, rankers, and forecasters fail under adaptive manipulation, what data and behavior they expose, and where robustness and assurance must be measured for real operational use.",
+  "backHref": "../../predictive-ai.html",
+  "backLabel": "Back to Predictive AI Security",
+  "figureSrc": "../../../assets/img/diagrams/predictive_ai_security_landscape.svg",
+  "figureAlt": "Diagram showing predictive AI security across model targets, attack classes, exposed assets, decision impact, and research focus.",
+  "figureCaption": "Predictive AI security around inference manipulation, poisoning, leakage, and operational decision impact.",
+  "stageIntro": "Use the animated lenses below to read the original diagram as a threat model, an asset map, a defense placement map, and an evaluation checklist without changing the underlying research framing.",
+  "tags": [
+    "classifiers and detectors",
+    "evasion",
+    "poisoning",
+    "privacy inference",
+    "decision assurance"
+  ],
+  "legend": [
+    {
+      "label": "Ingress or trust boundary",
+      "swatch": "#2f6df6"
+    },
+    {
+      "label": "Transformation or runtime layer",
+      "swatch": "#d69120"
+    },
+    {
+      "label": "System glue or control point",
+      "swatch": "#0f8a8f"
+    },
+    {
+      "label": "Exposed asset or consequence",
+      "swatch": "#d9486b"
+    }
+  ],
+  "metrics": [
+    {
+      "label": "Primary ingress",
+      "value": "Inference-time manipulation",
+      "detail": "Predictive systems are often attacked through the exact inputs they were built to score."
+    },
+    {
+      "label": "Protected asset",
+      "value": "Decision integrity and training data",
+      "detail": "The attacker wants wrong decisions, hidden leakage, or model replication."
+    },
+    {
+      "label": "Failure pattern",
+      "value": "Small perturbation, high-value misdecision",
+      "detail": "Operational damage can be large even when the observable change is subtle."
+    },
+    {
+      "label": "Research lens",
+      "value": "Decision boundary under adaptive pressure",
+      "detail": "Accuracy on clean data does not define security."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "inputs",
+      "kicker": "Input plane",
+      "title": "Scored observations",
+      "summary": "Images, text, telemetry, transactions, features.",
+      "color": "blue",
+      "x": 50,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "model",
+      "kicker": "Model plane",
+      "title": "Boundary and confidence",
+      "summary": "Classifier margin, ranking behavior, forecast response.",
+      "color": "amber",
+      "x": 430,
+      "y": 80,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "training",
+      "kicker": "Training plane",
+      "title": "Dataset and labels",
+      "summary": "Poisoning, clean-label manipulation, backdoors.",
+      "color": "violet",
+      "x": 810,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "privacy",
+      "kicker": "Leakage plane",
+      "title": "Inference and reconstruction",
+      "summary": "Membership, attributes, representative features.",
+      "color": "teal",
+      "x": 180,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "impact",
+      "kicker": "Decision impact",
+      "title": "Operational consequence",
+      "summary": "Fraud, filtering, triage, routing, risk scoring.",
+      "color": "red",
+      "x": 510,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "assurance",
+      "kicker": "Assurance lens",
+      "title": "Robustness and monitoring",
+      "summary": "Stress testing, drift review, fallback logic.",
+      "color": "slate",
+      "x": 840,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    }
+  ],
+  "edges": [
+    {
+      "from": "inputs",
+      "to": "model"
+    },
+    {
+      "from": "training",
+      "to": "model"
+    },
+    {
+      "from": "model",
+      "to": "impact"
+    },
+    {
+      "from": "model",
+      "to": "privacy"
+    },
+    {
+      "from": "privacy",
+      "to": "assurance"
+    },
+    {
+      "from": "impact",
+      "to": "assurance"
+    },
+    {
+      "from": "training",
+      "to": "assurance"
+    }
+  ],
+  "defaultLens": "threat",
+  "lenses": {
+    "threat": {
+      "buttonLabel": "Threat flow",
+      "title": "Threat-flow reading",
+      "summary": "Predictive AI threats move from manipulated observations or poisoned training examples into altered model decisions and operational outcomes.",
+      "focus": [
+        "inputs",
+        "model",
+        "training",
+        "impact"
+      ],
+      "questions": [
+        "Which attacker controls inputs and which can touch training data?",
+        "How sensitive is the decision boundary to small, targeted shifts?",
+        "What real-world action follows a wrong score or ranking?"
+      ],
+      "defenses": [
+        "Use robust feature pipelines and defense-aware monitoring.",
+        "Protect training data provenance and label integrity.",
+        "Bound operational automation when scores drive high-impact actions."
+      ],
+      "stageLabel": "How adaptive manipulation reaches the predictive decision boundary."
+    },
+    "assets": {
+      "buttonLabel": "Asset exposure",
+      "title": "Asset-exposure reading",
+      "summary": "The valuable assets include decision logic, training-set membership, sensitive features, and business behavior encoded in the model itself.",
+      "focus": [
+        "model",
+        "privacy",
+        "impact"
+      ],
+      "questions": [
+        "What can be inferred about the training distribution or protected attributes?",
+        "Does confidence output leak more than the task requires?",
+        "How much business logic is revealed by repeated scoring queries?"
+      ],
+      "defenses": [
+        "Reduce unnecessary confidence exposure.",
+        "Test membership and attribute leakage explicitly.",
+        "Treat model behavior as proprietary operational knowledge."
+      ],
+      "stageLabel": "What predictive systems reveal through scoring behavior."
+    },
+    "defense": {
+      "buttonLabel": "Defense placement",
+      "title": "Defense-placement reading",
+      "summary": "Controls must sit at feature construction, data curation, deployment policy, and downstream decision review, not only inside the model objective.",
+      "focus": [
+        "inputs",
+        "training",
+        "assurance"
+      ],
+      "questions": [
+        "Where is the first reliable opportunity to detect manipulation?",
+        "Does the system degrade safely when confidence is unreliable?",
+        "Can operators audit why a score changed over time?"
+      ],
+      "defenses": [
+        "Feature validation, provenance checks, and fallback review paths.",
+        "Robustness evaluation tied to the actual deployment domain.",
+        "Monitoring for drift, anomaly clustering, and repeated evasive probes."
+      ],
+      "stageLabel": "Where predictive defenses should be placed for real use."
+    },
+    "evaluation": {
+      "buttonLabel": "Evaluation lens",
+      "title": "Evaluation reading",
+      "summary": "Predictive models need evaluation against attacker-adaptive inputs, distribution shift, and consequence-weighted failure modes.",
+      "focus": [
+        "inputs",
+        "model",
+        "privacy",
+        "assurance"
+      ],
+      "questions": [
+        "Are robustness claims measured against adaptive attacks or only canned perturbations?",
+        "Which failure modes are most costly in the deployment context?",
+        "Can the team separate drift from deliberate manipulation?"
+      ],
+      "defenses": [
+        "Stress test under adversarial and shifted distributions.",
+        "Track confidence calibration as a security signal.",
+        "Measure operational impact, not just misclassification rate."
+      ],
+      "stageLabel": "Turning the predictive landscape into a serious evaluation plan."
+    }
+  },
+  "tableIntro": "Each row below translates one region of the figure into the security question it raises, the asset it exposes, and the control placement it demands.",
+  "table": [
+    {
+      "surface": "Inference input pipeline",
+      "risk": "Evasion and targeted manipulation",
+      "asset": "Decision integrity and service trust",
+      "control": "Feature validation, robust preprocessing, anomaly review"
+    },
+    {
+      "surface": "Training and labeling pipeline",
+      "risk": "Poisoning and backdoor insertion",
+      "asset": "Model integrity and future decision quality",
+      "control": "Provenance, review, staged retraining"
+    },
+    {
+      "surface": "Model outputs and confidence",
+      "risk": "Extraction and privacy inference",
+      "asset": "Training data, business logic, sensitive attributes",
+      "control": "Output minimization, query controls, privacy testing"
+    },
+    {
+      "surface": "Decision integration layer",
+      "risk": "Automated bad action after wrong score",
+      "asset": "Downstream workflow and user impact",
+      "control": "Fallback review, threshold governance, incident metrics"
+    }
+  ],
+  "researchIntro": "These are the higher-level questions that the diagram naturally opens once it is treated as a serious research map instead of only an illustration.",
+  "researchQuestions": [
+    {
+      "title": "Adaptive robustness",
+      "body": "What evaluation methodology best captures how real attackers adapt to ranking, filtering, or detection systems once they observe deployment behavior?"
+    },
+    {
+      "title": "Secure confidence",
+      "body": "How should confidence, uncertainty, and abstention be exposed so that operators gain signal without attackers gaining a better extraction or evasion oracle?"
+    },
+    {
+      "title": "Poisoning at scale",
+      "body": "Which data curation practices actually reduce poisoning risk when retraining happens continuously on very large, mixed-quality datasets?"
+    },
+    {
+      "title": "Consequence-weighted security",
+      "body": "How should security metrics change when a false negative in one domain is far more harmful than thousands of benign misclassifications elsewhere?"
+    }
+  ]
+};
+</script>
+</body>
+</html>

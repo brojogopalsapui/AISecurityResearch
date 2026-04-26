@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Edge AI Security Landscape — Interactive Research Visualization</title>
+<meta name="description" content="This companion page reads the edge-security diagram as a device trust chain: from sensor ingress to local compute, storage, update channels, and fleet assurance. The focus is how tight resource budgets, intermittent connectivity, and physical exposure reshape what counts as a realistic AI defense."/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
+<link href="../../../assets/css/topic-visualization.css" rel="stylesheet"/>
+<script defer="True" src="../../../assets/js/site-shell.js"></script>
+<script defer="True" src="../../../assets/js/portal.js"></script>
+<script defer="True" src="../../../assets/js/topic-visualization.js"></script>
+</head>
+<body class="portal-page topic-visualization-page" data-depth="3" data-nav="research" data-page="edge_security" data-topic-theme="light">
+<div id="site-shell-top"></div><div id="site-shell-header"></div>
+<main>
+  <div id="topicVisualizationRoot"></div>
+</main>
+<div id="site-shell-footer"></div>
+<script>
+window.TOPIC_VISUALIZATION = {
+  "pageTitle": "Edge AI Security Landscape — Interactive Research Visualization",
+  "slug": "edge_security-light",
+  "theme": "light",
+  "domain": "AI Security Section",
+  "title": "Edge AI Security Landscape",
+  "intro": "This companion page reads the edge-security diagram as a device trust chain: from sensor ingress to local compute, storage, update channels, and fleet assurance. The focus is how tight resource budgets, intermittent connectivity, and physical exposure reshape what counts as a realistic AI defense.",
+  "backHref": "../../edge-security.html",
+  "backLabel": "Back to Edge AI Security",
+  "figureSrc": "../../../assets/img/diagrams/edge_ai_security_landscape.svg",
+  "figureAlt": "Diagram showing edge AI security across trust chain, main threats, resource constraints, exposed assets, deployment risks, and research focus.",
+  "figureCaption": "Edge AI security across sensor ingress, local compute, trust anchors, updates, and fleet control.",
+  "stageIntro": "Use the animated lenses below to read the original diagram as a threat model, an asset map, a defense placement map, and an evaluation checklist without changing the underlying research framing.",
+  "tags": [
+    "physical access",
+    "secure boot",
+    "OTA updates",
+    "resource constraints",
+    "fleet assurance"
+  ],
+  "legend": [
+    {
+      "label": "Ingress or trust boundary",
+      "swatch": "#2f6df6"
+    },
+    {
+      "label": "Transformation or runtime layer",
+      "swatch": "#d69120"
+    },
+    {
+      "label": "System glue or control point",
+      "swatch": "#0f8a8f"
+    },
+    {
+      "label": "Exposed asset or consequence",
+      "swatch": "#d9486b"
+    }
+  ],
+  "metrics": [
+    {
+      "label": "Primary ingress",
+      "value": "Sensor, board, and update path",
+      "detail": "Edge attackers often have proximity or can tamper with the device lifecycle itself."
+    },
+    {
+      "label": "Protected asset",
+      "value": "Model, device identity, operational state",
+      "detail": "The device is both the AI host and the trust anchor."
+    },
+    {
+      "label": "Failure pattern",
+      "value": "Local compromise, remote fleet effect",
+      "detail": "One edge weakness can scale across a whole managed device population."
+    },
+    {
+      "label": "Research lens",
+      "value": "Trust chain under constraints",
+      "detail": "Security must survive limited power, storage, bandwidth, and operator visibility."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "sensor",
+      "kicker": "Ingress surface",
+      "title": "Sensor and local input",
+      "summary": "Camera, audio, telemetry, physical probes.",
+      "color": "blue",
+      "x": 50,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "runtime",
+      "kicker": "On-device stack",
+      "title": "Model and accelerator runtime",
+      "summary": "Local inference, quantization, scheduling, buffers.",
+      "color": "amber",
+      "x": 430,
+      "y": 80,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "storage",
+      "kicker": "State plane",
+      "title": "Secrets and local storage",
+      "summary": "Weights, keys, cached context, logs, credentials.",
+      "color": "violet",
+      "x": 810,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "update",
+      "kicker": "Lifecycle plane",
+      "title": "Boot and OTA path",
+      "summary": "Secure boot, attestation, firmware updates.",
+      "color": "teal",
+      "x": 180,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "fleet",
+      "kicker": "Fleet plane",
+      "title": "Remote management",
+      "summary": "Provisioning, telemetry, policy, revocation, rollout.",
+      "color": "red",
+      "x": 510,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "assurance",
+      "kicker": "Assurance lens",
+      "title": "Resilience under constraint",
+      "summary": "Recovery, monitoring, staged updates, trust repair.",
+      "color": "slate",
+      "x": 840,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    }
+  ],
+  "edges": [
+    {
+      "from": "sensor",
+      "to": "runtime"
+    },
+    {
+      "from": "runtime",
+      "to": "storage"
+    },
+    {
+      "from": "runtime",
+      "to": "update"
+    },
+    {
+      "from": "update",
+      "to": "fleet"
+    },
+    {
+      "from": "storage",
+      "to": "assurance"
+    },
+    {
+      "from": "fleet",
+      "to": "assurance"
+    },
+    {
+      "from": "sensor",
+      "to": "assurance"
+    }
+  ],
+  "defaultLens": "threat",
+  "lenses": {
+    "threat": {
+      "buttonLabel": "Threat flow",
+      "title": "Threat-flow reading",
+      "summary": "Read the edge map as a device trust chain where compromise can begin at the sensor, at the board, or during updates, then expand through fleet control.",
+      "focus": [
+        "sensor",
+        "runtime",
+        "storage",
+        "update"
+      ],
+      "questions": [
+        "What can an attacker alter physically or locally before inference begins?",
+        "Which trust assumptions break when the device is intermittently connected?",
+        "Can one update or provisioning fault replicate across the fleet?"
+      ],
+      "defenses": [
+        "Harden boot and update paths before relying on runtime AI controls.",
+        "Isolate secrets and weights from casual board-level access.",
+        "Plan fleet rollback and key rotation before field deployment."
+      ],
+      "stageLabel": "How edge compromise travels from one device to many."
+    },
+    "assets": {
+      "buttonLabel": "Asset exposure",
+      "title": "Asset-exposure reading",
+      "summary": "The main assets are the deployed model, device identity, local state, and the management channel that can reshape the fleet after manufacture.",
+      "focus": [
+        "runtime",
+        "storage",
+        "fleet"
+      ],
+      "questions": [
+        "Which local caches or logs reveal sensitive workloads or user behavior?",
+        "How strongly is device identity tied to attestation and provisioning?",
+        "Can stolen fleet credentials reconfigure many devices at once?"
+      ],
+      "defenses": [
+        "Encrypt and minimize local state.",
+        "Bind device identity to attestation and rollout policy.",
+        "Separate fleet management authority from routine inference telemetry."
+      ],
+      "stageLabel": "What the edge adversary wants from the device and its controller."
+    },
+    "defense": {
+      "buttonLabel": "Defense placement",
+      "title": "Defense-placement reading",
+      "summary": "On the edge, the best control is often one that prevents trust failure at boot or update time, not one that only detects strange inference later.",
+      "focus": [
+        "storage",
+        "update",
+        "fleet",
+        "assurance"
+      ],
+      "questions": [
+        "Which defenses work offline or under weak connectivity?",
+        "Can the platform recover trust after field compromise?",
+        "How much operator visibility exists when a device is physically remote?"
+      ],
+      "defenses": [
+        "Secure boot, measured updates, attestation, and staged rollout.",
+        "Minimal local privilege with revocable credentials.",
+        "Telemetry and fail-safe design that degrade safely under uncertainty."
+      ],
+      "stageLabel": "Controls that matter most on exposed, resource-constrained devices."
+    },
+    "evaluation": {
+      "buttonLabel": "Evaluation lens",
+      "title": "Evaluation reading",
+      "summary": "Edge AI evaluation must include real deployment conditions: battery budget, intermittent connectivity, board-level access, and fleet maintenance behavior.",
+      "focus": [
+        "sensor",
+        "runtime",
+        "fleet",
+        "assurance"
+      ],
+      "questions": [
+        "Do tests include tampered sensors, storage extraction, and rollback attacks?",
+        "What failures can be detected locally versus only in the fleet backend?",
+        "How does security behave when updates are delayed or partially deployed?"
+      ],
+      "defenses": [
+        "Test staged rollout and recovery, not only steady-state inference.",
+        "Measure security overhead against power and latency budgets.",
+        "Evaluate device and fleet behavior together as one assurance problem."
+      ],
+      "stageLabel": "How to evaluate the edge landscape beyond lab assumptions."
+    }
+  },
+  "tableIntro": "Each row below translates one region of the figure into the security question it raises, the asset it exposes, and the control placement it demands.",
+  "table": [
+    {
+      "surface": "Sensor and physical input path",
+      "risk": "Spoofing, perturbation, local tampering",
+      "asset": "Input integrity and situational awareness",
+      "control": "Sensor validation, secure preprocessing, tamper awareness"
+    },
+    {
+      "surface": "On-device runtime",
+      "risk": "Extraction, buffer leakage, constrained bypass",
+      "asset": "Model weights, outputs, local control flow",
+      "control": "Runtime isolation, minimized attack surface, bounded permissions"
+    },
+    {
+      "surface": "Boot/update lifecycle",
+      "risk": "Rollback, malicious firmware, counterfeit state",
+      "asset": "Device trust anchor and software provenance",
+      "control": "Secure boot, signed OTA, attestation"
+    },
+    {
+      "surface": "Fleet management plane",
+      "risk": "Mass reconfiguration or credential abuse",
+      "asset": "Whole-device population and policy state",
+      "control": "Scoped fleet credentials, staged rollout, rapid revocation"
+    }
+  ],
+  "researchIntro": "These are the higher-level questions that the diagram naturally opens once it is treated as a serious research map instead of only an illustration.",
+  "researchQuestions": [
+    {
+      "title": "Trust under constraints",
+      "body": "Which security controls remain viable when edge devices have severe energy, compute, and bandwidth limits but still need strong attestation and update assurance?"
+    },
+    {
+      "title": "Fleet-scale blast radius",
+      "body": "How should defenders model and measure the difference between a one-device compromise and a fleet-level compromise pathway?"
+    },
+    {
+      "title": "Sensor-to-model integrity",
+      "body": "What end-to-end guarantees are possible when sensing, preprocessing, inference, and actuation all happen on a physically exposed device?"
+    },
+    {
+      "title": "Recoverable edge trust",
+      "body": "What is the right recovery model when a device cannot be fully trusted but also cannot be immediately recalled from the field?"
+    }
+  ]
+};
+</script>
+</body>
+</html>

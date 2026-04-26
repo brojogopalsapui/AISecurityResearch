@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Agentic AI Security Landscape — Interactive Research Visualization</title>
+<meta name="description" content="This companion page reinterprets the agentic-security diagram as a delegated authority system: goals, planning, memory, retrieval, tools, and approvals unfold over time. The central question is how to keep action and privilege bounded when the model can iteratively choose what to read, call, remember, and do next."/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
+<link href="../../../assets/css/topic-visualization.css" rel="stylesheet"/>
+<script defer="True" src="../../../assets/js/site-shell.js"></script>
+<script defer="True" src="../../../assets/js/portal.js"></script>
+<script defer="True" src="../../../assets/js/topic-visualization.js"></script>
+</head>
+<body class="portal-page topic-visualization-page" data-depth="3" data-nav="research" data-page="agentic_ai" data-topic-theme="dark">
+<div id="site-shell-top"></div><div id="site-shell-header"></div>
+<main>
+  <div id="topicVisualizationRoot"></div>
+</main>
+<div id="site-shell-footer"></div>
+<script>
+window.TOPIC_VISUALIZATION = {
+  "pageTitle": "Agentic AI Security Landscape — Interactive Research Visualization",
+  "slug": "agentic_ai-dark",
+  "theme": "dark",
+  "domain": "AI Security Section",
+  "title": "Agentic AI Security Landscape",
+  "intro": "This companion page reinterprets the agentic-security diagram as a delegated authority system: goals, planning, memory, retrieval, tools, and approvals unfold over time. The central question is how to keep action and privilege bounded when the model can iteratively choose what to read, call, remember, and do next.",
+  "backHref": "../../agentic-ai.html",
+  "backLabel": "Back to Agentic AI Security",
+  "figureSrc": "../../../assets/img/diagrams/agentic_ai_security_landscape.svg",
+  "figureAlt": "Diagram showing agentic AI security across planner, memory, tools, delegation, threats, oversight points, and research focus.",
+  "figureCaption": "Agentic AI security around planning loops, memory, tools, delegation, and oversight.",
+  "stageIntro": "Use the animated lenses below to read the original diagram as a threat model, an asset map, a defense placement map, and an evaluation checklist without changing the underlying research framing.",
+  "tags": [
+    "planning loops",
+    "memory contamination",
+    "tool authority",
+    "approval gates",
+    "oversight"
+  ],
+  "legend": [
+    {
+      "label": "Ingress or trust boundary",
+      "swatch": "#6aa9ff"
+    },
+    {
+      "label": "Transformation or runtime layer",
+      "swatch": "#ffb454"
+    },
+    {
+      "label": "System glue or control point",
+      "swatch": "#45d1c7"
+    },
+    {
+      "label": "Exposed asset or consequence",
+      "swatch": "#ff6b87"
+    }
+  ],
+  "metrics": [
+    {
+      "label": "Primary ingress",
+      "value": "Goal and observation loop",
+      "detail": "Agentic risk grows as the system repeatedly updates its own state and plan."
+    },
+    {
+      "label": "Protected asset",
+      "value": "Authority, memory, workflow integrity",
+      "detail": "The agent can turn local reasoning errors into persistent operational change."
+    },
+    {
+      "label": "Failure pattern",
+      "value": "Compounding over time",
+      "detail": "A small manipulation early in the loop can reshape later actions and approvals."
+    },
+    {
+      "label": "Research lens",
+      "value": "Temporal security",
+      "detail": "The agent must be judged across many steps, not one model completion."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "goal",
+      "kicker": "Control plane",
+      "title": "Goal and policy",
+      "summary": "Task framing, rules, role constraints, approval policy.",
+      "color": "blue",
+      "x": 50,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "planner",
+      "kicker": "Reasoning loop",
+      "title": "Planner and decomposition",
+      "summary": "Subgoals, strategy updates, internal state.",
+      "color": "amber",
+      "x": 430,
+      "y": 80,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "memory",
+      "kicker": "State plane",
+      "title": "Memory and retrieval",
+      "summary": "Persistent notes, scratchpads, external state.",
+      "color": "violet",
+      "x": 810,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "tools",
+      "kicker": "Action plane",
+      "title": "Tools and delegation",
+      "summary": "API calls, code, browsing, SaaS operations, other agents.",
+      "color": "teal",
+      "x": 180,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "impact",
+      "kicker": "Impact plane",
+      "title": "Privilege and consequence",
+      "summary": "Data access, workflow changes, external actions.",
+      "color": "red",
+      "x": 510,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "assurance",
+      "kicker": "Assurance lens",
+      "title": "Oversight and interruption",
+      "summary": "Approval, replay, rollback, bounded autonomy.",
+      "color": "slate",
+      "x": 840,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    }
+  ],
+  "edges": [
+    {
+      "from": "goal",
+      "to": "planner"
+    },
+    {
+      "from": "planner",
+      "to": "memory"
+    },
+    {
+      "from": "planner",
+      "to": "tools"
+    },
+    {
+      "from": "memory",
+      "to": "tools"
+    },
+    {
+      "from": "tools",
+      "to": "impact"
+    },
+    {
+      "from": "impact",
+      "to": "assurance"
+    },
+    {
+      "from": "goal",
+      "to": "assurance"
+    }
+  ],
+  "defaultLens": "threat",
+  "lenses": {
+    "threat": {
+      "buttonLabel": "Threat flow",
+      "title": "Threat-flow reading",
+      "summary": "Agentic failures emerge when attacker-controlled observations or memory reshape planning, then steer tools and delegated actions over time.",
+      "focus": [
+        "goal",
+        "planner",
+        "memory",
+        "tools"
+      ],
+      "questions": [
+        "Where can hostile content influence the plan without looking like a direct command?",
+        "What state persists from one step to the next?",
+        "How much authority can the agent exercise before a human or policy gate intervenes?"
+      ],
+      "defenses": [
+        "Keep state scoped and inspectable.",
+        "Require policy checks before high-impact tool use.",
+        "Design for interruption and rollback, not only successful autonomy."
+      ],
+      "stageLabel": "How manipulation compounds across the agent loop."
+    },
+    "assets": {
+      "buttonLabel": "Asset exposure",
+      "title": "Asset-exposure reading",
+      "summary": "The exposed assets are not only data and prompts, but also plans, memory state, approval context, and delegated capability.",
+      "focus": [
+        "memory",
+        "tools",
+        "impact"
+      ],
+      "questions": [
+        "Which memories or retrieved notes can silently bias later actions?",
+        "What authority is delegated through tools, tokens, or peer agents?",
+        "Can one compromised agent session affect future sessions?"
+      ],
+      "defenses": [
+        "Expire or isolate memory aggressively.",
+        "Bind tools and delegated actions to narrow scopes.",
+        "Separate session-local state from persistent knowledge unless explicitly approved."
+      ],
+      "stageLabel": "What agentic systems expose as they accumulate context and authority."
+    },
+    "defense": {
+      "buttonLabel": "Defense placement",
+      "title": "Defense-placement reading",
+      "summary": "In agentic systems the most important defenses sit around transitions: plan-to-tool, observation-to-memory, and proposal-to-approval.",
+      "focus": [
+        "planner",
+        "tools",
+        "impact",
+        "assurance"
+      ],
+      "questions": [
+        "Where is the final gate before external action?",
+        "Can the approval layer understand the true context behind a proposed action?",
+        "What happens if oversight is delayed or skipped?"
+      ],
+      "defenses": [
+        "Use interpretable approval packets and explicit capability bounds.",
+        "Constrain memory writes and long-lived secrets.",
+        "Keep high-risk actions reversible where possible."
+      ],
+      "stageLabel": "Where to place controls in a temporal, tool-using system."
+    },
+    "evaluation": {
+      "buttonLabel": "Evaluation lens",
+      "title": "Evaluation reading",
+      "summary": "Agentic AI requires scenario-based, multi-step evaluation that measures persistence, deception, and authority escalation, not only first-response quality.",
+      "focus": [
+        "planner",
+        "memory",
+        "impact",
+        "assurance"
+      ],
+      "questions": [
+        "Do tests include long-horizon manipulation and memory contamination?",
+        "How is oversight evaluated under time pressure or alert fatigue?",
+        "Can the system explain why a later action depends on earlier hidden state?"
+      ],
+      "defenses": [
+        "Evaluate multi-step runs with adversarial observations and tool environments.",
+        "Measure blast radius over time and across connected systems.",
+        "Version policies and approvals with the agent architecture itself."
+      ],
+      "stageLabel": "How to evaluate the agentic landscape beyond single-turn prompts."
+    }
+  },
+  "tableIntro": "Each row below translates one region of the figure into the security question it raises, the asset it exposes, and the control placement it demands.",
+  "table": [
+    {
+      "surface": "Goal and policy framing",
+      "risk": "Instruction confusion or malicious task steering",
+      "asset": "Intended mission boundary and authority limits",
+      "control": "Policy envelopes, explicit constraints, capability scoping"
+    },
+    {
+      "surface": "Planner and memory loop",
+      "risk": "State contamination and covert persistence",
+      "asset": "Future reasoning and decision trajectory",
+      "control": "Scoped memory, reviewable state, bounded persistence"
+    },
+    {
+      "surface": "Tools and delegation",
+      "risk": "Unsafe external action or privilege escalation",
+      "asset": "Connected systems and business workflows",
+      "control": "Per-tool policy, approvals, reversible operations"
+    },
+    {
+      "surface": "Oversight and rollback path",
+      "risk": "Late detection with high blast radius",
+      "asset": "Human control and incident response",
+      "control": "Interruption hooks, replay, rollback, traceability"
+    }
+  ],
+  "researchIntro": "These are the higher-level questions that the diagram naturally opens once it is treated as a serious research map instead of only an illustration.",
+  "researchQuestions": [
+    {
+      "title": "Temporal guardrails",
+      "body": "What architecture can keep an agent useful while still enforcing trustworthy behavior across many observations, memory updates, and tool calls?"
+    },
+    {
+      "title": "Memory governance",
+      "body": "How should persistent memory be structured so that it helps continuity without becoming a silent persistence channel for attacker influence?"
+    },
+    {
+      "title": "Approval quality",
+      "body": "What information must a human or automated approver receive to judge whether a proposed action is safe in context rather than superficially reasonable?"
+    },
+    {
+      "title": "Delegation safety",
+      "body": "How can agent-to-agent or agent-to-tool delegation be made auditable, bounded, and revocable at runtime?"
+    }
+  ]
+};
+</script>
+</body>
+</html>

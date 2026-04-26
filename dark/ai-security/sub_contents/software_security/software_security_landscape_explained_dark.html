@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Software AI Security Landscape — Interactive Research Visualization</title>
+<meta name="description" content="This companion page turns the software-security landscape into a sharper systems model: where hostile inputs enter, which software layers amplify risk, what assets are exposed, and where defenses must sit if the model, the prompt stack, and the orchestration layer are all in play at once."/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
+<link href="../../../assets/css/topic-visualization.css" rel="stylesheet"/>
+<script defer="True" src="../../../assets/js/site-shell.js"></script>
+<script defer="True" src="../../../assets/js/portal.js"></script>
+<script defer="True" src="../../../assets/js/topic-visualization.js"></script>
+</head>
+<body class="portal-page topic-visualization-page" data-depth="3" data-nav="research" data-page="software_security" data-topic-theme="dark">
+<div id="site-shell-top"></div><div id="site-shell-header"></div>
+<main>
+  <div id="topicVisualizationRoot"></div>
+</main>
+<div id="site-shell-footer"></div>
+<script>
+window.TOPIC_VISUALIZATION = {
+  "pageTitle": "Software AI Security Landscape — Interactive Research Visualization",
+  "slug": "software_security-dark",
+  "theme": "dark",
+  "domain": "AI Security Section",
+  "title": "Software AI Security Landscape",
+  "intro": "This companion page turns the software-security landscape into a sharper systems model: where hostile inputs enter, which software layers amplify risk, what assets are exposed, and where defenses must sit if the model, the prompt stack, and the orchestration layer are all in play at once.",
+  "backHref": "../../software-security.html",
+  "backLabel": "Back to Software Security",
+  "figureSrc": "../../../assets/img/diagrams/software_security_landscape.svg",
+  "figureAlt": "Structured diagram showing software AI security landscape including attack surface, core threats, LLM-specific risks, exposed assets, operational impact, and evaluation focus.",
+  "figureCaption": "Software AI security across data, model, interface, retrieval, and deployment logic.",
+  "stageIntro": "Use the animated lenses below to read the original diagram as a threat model, an asset map, a defense placement map, and an evaluation checklist without changing the underlying research framing.",
+  "tags": [
+    "adversarial inputs",
+    "prompt injection",
+    "retrieval poisoning",
+    "tool orchestration",
+    "runtime containment"
+  ],
+  "legend": [
+    {
+      "label": "Ingress or trust boundary",
+      "swatch": "#6aa9ff"
+    },
+    {
+      "label": "Transformation or runtime layer",
+      "swatch": "#ffb454"
+    },
+    {
+      "label": "System glue or control point",
+      "swatch": "#45d1c7"
+    },
+    {
+      "label": "Exposed asset or consequence",
+      "swatch": "#ff6b87"
+    }
+  ],
+  "metrics": [
+    {
+      "label": "Primary ingress",
+      "value": "APIs and context assembly",
+      "detail": "Most attacks begin at the software boundary before silicon or physical access matters."
+    },
+    {
+      "label": "Protected asset",
+      "value": "Behavior, secrets, downstream authority",
+      "detail": "The software layer exposes prompts, training traces, tools, and action pathways."
+    },
+    {
+      "label": "Failure pattern",
+      "value": "Remote manipulation at scale",
+      "detail": "A low-friction attacker can repeatedly probe and adapt through public interfaces."
+    },
+    {
+      "label": "Research lens",
+      "value": "Model plus surrounding stack",
+      "detail": "The model cannot be evaluated in isolation from the glue code around it."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ingress",
+      "kicker": "Ingress surface",
+      "title": "Inputs and files",
+      "summary": "Queries, uploads, retrieved pages, plugin outputs.",
+      "color": "blue",
+      "x": 50,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "training",
+      "kicker": "Training plane",
+      "title": "Data and tuning",
+      "summary": "Poisoning, backdoors, provenance drift.",
+      "color": "amber",
+      "x": 430,
+      "y": 80,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "runtime",
+      "kicker": "Model runtime",
+      "title": "Prompt and inference",
+      "summary": "Jailbreaks, evasion, hidden-state leakage.",
+      "color": "violet",
+      "x": 810,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "rag",
+      "kicker": "System glue",
+      "title": "Retrieval and tools",
+      "summary": "RAG assembly, tool calls, memory, wrappers.",
+      "color": "teal",
+      "x": 180,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "assets",
+      "kicker": "Exposed assets",
+      "title": "Secrets and behavior",
+      "summary": "Prompts, embeddings, weights, policies, actions.",
+      "color": "red",
+      "x": 510,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "assurance",
+      "kicker": "Assurance lens",
+      "title": "Logging and evaluation",
+      "summary": "Replay, red teaming, policy checks, incident handling.",
+      "color": "slate",
+      "x": 840,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    }
+  ],
+  "edges": [
+    {
+      "from": "ingress",
+      "to": "training"
+    },
+    {
+      "from": "training",
+      "to": "runtime"
+    },
+    {
+      "from": "runtime",
+      "to": "rag"
+    },
+    {
+      "from": "ingress",
+      "to": "assets"
+    },
+    {
+      "from": "training",
+      "to": "assets"
+    },
+    {
+      "from": "rag",
+      "to": "assurance"
+    },
+    {
+      "from": "assets",
+      "to": "assurance"
+    }
+  ],
+  "defaultLens": "threat",
+  "lenses": {
+    "threat": {
+      "buttonLabel": "Threat flow",
+      "title": "Threat-flow reading",
+      "summary": "Read the diagram as a chain of attacker-controlled entry points, model interpretation mistakes, and software-side amplification paths.",
+      "focus": [
+        "ingress",
+        "training",
+        "runtime",
+        "rag"
+      ],
+      "questions": [
+        "Which interfaces accept untrusted content?",
+        "Can attacker content alter system behavior directly, or only indirectly?",
+        "Which stage turns text manipulation into privileged action?"
+      ],
+      "defenses": [
+        "Separate untrusted content from control instructions.",
+        "Gate retrieval and tool execution with explicit policy checks.",
+        "Record replayable traces for adaptive red-team evaluation."
+      ],
+      "stageLabel": "Animated threat progression across the software stack."
+    },
+    "assets": {
+      "buttonLabel": "Asset exposure",
+      "title": "Asset-exposure reading",
+      "summary": "This view emphasizes what the attacker is really trying to reach: confidential data, hidden prompts, proprietary behavior, or downstream authority.",
+      "focus": [
+        "runtime",
+        "rag",
+        "assets"
+      ],
+      "questions": [
+        "Which secrets are present in prompts, logs, memory, or retrieved context?",
+        "What proprietary behavior can be reconstructed through repeated queries?",
+        "How much downstream authority sits behind the model output?"
+      ],
+      "defenses": [
+        "Minimize prompt and log exposure.",
+        "Segment permissions so one compromised chain cannot reach every asset.",
+        "Treat tool outputs and memory as sensitive state, not harmless metadata."
+      ],
+      "stageLabel": "Asset-centric reading of the software landscape."
+    },
+    "defense": {
+      "buttonLabel": "Defense placement",
+      "title": "Defense-placement reading",
+      "summary": "The key question is not just whether a defense exists, but whether it is placed before the attacker-controlled transition that matters.",
+      "focus": [
+        "ingress",
+        "runtime",
+        "rag",
+        "assurance"
+      ],
+      "questions": [
+        "Is the main control preventive, detective, or forensic?",
+        "Does the defense sit before prompt assembly and tool execution?",
+        "Can operators see how a failure propagated across layers?"
+      ],
+      "defenses": [
+        "Put validation at ingress, policy checks before action, and audit hooks at every boundary.",
+        "Harden evaluation pipelines so regressions surface early.",
+        "Use containment so model compromise does not automatically become system compromise."
+      ],
+      "stageLabel": "Defense controls layered around the software attack chain."
+    },
+    "evaluation": {
+      "buttonLabel": "Evaluation lens",
+      "title": "Evaluation reading",
+      "summary": "Software security claims are only meaningful if they survive adaptive pressure, cross-layer attacks, and realistic orchestration complexity.",
+      "focus": [
+        "training",
+        "runtime",
+        "assets",
+        "assurance"
+      ],
+      "questions": [
+        "Are evaluations attacker-adaptive or static?",
+        "Do tests include retrieval, tools, memory, and post-processing?",
+        "What evidence proves the system remains safe after updates?"
+      ],
+      "defenses": [
+        "Continuously test with adaptive prompts and poisoned context.",
+        "Measure both model robustness and system blast radius.",
+        "Version prompts, tools, and policy logic alongside model changes."
+      ],
+      "stageLabel": "How to read the figure as an evaluation framework."
+    }
+  },
+  "tableIntro": "Each row below translates one region of the figure into the security question it raises, the asset it exposes, and the control placement it demands.",
+  "table": [
+    {
+      "surface": "Public API or chat surface",
+      "risk": "Evasion, jailbreaks, policy probing",
+      "asset": "Safety behavior and usage budget",
+      "control": "Input normalization, throttling, adaptive monitoring"
+    },
+    {
+      "surface": "Fine-tuning and data curation",
+      "risk": "Poisoning, backdoor insertion",
+      "asset": "Model integrity and evaluation validity",
+      "control": "Provenance control, data audits, staged release gates"
+    },
+    {
+      "surface": "Retrieval and tool orchestration",
+      "risk": "Indirect prompt injection, unsafe actuation",
+      "asset": "Secrets, connected systems, business workflows",
+      "control": "Context isolation, policy enforcement, approval checkpoints"
+    },
+    {
+      "surface": "Observability and feedback loops",
+      "risk": "Leakage, online abuse, silent regression",
+      "asset": "Logs, traces, memory, future model updates",
+      "control": "Retention policy, red-team replay, anomaly review"
+    }
+  ],
+  "researchIntro": "These are the higher-level questions that the diagram naturally opens once it is treated as a serious research map instead of only an illustration.",
+  "researchQuestions": [
+    {
+      "title": "Instruction separation",
+      "body": "How should agent and assistant stacks separate data, policy, and authority so that one compromised context window does not collapse the whole workflow?"
+    },
+    {
+      "title": "RAG trust boundaries",
+      "body": "What evaluation methodology best captures retrieval poisoning, citation laundering, and tool-mediated prompt injection together rather than as separate toy problems?"
+    },
+    {
+      "title": "Behavior theft economics",
+      "body": "How much API leakage is enough to enable substitute models, transfer attacks, or product-level competitive cloning in practice?"
+    },
+    {
+      "title": "Forensic observability",
+      "body": "Which software traces are minimal yet sufficient for post-incident reconstruction without creating new privacy or prompt leakage risks?"
+    }
+  ]
+};
+</script>
+</body>
+</html>

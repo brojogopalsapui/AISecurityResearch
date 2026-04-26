@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Cloud AI Security Landscape — Interactive Research Visualization</title>
+<meta name="description" content="This companion page interprets the cloud-security diagram as an operational trust map: identity boundaries, orchestration glue, storage and logs, shared infrastructure, and the governance controls that decide whether a scalable AI service remains trustworthy under real production pressure."/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
+<link href="../../../assets/css/topic-visualization.css" rel="stylesheet"/>
+<script defer="True" src="../../../assets/js/site-shell.js"></script>
+<script defer="True" src="../../../assets/js/portal.js"></script>
+<script defer="True" src="../../../assets/js/topic-visualization.js"></script>
+</head>
+<body class="portal-page topic-visualization-page" data-depth="3" data-nav="research" data-page="cloud_security" data-topic-theme="dark">
+<div id="site-shell-top"></div><div id="site-shell-header"></div>
+<main>
+  <div id="topicVisualizationRoot"></div>
+</main>
+<div id="site-shell-footer"></div>
+<script>
+window.TOPIC_VISUALIZATION = {
+  "pageTitle": "Cloud AI Security Landscape — Interactive Research Visualization",
+  "slug": "cloud_security-dark",
+  "theme": "dark",
+  "domain": "AI Security Section",
+  "title": "Cloud AI Security Landscape",
+  "intro": "This companion page interprets the cloud-security diagram as an operational trust map: identity boundaries, orchestration glue, storage and logs, shared infrastructure, and the governance controls that decide whether a scalable AI service remains trustworthy under real production pressure.",
+  "backHref": "../../cloud-security.html",
+  "backLabel": "Back to Cloud AI Security",
+  "figureSrc": "../../../assets/img/diagrams/cloud_ai_security_landscape.svg",
+  "figureAlt": "Diagram showing cloud AI security across trust boundaries, main threats, data exposure, infrastructure risks, operational impact, and security focus.",
+  "figureCaption": "Cloud AI security across identity, orchestration, storage, model serving, and operations.",
+  "stageIntro": "Use the animated lenses below to read the original diagram as a threat model, an asset map, a defense placement map, and an evaluation checklist without changing the underlying research framing.",
+  "tags": [
+    "identity boundaries",
+    "multi-tenancy",
+    "RAG and glue code",
+    "MLOps supply chain",
+    "cost abuse"
+  ],
+  "legend": [
+    {
+      "label": "Ingress or trust boundary",
+      "swatch": "#6aa9ff"
+    },
+    {
+      "label": "Transformation or runtime layer",
+      "swatch": "#ffb454"
+    },
+    {
+      "label": "System glue or control point",
+      "swatch": "#45d1c7"
+    },
+    {
+      "label": "Exposed asset or consequence",
+      "swatch": "#ff6b87"
+    }
+  ],
+  "metrics": [
+    {
+      "label": "Primary ingress",
+      "value": "Remote API and workload identity",
+      "detail": "Most cloud compromise starts with exposed interfaces or over-broad credentials."
+    },
+    {
+      "label": "Protected asset",
+      "value": "Prompts, data, models, service authority",
+      "detail": "Cloud AI concentrates many sensitive assets into one control plane."
+    },
+    {
+      "label": "Failure pattern",
+      "value": "Ordinary cloud weakness, AI-scale impact",
+      "detail": "One IAM or storage mistake can expose prompts, models, logs, and tools at once."
+    },
+    {
+      "label": "Research lens",
+      "value": "Model security plus service security",
+      "detail": "The production stack around the model is part of the AI threat model."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "identity",
+      "kicker": "Identity plane",
+      "title": "IAM and workload trust",
+      "summary": "Keys, roles, service accounts, workload identity.",
+      "color": "blue",
+      "x": 50,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "gateway",
+      "kicker": "Service edge",
+      "title": "API and model gateway",
+      "summary": "Remote access, throttling, moderation, tenancy.",
+      "color": "amber",
+      "x": 430,
+      "y": 80,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "orchestration",
+      "kicker": "Glue logic",
+      "title": "RAG and orchestration",
+      "summary": "Prompt assembly, tool routing, queues, policies.",
+      "color": "violet",
+      "x": 810,
+      "y": 110,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "storage",
+      "kicker": "Data plane",
+      "title": "Storage and observability",
+      "summary": "Buckets, logs, vectors, artifacts, traces.",
+      "color": "teal",
+      "x": 180,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "shared",
+      "kicker": "Shared infra",
+      "title": "Clusters and accelerators",
+      "summary": "Schedulers, multi-tenant nodes, runtime isolation.",
+      "color": "red",
+      "x": 510,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    },
+    {
+      "id": "assurance",
+      "kicker": "Assurance lens",
+      "title": "Governance and response",
+      "summary": "Auditability, supply chain, promotion controls.",
+      "color": "slate",
+      "x": 840,
+      "y": 360,
+      "w": 310,
+      "h": 112
+    }
+  ],
+  "edges": [
+    {
+      "from": "identity",
+      "to": "gateway"
+    },
+    {
+      "from": "gateway",
+      "to": "orchestration"
+    },
+    {
+      "from": "orchestration",
+      "to": "storage"
+    },
+    {
+      "from": "gateway",
+      "to": "shared"
+    },
+    {
+      "from": "storage",
+      "to": "assurance"
+    },
+    {
+      "from": "shared",
+      "to": "assurance"
+    },
+    {
+      "from": "identity",
+      "to": "assurance"
+    }
+  ],
+  "defaultLens": "threat",
+  "lenses": {
+    "threat": {
+      "buttonLabel": "Threat flow",
+      "title": "Threat-flow reading",
+      "summary": "Cloud AI attacks often chain remote query pressure, identity misuse, and orchestration mistakes into a wider service compromise.",
+      "focus": [
+        "identity",
+        "gateway",
+        "orchestration",
+        "storage"
+      ],
+      "questions": [
+        "What can an unauthenticated or weakly authenticated caller reach?",
+        "Which identity hop turns a prompt or webhook into privileged platform access?",
+        "Where does orchestration amplify a small cloud mistake into broad exposure?"
+      ],
+      "defenses": [
+        "Constrain identity first, then reduce orchestration authority.",
+        "Treat prompt wrappers and service glue as security-critical code.",
+        "Use quotas and anomaly detection to slow adaptive cloud abuse."
+      ],
+      "stageLabel": "How a remote attacker moves through cloud AI boundaries."
+    },
+    "assets": {
+      "buttonLabel": "Asset exposure",
+      "title": "Asset-exposure reading",
+      "summary": "The key cloud assets include not only model outputs, but logs, embeddings, artifacts, model registries, and the permissions that connect them.",
+      "focus": [
+        "gateway",
+        "storage",
+        "shared"
+      ],
+      "questions": [
+        "Which prompts, traces, or embeddings are retained beyond immediate inference?",
+        "Where do model artifacts live across dev, staging, and production?",
+        "How much tenant metadata is visible through dashboards or shared services?"
+      ],
+      "defenses": [
+        "Shorten retention, narrow visibility, and segment storage by trust boundary.",
+        "Protect model artifacts and registries like production secrets.",
+        "Minimize cross-tenant metadata exposure in tooling and observability."
+      ],
+      "stageLabel": "Cloud assets exposed by AI deployment patterns."
+    },
+    "defense": {
+      "buttonLabel": "Defense placement",
+      "title": "Defense-placement reading",
+      "summary": "The strongest cloud defenses sit before action and before storage proliferation, not only at the public endpoint.",
+      "focus": [
+        "identity",
+        "orchestration",
+        "storage",
+        "assurance"
+      ],
+      "questions": [
+        "Does the main control live in IAM, network policy, application policy, or post-event logging?",
+        "Can one stolen credential traverse too many systems?",
+        "Which controls verify deployment integrity before promotion?"
+      ],
+      "defenses": [
+        "Identity-first design, scoped secrets, and attested workloads.",
+        "Storage segmentation and retention review for prompts and traces.",
+        "Promotion gates for models, prompts, containers, and policy config."
+      ],
+      "stageLabel": "Control points that matter most in cloud AI operation."
+    },
+    "evaluation": {
+      "buttonLabel": "Evaluation lens",
+      "title": "Evaluation reading",
+      "summary": "Cloud AI needs evaluation under real service conditions: noisy tenants, pipeline updates, quota pressure, and cross-tool orchestration.",
+      "focus": [
+        "gateway",
+        "orchestration",
+        "shared",
+        "assurance"
+      ],
+      "questions": [
+        "Do tests include tenant isolation and quota abuse, not only prompt quality?",
+        "Can operators correlate a model issue with storage, scheduler, or IAM events?",
+        "What changes silently alter the trust boundary over time?"
+      ],
+      "defenses": [
+        "Run incident drills that include IAM and storage failures.",
+        "Test orchestration and MLOps paths, not only the serving endpoint.",
+        "Version governance policy alongside models and prompts."
+      ],
+      "stageLabel": "How to turn the cloud diagram into an evaluation plan."
+    }
+  },
+  "tableIntro": "Each row below translates one region of the figure into the security question it raises, the asset it exposes, and the control placement it demands.",
+  "table": [
+    {
+      "surface": "Identity and workload trust",
+      "risk": "Credential theft, overprivileged access",
+      "asset": "Model endpoints, buckets, vector stores, tooling",
+      "control": "Short-lived credentials, scoped roles, attested identity"
+    },
+    {
+      "surface": "Inference gateway and APIs",
+      "risk": "Extraction, cost abuse, policy probing",
+      "asset": "Service availability and hidden behavior",
+      "control": "Rate limits, quota isolation, adaptive abuse detection"
+    },
+    {
+      "surface": "Orchestration and retrieval glue",
+      "risk": "Prompt injection, unsafe tool routing",
+      "asset": "Connected services and workflow authority",
+      "control": "Policy checks, approval gates, context isolation"
+    },
+    {
+      "surface": "Storage and observability plane",
+      "risk": "Prompt leakage, artifact exposure, retention drift",
+      "asset": "User data, logs, embeddings, model artifacts",
+      "control": "Segmentation, retention review, auditable access control"
+    }
+  ],
+  "researchIntro": "These are the higher-level questions that the diagram naturally opens once it is treated as a serious research map instead of only an illustration.",
+  "researchQuestions": [
+    {
+      "title": "Identity-native agents",
+      "body": "What should least-privilege and workload identity look like when LLM agents dynamically call tools across many cloud services?"
+    },
+    {
+      "title": "Isolation for shared accelerators",
+      "body": "How strong must cluster, runtime, and accelerator isolation become as high-value inference workloads consolidate onto shared infrastructure?"
+    },
+    {
+      "title": "Observability without leakage",
+      "body": "Which tracing and logging patterns are sufficient for incident response while still minimizing prompt, secret, and embedding exposure?"
+    },
+    {
+      "title": "Governance drift detection",
+      "body": "How can teams detect when incremental prompt, container, or policy changes have silently moved the real cloud trust boundary?"
+    }
+  ]
+};
+</script>
+</body>
+</html>
