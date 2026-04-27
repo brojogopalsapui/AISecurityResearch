@@ -69,7 +69,7 @@
       { id:'contact', href:`${base}contact.html`, label:'Contact' }
     ];
 
-    if (topMount) {
+/*     if (topMount) {
       topMount.innerHTML = `
         <div class="portal-topline">
           <div class="container">
@@ -80,7 +80,7 @@
             </div>
           </div>
         </div>`;
-    }
+    } */
 
     if (headerMount) {
       headerMount.innerHTML = `
