@@ -393,12 +393,12 @@
 </section>
 <section class="section">
 <div class="container">
-<span class="kicker">Research Watch</span>
-<h2>Highlighted ongoing directions</h2>
+<span class="kicker">Research Watch Archive</span>
+<h2>Short notes by year and month</h2>
 <p class="lead lead-measure">
-          These shorter research-watch notes are ideal for commenting on new papers, industry movement, benchmark gaps,
-          and emerging design tensions. The goal is not to summarize everything, but to make the key shift in the field clear
-          and explain why it matters for how AI systems are actually being built.
+          These shorter research-watch notes keep the existing accordion format, but are now grouped into folder-style year
+          and month archives. Use this section for compact signals from papers, industry movement, benchmark gaps, and
+          emerging design tensions.
         </p>
 <!--
           ======================================================================
@@ -418,8 +418,8 @@
             _internal/update_ongoing_work_and_index_from_docx_posts_REFERENCE.ipynb
 
           MANUAL FALLBACK
-          If you ever want to add a note manually, paste a new <article> ABOVE the
-          first existing watch-note block.
+          If you ever want to add a note manually, paste a new <article> inside
+          the relevant month folder's watch-stack, above the newest note for that month.
 
           MINIMAL MANUAL TEMPLATE
           <article class="watch-note accordion" id="2026-04-your-topic">
@@ -470,6 +470,21 @@
             </div>
           </article>
         -->
+<div class="research-watch-archive">
+<div class="research-watch-year-folder">
+<div class="research-watch-year-label">
+<span class="folder-tab"></span>
+<strong>2026</strong>
+<small>Short research notes</small>
+</div>
+<section class="research-watch-month-folder" id="research-watch-2026-april">
+<header class="research-watch-month-head">
+<div>
+<span>April</span>
+<small>4 short notes</small>
+</div>
+<a href="#09-04-2026-190000-accelerating-ai-rd">Latest short note</a>
+</header>
 <div class="watch-stack">
 <article class="watch-note accordion" data-category="academic" id="09-04-2026-190000-accelerating-ai-rd">
 <button aria-expanded="false" class="accordion-trigger" type="button">
@@ -607,6 +622,17 @@
 </div>
 </div>
 </article>
+</div>
+</section>
+<section class="research-watch-month-folder" id="research-watch-2026-march">
+<header class="research-watch-month-head">
+<div>
+<span>March</span>
+<small>13 short notes</small>
+</div>
+<a href="#2026-03-zero-standing-privilege-p0-security">Open March notes</a>
+</header>
+<div class="watch-stack">
 <article class="watch-note accordion" data-category="academic" id="2026-03-zero-standing-privilege-p0-security">
 <button aria-expanded="false" class="accordion-trigger" type="button">
 <span class="stream-chip stream-chip--academic">Academic</span>
@@ -1107,6 +1133,9 @@
 </div>
 </div>
 </article>
+</div>
+</section>
+</div>
 </div>
 </div>
 </section>

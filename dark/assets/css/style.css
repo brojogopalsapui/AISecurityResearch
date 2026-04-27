@@ -4688,3 +4688,136 @@ body.portal-page[data-page="trending"] .accordion.is-open{
     grid-template-columns:1fr;
   }
 }
+
+/* Research Watch folder archive: keeps existing short-note accordion format */
+.research-watch-archive{
+  margin-top:1.6rem;
+}
+
+.research-watch-year-folder{
+  position:relative;
+  display:grid;
+  gap:1rem;
+  padding:1rem;
+  border:1px solid rgba(125,211,252,.26);
+  border-radius:20px;
+  background:linear-gradient(180deg,rgba(8,18,33,.78),rgba(12,30,50,.82));
+  box-shadow:0 22px 54px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.research-watch-year-label{
+  position:relative;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.7rem;
+  align-items:center;
+  width:fit-content;
+  min-height:58px;
+  padding:.8rem 1rem .75rem 1.1rem;
+  border:1px solid rgba(125,211,252,.42);
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(8,18,33,.98),rgba(14,116,144,.56));
+  color:#ffffff;
+}
+
+.research-watch-year-label::before{
+  content:"";
+  position:absolute;
+  left:1rem;
+  top:-15px;
+  width:5.8rem;
+  height:15px;
+  border:1px solid rgba(125,211,252,.42);
+  border-bottom:0;
+  border-radius:12px 12px 0 0;
+  background:rgba(14,116,144,.72);
+}
+
+.research-watch-year-label strong{
+  color:#ffffff;
+  font-size:1.5rem;
+  line-height:1;
+}
+
+.research-watch-year-label small{
+  color:#bff3ff;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.research-watch-month-folder{
+  position:relative;
+  display:grid;
+  gap:1rem;
+  padding:1rem;
+  border:1px solid rgba(125,211,252,.22);
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(8,18,33,.82),rgba(13,34,57,.86));
+  box-shadow:0 18px 42px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+.research-watch-month-folder::before{
+  content:"";
+  position:absolute;
+  left:-1px;
+  top:1.1rem;
+  bottom:1.1rem;
+  width:7px;
+  border-radius:0 999px 999px 0;
+  background:#38bdf8;
+  box-shadow:0 0 16px rgba(56,189,248,.34);
+}
+
+.research-watch-month-head{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.8rem;
+  align-items:center;
+  justify-content:space-between;
+  padding-left:.45rem;
+}
+
+.research-watch-month-head span{
+  display:block;
+  color:#ffffff;
+  font-size:1.35rem;
+  font-weight:900;
+}
+
+.research-watch-month-head small{
+  display:block;
+  color:#b8d2e8;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.research-watch-month-head a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  padding:0 .85rem;
+  border:1px solid rgba(125,211,252,.4);
+  border-radius:12px;
+  background:rgba(56,189,248,.09);
+  color:#d8f6ff!important;
+  font-weight:900;
+  text-decoration:none;
+}
+
+.research-watch-month-folder .watch-stack{
+  margin-top:.15rem;
+}
+
+@media (max-width: 720px){
+  .research-watch-year-folder,
+  .research-watch-month-folder{
+    padding:.85rem;
+  }
+
+  .research-watch-month-head a{
+    width:100%;
+  }
+}
