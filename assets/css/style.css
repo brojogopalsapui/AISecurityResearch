@@ -3784,3 +3784,146 @@ body.subpage::before{
     width:100%;
   }
 }
+
+/* Folder-style deep-dive archive */
+.deep-dive-folder-archive{
+  display:grid;
+  grid-template-columns:260px minmax(0,1fr);
+  gap:1rem;
+  align-items:stretch;
+}
+
+.deep-dive-folder-tree{
+  display:grid;
+  gap:.75rem;
+  align-content:start;
+}
+
+.deep-dive-year-folder,
+.deep-dive-month-folder,
+.deep-dive-latest{
+  position:relative;
+  border:2.4px solid #101114;
+  border-radius:16px;
+  background:#ffffff;
+  box-shadow:0 18px 42px rgba(28,39,51,.11), inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.deep-dive-year-folder{
+  min-height:126px;
+  padding:1rem;
+  background:linear-gradient(180deg,#0b1727,#12395b);
+  color:#ffffff;
+  overflow:hidden;
+}
+
+.deep-dive-year-folder::before{
+  content:"";
+  position:absolute;
+  left:1rem;
+  top:-1px;
+  width:6.5rem;
+  height:1.15rem;
+  border:2.4px solid #101114;
+  border-bottom:0;
+  border-radius:12px 12px 0 0;
+  background:#12395b;
+}
+
+.deep-dive-year-folder strong{
+  display:block;
+  margin-top:1.25rem;
+  color:#ffffff;
+  font-size:2.45rem;
+  line-height:1;
+}
+
+.deep-dive-year-folder small{
+  display:block;
+  margin-top:.35rem;
+  color:#bfeeff;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.deep-dive-month-folder{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:.4rem;
+  align-items:center;
+  min-height:82px;
+  padding:.9rem 1rem .9rem 1.25rem;
+  color:#07111f;
+  text-decoration:none;
+}
+
+.deep-dive-month-folder::before{
+  content:"";
+  position:absolute;
+  left:-2.4px;
+  top:14px;
+  bottom:14px;
+  width:7px;
+  background:#0e7490;
+  border-radius:0 999px 999px 0;
+}
+
+.deep-dive-month-folder span{
+  color:#07111f;
+  font-size:1.32rem;
+  font-weight:900;
+}
+
+.deep-dive-month-folder small{
+  color:#075985;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.deep-dive-latest{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:1.2rem;
+  align-items:center;
+  min-height:210px;
+  padding:1.45rem;
+  background:linear-gradient(135deg,#ffffff 0%,#eefaff 52%,#f5fffb 100%);
+}
+
+.deep-dive-latest::before{
+  content:"Latest";
+  position:absolute;
+  top:-2.4px;
+  right:1rem;
+  padding:.28rem .7rem;
+  border:2.4px solid #101114;
+  border-top:0;
+  border-radius:0 0 12px 12px;
+  background:#0b1727;
+  color:#ffffff;
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.deep-dive-latest h3{
+  margin:.1rem 0 .55rem;
+  color:#07111f;
+  font-size:clamp(1.45rem, 2.6vw, 2.3rem);
+}
+
+.deep-dive-latest p{
+  max-width:76ch;
+  margin:0;
+  color:#314156;
+}
+
+@media (max-width: 860px){
+  .deep-dive-folder-archive,
+  .deep-dive-latest{
+    grid-template-columns:1fr;
+  }
+}
