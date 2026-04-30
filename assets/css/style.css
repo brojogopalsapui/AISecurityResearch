@@ -32,6 +32,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
   overflow-x: clip;
 }
 
@@ -47,6 +48,7 @@ body {
     radial-gradient(circle at 92% 8%, rgba(155, 140, 255, 0.13), transparent 22%),
     radial-gradient(circle at 50% 96%, rgba(78, 216, 201, 0.11), transparent 24%),
     linear-gradient(135deg, #223350 0%, #2d4264 34%, #385278 68%, #273852 100%);
+  overflow-x: hidden;
   overflow-x: clip;
 }
 
@@ -4420,5 +4422,65 @@ body.subpage::before{
 
   .archive-month::before{
     left:-1.03rem;
+  }
+}
+
+/* Mobile-safe fallback for long AI topic pages, especially Android rendering */
+@media (max-width: 860px){
+  .ai-topic-page::before{
+    display:none;
+  }
+
+  .ai-topic-page main,
+  .ai-topic-page .section,
+  .ai-topic-page .container{
+    overflow:visible;
+  }
+
+  .ai-topic-page .page-grid{
+    display:block !important;
+  }
+
+  .ai-topic-page .toc,
+  .ai-topic-page .content-card,
+  .ai-topic-page .page-figure{
+    width:100%;
+    max-width:none;
+    opacity:1 !important;
+    visibility:visible !important;
+    transform:none !important;
+  }
+
+  .ai-topic-page .toc{
+    position:static !important;
+    top:auto !important;
+    margin:0 0 1rem;
+  }
+
+  .ai-topic-page .content-card,
+  .ai-topic-page .page-figure,
+  .ai-topic-page .toc{
+    overflow:visible;
+    box-shadow:0 10px 24px rgba(24,35,47,.08) !important;
+    backdrop-filter:none !important;
+  }
+
+  .ai-topic-page .content-card:hover,
+  .ai-topic-page .page-figure:hover,
+  .ai-topic-page .toc:hover{
+    transform:none !important;
+  }
+
+  .ai-topic-page .content-card > *:not(figure),
+  .ai-topic-page .page-figure,
+  .ai-topic-page .callout,
+  .ai-topic-page .table-wrap{
+    max-width:none;
+  }
+
+  .ai-topic-page .page-figure img,
+  .ai-topic-page .portal-media img{
+    width:100%;
+    height:auto;
   }
 }

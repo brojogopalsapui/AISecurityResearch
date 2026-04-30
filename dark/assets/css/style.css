@@ -34,6 +34,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
   overflow-x: clip;
 }
 
@@ -49,6 +50,7 @@ body {
     radial-gradient(circle at 92% 8%, rgba(155, 140, 255, 0.13), transparent 22%),
     radial-gradient(circle at 50% 96%, rgba(78, 216, 201, 0.11), transparent 24%),
     linear-gradient(135deg, #223350 0%, #2d4264 34%, #385278 68%, #273852 100%);
+  overflow-x: hidden;
   overflow-x: clip;
 }
 
@@ -5183,5 +5185,65 @@ body.portal-page[data-page="trending"] .accordion.is-open{
 
   .archive-month::before{
     left:-1.03rem;
+  }
+}
+
+/* Mobile-safe fallback for long research subpages, especially Android rendering */
+@media (max-width: 860px){
+  .portal-page[data-nav="research"]::before{
+    display:none;
+  }
+
+  .portal-page[data-nav="research"] main,
+  .portal-page[data-nav="research"] .section,
+  .portal-page[data-nav="research"] .container{
+    overflow:visible;
+  }
+
+  .portal-page[data-nav="research"] .page-grid{
+    display:block !important;
+  }
+
+  .portal-page[data-nav="research"] .toc,
+  .portal-page[data-nav="research"] .content-card,
+  .portal-page[data-nav="research"] .page-figure{
+    width:100%;
+    max-width:none;
+    opacity:1 !important;
+    visibility:visible !important;
+    transform:none !important;
+  }
+
+  .portal-page[data-nav="research"] .toc{
+    position:static !important;
+    top:auto !important;
+    margin:0 0 1rem;
+  }
+
+  .portal-page[data-nav="research"] .content-card,
+  .portal-page[data-nav="research"] .page-figure,
+  .portal-page[data-nav="research"] .toc{
+    overflow:visible;
+    box-shadow:0 14px 30px rgba(2,8,20,.22) !important;
+    backdrop-filter:none !important;
+  }
+
+  .portal-page[data-nav="research"] .content-card:hover,
+  .portal-page[data-nav="research"] .page-figure:hover,
+  .portal-page[data-nav="research"] .toc:hover{
+    transform:none !important;
+  }
+
+  .portal-page[data-nav="research"] .content-card > *:not(figure),
+  .portal-page[data-nav="research"] .page-figure,
+  .portal-page[data-nav="research"] .callout,
+  .portal-page[data-nav="research"] .table-wrap{
+    max-width:none;
+  }
+
+  .portal-page[data-nav="research"] .page-figure img,
+  .portal-page[data-nav="research"] .portal-media img{
+    width:100%;
+    height:auto;
   }
 }
