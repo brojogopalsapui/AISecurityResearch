@@ -118,6 +118,24 @@
   @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
   .shake{animation:shake 0.4s ease-in-out}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+  #site-shell-footer .shell-footer__links a.trending-link{
+    display:inline-flex !important;
+    align-items:center;
+    justify-content:center;
+    width:fit-content;
+    min-height:42px;
+    padding:0 .95rem;
+    border-radius:999px;
+    color:#ffffff !important;
+    background:linear-gradient(135deg, rgba(91,140,255,.28), rgba(83,229,246,.18), rgba(255,106,183,.2)) !important;
+    border:1px solid rgba(151,190,255,.22) !important;
+    box-shadow:0 12px 30px rgba(7,17,31,.28), inset 0 1px 0 rgba(255,255,255,.12) !important;
+    text-decoration:none !important;
+  }
+  #site-shell-footer .shell-footer__links a.trending-link:hover{
+    color:#ffffff !important;
+    background:linear-gradient(135deg, rgba(104,151,255,.34), rgba(90,234,247,.23), rgba(255,106,183,.24)) !important;
+  }
 </style>
 </head>
 <body class="subpage lifecycle-visualization-page" data-depth="2" data-nav="home" data-page="ml-lifecycle" data-light-href="../../../assets/portal_overview/ml_security_lifecycle_clarity_light.html?mode=light">
