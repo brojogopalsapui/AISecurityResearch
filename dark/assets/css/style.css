@@ -5247,3 +5247,17 @@ body.portal-page[data-page="trending"] .accordion.is-open{
     height:auto;
   }
 }
+
+/* Keep reading-oriented cards fixed for better readability */
+.content-card:hover,
+.post-card:hover,
+.topic-card:hover,
+.section-card:hover,
+.resource-card:hover,
+.watch-note:hover,
+.accordion:hover,
+.foundational-figure:hover,
+.page-figure:hover,
+.toc:hover{
+  transform:none !important;
+}

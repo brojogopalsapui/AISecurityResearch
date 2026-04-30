@@ -482,7 +482,7 @@
 
   function initTilt(){
     if (window.matchMedia('(pointer: coarse)').matches) return;
-    const cards = document.querySelectorAll('.quick-card, .feature-card, .content-card, .panel, .post-card, .section-card, .topic-card, .foundation-card, .profile-card, .pulse-card, .resource-card, .watch-note');
+    const cards = document.querySelectorAll('.quick-card, .feature-card, .profile-card, .pulse-card, .metric-card, .portal-visual');
     cards.forEach(card => {
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
