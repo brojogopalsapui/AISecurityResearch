@@ -2057,7 +2057,7 @@ body.portal-page .toc hr{border-color:var(--portal-line)!important;opacity:.7}
   background:#fff;color:#06111f;font-size:1.7rem;box-shadow:0 14px 30px rgba(0,0,0,.28)
 }
 
-.portal-reveal{opacity:0;transform:translateY(18px);transition:opacity .45s ease, transform .45s ease}
+.portal-reveal{opacity:1;transform:none;transition:none}
 .portal-reveal.is-visible{opacity:1;transform:none}
 
 .site-shell-footer{padding:1.2rem 0 2.3rem}

@@ -123,20 +123,7 @@
 
   function initReveal(){
     const nodes = document.querySelectorAll('main > section, .content-card, .post-card, .topic-card, .section-card, .panel, .feature-card, .quick-card, .pulse-card, .profile-card, .resource-card, .watch-note');
-    if (!('IntersectionObserver' in window)) {
-      nodes.forEach(el => el.classList.add('portal-reveal', 'is-visible'));
-      return;
-    }
-    nodes.forEach(el => el.classList.add('portal-reveal'));
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-    nodes.forEach(el => io.observe(el));
+    nodes.forEach(el => el.classList.add('portal-reveal', 'is-visible'));
   }
 
   function initJumpRail(){
