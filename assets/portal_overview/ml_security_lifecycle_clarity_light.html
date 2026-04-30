@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ML Security Lifecycle — Attack &amp; Defense Deep Dive</title>
+<link href="../css/style.css" rel="stylesheet"/>
+<script defer src="../js/site-shell.js"></script>
+<script defer src="../js/portal.js"></script>
 <style>
   :root{
     --bg:#07090f;
@@ -24,10 +27,10 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:radial-gradient(ellipse at top,#0c1428 0%,#05070d 60%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
-  header{padding:48px 24px 24px;text-align:center;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(255,51,85,.06),rgba(118,185,0,.04),transparent)}
-  header h1{margin:0;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;background:linear-gradient(90deg,#ff3355,#a479ff 45%,#00d4ff 75%,#76b900);-webkit-background-clip:text;background-clip:text;color:transparent}
-  header p.sub{color:var(--muted);margin:8px auto 0;font-size:15px;max-width:820px}
-  header .badges{margin-top:14px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+  .viz-hero{padding:48px 24px 24px;text-align:center;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(255,51,85,.06),rgba(118,185,0,.04),transparent)}
+  .viz-hero h1{margin:0;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;background:linear-gradient(90deg,#ff3355,#a479ff 45%,#00d4ff 75%,#76b900);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .viz-hero p.sub{color:var(--muted);margin:8px auto 0;font-size:15px;max-width:820px}
+  .viz-hero .badges{margin-top:14px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
   nav.toc{max-width:1200px;margin:20px auto 0;padding:14px 18px;background:var(--panel);border:1px solid var(--border);border-radius:12px;display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
   nav.toc a{color:var(--accent2);text-decoration:none;padding:6px 10px;border-radius:6px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.15);transition:background .15s}
   nav.toc a:hover{background:rgba(0,212,255,.18)}
@@ -102,7 +105,7 @@
   td.attack{color:var(--attack);font-weight:600}
   td.defense{color:var(--accent);font-weight:600}
   .footnote{color:var(--muted);font-size:12px;margin-top:10px;font-style:italic}
-  footer{text-align:center;padding:30px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:40px}
+  .viz-footer{text-align:center;padding:30px 20px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:40px}
   .callout{background:linear-gradient(135deg,rgba(118,185,0,.06),rgba(0,212,255,.04));border:1px solid rgba(118,185,0,.25);border-radius:10px;padding:14px 18px;margin:14px 0;font-size:14px;color:#d8e0f5}
   .callout strong{color:var(--accent)}
   .callout.warn{background:linear-gradient(135deg,rgba(255,51,85,.07),rgba(255,77,141,.04));border-color:rgba(255,51,85,.3)}
@@ -137,19 +140,19 @@
     background:radial-gradient(ellipse at top,#f8fbff 0%,#edf3f9 60%);
     color:var(--text);
   }
-  header{
+  .viz-hero{
     border-bottom:1px solid rgba(18,38,58,.08);
     background:linear-gradient(180deg,rgba(198,59,79,.08),rgba(95,141,18,.06),rgba(255,255,255,.72));
   }
-  header h1{
+  .viz-hero h1{
     background:linear-gradient(90deg,#c63b4f,#7654d4 45%,#0c7fa8 75%,#5f8d12);
     -webkit-background-clip:text;
     background-clip:text;
   }
-  header p.sub,
+  .viz-hero p.sub,
   .legend,
   .footnote,
-  footer{
+  .viz-footer{
     color:var(--muted);
   }
   nav.toc{
@@ -252,14 +255,16 @@
     background:linear-gradient(135deg,rgba(198,59,79,.08),rgba(184,90,136,.06));
     border-color:rgba(198,59,79,.24);
   }
-  footer{
+  .viz-footer{
     border-top:1px solid rgba(18,38,58,.08);
   }
 </style>
 </head>
-<body>
+<body class="subpage lifecycle-visualization-page" data-depth="2" data-nav="home" data-page="ml-lifecycle" data-dark-href="../../dark/assets/portal_overview/ml_security_lifecycle_clarity.html?mode=dark">
+<div id="site-shell-top"></div>
+<div id="site-shell-header"></div>
 
-<header>
+<section class="viz-hero">
   <h1>ML Security Lifecycle — Attack &amp; Defense Deep Dive</h1>
   <p class="sub">
     An interactive tour through the six stages of the machine-learning pipeline — Data Collection,
@@ -274,7 +279,7 @@
     <span class="chip cyan">Cloud · Edge · Physical</span>
     <span class="chip purple">MLSecOps reference</span>
   </div>
-</header>
+</section>
 
 <nav class="toc">
   <a href="#overview">Overview</a>
@@ -1301,9 +1306,7 @@
 
 </main>
 
-<footer>
-  Interactive visual companion to the ML Security Lifecycle · every animation is hand-written SVG/JS with no external dependencies.
-</footer>
+<div id="site-shell-footer"></div>
 
 <script>
 (function(){

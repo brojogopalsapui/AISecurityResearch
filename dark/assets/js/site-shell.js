@@ -26,6 +26,11 @@
   }
 
   function lightVersionHref() {
+    const override = document.body?.dataset?.lightHref;
+    if (override) {
+      const hash = window.location.hash || '';
+      return override.includes('#') ? override : `${override}${hash}`;
+    }
     const depth = Number(document.body?.dataset?.depth || 0);
     const path = window.location.pathname || '';
     const marker = '/dark/';

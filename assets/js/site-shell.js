@@ -52,6 +52,7 @@
     if (!body) return;
     const base = depthPrefix();
     const homeHref = preferredHomeHref(base);
+    const darkHref = body.dataset.darkHref || `${base}dark/index.html?mode=dark`;
     const nav = body.dataset.nav || 'home';
     const topMount = document.getElementById('site-shell-top');
     const headerMount = document.getElementById('site-shell-header');
@@ -76,7 +77,7 @@
           <div class="container nav-wrap">
             <div class="brand-group">
               <a class="brand" href="${homeHref}" aria-label="Brojogopal Sapui Home">B<span>S</span></a>
-              <a class="brand-hint" href="${base}dark/index.html?mode=dark">Dark Version</a>
+              <a class="brand-hint" href="${darkHref}">Dark Version</a>
             </div>
             <nav class="nav" id="shellNav">
               ${links.map(link => `<a class="${link.id===nav ? 'active' : ''}${link.id==='trending' ? ' trending-link' : ''}" href="${link.href}">${link.label}</a>`).join('')}
