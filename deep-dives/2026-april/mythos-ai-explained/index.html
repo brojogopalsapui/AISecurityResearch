@@ -1223,6 +1223,145 @@ body[data-autonomy="full"] .full-autonomy-only {
   }
 }
 </style>
+<style>
+:root {
+  --bg: #eef4fb;
+  --bg-2: #f7fbff;
+  --bg-3: #dde8f6;
+  --panel: rgba(255, 255, 255, 0.88);
+  --panel-2: rgba(247, 251, 255, 0.96);
+  --panel-3: rgba(235, 244, 253, 0.94);
+  --line: rgba(31, 79, 132, 0.16);
+  --line-strong: rgba(31, 79, 132, 0.32);
+  --text: #102338;
+  --muted: #46627d;
+  --muted-2: #73879b;
+  --cyan: #1070b6;
+  --blue: #2d63df;
+  --green: #138a63;
+  --orange: #b66b11;
+  --red: #c84558;
+  --violet: #6f54d8;
+  --shadow: 0 24px 64px rgba(39, 73, 108, 0.14);
+}
+html {
+  background: linear-gradient(180deg, #f8fbff 0%, #edf3fa 100%);
+}
+body {
+  color: var(--text);
+  background:
+    linear-gradient(180deg, rgba(249, 252, 255, 0.98) 0%, rgba(238, 245, 252, 0.98) 44%, rgba(247, 250, 255, 0.99) 100%),
+    repeating-linear-gradient(90deg, rgba(45, 99, 223, 0.04) 0, rgba(45, 99, 223, 0.04) 1px, transparent 1px, transparent 92px),
+    repeating-linear-gradient(0deg, rgba(16, 112, 182, 0.03) 0, rgba(16, 112, 182, 0.03) 1px, transparent 1px, transparent 92px);
+}
+body::before {
+  background:
+    linear-gradient(115deg, rgba(16, 112, 182, 0.11), transparent 28%),
+    linear-gradient(245deg, rgba(111, 84, 216, 0.09), transparent 34%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.72), transparent 64%);
+}
+h1,
+h2,
+h3,
+h4,
+.nav-brand strong,
+.console-title,
+.legend h3,
+.mini-node strong,
+.arch-node strong,
+.loop-node strong,
+.pipeline-node strong,
+.term strong {
+  color: #102338;
+}
+p,
+li {
+  color: var(--muted);
+}
+.side-nav {
+  border-right-color: var(--line);
+  background: rgba(248, 251, 255, 0.92);
+  box-shadow: 18px 0 42px rgba(43, 77, 113, 0.08);
+}
+.mode-console,
+.legend {
+  border-color: var(--line);
+  background: rgba(248, 251, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+.progress-shell {
+  background: rgba(16, 35, 56, 0.06);
+}
+.mode-btn {
+  border-color: rgba(31, 79, 132, 0.18);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--muted);
+  box-shadow: 0 10px 24px rgba(43, 77, 113, 0.08);
+}
+.mode-btn:hover,
+.mode-btn.active {
+  color: var(--cyan);
+  border-color: var(--cyan);
+  background: rgba(16, 112, 182, 0.1);
+}
+.toggle-btn[data-state="on"],
+body[data-redteam="on"] .toggle-btn[data-toggle="redteam"] {
+  color: #ffffff;
+}
+.nav-links a.active,
+.nav-links a:hover,
+.back-link:hover {
+  color: var(--text);
+  background: rgba(16, 112, 182, 0.08);
+}
+.pill {
+  color: #155f92;
+  background: rgba(16, 112, 182, 0.08);
+}
+.ocean-console,
+.diagram-panel,
+.product-card,
+.scenario-card,
+.threat-panel,
+.compare-table,
+.glossary,
+.reference-panel,
+.summary-board,
+.research-tile,
+.validation-stage,
+.trust-tile,
+.v-model {
+  border-color: rgba(31, 79, 132, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(241, 247, 252, 0.96));
+  box-shadow: var(--shadow);
+}
+.console-header,
+.mini-node,
+.arch-node,
+.loop-node,
+.pipeline-node,
+.hazard-item,
+.term {
+  border-color: rgba(31, 79, 132, 0.14);
+  background: rgba(255, 255, 255, 0.7);
+}
+.compare-row,
+.compare-cell,
+.console-header {
+  border-color: rgba(31, 79, 132, 0.14);
+}
+.arch-layer {
+  border-color: rgba(31, 79, 132, 0.16);
+  background: linear-gradient(180deg, rgba(247, 251, 255, 0.98), rgba(236, 244, 251, 0.98));
+}
+.status-line {
+  color: #16724f;
+}
+.sensor-cone {
+  mix-blend-mode: multiply;
+  opacity: 0.44;
+}
+</style>
 </head>
 <body data-view="system" data-redteam="off" data-autonomy="assisted" data-fleet="single">
 <a class="skip-link" href="#main">Skip to content</a>
