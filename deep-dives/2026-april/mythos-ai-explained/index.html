@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mythos AI Explained: Maritime Autonomy, Sensor Fusion, COLREGs Reasoning, and Cyber-Physical Security</title>
 <meta name="description" content="A research-grade technical explanation of Mythos AI as a maritime autonomy stack, with diagrams, autonomy-loop reasoning, COLREGs context, and cyber-physical security analysis.">
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
+<script defer src="../../../assets/js/site-shell.js"></script>
+<script defer src="../../../assets/js/main.js"></script>
 <style>
 :root {
   --bg: #050915;
@@ -1361,10 +1364,54 @@ body[data-redteam="on"] .toggle-btn[data-toggle="redteam"] {
   mix-blend-mode: multiply;
   opacity: 0.44;
 }
+.mythos-light-page .site-header .brand{
+  color:#102338;
+}
+.mythos-light-page .site-header .brand span{color:#2d63df}
+.mythos-light-page .site-header .brand-hint{
+  color:#245fd1;
+  background:rgba(36,95,209,.08);
+  border-color:rgba(36,95,209,.16);
+}
+.mythos-light-page .subcontent-back-row{
+  margin:1rem 0 0;
+}
+.mythos-light-page .subcontent-back{
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  padding:0 .95rem;
+  border-radius:999px;
+  border:1px solid rgba(31,79,132,.16);
+  background:rgba(255,255,255,.92);
+  color:#245fd1;
+  font-weight:700;
+  box-shadow:0 12px 26px rgba(39,73,108,.08);
+}
+.mythos-light-page .diagram-panel svg text[fill="#eef7ff"],
+.mythos-light-page .diagram-panel svg text[fill="#fff"],
+.mythos-light-page .scenario-card svg text[fill="#eef7ff"],
+.mythos-light-page .scenario-card svg text[fill="#fff"],
+.mythos-light-page .summary-board svg text[fill="#eef7ff"],
+.mythos-light-page .summary-board svg text[fill="#fff"]{
+  fill:#17314c !important;
+}
+.mythos-light-page .diagram-panel svg text[fill="#a9bdd1"],
+.mythos-light-page .scenario-card svg text[fill="#a9bdd1"],
+.mythos-light-page .summary-board svg text[fill="#a9bdd1"]{
+  fill:#61788e !important;
+}
+.mythos-light-page .diagram-panel svg path[fill="#eef7ff"],
+.mythos-light-page .scenario-card svg path[fill="#eef7ff"],
+.mythos-light-page .summary-board svg path[fill="#eef7ff"]{
+  fill:#1f4a73 !important;
+}
 </style>
 </head>
-<body data-view="system" data-redteam="off" data-autonomy="assisted" data-fleet="single">
+<body class="mythos-light-page" data-depth="3" data-nav="trending" data-page="mythos-ai-explained" data-dark-href="../../../dark/deep-dives/2026-april/mythos-ai-explained/index.html?mode=dark" data-view="system" data-redteam="off" data-autonomy="assisted" data-fleet="single">
 <a class="skip-link" href="#main">Skip to content</a>
+<div id="site-shell-top"></div>
+<div id="site-shell-header"></div>
 <div class="shell">
   <aside class="side-nav" aria-label="Page sections">
     <a class="nav-brand" href="../../../ongoing-work.html">
@@ -1389,6 +1436,7 @@ body[data-redteam="on"] .toggle-btn[data-toggle="redteam"] {
   </aside>
 
   <main id="main">
+    <div class="subcontent-back-row"><a class="subcontent-back" href="../../../ongoing-work.html">← Back to Trending Topics</a></div>
     <div class="mode-console" aria-label="View controls">
       <div class="mode-group" role="group" aria-label="Analysis view">
         <span class="mode-label">View</span>
@@ -2105,6 +2153,8 @@ body[data-redteam="on"] .toggle-btn[data-toggle="redteam"] {
     </section>
   </main>
 </div>
+
+<div id="site-shell-footer"></div>
 
 <script>
 (function () {
