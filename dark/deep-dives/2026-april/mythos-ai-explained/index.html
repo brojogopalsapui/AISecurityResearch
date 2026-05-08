@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mythos AI Explained: Maritime Autonomy, Sensor Fusion, COLREGs Reasoning, and Cyber-Physical Security</title>
 <meta name="description" content="A research-grade technical explanation of Mythos AI as a maritime autonomy stack, with diagrams, autonomy-loop reasoning, COLREGs context, and cyber-physical security analysis.">
+<link href="../../../assets/css/style.css" rel="stylesheet"/>
+<script defer src="../../../assets/js/site-shell.js"></script>
+<script defer src="../../../assets/js/portal.js"></script>
 <style>
 :root {
   --bg: #050915;
@@ -1222,10 +1225,19 @@ body[data-autonomy="full"] .full-autonomy-only {
     transition-duration: 0.001ms !important;
   }
 }
+.mythos-dark-page .side-nav {
+  top: 72px;
+  height: calc(100vh - 72px);
+}
+.mythos-dark-page .mode-console {
+  top: 72px;
+}
 </style>
 </head>
-<body data-view="system" data-redteam="off" data-autonomy="assisted" data-fleet="single">
+<body class="mythos-dark-page" data-depth="3" data-nav="trending" data-page="mythos-ai-explained" data-light-href="../../../deep-dives/2026-april/mythos-ai-explained/index.html?mode=light" data-view="system" data-redteam="off" data-autonomy="assisted" data-fleet="single">
 <a class="skip-link" href="#main">Skip to content</a>
+<div id="site-shell-top"></div>
+<div id="site-shell-header"></div>
 <div class="shell">
   <aside class="side-nav" aria-label="Page sections">
     <a class="nav-brand" href="../../../ongoing-work.html">
@@ -1966,6 +1978,7 @@ body[data-autonomy="full"] .full-autonomy-only {
     </section>
   </main>
 </div>
+<div id="site-shell-footer"></div>
 
 <script>
 (function () {
