@@ -42,7 +42,7 @@
   .grid.cols-4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
   .stat{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px}
   .stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-  .stat .v{font-size:22px;font-weight:700;color:#fff;margin-top:4px}
+  .stat .v{font-size:22px;font-weight:700;color:var(--text);margin-top:4px}
   .stat .v small{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
   .stage{background:#f9fbff;border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px;overflow:hidden}
   .stage svg{display:block;width:100%;height:auto;max-width:100%}
@@ -84,13 +84,6 @@
 }
 .subcontent-back:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(20,43,71,.1)}
 .site-footer{margin-top:40px}
-.report-card{max-width:1200px;margin:16px auto 0;padding:0 20px}
-.report-card-inner{padding:18px 20px;border-radius:14px;border:1px solid rgba(95,158,0,.24);background:linear-gradient(180deg,#ffffff,#eef7ff);box-shadow:0 12px 28px rgba(20,43,71,.08)}
-.report-card h2{margin:0 0 6px;font-size:18px;color:#10203a;letter-spacing:-.01em}
-.report-card p{margin:0;color:#334562;font-size:14px;line-height:1.55}
-.report-card a{display:inline-flex;align-items:center;gap:.45rem;margin-top:12px;min-height:38px;padding:0 .95rem;border-radius:999px;background:var(--accent);color:#0b0f1a!important;text-decoration:none;font-weight:800;font-size:13px}
-.report-card a:hover{filter:brightness(1.08);transform:translateY(-1px)}
-
 </style>
 </head>
 <body>
@@ -117,13 +110,10 @@
   <p class="sub">
     An interactive, research-level tour of NVIDIA's high-end Blackwell GPU (GB203):
     hardware blocks, on-chip interconnect, memory hierarchy, and an animated walkthrough of
-    how an MNIST digit classifier is trained and served on the silicon.
+    how a CIFAR-10 CNN is trained and served on the silicon.
   </p>
 </header>
 <div class="subcontent-back-row"><a class="subcontent-back" href="../../modern-ai-hardware-knowledge.html">← Back to Modern AI Hardware</a></div>
-
-
-
 
 <nav class="toc">
   <a href="#specs">1. Specs</a>
@@ -133,8 +123,8 @@
   <a href="#tensor">5. 5th-Gen Tensor Core</a>
   <a href="#memory">6. Memory Hierarchy</a>
   <a href="#io">7. I/O & Peripherals</a>
-  <a href="#mnist-train">8. MNIST Training</a>
-  <a href="#mnist-infer">9. MNIST Inference</a>
+  <a href="#cifar-train">8. CIFAR-10 CNN Training</a>
+  <a href="#cifar-infer">9. CIFAR-10 CNN Inference</a>
   <a href="#sources">Sources</a>
 </nav>
 
@@ -516,12 +506,12 @@
   </div>
 </section>
 
-<!-- ========================= MNIST TRAINING ========================= -->
-<section id="mnist-train">
-  <h2><span class="tag">08</span> Case Study — Training MNIST on the RTX 5080</h2>
+<!-- ========================= CIFAR-10 CNN TRAINING ========================= -->
+<section id="cifar-train">
+  <h2><span class="tag">08</span> Case Study — Training CIFAR-10 CNN on the RTX 5080</h2>
   <p class="lede">
-    Let's trace a complete training step of a tiny MLP (784 → 128 → 10) on a batch of 256 MNIST digits.
-    Press <code>▶ run epoch step</code> and watch how work flows across the chip: CPU → PCIe → GigaThread → SMs → Tensor Cores → back to L2 → GDDR7.
+    Let's trace one training step of a compact CNN for CIFAR-10: input 32 × 32 × 3 → Conv/ReLU/Pool → Conv/ReLU/Pool → FC → 10 classes.
+    Press <code>▶ run epoch step</code> and watch how image batches flow across the chip: CPU → PCIe → GigaThread → SMs → Tensor Cores/cuDNN → L2 → GDDR7.
   </p>
 
   <div class="stage">
@@ -538,28 +528,55 @@
       <text x="235" y="60" text-anchor="middle" fill="#5f6f8f" font-size="10">PCIe 5.0</text>
 
       <!-- GigaThread -->
-      <rect x="280" y="40" width="160" height="60" rx="8" fill="#edf8eb" stroke="#76b900"/>
+      <rect x="280" y="40" width="160" height="60" rx="8" fill="#14241b" stroke="#76b900"/>
       <text x="360" y="65" text-anchor="middle" fill="#76b900" font-size="12" font-weight="700">GigaThread Engine</text>
-      <text x="360" y="82" text-anchor="middle" fill="#5f6f8f" font-size="10">decompose → CTAs</text>
+      <text x="360" y="82" text-anchor="middle" fill="#5f6f8f" font-size="10">CNN kernels → CTAs</text>
 
       <!-- GDDR7 pool -->
-      <rect x="720" y="40" width="140" height="60" rx="8" fill="#f1ebff" stroke="#a479ff"/>
+      <rect x="720" y="40" width="140" height="60" rx="8" fill="#f2e9ff" stroke="#a479ff"/>
       <text x="790" y="65" text-anchor="middle" fill="#a479ff" font-size="12" font-weight="700">GDDR7 16 GB</text>
-      <text x="790" y="82" text-anchor="middle" fill="#5f6f8f" font-size="10">weights W1, W2, batch X</text>
+      <text x="790" y="82" text-anchor="middle" fill="#5f6f8f" font-size="10">images, labels, filters</text>
 
       <line x1="440" y1="70" x2="720" y2="70" stroke="#a479ff" stroke-width="2" class="flow"/>
 
       <!-- L2 -->
-      <rect x="280" y="140" width="340" height="40" rx="6" fill="#e9f4ff" stroke="#00d4ff"/>
-      <text x="450" y="164" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">L2 Cache (64 MB) — shared</text>
+      <rect x="280" y="140" width="340" height="40" rx="6" fill="#e7f1ff" stroke="#00d4ff"/>
+      <text x="450" y="164" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="700">L2 Cache (64 MB) — feature maps + filter tiles</text>
 
       <line x1="790" y1="100" x2="450" y2="140" stroke="#00d4ff" stroke-width="2" class="flow"/>
+
+      <!-- CNN pipeline strip -->
+      <g id="cnnTrainPipe">
+        <rect x="48" y="205" width="104" height="56" rx="6" fill="#eef4ff" stroke="#8a97b8"/>
+        <text x="100" y="228" text-anchor="middle" fill="#334562" font-size="11" font-weight="700">Input batch</text>
+        <text x="100" y="245" text-anchor="middle" fill="#5f6f8f" font-size="9">128 × 32×32×3</text>
+        <line x1="152" y1="233" x2="195" y2="233" stroke="#00d4ff" stroke-width="2" class="flow"/>
+        <rect x="195" y="205" width="104" height="56" rx="6" fill="#14241b" stroke="#76b900"/>
+        <text x="247" y="228" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">Conv1</text>
+        <text x="247" y="245" text-anchor="middle" fill="#5f6f8f" font-size="9">3→32, 3×3</text>
+        <line x1="299" y1="233" x2="342" y2="233" stroke="#00d4ff" stroke-width="2" class="flow"/>
+        <rect x="342" y="205" width="104" height="56" rx="6" fill="#2a1a0a" stroke="#ffb03b"/>
+        <text x="394" y="228" text-anchor="middle" fill="#ffb03b" font-size="11" font-weight="700">ReLU + Pool</text>
+        <text x="394" y="245" text-anchor="middle" fill="#5f6f8f" font-size="9">32×16×16</text>
+        <line x1="446" y1="233" x2="489" y2="233" stroke="#00d4ff" stroke-width="2" class="flow"/>
+        <rect x="489" y="205" width="104" height="56" rx="6" fill="#14241b" stroke="#76b900"/>
+        <text x="541" y="228" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">Conv2</text>
+        <text x="541" y="245" text-anchor="middle" fill="#5f6f8f" font-size="9">32→64, 3×3</text>
+        <line x1="593" y1="233" x2="636" y2="233" stroke="#00d4ff" stroke-width="2" class="flow"/>
+        <rect x="636" y="205" width="104" height="56" rx="6" fill="#14241b" stroke="#76b900"/>
+        <text x="688" y="228" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">FC</text>
+        <text x="688" y="245" text-anchor="middle" fill="#5f6f8f" font-size="9">4096→10</text>
+        <line x1="740" y1="233" x2="783" y2="233" stroke="#00d4ff" stroke-width="2" class="flow"/>
+        <rect x="783" y="205" width="70" height="56" rx="6" fill="#2a1a0a" stroke="#ffb03b"/>
+        <text x="818" y="228" text-anchor="middle" fill="#ffb03b" font-size="11" font-weight="700">Loss</text>
+        <text x="818" y="245" text-anchor="middle" fill="#5f6f8f" font-size="9">CE</text>
+      </g>
 
       <!-- SM grid -->
       <g id="smGrid"></g>
 
       <!-- Phase readout -->
-      <rect x="40" y="480" width="820" height="54" rx="8" fill="#edf4ff" stroke="#243052"/>
+      <rect x="40" y="480" width="820" height="54" rx="8" fill="#eef4ff" stroke="#243052"/>
       <text x="60" y="500" fill="#5f6f8f" font-size="11" font-family="ui-monospace">phase</text>
       <text id="trainPhase" x="60" y="522" fill="#76b900" font-size="16" font-weight="700" font-family="ui-monospace">idle</text>
       <text id="trainMetric" x="860" y="522" text-anchor="end" fill="#00d4ff" font-size="13" font-family="ui-monospace">step 0 · loss —</text>
@@ -569,82 +586,88 @@
     <button class="btn" id="runTrain">▶ run epoch step</button>
     <button class="btn alt" id="resetTrain">↺ reset</button>
   </div>
-  <div class="narr" id="trainNarr">Ready. We'll walk through the 7 phases: (1) host launch → (2) HtoD DMA → (3) forward FC1 GEMM → (4) ReLU → (5) forward FC2 → (6) softmax+loss → (7) backward+SGD weight update.</div>
+  <div class="narr" id="trainNarr">Ready. We'll walk through the CNN phases: host launch → HtoD image batch → Conv1 → ReLU/Pool → Conv2 → FC/softmax → backward update.</div>
 
   <h3>What actually runs on which block</h3>
   <table>
     <thead><tr><th>Phase</th><th>Where</th><th>How</th></tr></thead>
     <tbody>
-      <tr><td>1. Kernel launch</td><td>Host CPU → PCIe 5.0 → GigaThread</td><td><code>cudaLaunchKernel</code> · command buffer DMAed over PCIe; GigaThread reads it and fans out CTAs</td></tr>
-      <tr><td>2. HtoD data copy</td><td>PCIe 5.0 DMA → GDDR7 → L2</td><td>Batch X (256 × 784 × 1 B) ≈ 200 KB · copied once per step, then pinned in L2</td></tr>
-      <tr><td>3. FC1: Y1 = X·W1<sup>T</sup></td><td>Tensor cores in ~60 SMs</td><td>GEMM tiled 128×128 × 256 — BF16 operands, FP32 accum; tiles staged through TMEM</td></tr>
-      <tr><td>4. ReLU(Y1)</td><td>CUDA cores, same SMs</td><td>Elementwise max(0,x) fused into epilogue — no extra DRAM trip</td></tr>
-      <tr><td>5. FC2: Y2 = A1·W2<sup>T</sup></td><td>Tensor cores</td><td>Smaller GEMM (256 × 128 × 10), latency-bound</td></tr>
-      <tr><td>6. Softmax + cross-entropy</td><td>CUDA cores + special-function units</td><td>exp / sum / log done per-row in shared memory</td></tr>
-      <tr><td>7. Backward + SGD update</td><td>Tensor cores + CUDA cores → L2 → GDDR7</td><td>Reverses the graph: dW2, dW1 computed by transposed GEMMs; atomic writes update W1, W2 in GDDR7</td></tr>
+      <tr><td>1. Kernel launch</td><td>Host CPU → PCIe 5.0 → GigaThread</td><td><code>cudaLaunchKernel</code> and cuDNN descriptors select convolution kernels; GigaThread fans out CTAs across SMs.</td></tr>
+      <tr><td>2. HtoD data copy</td><td>PCIe 5.0 DMA → GDDR7 → L2</td><td>CIFAR-10 batch X: 128 × 32 × 32 × 3 images; labels and normalized tensors are staged for reuse.</td></tr>
+      <tr><td>3. Conv1: 3 → 32 filters</td><td>Tensor cores / CUDA cores via cuDNN</td><td>3×3 convolution lowered to tiled GEMM or direct convolution; feature-map tiles pass through L2/shared memory.</td></tr>
+      <tr><td>4. ReLU + MaxPool</td><td>CUDA cores, same SMs</td><td>Elementwise activation and 2×2 pooling reduce spatial size to 16 × 16 while keeping data close to SMs.</td></tr>
+      <tr><td>5. Conv2: 32 → 64 filters</td><td>Tensor cores across many SMs</td><td>Larger convolution dominates the step; input/filter tiles are staged through L2, shared memory, and TMEM.</td></tr>
+      <tr><td>6. FC + Softmax + cross-entropy</td><td>Tensor cores + special-function units</td><td>Flattened feature map goes through a 4096 → 10 classifier; exp/sum/log compute the loss.</td></tr>
+      <tr><td>7. Backward + optimizer update</td><td>Tensor cores + CUDA cores → L2 → GDDR7</td><td>Gradient convolutions compute dFilters and dActivations; SGD/Adam updates filter and FC weights in GDDR7.</td></tr>
     </tbody>
   </table>
 </section>
 
-<!-- ========================= MNIST INFERENCE ========================= -->
-<section id="mnist-infer">
-  <h2><span class="tag">09</span> Inference — Classifying One Digit</h2>
+<!-- ========================= CIFAR-10 CNN INFERENCE ========================= -->
+<section id="cifar-infer">
+  <h2><span class="tag">09</span> Inference — Classifying One CIFAR-10 Image</h2>
   <p class="lede">
-    Draw (or click <code>🎲 random</code>) a digit in the canvas below. We simulate inference using a pretrained-feel set of weights and show, step by step,
-    the activations flowing through FC1 → ReLU → FC2 → Softmax, exactly mirroring the hardware path on the RTX 5080.
+    Click <code>🎲 random CIFAR-10 image</code> to generate a small 32 × 32 RGB-style sample. We simulate inference with a compact CNN and show how
+    activations flow through Conv1 → ReLU/Pool → Conv2 → FC → Softmax, mirroring the GPU execution path on the RTX 5080.
   </p>
 
   <div class="grid cols-2">
-    <!-- Left: draw canvas -->
+    <!-- Left: CIFAR-style image canvas -->
     <div>
-      <h3>Input: 28 × 28 pixel image</h3>
-      <canvas id="digitCanvas" width="280" height="280" style="background:#ffffff;border:2px solid var(--border);border-radius:8px;cursor:crosshair;image-rendering:pixelated;display:block"></canvas>
+      <h3>Input: 32 × 32 RGB image</h3>
+      <canvas id="cifarCanvas" width="280" height="280" style="background:#eef4ff;border:2px solid var(--border);border-radius:8px;image-rendering:pixelated;display:block"></canvas>
       <div class="controls">
         <button class="btn" id="inferBtn">▶ classify</button>
-        <button class="btn alt" id="clearCanvas">clear</button>
-        <button class="btn alt" id="randomDigit">🎲 random</button>
+        <button class="btn alt" id="randomCifar">🎲 random CIFAR-10 image</button>
       </div>
-      <p class="footnote">Note: weights here are procedurally generated templates (one per digit), not a real trained model — the goal is to visualize the hardware pipeline, not beat MNIST SOTA.</p>
+      <p class="footnote">Note: the images and logits here are procedurally generated to visualize the CNN hardware pipeline. This is a teaching demo, not a real CIFAR-10 benchmark.</p>
     </div>
-    <!-- Right: hidden layer + logits bar chart -->
+    <!-- Right: CNN pipeline + logits bar chart -->
     <div>
       <h3>Hardware pipeline &amp; activations</h3>
       <div class="stage">
-        <svg id="inferSvg" viewBox="0 0 480 420" xmlns="http://www.w3.org/2000/svg">
-          <rect x="0" y="0" width="480" height="420" fill="#f9fbff"/>
+        <svg id="inferSvg" viewBox="0 0 520 440" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="520" height="440" fill="#f9fbff"/>
 
           <!-- input -->
-          <rect x="20" y="30" width="60" height="60" rx="4" fill="#edf4ff" stroke="#8a97b8"/>
-          <text x="50" y="110" text-anchor="middle" fill="#5f6f8f" font-size="10">input 784</text>
+          <rect x="20" y="30" width="60" height="60" rx="4" fill="#eef4ff" stroke="#5f6f8f"/>
+          <text x="50" y="110" text-anchor="middle" fill="#5f6f8f" font-size="10">32×32×3</text>
 
-          <!-- FC1 -->
-          <rect x="110" y="20" width="80" height="80" rx="4" fill="#edf8eb" stroke="#76b900"/>
-          <text x="150" y="55" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">FC1</text>
-          <text x="150" y="70" text-anchor="middle" fill="#76b900" font-size="9">Tensor Core</text>
-          <text x="150" y="120" text-anchor="middle" fill="#5f6f8f" font-size="10">128 hidden</text>
+          <!-- Conv1 -->
+          <rect x="105" y="20" width="76" height="80" rx="4" fill="#14241b" stroke="#76b900"/>
+          <text x="143" y="52" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">Conv1</text>
+          <text x="143" y="68" text-anchor="middle" fill="#76b900" font-size="9">3→32</text>
+          <text x="143" y="120" text-anchor="middle" fill="#5f6f8f" font-size="10">32 maps</text>
 
-          <!-- ReLU -->
-          <rect x="220" y="30" width="60" height="60" rx="4" fill="#fff2e2" stroke="#ffb03b"/>
-          <text x="250" y="62" text-anchor="middle" fill="#ffb03b" font-size="11" font-weight="700">ReLU</text>
-          <text x="250" y="76" text-anchor="middle" fill="#ffb03b" font-size="9">CUDA</text>
+          <!-- ReLU/Pool -->
+          <rect x="205" y="30" width="76" height="60" rx="4" fill="#2a1a0a" stroke="#ffb03b"/>
+          <text x="243" y="58" text-anchor="middle" fill="#ffb03b" font-size="11" font-weight="700">ReLU</text>
+          <text x="243" y="74" text-anchor="middle" fill="#ffb03b" font-size="9">Pool</text>
 
-          <!-- FC2 -->
-          <rect x="310" y="20" width="80" height="80" rx="4" fill="#edf8eb" stroke="#76b900"/>
-          <text x="350" y="55" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">FC2</text>
-          <text x="350" y="70" text-anchor="middle" fill="#76b900" font-size="9">Tensor Core</text>
-          <text x="350" y="120" text-anchor="middle" fill="#5f6f8f" font-size="10">10 logits</text>
+          <!-- Conv2 -->
+          <rect x="305" y="20" width="76" height="80" rx="4" fill="#14241b" stroke="#76b900"/>
+          <text x="343" y="52" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">Conv2</text>
+          <text x="343" y="68" text-anchor="middle" fill="#76b900" font-size="9">32→64</text>
+          <text x="343" y="120" text-anchor="middle" fill="#5f6f8f" font-size="10">64 maps</text>
+
+          <!-- FC -->
+          <rect x="405" y="20" width="76" height="80" rx="4" fill="#14241b" stroke="#76b900"/>
+          <text x="443" y="52" text-anchor="middle" fill="#76b900" font-size="11" font-weight="700">FC</text>
+          <text x="443" y="68" text-anchor="middle" fill="#76b900" font-size="9">4096→10</text>
+          <text x="443" y="120" text-anchor="middle" fill="#5f6f8f" font-size="10">10 logits</text>
 
           <!-- arrows -->
-          <line id="a1" x1="80" y1="60" x2="110" y2="60" stroke="#00d4ff" stroke-width="2"/>
-          <line id="a2" x1="190" y1="60" x2="220" y2="60" stroke="#00d4ff" stroke-width="2"/>
-          <line id="a3" x1="280" y1="60" x2="310" y2="60" stroke="#00d4ff" stroke-width="2"/>
+          <line id="a1" x1="80" y1="60" x2="105" y2="60" stroke="#00d4ff" stroke-width="2"/>
+          <line id="a2" x1="181" y1="60" x2="205" y2="60" stroke="#00d4ff" stroke-width="2"/>
+          <line id="a3" x1="281" y1="60" x2="305" y2="60" stroke="#00d4ff" stroke-width="2"/>
+          <line id="a4" x1="381" y1="60" x2="405" y2="60" stroke="#00d4ff" stroke-width="2"/>
 
           <!-- bar chart for output -->
-          <text x="240" y="160" text-anchor="middle" fill="#334562" font-size="12" font-weight="700">Softmax output</text>
+          <text x="260" y="160" text-anchor="middle" fill="#334562" font-size="12" font-weight="700">Softmax output over CIFAR-10 classes</text>
           <g id="bars"></g>
         </svg>
       </div>
-      <div class="narr" id="inferNarr">Draw a digit and press <b>classify</b>.</div>
+      <div class="narr" id="inferNarr">Generate a CIFAR-10-style image and press <b>classify</b>.</div>
     </div>
   </div>
 </section>
@@ -697,34 +720,47 @@ function el(tag,attrs={}){const e=document.createElementNS(SVG,tag);for(const k 
 (function buildDie(){
   const svg=document.getElementById('dieSvg');
   const gpcGroup=document.getElementById('gpcGroup');
-  // Topological placement for 7 GB203 GPCs
+  const memRing=document.getElementById('memRing');
   const dieX=120,dieY=70,dieW=660,dieH=380;
-  const cols=4,rows=3,pad=10;
-  // place 7 GPCs around the shared L2/IO region
-  const cellW=(dieW-(cols+1)*pad)/cols;
-  const cellH=((dieH-(rows+1)*pad-60)/rows); // leave bottom 60 for IO row
-  const gpcPositions=[
-    [0,0],[0,1],[0,2],[0,3],
-    [1,0],[1,3],
-    [2,1]
-  ];
-  gpcPositions.forEach(([r,c],i)=>{
-      const x=dieX+pad+c*(cellW+pad);
-      const y=dieY+pad+r*(cellH+pad);
+
+  // 7 GB203 GPCs arranged to preserve the original visual density:
+  // 4 across the upper row and 3 across the lower row around the shared L2 region.
+  const topY=102, topW=150, topH=76, topGap=10, topStart=135;
+  const botY=306, botW=180, botH=76, botGap=15, botStart=165;
+  const gpcBoxes=[];
+  for(let i=0;i<4;i++) gpcBoxes.push({x:topStart+i*(topW+topGap), y:topY, w:topW, h:topH});
+  for(let i=0;i<3;i++) gpcBoxes.push({x:botStart+i*(botW+botGap), y:botY, w:botW, h:botH});
+
+  gpcBoxes.forEach((b,i)=>{
       const g=el('g',{});
-      const rect=el('rect',{x,y,width:cellW,height:cellH,rx:4,fill:'url(#gpcGrad)',stroke:'#76b900','stroke-width':'1','data-gpc':i});
+      const rect=el('rect',{x:b.x,y:b.y,width:b.w,height:b.h,rx:4,fill:'url(#gpcGrad)',stroke:'#76b900','stroke-width':'1','data-gpc':i});
       g.appendChild(rect);
-      const label=el('text',{x:x+cellW/2,y:y+cellH/2-4,'text-anchor':'middle',fill:'#c8d0e8','font-size':'11','font-weight':'700'});
+      const label=el('text',{x:b.x+b.w/2,y:b.y+b.h/2-4,'text-anchor':'middle',fill:'#c8d0e8','font-size':'11','font-weight':'700'});
       label.textContent='GPC '+i;
       g.appendChild(label);
-      const sub=el('text',{x:x+cellW/2,y:y+cellH/2+10,'text-anchor':'middle',fill:'#8a97b8','font-size':'9'});
+      const sub=el('text',{x:b.x+b.w/2,y:b.y+b.h/2+10,'text-anchor':'middle',fill:'#8a97b8','font-size':'9'});
       sub.textContent='6 TPC · 12 SM · 16 ROP';
       g.appendChild(sub);
-      // subtle pulse randomly
       rect.style.animation='pulse '+(2+Math.random()*3)+'s ease-in-out infinite';
       gpcGroup.appendChild(g);
   });
-  // 8 GDDR7 chips — 4 top, 4 bottom of die
+
+  // 8 memory-controller/L2-slice boxes for the 256-bit memory interface.
+  const mcW=120, mcH=12, mcGap=20, mcStart=140;
+  for(let i=0;i<4;i++){
+    const x=mcStart+i*(mcW+mcGap);
+    const topRect=el('rect',{x,y:78,width:mcW,height:mcH,rx:2,fill:'#201339',stroke:'#a479ff'});
+    const topText=el('text',{x:x+mcW/2,y:87,'text-anchor':'middle',fill:'#d9ccff','font-size':'7','font-weight':'700'});
+    topText.textContent='MC / L2 slice';
+    memRing.appendChild(topRect); memRing.appendChild(topText);
+
+    const botRect=el('rect',{x,y:428,width:mcW,height:mcH,rx:2,fill:'#201339',stroke:'#a479ff'});
+    const botText=el('text',{x:x+mcW/2,y:437,'text-anchor':'middle',fill:'#d9ccff','font-size':'7','font-weight':'700'});
+    botText.textContent='MC / L2 slice';
+    memRing.appendChild(botRect); memRing.appendChild(botText);
+  }
+
+  // 8 GDDR7 packages — 4 top, 4 bottom.
   const gddrGroup=document.getElementById('gddrTop');
   for(let i=0;i<4;i++){
     const x=240+i*105;
@@ -1031,7 +1067,7 @@ function el(tag,attrs={}){const e=document.createElementNS(SVG,tag);for(const k 
 (function train(){
   const smGrid=document.getElementById('smGrid');
   // Draw 7 x 12 = 84 tiny SM squares
-  const cols=12,rows=7,startX=60,startY=210,cell=20,gap=4;
+  const cols=12,rows=7,startX=60,startY=290,cell=20,gap=4;
   const sms=[];
   for(let r=0;r<rows;r++){
     for(let c=0;c<cols;c++){
@@ -1041,7 +1077,7 @@ function el(tag,attrs={}){const e=document.createElementNS(SVG,tag);for(const k 
       sms.push(rect);
     }
   }
-  const label=el('text',{x:60,y:200,fill:'#76b900','font-size':'11','font-weight':'700','font-family':'ui-monospace'});
+  const label=el('text',{x:60,y:278,fill:'#76b900','font-size':'11','font-weight':'700','font-family':'ui-monospace'});
   label.textContent='84 Streaming Multiprocessors';
   smGrid.appendChild(label);
 
@@ -1077,120 +1113,102 @@ function el(tag,attrs={}){const e=document.createElementNS(SVG,tag);for(const k 
       '<b>Host CPU</b> calls <code>cudaLaunchKernel</code>. Command buffer streams across PCIe 5.0 ×16 at 64 GB/s. GigaThread decodes it.',
       0,'#0a1a0c','step 1 · loss —');
     phase(1100,'② HtoD DMA',
-      '<b>DMA copy</b>: batch X (256×784 bytes ≈ 200 KB) + labels sent GDDR7-side; pinned into L2 for reuse.',
+      '<b>DMA copy</b>: CIFAR-10 batch X (128×32×32×3 images) + labels sent GDDR7-side; pinned into L2 for reuse.',
       5,'#1a0f2b','step 1 · loss —');
-    phase(2200,'③ forward FC1 GEMM',
-      '<b>Tensor cores</b> fire a 256×784×128 BF16 GEMM. Tiles staged via TMEM. ~60 SMs needed — the rest idle for this tiny model.',
-      60,'#1a3a4d','step 1 · loss —');
-    phase(3600,'④ ReLU (fused)',
-      '<b>CUDA cores</b> run max(0,x) as a GEMM epilogue — no round-trip to L2. Same SMs, different datapath.',
-      60,'#1a3a1d','step 1 · loss —');
-    phase(4700,'⑤ forward FC2',
-      '<b>Tensor cores</b> compute Y2 = A1·W2ᵀ (256×128×10). Tiny — latency-bound, ~8 SMs suffice.',
-      8,'#1a3a4d','step 1 · loss —');
+    phase(2200,'③ Conv1 forward',
+      '<b>cuDNN convolution</b>: Conv1 applies 32 small 3×3 filters over RGB images. Tiles are staged via shared memory/L2; ~32 SMs are enough for this compact layer.',
+      32,'#1a3a4d','step 1 · loss —');
+    phase(3600,'④ ReLU + Pool',
+      '<b>CUDA cores</b> run ReLU and 2×2 max-pooling, reducing 32×32 maps to 16×16 while keeping activations close to the SMs.',
+      32,'#1a3a1d','step 1 · loss —');
+    phase(4700,'⑤ Conv2 + FC',
+      '<b>Tensor cores/cuDNN</b> compute the heavier Conv2 layer and the final 4096→10 classifier. More SMs light up as feature-map reuse increases.',
+      72,'#1a3a4d','step 1 · loss —');
     phase(5800,'⑥ softmax + loss',
-      '<b>Special-function units + CUDA cores</b> compute exp/sum/log in shared memory. Cross-entropy aggregated to a single scalar.',
-      8,'#2a1a0a','step 1 · loss 2.31');
+      '<b>Special-function units + CUDA cores</b> compute softmax and cross-entropy over the 10 CIFAR-10 classes.',
+      24,'#2a1a0a','step 1 · loss 2.31');
     phase(7000,'⑦ backward + SGD',
-      '<b>Reverse graph</b>: transposed GEMMs on Tensor cores produce dW2, dW1. Atomic adds update weights back in GDDR7 via L2 write-through.',
+      '<b>Reverse graph</b>: convolution gradients produce dFilters and dActivations; optimizer updates CNN weights back in GDDR7 via L2 write-through.',
       80,'#2a1233','step 1 · loss 2.04');
     phase(8400,'✅ step done',
-      'Batch complete. Weights updated. Next launch starts immediately — GigaThread overlaps DMA of the next batch with this one.',
+      'CIFAR-10 batch complete. CNN weights updated. Next launch starts immediately — GigaThread overlaps DMA of the next batch with this one.',
       0,'#0a1a0c','step 2 · loss 2.04 ↓');
   };
   reset();
 })();
 
 /* =====================================================================
-   7. MNIST inference with drawable canvas
+   7. CIFAR-10 CNN inference with synthetic 32x32 RGB samples
    ===================================================================== */
 (function infer(){
-  const canvas=document.getElementById('digitCanvas');
+  const canvas=document.getElementById('cifarCanvas');
   const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,280,280);
-  let drawing=false;
-  function pos(e){
-    const r=canvas.getBoundingClientRect();
-    const t=e.touches?e.touches[0]:e;
-    return {x:(t.clientX-r.left)*(280/r.width),y:(t.clientY-r.top)*(280/r.height)};
-  }
-  function draw(e){
-    if(!drawing)return;
-    const p=pos(e);
-    ctx.fillStyle='#0f1a2e';
-    ctx.beginPath();ctx.arc(p.x,p.y,14,0,Math.PI*2);ctx.fill();
-    e.preventDefault();
-  }
-  canvas.addEventListener('mousedown',e=>{drawing=true;draw(e);});
-  canvas.addEventListener('mousemove',draw);
-  window.addEventListener('mouseup',()=>drawing=false);
-  canvas.addEventListener('touchstart',e=>{drawing=true;draw(e);},{passive:false});
-  canvas.addEventListener('touchmove',draw,{passive:false});
-  canvas.addEventListener('touchend',()=>drawing=false);
+  ctx.imageSmoothingEnabled=false;
+  const classes=['airplane','auto','bird','cat','deer','dog','frog','horse','ship','truck'];
+  let currentClass=Math.floor(Math.random()*classes.length);
 
-  document.getElementById('clearCanvas').onclick=()=>{ctx.fillStyle='#ffffff';ctx.fillRect(0,0,280,280);drawBars(new Array(10).fill(0));};
-
-  // Fake "trained weights": template digits — we compare input to each template and softmax
-  const templates={};
-  function buildTemplates(){
-    // digits 0..9 as simple bitmaps on a 28x28 grid
-    const t={
-      0:[[7,4,14,14],[7,4,14,1]],  // frame
-      1:[[13,4,2,20]],
-      2:[[6,4,16,3],[20,8,2,10],[6,17,16,3]],
-      3:[[6,4,16,3],[6,12,16,3],[6,20,16,3]],
-      4:[[6,4,2,12],[6,14,16,2],[20,4,2,20]],
-      5:[[6,4,16,3],[6,4,2,10],[6,12,16,3],[20,14,2,8],[6,20,16,3]],
-      6:[[6,4,16,3],[6,4,2,20],[6,12,16,3],[20,12,2,10],[6,20,16,3]],
-      7:[[6,4,16,3],[18,6,2,18]],
-      8:[[6,4,14,3],[6,4,2,20],[18,4,2,20],[6,12,14,3],[6,20,14,3]],
-      9:[[6,4,14,3],[6,4,2,10],[18,4,2,20],[6,12,14,3],[6,20,14,3]]
-    };
-    for(const d in t){
-      const arr=new Float32Array(784);
-      t[d].forEach(([x,y,w,h])=>{
-        for(let j=0;j<h;j++)for(let i=0;i<w;i++){
-          if(x+i<28&&y+j<28)arr[(y+j)*28+(x+i)]=1;
-        }
-      });
-      templates[d]=arr;
+  function drawBackground(kind){
+    const sky=kind==='water'?'#154c7a':'#77aee8';
+    const ground=kind==='road'?'#3d3d3d':kind==='water'?'#0f355f':'#4f8b42';
+    ctx.fillStyle=sky;ctx.fillRect(0,0,32,18);
+    ctx.fillStyle=ground;ctx.fillRect(0,18,32,14);
+    // Low-resolution texture/noise to resemble a CIFAR-sized image.
+    for(let i=0;i<140;i++){
+      const x=Math.floor(Math.random()*32),y=Math.floor(Math.random()*32);
+      ctx.fillStyle='rgba(255,255,255,'+(Math.random()*0.18).toFixed(2)+')';
+      ctx.fillRect(x,y,1,1);
     }
   }
-  buildTemplates();
+  function pixelRect(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h);}
+  function pixelCircle(cx,cy,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();}
 
-  function downsample(){
-    // read canvas at 28x28
-    const scratch=document.createElement('canvas');
-    scratch.width=28;scratch.height=28;
-    const sctx=scratch.getContext('2d');
-    sctx.drawImage(canvas,0,0,28,28);
-    const data=sctx.getImageData(0,0,28,28).data;
-    const out=new Float32Array(784);
-    for(let i=0;i<784;i++){out[i]=data[i*4]/255;}
-    return out;
-  }
-  function dot(a,b){let s=0;for(let i=0;i<784;i++)s+=a[i]*b[i];return s;}
-  function norm(a){let s=0;for(let i=0;i<784;i++)s+=a[i]*a[i];return Math.sqrt(s)||1;}
-
-  function classify(x){
-    // cosine similarity against each template — then softmax
-    const n=norm(x);
-    const scores=[];
-    for(let d=0;d<10;d++){
-      const t=templates[d];
-      scores.push(dot(x,t)/(n*norm(t)));
+  function drawSample(cls){
+    ctx.save();
+    ctx.setTransform(280/32,0,0,280/32,0,0);
+    ctx.clearRect(0,0,32,32);
+    const c=classes[cls];
+    drawBackground(c==='ship'?'water':(c==='auto'||c==='truck')?'road':'land');
+    if(c==='airplane'){
+      pixelRect(8,12,16,3,'#dfe9f3'); pixelRect(14,7,3,13,'#eef5ff'); pixelRect(5,14,8,2,'#c9d6e8'); pixelRect(21,14,7,2,'#c9d6e8'); pixelRect(22,10,3,3,'#ff4d4d');
+    }else if(c==='auto'){
+      pixelRect(7,18,18,5,'#d62f2f'); pixelRect(10,14,10,5,'#e84a4a'); pixelRect(12,15,4,3,'#bfe7ff'); pixelRect(17,15,4,3,'#bfe7ff'); pixelCircle(11,24,2,'#111'); pixelCircle(22,24,2,'#111');
+    }else if(c==='bird'){
+      pixelCircle(17,14,4,'#f5c542'); pixelRect(10,16,12,3,'#d99b22'); pixelRect(8,15,5,2,'#f1d97a'); pixelRect(21,13,3,2,'#ff6b32'); pixelRect(16,19,1,4,'#553311');
+    }else if(c==='cat'){
+      pixelCircle(16,15,5,'#b8875a'); pixelRect(12,9,3,4,'#b8875a'); pixelRect(18,9,3,4,'#b8875a'); pixelRect(11,20,10,5,'#9a6b47'); pixelCircle(14,14,1,'#111'); pixelCircle(18,14,1,'#111');
+    }else if(c==='deer'){
+      pixelRect(11,16,12,7,'#9b5f2e'); pixelRect(19,11,5,5,'#a66b36'); pixelRect(21,8,1,4,'#5a3418'); pixelRect(24,8,1,4,'#5a3418'); pixelRect(13,23,2,5,'#5a3418'); pixelRect(20,23,2,5,'#5a3418');
+    }else if(c==='dog'){
+      pixelRect(10,17,14,7,'#6b4b2a'); pixelCircle(21,14,4,'#7d5a33'); pixelRect(23,13,4,2,'#5a3418'); pixelRect(18,11,2,5,'#3c2716'); pixelRect(12,24,2,4,'#3c2716'); pixelRect(21,24,2,4,'#3c2716');
+    }else if(c==='frog'){
+      pixelCircle(16,18,6,'#49a94d'); pixelCircle(12,13,2,'#7bd96f'); pixelCircle(20,13,2,'#7bd96f'); pixelCircle(12,13,1,'#111'); pixelCircle(20,13,1,'#111'); pixelRect(9,23,5,2,'#2f7b35'); pixelRect(19,23,5,2,'#2f7b35');
+    }else if(c==='horse'){
+      pixelRect(9,16,15,7,'#7a4a25'); pixelRect(20,10,5,7,'#8a552d'); pixelRect(19,9,2,8,'#2c1a0b'); pixelRect(11,23,2,6,'#2c1a0b'); pixelRect(21,23,2,6,'#2c1a0b');
+    }else if(c==='ship'){
+      pixelRect(7,20,18,4,'#d7d7d7'); pixelRect(10,16,12,4,'#ffffff'); pixelRect(14,9,2,7,'#eeeeee'); pixelRect(16,10,6,4,'#ff4d4d'); pixelRect(5,24,22,1,'#c8e6ff');
+    }else if(c==='truck'){
+      pixelRect(5,16,16,7,'#2e75d6'); pixelRect(21,18,6,5,'#2e75d6'); pixelRect(22,15,4,3,'#bfe7ff'); pixelCircle(10,24,2,'#111'); pixelCircle(23,24,2,'#111');
     }
-    // softmax with temperature
-    const T=12;
-    const ex=scores.map(s=>Math.exp(s*T));
-    const sum=ex.reduce((a,b)=>a+b,0);
-    return ex.map(e=>e/sum);
+    ctx.restore();
+  }
+
+  function softmax(logits){
+    const m=Math.max(...logits); const ex=logits.map(v=>Math.exp(v-m)); const s=ex.reduce((a,b)=>a+b,0); return ex.map(v=>v/s);
+  }
+  function classify(){
+    // Synthetic confidence profile: the generated class gets the highest logit, visually mimicking a trained CNN output.
+    const logits=classes.map((_,i)=>-0.5+Math.random()*0.9);
+    logits[currentClass]=3.2+Math.random()*0.8;
+    // Add plausible confusion pairs.
+    const confusions={1:9,9:1,3:5,5:3,4:7,7:4,0:8,8:0,2:6,6:2};
+    if(confusions[currentClass]!==undefined)logits[confusions[currentClass]]=1.6+Math.random()*0.8;
+    return softmax(logits);
   }
 
   const barsG=document.getElementById('bars');
   function drawBars(probs){
     while(barsG.firstChild)barsG.removeChild(barsG.firstChild);
-    const startX=40,startY=180,barW=32,maxH=180,gap=8;
+    const startX=24,startY=185,barW=38,maxH=165,gap=8;
     const max=Math.max(...probs,0.001);
     for(let i=0;i<10;i++){
       const h=(probs[i]/max)*maxH;
@@ -1199,8 +1217,8 @@ function el(tag,attrs={}){const e=document.createElementNS(SVG,tag);for(const k 
       const winner=probs[i]===max;
       const rect=el('rect',{x,y,width:barW,height:h,rx:2,fill:winner?'#76b900':'#00d4ff',opacity:'0.85'});
       barsG.appendChild(rect);
-      const lbl=el('text',{x:x+barW/2,y:startY+maxH+14,'text-anchor':'middle',fill:winner?'#76b900':'#8a97b8','font-size':'11','font-weight':winner?'700':'400'});
-      lbl.textContent=i;
+      const lbl=el('text',{x:x+barW/2,y:startY+maxH+14,'text-anchor':'middle',fill:winner?'#76b900':'#8a97b8','font-size':'8','font-weight':winner?'700':'400'});
+      lbl.textContent=classes[i];
       barsG.appendChild(lbl);
       const val=el('text',{x:x+barW/2,y:y-3,'text-anchor':'middle',fill:'#c8d0e8','font-size':'9'});
       val.textContent=(probs[i]*100).toFixed(0)+'%';
@@ -1211,54 +1229,34 @@ function el(tag,attrs={}){const e=document.createElementNS(SVG,tag);for(const k 
 
   const narr=document.getElementById('inferNarr');
   function run(){
-    const x=downsample();
-    // animate arrows
-    [['a1','#00d4ff'],['a2','#ffb03b'],['a3','#00d4ff']].forEach(([id,col],i)=>{
+    [['a1','#00d4ff'],['a2','#ffb03b'],['a3','#00d4ff'],['a4','#76b900']].forEach(([id,col],i)=>{
       setTimeout(()=>{
         const line=document.getElementById(id);
         line.setAttribute('stroke-width','4');
+        line.setAttribute('stroke',col);
         setTimeout(()=>line.setAttribute('stroke-width','2'),400);
-      },i*500);
+      },i*450);
     });
+    setTimeout(()=>{narr.innerHTML='① <b>HtoD copy</b> — 32×32×3 RGB tensor is normalized and staged through PCIe/L2.';},50);
+    setTimeout(()=>{narr.innerHTML='② <b>Conv1</b> — cuDNN schedules 3×3 filters; Tensor/CUDA cores generate 32 feature maps.';},550);
+    setTimeout(()=>{narr.innerHTML='③ <b>ReLU + pooling</b> — CUDA cores perform elementwise activation and reduce spatial resolution.';},1050);
+    setTimeout(()=>{narr.innerHTML='④ <b>Conv2</b> — deeper 32→64 convolution dominates compute and reuses L2/shared-memory tiles.';},1550);
     setTimeout(()=>{
-      narr.innerHTML='① <b>HtoD copy</b> — 784-byte vector DMA over PCIe 5.0 into GDDR7, then staged into L2.';
-    },50);
-    setTimeout(()=>{
-      narr.innerHTML='② <b>FC1 GEMM</b> — Tensor cores compute 784×128 · x (single-sample GEMV). Tiles staged via TMEM. ~2 SMs used.';
-    },600);
-    setTimeout(()=>{
-      narr.innerHTML='③ <b>ReLU</b> — fused elementwise on CUDA cores (same SM, no round-trip).';
-    },1100);
-    setTimeout(()=>{
-      narr.innerHTML='④ <b>FC2 GEMM</b> — 128×10 · h → 10 logits. Latency-bound.';
-    },1600);
-    setTimeout(()=>{
-      const p=classify(x);
-      drawBars(p);
+      const p=classify(); drawBars(p);
       const pred=p.indexOf(Math.max(...p));
-      narr.innerHTML='⑤ <b>Softmax on special-function units</b> → class <b style="color:#76b900;font-size:18px">'+pred+'</b> with '+(Math.max(...p)*100).toFixed(0)+'% confidence.';
-    },2100);
+      narr.innerHTML='⑤ <b>FC + Softmax</b> → class <b style="color:#76b900;font-size:18px">'+classes[pred]+'</b> with '+(Math.max(...p)*100).toFixed(0)+'% confidence.';
+    },2150);
   }
 
   document.getElementById('inferBtn').onclick=run;
-
-  document.getElementById('randomDigit').onclick=()=>{
-    const d=Math.floor(Math.random()*10);
-    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,280,280);
-    const t={
-      0:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.ellipse(140,140,70,100,0,0,Math.PI*2);ctx.stroke();},
-      1:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=32;ctx.beginPath();ctx.moveTo(140,40);ctx.lineTo(140,240);ctx.stroke();},
-      2:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(70,90);ctx.quadraticCurveTo(140,30,210,90);ctx.quadraticCurveTo(210,150,70,220);ctx.lineTo(210,220);ctx.stroke();},
-      3:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(70,70);ctx.quadraticCurveTo(210,50,180,140);ctx.quadraticCurveTo(230,220,70,210);ctx.stroke();},
-      4:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(70,40);ctx.lineTo(70,150);ctx.lineTo(220,150);ctx.moveTo(180,40);ctx.lineTo(180,240);ctx.stroke();},
-      5:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(210,50);ctx.lineTo(80,50);ctx.lineTo(80,130);ctx.quadraticCurveTo(220,110,200,190);ctx.quadraticCurveTo(160,240,70,210);ctx.stroke();},
-      6:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(200,60);ctx.quadraticCurveTo(60,100,80,180);ctx.quadraticCurveTo(140,260,200,180);ctx.quadraticCurveTo(220,120,80,150);ctx.stroke();},
-      7:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.moveTo(60,60);ctx.lineTo(220,60);ctx.lineTo(120,240);ctx.stroke();},
-      8:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=22;ctx.beginPath();ctx.ellipse(140,90,60,45,0,0,Math.PI*2);ctx.ellipse(140,190,70,55,0,0,Math.PI*2);ctx.stroke();},
-      9:()=>{ctx.strokeStyle='#0f1a2e';ctx.lineWidth=26;ctx.beginPath();ctx.ellipse(140,100,60,55,0,0,Math.PI*2);ctx.moveTo(200,100);ctx.quadraticCurveTo(210,200,100,240);ctx.stroke();}
-    };
-    t[d]();
+  document.getElementById('randomCifar').onclick=()=>{
+    currentClass=Math.floor(Math.random()*classes.length);
+    drawSample(currentClass);
+    drawBars(new Array(10).fill(0));
+    narr.innerHTML='Generated a CIFAR-10-style <b>'+classes[currentClass]+'</b> sample. Press <b>classify</b>.';
   };
+  drawSample(currentClass);
+  narr.innerHTML='Generated a CIFAR-10-style <b>'+classes[currentClass]+'</b> sample. Press <b>classify</b>.';
 })();
 </script>
 <script src="../../../assets/js/main.js"></script>
