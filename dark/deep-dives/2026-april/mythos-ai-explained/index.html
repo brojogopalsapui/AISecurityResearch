@@ -1263,16 +1263,9 @@ body[data-autonomy="full"] .full-autonomy-only {
 
   <main id="main">
     <div class="mode-console" aria-label="View controls">
-      <div class="mode-group" role="group" aria-label="Analysis view">
-        <span class="mode-label">View</span>
-        <button class="mode-btn active" type="button" data-view-btn="system">System View</button>
-        <button class="mode-btn" type="button" data-view-btn="security">Security View</button>
-        <button class="mode-btn" type="button" data-view-btn="autonomy">Autonomy View</button>
-      </div>
-      <div class="mode-group" role="group" aria-label="Operational toggles">
-        <button class="mode-btn toggle-btn" type="button" data-toggle="redteam" data-state="off">Red-team mode</button>
-        <button class="mode-btn toggle-btn" type="button" data-toggle="autonomy" data-state="assisted">Assisted navigation</button>
-        <button class="mode-btn toggle-btn" type="button" data-toggle="fleet" data-state="single">Single vessel</button>
+      <div class="mode-group" role="group" aria-label="Threat overlay">
+        <span class="mode-label">Overlay</span>
+        <button class="mode-btn toggle-btn" type="button" data-toggle="redteam" data-state="off">Red-team overlay</button>
       </div>
     </div>
 
@@ -2118,13 +2111,6 @@ body[data-autonomy="full"] .full-autonomy-only {
   }
 
   function initControls() {
-    $$("[data-view-btn]").forEach((button) => {
-      button.addEventListener("click", () => {
-        body.dataset.view = button.dataset.viewBtn;
-        $$("[data-view-btn]").forEach((item) => item.classList.toggle("active", item === button));
-      });
-    });
-
     $$("[data-toggle]").forEach((button) => {
       button.addEventListener("click", () => {
         const kind = button.dataset.toggle;
@@ -2132,19 +2118,7 @@ body[data-autonomy="full"] .full-autonomy-only {
           const on = body.dataset.redteam !== "on";
           body.dataset.redteam = on ? "on" : "off";
           button.dataset.state = on ? "on" : "off";
-          button.textContent = on ? "Red-team mode on" : "Red-team mode";
-        }
-        if (kind === "autonomy") {
-          const full = body.dataset.autonomy !== "full";
-          body.dataset.autonomy = full ? "full" : "assisted";
-          button.dataset.state = full ? "full" : "assisted";
-          button.textContent = full ? "Full autonomy" : "Assisted navigation";
-        }
-        if (kind === "fleet") {
-          const fleet = body.dataset.fleet !== "fleet";
-          body.dataset.fleet = fleet ? "fleet" : "single";
-          button.dataset.state = fleet ? "fleet" : "single";
-          button.textContent = fleet ? "Fleet operation" : "Single vessel";
+          button.textContent = on ? "Red-team overlay on" : "Red-team overlay";
         }
       });
     });
