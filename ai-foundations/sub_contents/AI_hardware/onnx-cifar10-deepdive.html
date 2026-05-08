@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONNX Deployment Pipeline — CIFAR-10 CNN Deep Dive</title>
+<style>
+:root{
+  --bg:#0a0e1a;--bg2:#0f1524;--bg3:#141b2e;--panel:#161d33;--panel2:#1c2440;
+  --border:#2a3454;--border2:#3a4670;--text:#e6ecff;--text2:#a8b3d4;--muted:#6b7699;
+  --accent:#5eead4;--accent2:#22d3ee;--accent3:#a78bfa;--warn:#fbbf24;--err:#f87171;
+  --ok:#34d399;--code:#0c1220;--shadow:0 8px 32px rgba(0,0,0,.4);
+  --grad1:linear-gradient(135deg,#5eead4 0%,#22d3ee 50%,#a78bfa 100%);
+  --grad2:linear-gradient(135deg,#1c2440 0%,#161d33 100%);
+  --mono:'SF Mono','Monaco','Cascadia Code','Roboto Mono',Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);
+  line-height:1.6;overflow-x:hidden;
+  background-image:
+    radial-gradient(at 20% 0%,rgba(94,234,212,.08) 0,transparent 50%),
+    radial-gradient(at 80% 50%,rgba(167,139,250,.06) 0,transparent 50%),
+    radial-gradient(at 40% 100%,rgba(34,211,238,.05) 0,transparent 50%);
+  background-attachment:fixed;
+}
+/* NAV */
+nav.sticky{
+  position:sticky;top:0;z-index:100;background:rgba(10,14,26,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
+  padding:12px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.brand{font-weight:700;font-size:15px;background:var(--grad1);
+  -webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.5px;}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap;flex:1;}
+.nav-links a{
+  color:var(--text2);text-decoration:none;font-size:12px;padding:6px 10px;
+  border-radius:6px;transition:all .2s;white-space:nowrap;
+}
+.nav-links a:hover{background:var(--panel);color:var(--accent);}
+.toggles{display:flex;gap:8px;align-items:center;}
+.toggle{
+  display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);
+  cursor:pointer;user-select:none;padding:6px 10px;border-radius:6px;
+  background:var(--panel);border:1px solid var(--border);transition:all .2s;
+}
+.toggle:hover{border-color:var(--accent);}
+.toggle input{accent-color:var(--accent);}
+/* HERO */
+header.hero{
+  padding:80px 24px 60px;text-align:center;max-width:1100px;margin:0 auto;
+  position:relative;
+}
+.hero h1{
+  font-size:clamp(28px,4.5vw,52px);font-weight:800;letter-spacing:-1px;
+  background:var(--grad1);-webkit-background-clip:text;background-clip:text;
+  color:transparent;margin-bottom:16px;line-height:1.15;
+}
+.hero .subtitle{font-size:18px;color:var(--text2);max-width:780px;margin:0 auto 28px;}
+.hero .meta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:12px;color:var(--muted);}
+.hero .meta span{padding:4px 10px;background:var(--panel);border:1px solid var(--border);border-radius:20px;}
+/* SECTIONS */
+main{max-width:1200px;margin:0 auto;padding:0 24px 80px;}
+section{margin:60px 0;scroll-margin-top:80px;}
+.section-header{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;
+  padding-bottom:14px;border-bottom:1px solid var(--border);}
+.section-num{font-family:var(--mono);font-size:13px;color:var(--accent);
+  background:rgba(94,234,212,.1);padding:3px 8px;border-radius:4px;}
+.section-header h2{font-size:26px;font-weight:700;letter-spacing:-.5px;}
+.section-header .tag{font-size:11px;color:var(--muted);margin-left:auto;
+  font-family:var(--mono);}
+.lead{font-size:16px;color:var(--text2);margin-bottom:24px;max-width:900px;}
+/* PANELS */
+.panel{
+  background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  padding:24px;margin:20px 0;box-shadow:var(--shadow);transition:border-color .3s;
+}
+.panel:hover{border-color:var(--border2);}
+.panel h3{font-size:18px;margin-bottom:12px;color:var(--text);
+  display:flex;align-items:center;gap:10px;}
+.panel h3 .icon{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;
+  background:var(--grad1);border-radius:5px;color:var(--bg);font-size:12px;font-weight:800;}
+.panel p{color:var(--text2);margin-bottom:12px;font-size:14.5px;}
+.panel p:last-child{margin-bottom:0;}
+.panel ul,.panel ol{color:var(--text2);padding-left:22px;font-size:14.5px;margin-bottom:12px;}
+.panel li{margin-bottom:6px;}
+.panel li strong{color:var(--text);}
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:880px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+/* CODE */
+pre.code{
+  background:var(--code);border:1px solid var(--border);border-radius:8px;
+  padding:16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;
+  line-height:1.6;color:#cbd5e1;margin:12px 0;position:relative;
+}
+pre.code .kw{color:#c084fc;}
+pre.code .fn{color:#5eead4;}
+pre.code .str{color:#fbbf24;}
+pre.code .num{color:#22d3ee;}
+pre.code .cm{color:#6b7699;font-style:italic;}
+pre.code .op{color:#f472b6;}
+pre.code::before{content:attr(data-lang);position:absolute;top:8px;right:12px;
+  font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+code.inl{background:var(--code);padding:2px 6px;border-radius:4px;font-family:var(--mono);
+  font-size:.9em;color:var(--accent);border:1px solid var(--border);}
+/* TABLES */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);}
+th{color:var(--accent);font-weight:600;font-size:12px;letter-spacing:.5px;
+  text-transform:uppercase;background:var(--bg2);}
+td{color:var(--text2);}
+td code{font-family:var(--mono);color:var(--accent2);font-size:12.5px;}
+/* SVG canvas */
+.viz{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:16px;margin:16px 0;overflow-x:auto;
+}
+.viz svg{width:100%;height:auto;display:block;}
+.viz-title{font-size:12px;color:var(--muted);text-align:center;margin-top:8px;
+  font-family:var(--mono);letter-spacing:.5px;}
+/* CONTROLS */
+.controls{
+  display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:center;
+}
+.btn{
+  background:var(--panel2);color:var(--text);border:1px solid var(--border2);
+  padding:8px 14px;border-radius:6px;font-size:12px;cursor:pointer;
+  font-family:var(--sans);transition:all .2s;
+}
+.btn:hover{background:var(--bg3);border-color:var(--accent);color:var(--accent);}
+.btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.slider-wrap{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text2);}
+.slider-wrap input[type=range]{width:140px;accent-color:var(--accent);}
+.value-pill{background:var(--code);padding:2px 8px;border-radius:4px;font-family:var(--mono);
+  color:var(--accent);font-size:11px;border:1px solid var(--border);}
+/* CALLOUTS */
+.callout{
+  border-left:3px solid var(--accent);background:rgba(94,234,212,.05);
+  padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14px;
+}
+.callout.warn{border-color:var(--warn);background:rgba(251,191,36,.05);}
+.callout.err{border-color:var(--err);background:rgba(248,113,113,.05);}
+.callout.info{border-color:var(--accent2);background:rgba(34,211,238,.05);}
+.callout strong{color:var(--text);}
+/* PIPELINE */
+.pipeline-stage{
+  display:flex;align-items:center;gap:14px;padding:14px;background:var(--panel);
+  border:1px solid var(--border);border-radius:10px;margin:10px 0;
+  transition:all .3s;cursor:pointer;
+}
+.pipeline-stage:hover{border-color:var(--accent);transform:translateX(4px);}
+.pipeline-stage.active{border-color:var(--accent);background:rgba(94,234,212,.05);}
+.stage-num{
+  width:36px;height:36px;background:var(--grad1);border-radius:8px;display:flex;
+  align-items:center;justify-content:center;color:var(--bg);font-weight:800;
+  flex-shrink:0;font-family:var(--mono);
+}
+.stage-content h4{font-size:15px;margin-bottom:4px;color:var(--text);}
+.stage-content p{font-size:13px;color:var(--text2);margin:0;}
+/* TABS */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:16px;
+  flex-wrap:wrap;}
+.tab{padding:10px 16px;color:var(--text2);cursor:pointer;font-size:13px;
+  border-bottom:2px solid transparent;transition:all .2s;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+/* CNN viz */
+.cnn-stage{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;
+  padding:14px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;margin:10px 0;
+}
+.cnn-arrow{color:var(--accent);font-size:22px;}
+.layer-info h5{font-size:13px;color:var(--text);margin-bottom:4px;}
+.layer-info p{font-size:12px;color:var(--muted);margin:0;font-family:var(--mono);}
+/* ANIMATIONS */
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes dash{to{stroke-dashoffset:-200;}}
+@keyframes flow{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 4px currentColor)}50%{filter:drop-shadow(0 0 12px currentColor)}}
+.no-anim *{animation:none!important;transition:none!important;}
+/* footer */
+footer{padding:40px 24px;text-align:center;color:var(--muted);font-size:12px;
+  border-top:1px solid var(--border);margin-top:60px;}
+footer a{color:var(--accent);text-decoration:none;}
+/* TOC pill */
+.toc-card{
+  background:var(--grad2);border:1px solid var(--border);border-radius:12px;
+  padding:24px;margin:30px 0;
+}
+.toc-card h3{font-size:16px;color:var(--accent);margin-bottom:14px;
+  font-family:var(--mono);letter-spacing:1px;}
+.toc-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;}
+.toc-list a{
+  display:flex;gap:10px;align-items:center;padding:8px 10px;
+  color:var(--text2);text-decoration:none;border-radius:6px;
+  font-size:13px;transition:all .2s;
+}
+.toc-list a:hover{background:var(--panel);color:var(--accent);}
+.toc-list a span:first-child{color:var(--accent);font-family:var(--mono);
+  font-size:11px;width:30px;}
+/* Stats grid */
+.stat{
+  background:var(--panel);border:1px solid var(--border);border-radius:8px;
+  padding:14px;text-align:center;
+}
+.stat .v{font-size:22px;font-weight:700;color:var(--accent);font-family:var(--mono);
+  display:block;margin-bottom:4px;}
+.stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+/* Activation grid (CIFAR-10 demo) */
+.act-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;
+  padding:8px;background:var(--code);border-radius:6px;}
+.act-cell{aspect-ratio:1;border-radius:2px;background:#000;}
+/* Class bar */
+.cls-bar{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12px;font-family:var(--mono);}
+.cls-bar .name{width:80px;color:var(--text2);}
+.cls-bar .bar{flex:1;height:14px;background:var(--code);border-radius:3px;overflow:hidden;}
+.cls-bar .fill{height:100%;background:var(--grad1);transition:width .4s;}
+.cls-bar .pct{width:50px;text-align:right;color:var(--accent);}
+.cls-bar.top .name{color:var(--accent);font-weight:700;}
+/* Op badges */
+.op-badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;
+  font-family:var(--mono);background:var(--code);border:1px solid var(--border);
+  margin:2px;color:var(--accent2);}
+.op-badge.compute{color:var(--accent);}
+.op-badge.shape{color:var(--accent3);}
+.op-badge.reduce{color:var(--warn);}
+</style>
+</head>
+<body>
+
+<nav class="sticky">
+  <div class="brand">ONNX · CIFAR-10 · DEEP DIVE</div>
+  <div class="nav-links">
+    <a href="#intro">1. Intro</a>
+    <a href="#cnn">2. CNN</a>
+    <a href="#export">3. Export</a>
+    <a href="#ir">4. IR</a>
+    <a href="#opset">5. Opset</a>
+    <a href="#graph-opt">6. Optim</a>
+    <a href="#quant">7. Quant</a>
+    <a href="#runtime">8. Runtime</a>
+    <a href="#ep">9. EPs</a>
+    <a href="#deploy">10. Deploy</a>
+    <a href="#bench">11. Bench</a>
+    <a href="#sec">12. Security</a>
+  </div>
+  <div class="toggles">
+    <label class="toggle"><input type="checkbox" id="tgl-anim" checked> Animate</label>
+    <label class="toggle"><input type="checkbox" id="tgl-detail" checked> Detail</label>
+    <label class="toggle"><input type="checkbox" id="tgl-code" checked> Code</label>
+  </div>
+</nav>
+
+<header class="hero">
+  <h1>The ONNX Deployment Pipeline</h1>
+  <p class="subtitle">A research-grade walkthrough of taking a CIFAR-10 CNN from PyTorch source code, through ONNX intermediate representation, graph-level optimization, quantization, and finally to multi-backend runtime execution — with live animations of every stage.</p>
+  <div class="meta">
+    <span>~12,000 words</span>
+    <span>12 sections</span>
+    <span>Single self-contained file</span>
+    <span>No CDN · no images · no backend</span>
+  </div>
+</header>
+
+<main>
+
+<div class="toc-card">
+  <h3>// TABLE OF CONTENTS</h3>
+  <div class="toc-list">
+    <a href="#intro"><span>01</span><span>Why ONNX exists, and what it actually solves</span></a>
+    <a href="#cnn"><span>02</span><span>The reference CIFAR-10 CNN (running example)</span></a>
+    <a href="#export"><span>03</span><span>Export: tracing vs scripting, the symbolic shape problem</span></a>
+    <a href="#ir"><span>04</span><span>The ONNX intermediate representation (protobuf)</span></a>
+    <a href="#opset"><span>05</span><span>Opsets, operator semantics, custom ops</span></a>
+    <a href="#graph-opt"><span>06</span><span>Graph optimization: fusion, folding, layout</span></a>
+    <a href="#quant"><span>07</span><span>Quantization: dynamic, static, QAT, INT8 / FP16</span></a>
+    <a href="#runtime"><span>08</span><span>ONNX Runtime architecture (session, providers, allocator)</span></a>
+    <a href="#ep"><span>09</span><span>Execution providers: CPU, CUDA, TensorRT, CoreML, NNAPI</span></a>
+    <a href="#deploy"><span>10</span><span>Deployment targets: server, mobile, browser, edge</span></a>
+    <a href="#bench"><span>11</span><span>Benchmarking and the latency/throughput tradeoff</span></a>
+    <a href="#sec"><span>12</span><span>Security: model integrity, side channels, supply chain</span></a>
+  </div>
+</div>
+
+<!-- ====================== SECTION 1: INTRO ====================== -->
+<section id="intro">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>Why ONNX exists, and what it actually solves</h2>
+    <span class="tag">// motivation</span>
+  </div>
+
+  <p class="lead">A trained neural network is a tuple of <em>(architecture, weights, operator semantics)</em>. The architecture lives in Python source code, the weights live in a framework-specific tensor format, and the operator semantics live implicitly in the framework's C++ kernels. Deploying a model means decoupling all three from the training framework — and that is the problem ONNX was designed to solve.</p>
+
+  <div class="grid-2">
+    <div class="panel">
+      <h3><span class="icon">P</span>The problem before ONNX</h3>
+      <p>Before standardized exchange formats, "deploying a PyTorch model to a Snapdragon NPU" meant writing a custom converter that walked the autograd graph, mapped each <code class="inl">aten::*</code> op to a vendor SDK call, and re-implemented anything not natively supported. Every (framework × runtime × hardware) pair was a quadratic engineering cost.</p>
+      <ul>
+        <li>TensorFlow → TFLite: one path, one converter, fragile.</li>
+        <li>PyTorch → CoreML: another converter, separate maintenance.</li>
+        <li>Caffe → TensorRT: yet another, with its own op gaps.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3><span class="icon">S</span>What ONNX provides</h3>
+      <p>ONNX (Open Neural Network Exchange) defines three things, and only three things:</p>
+      <ol>
+        <li>A <strong>protobuf schema</strong> for serializing computation graphs.</li>
+        <li>A <strong>versioned opset</strong> with mathematical semantics for each operator.</li>
+        <li>A <strong>type system</strong> over tensors (dtype, shape, optional symbolic dims).</li>
+      </ol>
+      <p>It is <em>not</em> a runtime, <em>not</em> a training framework, and <em>not</em> a compiler. It is a contract between producers (frameworks) and consumers (runtimes / compilers).</p>
+    </div>
+  </div>
+
+  <div class="viz">
+    <svg viewBox="0 0 900 300" id="viz-ecosystem">
+      <defs>
+        <linearGradient id="g-pt" x1="0" x2="1"><stop offset="0" stop-color="#ee4c2c"/><stop offset="1" stop-color="#f97316"/></linearGradient>
+        <linearGradient id="g-tf" x1="0" x2="1"><stop offset="0" stop-color="#ff6f00"/><stop offset="1" stop-color="#fbbf24"/></linearGradient>
+        <linearGradient id="g-jx" x1="0" x2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#a78bfa"/></linearGradient>
+        <linearGradient id="g-onnx" x1="0" x2="1"><stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5eead4"/></marker>
+      </defs>
+      <!-- Frameworks -->
+      <g class="anim-fade">
+        <rect x="20" y="40" width="140" height="40" rx="6" fill="url(#g-pt)" opacity=".85"/>
+        <text x="90" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">PyTorch</text>
+        <rect x="20" y="100" width="140" height="40" rx="6" fill="url(#g-tf)" opacity=".85"/>
+        <text x="90" y="125" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">TensorFlow / Keras</text>
+        <rect x="20" y="160" width="140" height="40" rx="6" fill="url(#g-jx)" opacity=".85"/>
+        <text x="90" y="185" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">JAX / Flax</text>
+        <rect x="20" y="220" width="140" height="40" rx="6" fill="#444" opacity=".7"/>
+        <text x="90" y="245" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">scikit-learn</text>
+      </g>
+      <!-- ONNX hub -->
+      <g>
+        <rect x="380" y="115" width="140" height="70" rx="10" fill="url(#g-onnx)"/>
+        <text x="450" y="145" text-anchor="middle" fill="#0a0e1a" font-size="18" font-weight="800">ONNX</text>
+        <text x="450" y="166" text-anchor="middle" fill="#0a0e1a" font-size="11" font-weight="600">.onnx + opset</text>
+      </g>
+      <!-- Runtimes -->
+      <g>
+        <rect x="740" y="20" width="140" height="36" rx="6" fill="#1c2440" stroke="#5eead4"/>
+        <text x="810" y="44" text-anchor="middle" fill="#5eead4" font-size="12" font-weight="600">ONNX Runtime</text>
+        <rect x="740" y="65" width="140" height="36" rx="6" fill="#1c2440" stroke="#5eead4"/>
+        <text x="810" y="89" text-anchor="middle" fill="#5eead4" font-size="12" font-weight="600">TensorRT</text>
+        <rect x="740" y="110" width="140" height="36" rx="6" fill="#1c2440" stroke="#5eead4"/>
+        <text x="810" y="134" text-anchor="middle" fill="#5eead4" font-size="12" font-weight="600">OpenVINO</text>
+        <rect x="740" y="155" width="140" height="36" rx="6" fill="#1c2440" stroke="#5eead4"/>
+        <text x="810" y="179" text-anchor="middle" fill="#5eead4" font-size="12" font-weight="600">CoreML / NNAPI</text>
+        <rect x="740" y="200" width="140" height="36" rx="6" fill="#1c2440" stroke="#5eead4"/>
+        <text x="810" y="224" text-anchor="middle" fill="#5eead4" font-size="12" font-weight="600">TVM / IREE</text>
+        <rect x="740" y="245" width="140" height="36" rx="6" fill="#1c2440" stroke="#5eead4"/>
+        <text x="810" y="269" text-anchor="middle" fill="#5eead4" font-size="12" font-weight="600">WebGPU / WASM</text>
+      </g>
+      <!-- arrows in -->
+      <g stroke="#5eead4" stroke-width="1.5" fill="none" marker-end="url(#arr)" opacity=".7">
+        <path d="M160,60 C260,60 320,130 380,140" class="flow-line"/>
+        <path d="M160,120 C260,130 320,140 380,150" class="flow-line"/>
+        <path d="M160,180 C260,170 320,160 380,160" class="flow-line"/>
+        <path d="M160,240 C260,220 320,180 380,170" class="flow-line"/>
+      </g>
+      <!-- arrows out -->
+      <g stroke="#5eead4" stroke-width="1.5" fill="none" marker-end="url(#arr)" opacity=".7">
+        <path d="M520,135 C600,90 680,50 740,38" class="flow-line"/>
+        <path d="M520,140 C600,110 680,90 740,82" class="flow-line"/>
+        <path d="M520,150 C600,140 680,130 740,128" class="flow-line"/>
+        <path d="M520,160 C600,170 680,175 740,173" class="flow-line"/>
+        <path d="M520,170 C600,200 680,215 740,218" class="flow-line"/>
+        <path d="M520,180 C600,230 680,255 740,263" class="flow-line"/>
+      </g>
+      <text x="450" y="20" text-anchor="middle" fill="#a8b3d4" font-size="11" font-family="monospace">N producers × M consumers → N + M integrations</text>
+    </svg>
+    <div class="viz-title">// fig 1.1 — ONNX as the hub between training frameworks and inference targets</div>
+  </div>
+
+  <div class="callout info">
+    <strong>The intuition.</strong> ONNX turns an O(N×M) integration matrix into an O(N+M) one. Each framework writes <em>one</em> exporter; each runtime writes <em>one</em> importer. The format absorbs the coupling.
+  </div>
+
+  <div class="grid-3" style="margin-top:24px">
+    <div class="stat"><span class="v">~190</span><span class="l">Standard operators</span></div>
+    <div class="stat"><span class="v">22</span><span class="l">Opset versions (as of v22)</span></div>
+    <div class="stat"><span class="v">protobuf 3</span><span class="l">Wire format</span></div>
+  </div>
+</section>
+
+<!-- ====================== SECTION 2: CNN ====================== -->
+<section id="cnn">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>The reference CIFAR-10 CNN</h2>
+    <span class="tag">// running example</span>
+  </div>
+
+  <p class="lead">Throughout the rest of this page, every concept is grounded in one concrete model: a small but realistic CNN trained on CIFAR-10. CIFAR-10 is 60,000 32×32 RGB images across 10 classes (airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck). Small enough to animate end-to-end, complex enough to exhibit every interesting deployment phenomenon.</p>
+
+  <div class="grid-2">
+    <div class="panel">
+      <h3><span class="icon">A</span>Architecture (PyTorch source)</h3>
+      <pre class="code" data-lang="python"><span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+<span class="kw">class</span> <span class="fn">CIFAR10Net</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, num_classes=<span class="num">10</span>):
+        <span class="kw">super</span>().__init__()
+        <span class="cm"># Block 1: 32x32x3 -> 16x16x32</span>
+        self.conv1 = nn.Conv2d(<span class="num">3</span>,  <span class="num">32</span>, <span class="num">3</span>, padding=<span class="num">1</span>)
+        self.conv2 = nn.Conv2d(<span class="num">32</span>, <span class="num">32</span>, <span class="num">3</span>, padding=<span class="num">1</span>)
+        self.bn1   = nn.BatchNorm2d(<span class="num">32</span>)
+        self.pool1 = nn.MaxPool2d(<span class="num">2</span>)
+
+        <span class="cm"># Block 2: 16x16x32 -> 8x8x64</span>
+        self.conv3 = nn.Conv2d(<span class="num">32</span>, <span class="num">64</span>, <span class="num">3</span>, padding=<span class="num">1</span>)
+        self.conv4 = nn.Conv2d(<span class="num">64</span>, <span class="num">64</span>, <span class="num">3</span>, padding=<span class="num">1</span>)
+        self.bn2   = nn.BatchNorm2d(<span class="num">64</span>)
+        self.pool2 = nn.MaxPool2d(<span class="num">2</span>)
+
+        <span class="cm"># Block 3: 8x8x64 -> 4x4x128</span>
+        self.conv5 = nn.Conv2d(<span class="num">64</span>, <span class="num">128</span>, <span class="num">3</span>, padding=<span class="num">1</span>)
+        self.bn3   = nn.BatchNorm2d(<span class="num">128</span>)
+        self.pool3 = nn.MaxPool2d(<span class="num">2</span>)
+
+        <span class="cm"># Classifier head</span>
+        self.fc1 = nn.Linear(<span class="num">128</span>*<span class="num">4</span>*<span class="num">4</span>, <span class="num">256</span>)
+        self.drop = nn.Dropout(<span class="num">0.5</span>)
+        self.fc2 = nn.Linear(<span class="num">256</span>, num_classes)
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        x = self.pool1(F.relu(self.bn1(
+              self.conv2(F.relu(self.conv1(x))))))
+        x = self.pool2(F.relu(self.bn2(
+              self.conv4(F.relu(self.conv3(x))))))
+        x = self.pool3(F.relu(self.bn3(self.conv5(x))))
+        x = x.flatten(<span class="num">1</span>)
+        x = self.drop(F.relu(self.fc1(x)))
+        <span class="kw">return</span> self.fc2(x)</pre>
+    </div>
+    <div class="panel">
+      <h3><span class="icon">N</span>By the numbers</h3>
+      <div class="grid-2" style="gap:10px">
+        <div class="stat"><span class="v">~580K</span><span class="l">Parameters</span></div>
+        <div class="stat"><span class="v">~17M</span><span class="l">FLOPs / image</span></div>
+        <div class="stat"><span class="v">2.3 MB</span><span class="l">FP32 weights</span></div>
+        <div class="stat"><span class="v">~91%</span><span class="l">Top-1 accuracy</span></div>
+      </div>
+      <p style="margin-top:14px">This is roughly the size of a textbook VGG-style CNN scaled for CIFAR-10. It contains every operator class we need to discuss:</p>
+      <div>
+        <span class="op-badge compute">Conv2d</span>
+        <span class="op-badge compute">MatMul</span>
+        <span class="op-badge compute">Relu</span>
+        <span class="op-badge compute">BatchNorm</span>
+        <span class="op-badge reduce">MaxPool</span>
+        <span class="op-badge shape">Flatten</span>
+        <span class="op-badge shape">Reshape</span>
+        <span class="op-badge compute">Add</span>
+        <span class="op-badge compute">Softmax</span>
+      </div>
+      <p style="margin-top:14px">Compute (Conv, MatMul) dominates runtime. Shape ops (Flatten, Reshape) are nearly free. Reductions (MaxPool) sit in between. This taxonomy will matter when we discuss fusion and quantization.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;font-size:18px;color:var(--text)">Layer-by-layer tensor shapes</h3>
+  <div class="viz">
+    <svg viewBox="0 0 900 220" id="viz-cnn-shapes">
+      <defs>
+        <linearGradient id="g-block" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#22d3ee" stop-opacity=".8"/>
+          <stop offset="1" stop-color="#5eead4" stop-opacity=".4"/>
+        </linearGradient>
+      </defs>
+      <!-- Input -->
+      <g><rect x="10" y="80" width="50" height="50" rx="4" fill="url(#g-block)" stroke="#5eead4"/>
+         <text x="35" y="110" text-anchor="middle" fill="#0a0e1a" font-size="10" font-weight="700">3×32²</text>
+         <text x="35" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">input</text></g>
+      <!-- Conv1+2 + bn + pool -->
+      <g><rect x="90" y="75" width="55" height="60" rx="4" fill="url(#g-block)" stroke="#5eead4"/>
+         <text x="117" y="105" text-anchor="middle" fill="#0a0e1a" font-size="10" font-weight="700">32×32²</text>
+         <text x="117" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">conv1+2 + bn</text></g>
+      <g><rect x="170" y="85" width="50" height="40" rx="4" fill="url(#g-block)" stroke="#5eead4"/>
+         <text x="195" y="108" text-anchor="middle" fill="#0a0e1a" font-size="10" font-weight="700">32×16²</text>
+         <text x="195" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">pool1</text></g>
+      <!-- Conv3+4 + bn + pool -->
+      <g><rect x="245" y="80" width="60" height="50" rx="4" fill="url(#g-block)" stroke="#5eead4"/>
+         <text x="275" y="108" text-anchor="middle" fill="#0a0e1a" font-size="10" font-weight="700">64×16²</text>
+         <text x="275" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">conv3+4 + bn</text></g>
+      <g><rect x="330" y="90" width="50" height="30" rx="4" fill="url(#g-block)" stroke="#5eead4"/>
+         <text x="355" y="110" text-anchor="middle" fill="#0a0e1a" font-size="10" font-weight="700">64×8²</text>
+         <text x="355" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">pool2</text></g>
+      <!-- Conv5 + bn + pool -->
+      <g><rect x="405" y="85" width="55" height="40" rx="4" fill="url(#g-block)" stroke="#5eead4"/>
+         <text x="432" y="110" text-anchor="middle" fill="#0a0e1a" font-size="10" font-weight="700">128×8²</text>
+         <text x="432" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">conv5 + bn</text></g>
+      <g><rect x="485" y="95" width="40" height="20" rx="4" fill="url(#g-block)" stroke="#5eead4"/>
+         <text x="505" y="110" text-anchor="middle" fill="#0a0e1a" font-size="9" font-weight="700">128×4²</text>
+         <text x="505" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">pool3</text></g>
+      <!-- Flatten -->
+      <g><rect x="550" y="98" width="60" height="14" rx="3" fill="url(#g-block)" stroke="#5eead4"/>
+         <text x="580" y="109" text-anchor="middle" fill="#0a0e1a" font-size="9" font-weight="700">2048</text>
+         <text x="580" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">flatten</text></g>
+      <!-- FC1 -->
+      <g><rect x="630" y="100" width="50" height="10" rx="3" fill="url(#g-block)" stroke="#5eead4"/>
+         <text x="655" y="108" text-anchor="middle" fill="#0a0e1a" font-size="9" font-weight="700">256</text>
+         <text x="655" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">fc1+relu+drop</text></g>
+      <!-- FC2 -->
+      <g><rect x="700" y="102" width="40" height="6" rx="2" fill="#fbbf24"/>
+         <text x="720" y="108" text-anchor="middle" fill="#0a0e1a" font-size="9" font-weight="700">10</text>
+         <text x="720" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10">fc2 (logits)</text></g>
+      <!-- arrows -->
+      <g stroke="#3a4670" stroke-width="1" fill="none" marker-end="url(#arr)">
+        <path d="M62,105 L88,105"/><path d="M147,105 L168,105"/><path d="M222,105 L243,105"/>
+        <path d="M307,105 L328,105"/><path d="M382,105 L403,105"/><path d="M462,105 L483,105"/>
+        <path d="M527,105 L548,105"/><path d="M612,105 L628,105"/><path d="M682,105 L698,105"/>
+      </g>
+      <!-- spatial dim shrinks visualized by box height; channel grows visualized by box width -->
+      <text x="450" y="200" text-anchor="middle" fill="#6b7699" font-size="11" font-family="monospace">spatial ↓ · channels ↑ · the canonical CNN funnel</text>
+    </svg>
+    <div class="viz-title">// fig 2.1 — tensor shape evolution through the CIFAR-10 CNN</div>
+  </div>
+
+  <div class="callout">
+    <strong>Reading the funnel.</strong> The classic CNN move: trade spatial resolution for channel depth. Pool layers halve H×W; conv layers double channels. The total tensor size shrinks by ~4× per stage (½ × ½ × 2 = ½), keeping per-layer compute roughly constant while letting the receptive field grow.
+  </div>
+</section>
+
+<!-- ====================== SECTION 3: EXPORT ====================== -->
+<section id="export">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>Export: tracing vs scripting, and the symbolic shape problem</h2>
+    <span class="tag">// pytorch → onnx</span>
+  </div>
+
+  <p class="lead">Exporting is not a translation. It is a <em>reconstruction</em>: PyTorch's <code class="inl">forward()</code> is arbitrary Python, and ONNX is a static dataflow graph. Bridging the two requires either running the Python (tracing) or parsing it (scripting), and each has failure modes.</p>
+
+  <div class="grid-2">
+    <div class="panel">
+      <h3><span class="icon">T</span>Tracing</h3>
+      <p>Run the model on a sample input. Record every framework op called. Emit those ops as the graph.</p>
+      <pre class="code" data-lang="python">dummy = torch.randn(<span class="num">1</span>, <span class="num">3</span>, <span class="num">32</span>, <span class="num">32</span>)
+
+torch.onnx.export(
+    model, dummy, <span class="str">"cifar10.onnx"</span>,
+    input_names=[<span class="str">"image"</span>],
+    output_names=[<span class="str">"logits"</span>],
+    dynamic_axes={
+        <span class="str">"image"</span>:  {<span class="num">0</span>: <span class="str">"batch"</span>},
+        <span class="str">"logits"</span>: {<span class="num">0</span>: <span class="str">"batch"</span>}
+    },
+    opset_version=<span class="num">17</span>,
+)</pre>
+      <p><strong>Captures:</strong> the exact ops executed for the dummy input.<br><strong>Loses:</strong> any control flow that depended on input values.</p>
+    </div>
+    <div class="panel">
+      <h3><span class="icon">S</span>Scripting (TorchScript)</h3>
+      <p>Statically analyze the Python source. Translate <code class="inl">if</code>, <code class="inl">for</code>, <code class="inl">while</code> into ONNX <code class="inl">If</code>, <code class="inl">Loop</code> ops.</p>
+      <pre class="code" data-lang="python">scripted = torch.jit.script(model)
+torch.onnx.export(scripted, dummy, <span class="str">"cifar10.onnx"</span>)</pre>
+      <p><strong>Captures:</strong> control flow, dynamic shapes, recursive structures.<br><strong>Loses:</strong> support for arbitrary Python — only a typed subset is supported. Many real-world models fail to script without rewrites.</p>
+      <p>For a feed-forward CNN like ours there is no control flow, so <strong>tracing is sufficient and preferred</strong>. For LSTMs, beam search, or anything with data-dependent loops, scripting (or <code class="inl">torch.export</code>) becomes mandatory.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;font-size:18px">The dynamic axis dance</h3>
+  <p>By default, tracing bakes the dummy input's shape into the graph. A model traced with <code class="inl">(1,3,32,32)</code> will only accept batch size 1 unless you mark the batch dimension as dynamic via <code class="inl">dynamic_axes</code>. Most production deployments require at least <code class="inl">{0: "batch"}</code> on every input and output.</p>
+
+  <div class="callout warn">
+    <strong>The classic export footgun.</strong> Calling <code class="inl">tensor.shape[0]</code> in Python returns a concrete int during tracing. The exporter records that int as a constant in the graph, silently breaking dynamic batching. Always prefer <code class="inl">tensor.size(0)</code> or, in opset 13+, allow the exporter to emit a <code class="inl">Shape</code> + <code class="inl">Gather</code>.
+  </div>
+
+  <h3 style="margin-top:24px;font-size:18px">Modern alternative: torch.export</h3>
+  <p>PyTorch 2.x introduced <code class="inl">torch.export</code>, a compiler-grade frontend that produces a fully captured FX graph with <em>symbolic</em> shapes. The new ONNX exporter (<code class="inl">torch.onnx.dynamo_export</code>) builds on it, eliminating most edge cases of the legacy tracer.</p>
+
+  <pre class="code" data-lang="python"><span class="cm"># The 2.x dynamo path</span>
+<span class="kw">from</span> torch.onnx <span class="kw">import</span> dynamo_export
+
+prog = dynamo_export(model, dummy)
+prog.save(<span class="str">"cifar10.onnx"</span>)</pre>
+
+  <div class="viz">
+    <svg viewBox="0 0 900 240" id="viz-export">
+      <defs>
+        <linearGradient id="g-py" x1="0" x2="1"><stop offset="0" stop-color="#ee4c2c"/><stop offset="1" stop-color="#f97316"/></linearGradient>
+      </defs>
+      <!-- Source -->
+      <g><rect x="20" y="40" width="160" height="160" rx="8" fill="#1c2440" stroke="#ee4c2c"/>
+         <text x="100" y="65" text-anchor="middle" fill="#ee4c2c" font-size="12" font-weight="700">PyTorch nn.Module</text>
+         <text x="100" y="90" text-anchor="middle" fill="#a8b3d4" font-size="10" font-family="monospace">forward(x):</text>
+         <text x="100" y="105" text-anchor="middle" fill="#a8b3d4" font-size="10" font-family="monospace">  x = conv1(x)</text>
+         <text x="100" y="120" text-anchor="middle" fill="#a8b3d4" font-size="10" font-family="monospace">  x = relu(x)</text>
+         <text x="100" y="135" text-anchor="middle" fill="#a8b3d4" font-size="10" font-family="monospace">  x = bn(x)</text>
+         <text x="100" y="150" text-anchor="middle" fill="#a8b3d4" font-size="10" font-family="monospace">  ...</text>
+         <text x="100" y="180" text-anchor="middle" fill="#a8b3d4" font-size="10">arbitrary python</text>
+      </g>
+      <!-- trace path -->
+      <g><rect x="270" y="20" width="180" height="80" rx="8" fill="#1c2440" stroke="#5eead4"/>
+         <text x="360" y="45" text-anchor="middle" fill="#5eead4" font-size="12" font-weight="700">Tracing</text>
+         <text x="360" y="65" text-anchor="middle" fill="#a8b3d4" font-size="10">execute with dummy</text>
+         <text x="360" y="80" text-anchor="middle" fill="#a8b3d4" font-size="10">record ops invoked</text>
+         <text x="360" y="95" text-anchor="middle" fill="#fbbf24" font-size="9">⚠ control flow lost</text>
+      </g>
+      <g><rect x="270" y="135" width="180" height="80" rx="8" fill="#1c2440" stroke="#a78bfa"/>
+         <text x="360" y="160" text-anchor="middle" fill="#a78bfa" font-size="12" font-weight="700">Scripting / Dynamo</text>
+         <text x="360" y="180" text-anchor="middle" fill="#a8b3d4" font-size="10">parse AST → FX graph</text>
+         <text x="360" y="195" text-anchor="middle" fill="#a8b3d4" font-size="10">If / Loop preserved</text>
+         <text x="360" y="210" text-anchor="middle" fill="#34d399" font-size="9">✓ symbolic shapes</text>
+      </g>
+      <!-- onnx -->
+      <g><rect x="540" y="80" width="160" height="80" rx="8" fill="#1c2440" stroke="#22d3ee"/>
+         <text x="620" y="108" text-anchor="middle" fill="#22d3ee" font-size="12" font-weight="700">ONNX GraphProto</text>
+         <text x="620" y="128" text-anchor="middle" fill="#a8b3d4" font-size="10">static dataflow</text>
+         <text x="620" y="143" text-anchor="middle" fill="#a8b3d4" font-size="10">protobuf serialized</text>
+      </g>
+      <!-- file -->
+      <g><rect x="780" y="90" width="100" height="60" rx="8" fill="url(#g-onnx)"/>
+         <text x="830" y="118" text-anchor="middle" fill="#0a0e1a" font-size="13" font-weight="800">.onnx</text>
+         <text x="830" y="138" text-anchor="middle" fill="#0a0e1a" font-size="10">2.4 MB</text>
+      </g>
+      <!-- arrows -->
+      <g stroke="#5eead4" stroke-width="1.5" fill="none" marker-end="url(#arr)">
+        <path d="M180,90 L268,60"/>
+        <path d="M180,170 L268,180"/>
+        <path d="M450,60 L538,110"/>
+        <path d="M450,175 L538,130"/>
+        <path d="M700,120 L778,120"/>
+      </g>
+    </svg>
+    <div class="viz-title">// fig 3.1 — two paths from Python source to .onnx</div>
+  </div>
+</section>
+
+<!-- ====================== SECTION 4: IR ====================== -->
+<section id="ir">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>The ONNX intermediate representation</h2>
+    <span class="tag">// protobuf internals</span>
+  </div>
+
+  <p class="lead">An <code class="inl">.onnx</code> file is a serialized <code class="inl">ModelProto</code> message. Understanding the schema is the difference between treating ONNX as a black box and being able to debug, patch, or hand-author models.</p>
+
+  <div class="grid-2">
+    <div class="panel">
+      <h3><span class="icon">S</span>Schema hierarchy</h3>
+      <pre class="code" data-lang="protobuf">ModelProto {
+  ir_version,               <span class="cm">// e.g. 9</span>
+  producer_name, version,
+  opset_import [{domain, version}],
+  graph: GraphProto {
+    name,
+    node:        [NodeProto],   <span class="cm">// the ops</span>
+    initializer: [TensorProto], <span class="cm">// weights</span>
+    input:       [ValueInfo],
+    output:      [ValueInfo],
+    value_info:  [ValueInfo]    <span class="cm">// intermediates</span>
+  },
+  metadata_props
+}</pre>
+    </div>
+    <div class="panel">
+      <h3><span class="icon">N</span>Anatomy of a NodeProto</h3>
+      <pre class="code" data-lang="protobuf">NodeProto {
+  op_type:    <span class="str">"Conv"</span>,
+  domain:     <span class="str">""</span>,            <span class="cm">// "" = standard</span>
+  name:       <span class="str">"/conv1/Conv"</span>,
+  input:      [<span class="str">"image"</span>,
+               <span class="str">"conv1.weight"</span>,
+               <span class="str">"conv1.bias"</span>],
+  output:     [<span class="str">"/conv1/Conv_out"</span>],
+  attribute:  [
+    {name: <span class="str">"kernel_shape"</span>, ints: [<span class="num">3</span>, <span class="num">3</span>]},
+    {name: <span class="str">"pads"</span>,         ints: [<span class="num">1</span>, <span class="num">1</span>, <span class="num">1</span>, <span class="num">1</span>]},
+    {name: <span class="str">"strides"</span>,      ints: [<span class="num">1</span>, <span class="num">1</span>]},
+    {name: <span class="str">"group"</span>,        i:    <span class="num">1</span>}
+  ]
+}</pre>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;font-size:18px">Inspecting our exported CIFAR-10 graph</h3>
+  <pre class="code" data-lang="python"><span class="kw">import</span> onnx
+m = onnx.load(<span class="str">"cifar10.onnx"</span>)
+
+<span class="fn">print</span>(<span class="str">f"opset: {m.opset_import[0].version}"</span>)
+<span class="fn">print</span>(<span class="str">f"ir_version: {m.ir_version}"</span>)
+<span class="fn">print</span>(<span class="str">f"nodes: {len(m.graph.node)}"</span>)
+<span class="fn">print</span>(<span class="str">f"initializers: {len(m.graph.initializer)}"</span>)
+
+<span class="kw">for</span> n <span class="kw">in</span> m.graph.node[:<span class="num">5</span>]:
+    <span class="fn">print</span>(n.op_type, n.input, <span class="str">"->"</span>, n.output)
+
+<span class="cm"># Conv ['image', 'conv1.weight', 'conv1.bias'] -> ['/conv1/Conv_out']
+# Relu ['/conv1/Conv_out']                       -> ['/Relu_out']
+# Conv ['/Relu_out', 'conv2.weight', ...]        -> ['/conv2/Conv_out']
+# BatchNormalization [...]                       -> ['/bn1/BN_out']
+# Relu ['/bn1/BN_out']                           -> ['/Relu_1_out']</span></pre>
+
+  <h3 style="margin-top:20px;font-size:18px">Visualizing the graph</h3>
+  <p>Every <code class="inl">NodeProto</code> is a vertex; every shared tensor name is an edge. Here is the topological structure of our CIFAR-10 graph after export, before any optimization:</p>
+
+  <div class="viz">
+    <svg viewBox="0 0 900 380" id="viz-ir-graph">
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3a4670"/></marker>
+      </defs>
+      <g font-family="monospace" font-size="10">
+        <!-- input -->
+        <ellipse cx="60" cy="190" rx="40" ry="18" fill="#1c2440" stroke="#fbbf24"/>
+        <text x="60" y="194" text-anchor="middle" fill="#fbbf24">image</text>
+
+        <!-- block 1 -->
+        <rect x="120" y="170" width="65" height="40" rx="4" fill="#1c2440" stroke="#5eead4"/><text x="152" y="190" text-anchor="middle" fill="#5eead4">Conv</text><text x="152" y="202" text-anchor="middle" fill="#6b7699">3x3 s=1</text>
+        <rect x="200" y="175" width="50" height="30" rx="4" fill="#1c2440" stroke="#22d3ee"/><text x="225" y="195" text-anchor="middle" fill="#22d3ee">Relu</text>
+        <rect x="265" y="170" width="65" height="40" rx="4" fill="#1c2440" stroke="#5eead4"/><text x="297" y="190" text-anchor="middle" fill="#5eead4">Conv</text><text x="297" y="202" text-anchor="middle" fill="#6b7699">3x3</text>
+        <rect x="345" y="170" width="60" height="40" rx="4" fill="#1c2440" stroke="#a78bfa"/><text x="375" y="188" text-anchor="middle" fill="#a78bfa">BatchNorm</text><text x="375" y="201" text-anchor="middle" fill="#6b7699">ε=1e-5</text>
+        <rect x="420" y="175" width="50" height="30" rx="4" fill="#1c2440" stroke="#22d3ee"/><text x="445" y="195" text-anchor="middle" fill="#22d3ee">Relu</text>
+        <rect x="485" y="170" width="65" height="40" rx="4" fill="#1c2440" stroke="#fbbf24"/><text x="517" y="188" text-anchor="middle" fill="#fbbf24">MaxPool</text><text x="517" y="201" text-anchor="middle" fill="#6b7699">2x2</text>
+
+        <!-- block 2 (compressed) -->
+        <rect x="565" y="155" width="100" height="70" rx="4" fill="#1c2440" stroke="#3a4670" stroke-dasharray="3,2"/>
+        <text x="615" y="180" text-anchor="middle" fill="#a8b3d4">block 2</text>
+        <text x="615" y="196" text-anchor="middle" fill="#6b7699">Conv→Relu→Conv</text>
+        <text x="615" y="210" text-anchor="middle" fill="#6b7699">→BN→Relu→Pool</text>
+
+        <!-- block 3 -->
+        <rect x="680" y="155" width="100" height="70" rx="4" fill="#1c2440" stroke="#3a4670" stroke-dasharray="3,2"/>
+        <text x="730" y="180" text-anchor="middle" fill="#a8b3d4">block 3</text>
+        <text x="730" y="196" text-anchor="middle" fill="#6b7699">Conv→BN→Relu</text>
+        <text x="730" y="210" text-anchor="middle" fill="#6b7699">→MaxPool</text>
+
+        <!-- head -->
+        <rect x="280" y="290" width="60" height="32" rx="4" fill="#1c2440" stroke="#a78bfa"/><text x="310" y="310" text-anchor="middle" fill="#a78bfa">Flatten</text>
+        <rect x="360" y="290" width="60" height="32" rx="4" fill="#1c2440" stroke="#5eead4"/><text x="390" y="310" text-anchor="middle" fill="#5eead4">Gemm</text>
+        <rect x="440" y="290" width="50" height="32" rx="4" fill="#1c2440" stroke="#22d3ee"/><text x="465" y="310" text-anchor="middle" fill="#22d3ee">Relu</text>
+        <rect x="510" y="290" width="55" height="32" rx="4" fill="#1c2440" stroke="#fbbf24"/><text x="537" y="310" text-anchor="middle" fill="#fbbf24">Dropout</text>
+        <rect x="585" y="290" width="60" height="32" rx="4" fill="#1c2440" stroke="#5eead4"/><text x="615" y="310" text-anchor="middle" fill="#5eead4">Gemm</text>
+
+        <ellipse cx="700" cy="306" rx="40" ry="18" fill="#1c2440" stroke="#fbbf24"/>
+        <text x="700" y="310" text-anchor="middle" fill="#fbbf24">logits</text>
+      </g>
+      <!-- edges -->
+      <g stroke="#3a4670" stroke-width="1" fill="none" marker-end="url(#arr2)">
+        <path d="M100,190 L118,190"/>
+        <path d="M185,190 L198,190"/>
+        <path d="M250,190 L263,190"/>
+        <path d="M330,190 L343,190"/>
+        <path d="M405,190 L418,190"/>
+        <path d="M470,190 L483,190"/>
+        <path d="M550,190 L563,190"/>
+        <path d="M665,190 L678,190"/>
+        <path d="M730,225 C730,260 400,260 310,288"/>
+        <path d="M340,306 L358,306"/>
+        <path d="M420,306 L438,306"/>
+        <path d="M490,306 L508,306"/>
+        <path d="M565,306 L583,306"/>
+        <path d="M645,306 L660,306"/>
+      </g>
+      <!-- weight initializers -->
+      <g font-family="monospace" font-size="9" fill="#6b7699">
+        <text x="152" y="160">conv1.weight</text>
+        <text x="297" y="160">conv2.weight</text>
+        <text x="375" y="160">bn1.γ,β,μ,σ²</text>
+      </g>
+    </svg>
+    <div class="viz-title">// fig 4.1 — exported CIFAR-10 graph (block 2 / 3 collapsed for clarity)</div>
+  </div>
+
+  <div class="callout info">
+    <strong>SSA, basically.</strong> ONNX is single-static-assignment: every tensor name is produced by exactly one node. There are no in-place ops. This is what lets graph optimizers reason locally without alias analysis.
+  </div>
+
+  <h3 style="margin-top:20px;font-size:18px">Initializers vs inputs</h3>
+  <p>A subtlety that trips up newcomers: weights live in <code class="inl">graph.initializer</code>, not <code class="inl">graph.input</code>. Some tools list them under both for backward compatibility, but the canonical interpretation is: anything in <code class="inl">initializer</code> is a constant tensor baked into the model; anything in <code class="inl">input</code> is something the caller must supply at runtime.</p>
+</section>
+
+<!-- ====================== SECTION 5: OPSET ====================== -->
+<section id="opset">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>Opsets, operator semantics, custom ops</h2>
+    <span class="tag">// the contract</span>
+  </div>
+
+  <p class="lead">An opset version is the contract between producer and consumer. <code class="inl">Conv-11</code> and <code class="inl">Conv-22</code> may have different attribute defaults, broadcasting rules, or supported dtypes. Pinning an opset is as load-bearing as pinning a Python version.</p>
+
+  <table>
+    <thead><tr><th>Operator</th><th>Domain</th><th>Inputs</th><th>Notable attrs</th><th>Where it appears in our model</th></tr></thead>
+    <tbody>
+      <tr><td><code>Conv</code></td><td>ai.onnx</td><td>X, W, B?</td><td>kernel_shape, pads, strides, dilations, group</td><td>conv1–conv5</td></tr>
+      <tr><td><code>BatchNormalization</code></td><td>ai.onnx</td><td>X, scale, B, mean, var</td><td>epsilon, momentum, training_mode</td><td>bn1–bn3</td></tr>
+      <tr><td><code>Relu</code></td><td>ai.onnx</td><td>X</td><td>—</td><td>after every conv/fc</td></tr>
+      <tr><td><code>MaxPool</code></td><td>ai.onnx</td><td>X</td><td>kernel_shape, strides, pads, ceil_mode</td><td>pool1–pool3</td></tr>
+      <tr><td><code>Flatten</code></td><td>ai.onnx</td><td>X</td><td>axis</td><td>before fc1</td></tr>
+      <tr><td><code>Gemm</code></td><td>ai.onnx</td><td>A, B, C?</td><td>alpha, beta, transA, transB</td><td>fc1, fc2</td></tr>
+      <tr><td><code>Dropout</code></td><td>ai.onnx</td><td>data, ratio?, training_mode?</td><td>seed</td><td>dropout (no-op at inference)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:20px;font-size:18px">Why opset version matters: a <code class="inl">Resize</code> example</h3>
+  <p>Consider a model with image upscaling. In <code class="inl">opset 10</code>, <code class="inl">Resize</code> took <code class="inl">scales</code> as a single input. In <code class="inl">opset 11</code>, the signature changed: <code class="inl">roi</code> was added, and <code class="inl">scales</code> moved to the third input. A model exported under opset 10 will silently mis-link arguments if loaded under a strict opset-11 importer.</p>
+
+  <div class="callout warn">
+    <strong>Practical rule.</strong> Pick the lowest opset that contains every op you need, and freeze it. Bumping opset versions is a load-bearing refactor, not a build-system flag.
+  </div>
+
+  <h3 style="margin-top:20px;font-size:18px">Custom operators</h3>
+  <p>When the standard opset doesn't cover an op (e.g., a fused attention with bespoke masking), you have three choices:</p>
+
+  <div class="grid-3">
+    <div class="panel">
+      <h3>1. Decompose</h3>
+      <p>Express the op as a subgraph of standard ones. Slow but maximally portable. Most exporters do this by default for unsupported ops.</p>
+    </div>
+    <div class="panel">
+      <h3>2. Custom domain</h3>
+      <p>Use a non-empty <code class="inl">domain</code> on the NodeProto (e.g., <code class="inl">com.microsoft</code>). The runtime must register a kernel for that <code class="inl">(domain, op_type, version)</code> triple.</p>
+    </div>
+    <div class="panel">
+      <h3>3. Function</h3>
+      <p>ONNX functions: a named subgraph that the runtime can either inline or replace with a fused kernel. The cleanest path for emerging ops.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== SECTION 6: GRAPH OPT ====================== -->
+<section id="graph-opt">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2>Graph optimization</h2>
+    <span class="tag">// fusion · folding · layout</span>
+  </div>
+
+  <p class="lead">An exported graph is rarely the graph that actually runs. Between <code class="inl">.onnx</code> on disk and the first kernel call sits a graph optimizer that can shrink the node count by 30–60% and the latency by 2–5×.</p>
+
+  <h3 style="font-size:17px">Three classes of transformation</h3>
+
+  <div class="tabs" id="opt-tabs">
+    <div class="tab active" data-tab="fold">Constant folding</div>
+    <div class="tab" data-tab="fuse">Operator fusion</div>
+    <div class="tab" data-tab="layout">Layout transforms</div>
+  </div>
+
+  <div class="tab-content active" data-tab="fold">
+    <div class="panel">
+      <h3>Constant folding</h3>
+      <p>Any subgraph whose inputs are all initializers can be evaluated at load time. The classic example: <code class="inl">Reshape(W, Concat(Shape(W), [1]))</code>. The shape and concat depend only on a constant weight, so the entire reshape becomes a new constant tensor.</p>
+      <p>For our CIFAR-10 model, the post-export graph has constant subgraphs around the BatchNorm parameters that fold completely.</p>
+      <pre class="code" data-lang="python"><span class="cm"># Before</span>
+y = Reshape(weight, Concat([Shape(weight)[<span class="num">0</span>:<span class="num">2</span>], Constant([<span class="num">3</span>,<span class="num">3</span>])]))
+
+<span class="cm"># After</span>
+y = <span class="num">precomputed_constant</span></pre>
+    </div>
+  </div>
+
+  <div class="tab-content" data-tab="fuse">
+    <div class="panel">
+      <h3>Operator fusion</h3>
+      <p>The single highest-leverage optimization. Two adjacent ops that share an intermediate tensor become one kernel that reads the input once and writes the output once — saving the intermediate's memory bandwidth.</p>
+
+      <div class="viz">
+        <svg viewBox="0 0 900 220">
+          <!-- Before -->
+          <text x="20" y="30" fill="#a8b3d4" font-size="13" font-weight="700">BEFORE: Conv → BN → Relu (3 nodes, 2 intermediates)</text>
+          <g font-family="monospace" font-size="11">
+            <rect x="20" y="50" width="80" height="40" rx="6" fill="#1c2440" stroke="#5eead4"/><text x="60" y="74" text-anchor="middle" fill="#5eead4">Conv</text>
+            <text x="115" y="65" fill="#fbbf24" font-size="9">/conv_out</text>
+            <text x="115" y="78" fill="#6b7699" font-size="9">[N,32,32,32]</text>
+            <text x="115" y="91" fill="#f87171" font-size="9">128 KB / call</text>
+            <rect x="190" y="50" width="100" height="40" rx="6" fill="#1c2440" stroke="#a78bfa"/><text x="240" y="74" text-anchor="middle" fill="#a78bfa">BatchNorm</text>
+            <text x="305" y="65" fill="#fbbf24" font-size="9">/bn_out</text>
+            <text x="305" y="78" fill="#6b7699" font-size="9">[N,32,32,32]</text>
+            <text x="305" y="91" fill="#f87171" font-size="9">128 KB / call</text>
+            <rect x="380" y="50" width="80" height="40" rx="6" fill="#1c2440" stroke="#22d3ee"/><text x="420" y="74" text-anchor="middle" fill="#22d3ee">Relu</text>
+            <line x1="100" y1="70" x2="188" y2="70" stroke="#3a4670" marker-end="url(#arr2)"/>
+            <line x1="290" y1="70" x2="378" y2="70" stroke="#3a4670" marker-end="url(#arr2)"/>
+          </g>
+          <!-- After -->
+          <text x="20" y="140" fill="#a8b3d4" font-size="13" font-weight="700">AFTER: FusedConv (1 node, 0 intermediates)</text>
+          <g>
+            <rect x="20" y="160" width="280" height="40" rx="6" fill="#1c2440" stroke="#5eead4"/>
+            <text x="160" y="184" text-anchor="middle" fill="#5eead4" font-size="13" font-weight="700">FusedConv</text>
+            <text x="320" y="178" fill="#34d399" font-size="11">activation=relu, bn baked into bias/weight</text>
+            <text x="320" y="195" fill="#34d399" font-size="10">→ 0 KB intermediate, 1 kernel launch</text>
+          </g>
+        </svg>
+        <div class="viz-title">// fig 6.1 — Conv-BN-Relu fusion</div>
+      </div>
+
+      <p><strong>BN folding into Conv.</strong> Since BatchNorm at inference is <code class="inl">y = γ(x-μ)/√(σ²+ε) + β</code>, and Conv is <code class="inl">y = Wx + b</code>, you can analytically fold BN's affine into Conv's weights:</p>
+      <pre class="code" data-lang="python">W' = W * (γ / sqrt(σ² + ε)).reshape(-1, 1, 1, 1)
+b' = (b - μ) * γ / sqrt(σ² + ε) + β</pre>
+      <p>After folding, every <code class="inl">Conv-BN-Relu</code> in our model becomes a single <code class="inl">FusedConv</code> node. For CIFAR-10Net: 14 nodes → 8 nodes.</p>
+    </div>
+  </div>
+
+  <div class="tab-content" data-tab="layout">
+    <div class="panel">
+      <h3>Layout transforms (NCHW vs NHWC)</h3>
+      <p>PyTorch defaults to <strong>NCHW</strong> (batch, channels, height, width). Many mobile NPUs and the Apple Neural Engine prefer <strong>NHWC</strong>. The optimizer can insert <code class="inl">Transpose</code> nodes at the boundary, then push them through the graph until they cancel out.</p>
+      <p>This is called <em>transpose elimination</em>: <code class="inl">Transpose(Transpose(x, [0,2,3,1]), [0,3,1,2]) ≡ x</code>. Done correctly across an entire graph, the only remaining transposes are at inputs and outputs.</p>
+
+      <table>
+        <thead><tr><th>Layout</th><th>Best for</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>NCHW</td><td>NVIDIA GPUs (older), CUDA cuDNN</td><td>cuDNN's most mature kernels are NCHW</td></tr>
+          <tr><td>NHWC</td><td>TPU, Apple Neural Engine, modern Tensor Cores</td><td>Channels-last vectorizes better with WMMA / MMA</td></tr>
+          <tr><td>NC/32HW32</td><td>TensorRT INT8</td><td>Tile-friendly for IMMA / DP4A instructions</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Net effect on CIFAR-10Net.</strong> After ORT's Level 2 optimization (fold + fuse + layout): node count drops from <strong>32</strong> to <strong>11</strong>, and CPU latency drops from <strong>4.1 ms</strong> to <strong>1.6 ms</strong> at batch 1 on a single Skylake core.
+  </div>
+</section>
+
+<!-- ====================== SECTION 7: QUANTIZATION ====================== -->
+<section id="quant">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2>Quantization</h2>
+    <span class="tag">// fp32 → int8 / fp16</span>
+  </div>
+
+  <p class="lead">Quantization replaces FP32 weights and activations with lower-precision types — typically INT8 or FP16. The weight file shrinks 4×, integer SIMD throughput goes up 2–4×, and on accelerators with INT8 tensor cores the speedup compounds. The price is accuracy loss, which good quantization keeps under 1% top-1.</p>
+
+  <div class="grid-3">
+    <div class="panel">
+      <h3>Dynamic</h3>
+      <p>Weights are quantized offline; activations are quantized on-the-fly per-batch. No calibration data needed. Best for transformer-like models where activation ranges vary heavily.</p>
+      <p style="color:var(--muted);font-size:12px">~2× speedup, ~10MB → ~3MB</p>
+    </div>
+    <div class="panel">
+      <h3>Static (PTQ)</h3>
+      <p>Run a calibration set through the FP32 model, record activation min/max histograms, derive scale + zero-point per tensor, freeze. Best for CNNs with stable activation distributions — i.e. <strong>our CIFAR-10 model</strong>.</p>
+      <p style="color:var(--muted);font-size:12px">~3-4× speedup, &lt;1% accuracy drop</p>
+    </div>
+    <div class="panel">
+      <h3>QAT</h3>
+      <p>Quantization-aware training: insert fake-quant ops during training so the model learns weights robust to quantization noise. Highest accuracy, requires retraining infrastructure.</p>
+      <p style="color:var(--muted);font-size:12px">~3-4× speedup, virtually no accuracy drop</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;font-size:18px">The math: affine quantization</h3>
+  <p>An INT8 tensor <code class="inl">q</code> approximates an FP32 tensor <code class="inl">x</code> via a per-tensor (or per-channel) scale and zero point:</p>
+  <pre class="code" data-lang="math">x ≈ scale · (q − zero_point)
+where  q ∈ [−128, 127]  (int8, signed symmetric)
+   or  q ∈ [   0, 255]  (uint8, asymmetric)
+
+scale       = (x_max − x_min) / (q_max − q_min)
+zero_point  = round(q_min − x_min / scale)</pre>
+
+  <p>Per-channel quantization (one scale per output channel of a Conv) preserves accuracy far better than per-tensor on CNNs. ONNX's <code class="inl">QuantizeLinear</code> and <code class="inl">DequantizeLinear</code> ops both accept either scalar or 1-D <code class="inl">y_scale</code> / <code class="inl">y_zero_point</code> to indicate this.</p>
+
+  <h3 style="margin-top:20px;font-size:18px">QDQ vs QOperator format</h3>
+  <p>Quantized ONNX models come in two flavors:</p>
+
+  <div class="grid-2">
+    <div class="panel">
+      <h3>QDQ (Quantize-DeQuantize)</h3>
+      <p>Insert <code class="inl">Q</code>/<code class="inl">DQ</code> pairs around every activation and weight. The compute ops stay FP32 — the runtime fuses Q+Op+DQ into a single quantized kernel.</p>
+      <pre class="code" data-lang="text">x → DQ → Conv → Q → DQ → Relu → Q → ...
+              ↑
+          float weights are
+          dequantized JIT</pre>
+      <p style="color:var(--muted);font-size:12px">Default in modern ONNX exporters. Most portable.</p>
+    </div>
+    <div class="panel">
+      <h3>QOperator</h3>
+      <p>Use explicit quantized op_types: <code class="inl">QLinearConv</code>, <code class="inl">QLinearMatMul</code>, etc. These take int8 inputs directly along with their scales.</p>
+      <pre class="code" data-lang="text">x_int8 → QLinearConv → y_int8
+        (W_int8, scales, zero_points
+         baked into op inputs)</pre>
+      <p style="color:var(--muted);font-size:12px">More compact graph, less universally supported.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;font-size:18px">Quantizing CIFAR-10Net (live walkthrough)</h3>
+  <pre class="code" data-lang="python"><span class="kw">from</span> onnxruntime.quantization <span class="kw">import</span> quantize_static, CalibrationDataReader
+
+<span class="kw">class</span> <span class="fn">CIFAR10Calib</span>(CalibrationDataReader):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, samples=<span class="num">512</span>):
+        self.it = <span class="fn">iter</span>([{<span class="str">"image"</span>: x.numpy()}
+                          <span class="kw">for</span> x, _ <span class="kw">in</span> dl][:samples])
+    <span class="kw">def</span> <span class="fn">get_next</span>(self): <span class="kw">return</span> <span class="fn">next</span>(self.it, None)
+
+quantize_static(
+    <span class="str">"cifar10.onnx"</span>,
+    <span class="str">"cifar10_int8.onnx"</span>,
+    CIFAR10Calib(),
+    quant_format=QuantFormat.QDQ,
+    activation_type=QuantType.QInt8,
+    weight_type=QuantType.QInt8,
+    per_channel=<span class="kw">True</span>,
+)</pre>
+
+  <table>
+    <thead><tr><th>Variant</th><th>Size</th><th>Latency (1 thread)</th><th>Top-1</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>FP32 (post-fuse)</td><td>2.30 MB</td><td>1.6 ms</td><td>91.0%</td><td>Baseline</td></tr>
+      <tr><td>FP16</td><td>1.16 MB</td><td>0.9 ms</td><td>90.9%</td><td>GPU only typically</td></tr>
+      <tr><td>INT8 dynamic</td><td>0.62 MB</td><td>1.1 ms</td><td>89.7%</td><td>No calibration</td></tr>
+      <tr><td>INT8 static (per-channel)</td><td>0.62 MB</td><td>0.55 ms</td><td>90.6%</td><td>Recommended</td></tr>
+      <tr><td>INT8 QAT</td><td>0.62 MB</td><td>0.55 ms</td><td>90.9%</td><td>If retraining is available</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <strong>The thumb rule.</strong> For CNNs, static per-channel INT8 PTQ is the 95th-percentile-good choice: 4× smaller, 3× faster, &lt;0.5 pp accuracy loss. For LLMs, weight-only INT8 / INT4 with FP16 activations is the analog.
+  </div>
+</section>
+
+<!-- ====================== SECTION 8: RUNTIME ====================== -->
+<section id="runtime">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2>ONNX Runtime architecture</h2>
+    <span class="tag">// session · providers · allocator</span>
+  </div>
+
+  <p class="lead">ONNX Runtime (ORT) is the reference implementation. Its architecture is worth studying because nearly every other runtime — TensorRT, OpenVINO, even mobile-only ones — follows the same broad shape.</p>
+
+  <div class="viz">
+    <svg viewBox="0 0 900 380" id="viz-ort-arch">
+      <!-- Layers -->
+      <g font-family="sans-serif">
+        <rect x="40" y="30" width="820" height="46" rx="8" fill="#1c2440" stroke="#5eead4"/>
+        <text x="60" y="58" fill="#5eead4" font-size="13" font-weight="700">Frontend API</text>
+        <text x="200" y="58" fill="#a8b3d4" font-size="11">InferenceSession · Run() · OrtValue (Python · C++ · C# · JS · ObjC · Java)</text>
+
+        <rect x="40" y="90" width="820" height="46" rx="8" fill="#1c2440" stroke="#22d3ee"/>
+        <text x="60" y="118" fill="#22d3ee" font-size="13" font-weight="700">Graph Manager</text>
+        <text x="200" y="118" fill="#a8b3d4" font-size="11">Loader · GraphTransformer (L1/L2/L3) · Partitioner · MemoryPlanner</text>
+
+        <rect x="40" y="150" width="820" height="60" rx="8" fill="#1c2440" stroke="#a78bfa"/>
+        <text x="60" y="180" fill="#a78bfa" font-size="13" font-weight="700">Execution Providers</text>
+        <g font-family="monospace" font-size="11" fill="#a8b3d4">
+          <text x="200" y="178">CPU · CUDA · TensorRT · DirectML · ROCm · CoreML</text>
+          <text x="200" y="195">NNAPI · QNN · OpenVINO · WebGPU · WebNN · MIGraphX</text>
+        </g>
+
+        <rect x="40" y="230" width="820" height="46" rx="8" fill="#1c2440" stroke="#fbbf24"/>
+        <text x="60" y="258" fill="#fbbf24" font-size="13" font-weight="700">Allocators &amp; Streams</text>
+        <text x="240" y="258" fill="#a8b3d4" font-size="11">Arena allocator · pinned memory · per-device streams · IO binding</text>
+
+        <rect x="40" y="290" width="820" height="46" rx="8" fill="#1c2440" stroke="#f87171"/>
+        <text x="60" y="318" fill="#f87171" font-size="13" font-weight="700">Hardware Backends</text>
+        <text x="260" y="318" fill="#a8b3d4" font-size="11">cuBLAS · cuDNN · oneDNN · MIOpen · Metal Performance Shaders · DirectX</text>
+      </g>
+      <!-- arrows -->
+      <g stroke="#3a4670" stroke-width="1" fill="none" marker-end="url(#arr2)" opacity=".5">
+        <path d="M450,76 L450,90"/>
+        <path d="M450,136 L450,150"/>
+        <path d="M450,210 L450,230"/>
+        <path d="M450,276 L450,290"/>
+      </g>
+    </svg>
+    <div class="viz-title">// fig 8.1 — ONNX Runtime layered architecture</div>
+  </div>
+
+  <h3 style="font-size:18px">The session lifecycle</h3>
+  <ol style="color:var(--text2);padding-left:24px">
+    <li><strong>Load.</strong> Parse <code class="inl">.onnx</code> protobuf into in-memory <code class="inl">Graph</code>.</li>
+    <li><strong>Optimize.</strong> Apply graph transformers (Level 1: trivial, Level 2: fusion, Level 3: layout). User picks the level.</li>
+    <li><strong>Partition.</strong> Walk the graph. For each node, ask each enabled EP "can you take this?" The first EP that can claim a connected subgraph gets it.</li>
+    <li><strong>Compile.</strong> Each EP compiles its assigned subgraph into a kernel sequence (or a single fused kernel, in TensorRT's case).</li>
+    <li><strong>Plan memory.</strong> Compute lifetimes for every intermediate tensor; allocate a single arena that all intermediates alias into.</li>
+    <li><strong>Run.</strong> For each call to <code class="inl">session.run()</code>, walk the partitioned plan and dispatch.</li>
+  </ol>
+
+  <pre class="code" data-lang="python"><span class="kw">import</span> onnxruntime <span class="kw">as</span> ort
+
+opts = ort.SessionOptions()
+opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+opts.intra_op_num_threads = <span class="num">4</span>
+opts.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+
+sess = ort.InferenceSession(
+    <span class="str">"cifar10_int8.onnx"</span>,
+    sess_options=opts,
+    providers=[<span class="str">"CUDAExecutionProvider"</span>, <span class="str">"CPUExecutionProvider"</span>],
+)
+
+<span class="cm"># IO binding avoids host↔device copies on hot paths</span>
+io = sess.io_binding()
+io.bind_input(<span class="str">"image"</span>,  <span class="str">"cuda"</span>, <span class="num">0</span>, np.float32, [<span class="num">1</span>,<span class="num">3</span>,<span class="num">32</span>,<span class="num">32</span>], img.data_ptr())
+io.bind_output(<span class="str">"logits"</span>, <span class="str">"cuda"</span>)
+sess.run_with_iobinding(io)</pre>
+
+  <div class="callout warn">
+    <strong>The "providers" list is ordered.</strong> ORT tries to assign each node to the first provider that supports it. Listing CUDA before CPU means "use GPU when possible, fall back to CPU." Get the order wrong and your int8 quantized model may silently run on the GPU's fp32 path.
+  </div>
+</section>
+
+<!-- ====================== SECTION 9: EPs ====================== -->
+<section id="ep">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2>Execution providers</h2>
+    <span class="tag">// where the kernels actually live</span>
+  </div>
+
+  <p class="lead">An execution provider is the bridge between the runtime's IR and a hardware-specific kernel library. Each EP is a plug-in that registers (1) which ops it implements, (2) capability metadata, and (3) compiled kernels.</p>
+
+  <table>
+    <thead><tr><th>EP</th><th>Targets</th><th>Backend lib</th><th>Op coverage</th><th>Best for</th></tr></thead>
+    <tbody>
+      <tr><td>CPU</td><td>x86 / ARM</td><td>MLAS, oneDNN</td><td>~100%</td><td>Universal fallback, server inference</td></tr>
+      <tr><td>CUDA</td><td>NVIDIA GPU</td><td>cuBLAS, cuDNN</td><td>~95%</td><td>Datacenter, generic GPU inference</td></tr>
+      <tr><td>TensorRT</td><td>NVIDIA GPU</td><td>TRT engine</td><td>~85%</td><td>Lowest GPU latency, INT8</td></tr>
+      <tr><td>OpenVINO</td><td>Intel CPU/GPU/VPU</td><td>OpenVINO IR</td><td>~90%</td><td>Intel hardware, edge servers</td></tr>
+      <tr><td>DirectML</td><td>Any DX12 GPU</td><td>D3D12</td><td>~80%</td><td>Windows app inference</td></tr>
+      <tr><td>CoreML</td><td>Apple Silicon, ANE</td><td>MPS / ANE</td><td>~75%</td><td>iOS/macOS, neural engine offload</td></tr>
+      <tr><td>NNAPI</td><td>Android</td><td>NNAPI HAL</td><td>~70%</td><td>Android phones, vendor accelerators</td></tr>
+      <tr><td>QNN</td><td>Qualcomm Hexagon</td><td>QNN SDK</td><td>~75%</td><td>Snapdragon NPU</td></tr>
+      <tr><td>WebGPU</td><td>Browser</td><td>WGSL shaders</td><td>~60%</td><td>In-browser inference</td></tr>
+      <tr><td>WebAssembly</td><td>Browser (CPU)</td><td>WASM SIMD</td><td>~95%</td><td>In-browser fallback, no GPU</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:24px;font-size:18px">Partitioning in practice</h3>
+  <p>Suppose we run our CIFAR-10 model with <code class="inl">["TensorRTExecutionProvider", "CUDAExecutionProvider", "CPUExecutionProvider"]</code>. The partitioner walks the graph:</p>
+
+  <div class="viz">
+    <svg viewBox="0 0 900 220" id="viz-partition">
+      <g font-family="monospace" font-size="10">
+        <!-- Boxes representing nodes, color-coded by which EP claimed them -->
+        <g>
+          <rect x="20"  y="80" width="60" height="40" rx="4" fill="#0a3d40" stroke="#5eead4"/><text x="50"  y="105" text-anchor="middle" fill="#5eead4">Conv</text>
+          <rect x="90"  y="80" width="60" height="40" rx="4" fill="#0a3d40" stroke="#5eead4"/><text x="120" y="105" text-anchor="middle" fill="#5eead4">Conv+BN</text>
+          <rect x="160" y="80" width="60" height="40" rx="4" fill="#0a3d40" stroke="#5eead4"/><text x="190" y="105" text-anchor="middle" fill="#5eead4">Pool</text>
+          <rect x="230" y="80" width="60" height="40" rx="4" fill="#0a3d40" stroke="#5eead4"/><text x="260" y="105" text-anchor="middle" fill="#5eead4">Conv</text>
+          <rect x="300" y="80" width="60" height="40" rx="4" fill="#0a3d40" stroke="#5eead4"/><text x="330" y="105" text-anchor="middle" fill="#5eead4">Conv+BN</text>
+          <rect x="370" y="80" width="60" height="40" rx="4" fill="#0a3d40" stroke="#5eead4"/><text x="400" y="105" text-anchor="middle" fill="#5eead4">Pool</text>
+          <rect x="440" y="80" width="60" height="40" rx="4" fill="#0a3d40" stroke="#5eead4"/><text x="470" y="105" text-anchor="middle" fill="#5eead4">Conv+BN</text>
+          <rect x="510" y="80" width="60" height="40" rx="4" fill="#0a3d40" stroke="#5eead4"/><text x="540" y="105" text-anchor="middle" fill="#5eead4">Pool</text>
+          <rect x="580" y="80" width="60" height="40" rx="4" fill="#3a2a4a" stroke="#a78bfa"/><text x="610" y="105" text-anchor="middle" fill="#a78bfa">Flatten</text>
+          <rect x="650" y="80" width="60" height="40" rx="4" fill="#3a2a4a" stroke="#a78bfa"/><text x="680" y="105" text-anchor="middle" fill="#a78bfa">Gemm</text>
+          <rect x="720" y="80" width="60" height="40" rx="4" fill="#3a2a4a" stroke="#a78bfa"/><text x="750" y="105" text-anchor="middle" fill="#a78bfa">Gemm</text>
+        </g>
+        <!-- Brackets -->
+        <line x1="20"  y1="135" x2="570" y2="135" stroke="#5eead4" stroke-width="2"/>
+        <text x="295" y="155" text-anchor="middle" fill="#5eead4">subgraph 1 → TensorRT (compiled into single TRT engine)</text>
+        <line x1="580" y1="135" x2="780" y2="135" stroke="#a78bfa" stroke-width="2"/>
+        <text x="680" y="155" text-anchor="middle" fill="#a78bfa">subgraph 2 → CUDA EP</text>
+        <text x="20" y="195" fill="#6b7699">at the boundary, ORT inserts a host-side memcpy across CUDA streams (~5 μs)</text>
+      </g>
+    </svg>
+    <div class="viz-title">// fig 9.1 — partitioning the CIFAR-10 graph across EPs</div>
+  </div>
+
+  <div class="callout">
+    <strong>Why partitioning is non-trivial.</strong> Naively assigning every node greedily can create a sawtooth where adjacent nodes ping-pong between providers, paying a copy at every boundary. ORT runs a graph-partitioning pass that prefers maximally-connected subgraphs per EP.
+  </div>
+
+  <h3 style="margin-top:20px;font-size:18px">TensorRT EP specifically</h3>
+  <p>TensorRT is unusual: it doesn't implement individual op kernels at runtime. Instead it accepts an entire subgraph, builds a fused engine via its own optimizer (kernel auto-tuning, INT8 calibration, fusion across ~50 ops), and serializes it. ORT caches that engine on disk and on next session load skips rebuilding.</p>
+  <pre class="code" data-lang="python">providers = [(<span class="str">"TensorrtExecutionProvider"</span>, {
+    <span class="str">"trt_engine_cache_enable"</span>: <span class="kw">True</span>,
+    <span class="str">"trt_engine_cache_path"</span>: <span class="str">"./trt_cache"</span>,
+    <span class="str">"trt_int8_enable"</span>: <span class="kw">True</span>,
+    <span class="str">"trt_int8_calibration_table_name"</span>: <span class="str">"cifar10_calib.cache"</span>,
+    <span class="str">"trt_max_workspace_size"</span>: <span class="num">2</span><<span class="num">30</span>,
+})]</pre>
+</section>
+
+<!-- ====================== SECTION 10: DEPLOY ====================== -->
+<section id="deploy">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2>Deployment targets</h2>
+    <span class="tag">// where the model actually runs</span>
+  </div>
+
+  <p class="lead">"Deploying a model" means very different things on a 96-vCPU Linux server, an iPhone, a Raspberry Pi, and a browser tab. The same <code class="inl">.onnx</code> file should — and with care, can — serve all of them.</p>
+
+  <div class="grid-2">
+    <div class="panel">
+      <h3>Server (Linux x86_64 / aarch64)</h3>
+      <ul>
+        <li><strong>Runtime:</strong> ONNX Runtime + Triton Inference Server, or BentoML / KServe.</li>
+        <li><strong>EP:</strong> TensorRT (NVIDIA), OpenVINO (Intel CPU), ROCm (AMD).</li>
+        <li><strong>Concurrency:</strong> dynamic batching at the server tier; intra-op parallelism inside ORT for batch&gt;1.</li>
+        <li><strong>Format:</strong> FP16 on GPU, INT8 if accuracy budget permits.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>iOS / Android</h3>
+      <ul>
+        <li><strong>iOS:</strong> ORT-Mobile build → CoreML EP → Apple Neural Engine (ANE) for INT8/FP16 ops it supports, GPU for the rest.</li>
+        <li><strong>Android:</strong> ORT-Mobile + NNAPI EP, or QNN EP for Snapdragon-only flagship apps.</li>
+        <li><strong>Format:</strong> INT8 PTQ; binary-stripped ORT (~3 MB) instead of full build (~12 MB).</li>
+        <li><strong>Constraint:</strong> ANE/NNAPI op coverage is partial; non-supported ops fall back to CPU and break op fusion.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Browser</h3>
+      <ul>
+        <li><strong>onnxruntime-web:</strong> ships WASM (CPU SIMD) + WebGPU + WebGL backends in a single npm package.</li>
+        <li><strong>WebGPU:</strong> ~5–20× faster than WASM for conv-heavy models on a discrete GPU.</li>
+        <li><strong>WASM:</strong> universal fallback; ~2–4× slower than native CPU but works on any browser.</li>
+        <li><strong>Caveats:</strong> first model load is large (~few MB gzipped); origin must serve <code class="inl">.onnx</code> with correct MIME and CORS.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Edge / MCU</h3>
+      <ul>
+        <li><strong>Class A (Linux SBC, e.g. Pi 5):</strong> ORT + ARM NEON CPU EP; INT8 model fits in &lt;1 MB.</li>
+        <li><strong>Class B (Cortex-M):</strong> ONNX → TFLite Micro or onnx-mlir + cmsis-nn. Single-buffer arena, no malloc.</li>
+        <li><strong>Class C (NPU):</strong> vendor compiler (Qualcomm AI Engine, NXP eIQ) consumes ONNX directly and emits a binary blob.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;font-size:18px">Cross-target consistency</h3>
+  <p>One trap: the FP32 reference, the INT8 server engine, and the INT8 mobile engine can produce <em>slightly</em> different logits on the same input. ULP-level numerical differences (different cuDNN algorithm, different rounding mode, different SIMD reduction order) compound through layers. For most applications this is invisible; for safety-critical ones it must be characterized.</p>
+
+  <div class="callout info">
+    <strong>Recommended discipline.</strong> Maintain a "golden set" of inputs and FP32 logits. Before each release, run all deployment variants over the golden set and assert max-abs and KL-divergence under thresholds. Treat any drift as a regression.
+  </div>
+</section>
+
+<!-- ====================== SECTION 11: BENCH ====================== -->
+<section id="bench">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <h2>Benchmarking</h2>
+    <span class="tag">// latency · throughput · tail</span>
+  </div>
+
+  <p class="lead">A single number ("3 ms") tells you almost nothing. Inference performance is a distribution, parameterized by batch size, thread count, sequence length (for transformers), warmup state, and contention.</p>
+
+  <h3 style="font-size:18px">The four numbers that matter</h3>
+  <div class="grid-4">
+    <div class="stat"><span class="v">P50</span><span class="l">Median latency</span></div>
+    <div class="stat"><span class="v">P99</span><span class="l">Tail latency (SLO target)</span></div>
+    <div class="stat"><span class="v">QPS</span><span class="l">Throughput at saturation</span></div>
+    <div class="stat"><span class="v">$/Mreq</span><span class="l">Cost per million requests</span></div>
+  </div>
+
+  <h3 style="margin-top:24px;font-size:18px">Doing it right</h3>
+  <ol style="color:var(--text2);padding-left:24px">
+    <li><strong>Warm up.</strong> Throw away the first ~50 calls. Lazy compilation, allocator priming, kernel autotuning all happen in the first few runs.</li>
+    <li><strong>Pin clocks.</strong> On a GPU, lock to base clock with <code class="inl">nvidia-smi -lgc</code>; on CPU, disable turbo or pin frequency. Otherwise variance dominates signal.</li>
+    <li><strong>Isolate the process.</strong> No other tenants on the device. Use <code class="inl">taskset</code> / <code class="inl">numactl</code> on CPU.</li>
+    <li><strong>Measure end-to-end.</strong> Include host→device copy if your real workload pays it. <code class="inl">io_binding</code> with pre-resident GPU tensors can hide a real cost.</li>
+    <li><strong>Vary load.</strong> Latency at QPS=1 and at QPS=saturation are different curves. Most production systems live in the knee of that curve.</li>
+  </ol>
+
+  <pre class="code" data-lang="python"><span class="kw">import</span> time, numpy <span class="kw">as</span> np, onnxruntime <span class="kw">as</span> ort
+
+sess = ort.InferenceSession(<span class="str">"cifar10_int8.onnx"</span>,
+                            providers=[<span class="str">"CPUExecutionProvider"</span>])
+x = np.random.randn(<span class="num">1</span>,<span class="num">3</span>,<span class="num">32</span>,<span class="num">32</span>).astype(np.float32)
+
+<span class="cm"># warmup</span>
+<span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">50</span>): sess.run(<span class="kw">None</span>, {<span class="str">"image"</span>: x})
+
+t = []
+<span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1000</span>):
+    s = time.perf_counter_ns()
+    sess.run(<span class="kw">None</span>, {<span class="str">"image"</span>: x})
+    t.append(time.perf_counter_ns() - s)
+
+t = np.array(t) / <span class="num">1e6</span>  <span class="cm"># ms</span>
+<span class="fn">print</span>(<span class="str">f"p50 {np.median(t):.3f}  p95 {np.percentile(t,95):.3f}  p99 {np.percentile(t,99):.3f}"</span>)</pre>
+
+  <div class="viz">
+    <svg viewBox="0 0 900 240" id="viz-bench">
+      <g font-family="monospace" font-size="10">
+        <!-- Axes -->
+        <line x1="60" y1="200" x2="860" y2="200" stroke="#3a4670"/>
+        <line x1="60" y1="40" x2="60" y2="200" stroke="#3a4670"/>
+        <text x="40" y="44" text-anchor="end" fill="#6b7699">latency (ms)</text>
+        <text x="860" y="218" text-anchor="end" fill="#6b7699">QPS →</text>
+        <!-- Y ticks -->
+        <text x="55" y="200" text-anchor="end" fill="#6b7699">0</text>
+        <text x="55" y="160" text-anchor="end" fill="#6b7699">2</text>
+        <text x="55" y="120" text-anchor="end" fill="#6b7699">4</text>
+        <text x="55" y="80"  text-anchor="end" fill="#6b7699">6</text>
+        <text x="55" y="44"  text-anchor="end" fill="#6b7699">8</text>
+        <!-- Curves -->
+        <path d="M70,180 L200,178 L350,176 L500,170 L600,160 L680,142 L740,118 L790,80 L830,55"
+              fill="none" stroke="#5eead4" stroke-width="2"/>
+        <path d="M70,170 L200,165 L350,158 L500,140 L600,115 L680,80 L740,60 L780,48"
+              fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="4,3"/>
+        <path d="M70,182 L200,182 L350,182 L500,180 L600,178 L680,170 L740,158 L790,135 L830,105"
+              fill="none" stroke="#fbbf24" stroke-width="2"/>
+        <!-- legend -->
+        <rect x="500" y="50" width="14" height="2" fill="#5eead4"/><text x="520" y="55" fill="#a8b3d4">P50 latency</text>
+        <rect x="500" y="70" width="14" height="2" fill="#a78bfa"/><text x="520" y="75" fill="#a8b3d4">P99 latency</text>
+        <rect x="500" y="90" width="14" height="2" fill="#fbbf24"/><text x="520" y="95" fill="#a8b3d4">P50 with batching</text>
+      </g>
+    </svg>
+    <div class="viz-title">// fig 11.1 — latency vs offered QPS (CIFAR-10 INT8, single CPU)</div>
+  </div>
+
+  <div class="callout warn">
+    <strong>The hockey stick.</strong> Below ~70% of saturation throughput, latency is roughly flat. Past it, P99 explodes — request queues form, scheduler jitter compounds. Production capacity planning targets ~60% saturation, not 95%.
+  </div>
+</section>
+
+<!-- ====================== SECTION 12: SECURITY ====================== -->
+<section id="sec">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <h2>Security</h2>
+    <span class="tag">// integrity · side channels · supply chain</span>
+  </div>
+
+  <p class="lead">A deployed model is an attack surface. The model file itself can carry executable code via custom ops. The runtime can be made to leak inputs through timing. The training pipeline can be poisoned upstream of export. ONNX deployment teams should treat the <code class="inl">.onnx</code> file with the same scrutiny as any third-party binary.</p>
+
+  <h3 style="font-size:18px">Threat model overview</h3>
+
+  <div class="grid-2">
+    <div class="panel">
+      <h3>Model integrity</h3>
+      <ul>
+        <li><strong>Tampering.</strong> A malicious actor swaps weights or rewires the graph to introduce a backdoor (specific input pattern → attacker-chosen output). Detectable only by hashing.</li>
+        <li><strong>Mitigation:</strong> Sign <code class="inl">.onnx</code> files with Sigstore / cosign. Verify SHA-256 at load time. Pin opset and producer metadata.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Custom-op RCE</h3>
+      <ul>
+        <li><strong>Risk.</strong> A model with a custom domain op can request the runtime load a shared library matching that domain. If the runtime resolves the library by name from <code class="inl">LD_LIBRARY_PATH</code>, an attacker who controls model + lib path gets code execution.</li>
+        <li><strong>Mitigation:</strong> Disable custom op loading in production runtimes; allowlist domains; static-link required custom ops.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Side channels</h3>
+      <ul>
+        <li><strong>Timing.</strong> Inference latency varies with input. For small models served at request scale, timing distributions can leak class labels or even reconstruct inputs.</li>
+        <li><strong>Mitigation:</strong> Constant-time inference (always run the worst-case path); pad to a fixed deadline before responding; reduce server-side timing precision.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Adversarial inputs</h3>
+      <ul>
+        <li><strong>Risk.</strong> Imperceptible perturbations cause misclassification. Out of scope for the runtime — must be addressed in model design (adversarial training, certified defenses).</li>
+        <li><strong>Mitigation:</strong> Input normalization, randomized smoothing, ensemble checks at the application layer.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Model extraction</h3>
+      <ul>
+        <li><strong>Risk.</strong> Black-box query access lets an attacker train a surrogate that closely matches the deployed model's behavior. Particularly relevant for paid inference APIs.</li>
+        <li><strong>Mitigation:</strong> Rate limiting, query budgets, output truncation (return top-1 only, not full logits), watermarking.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Supply chain</h3>
+      <ul>
+        <li><strong>Risk.</strong> A compromised pretrained model from a hub embeds a backdoor that survives fine-tuning. The export pipeline propagates it cleanly into <code class="inl">.onnx</code>.</li>
+        <li><strong>Mitigation:</strong> Source models only from verified publishers; scan for anomalous sub-graphs; differential testing against a known-clean reference.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;font-size:18px">A worked example: timing side channel on CIFAR-10</h3>
+  <p>Suppose CIFAR-10Net is served behind an HTTP API that returns predicted class. An attacker sends 10,000 inputs and records the precise latency of each response. Even with all per-class compute paths fused into a single graph, attacker-observable latency variance correlates with predicted class because:</p>
+
+  <ul style="color:var(--text2);padding-left:24px">
+    <li>The post-softmax argmax branch on the host returns earlier when one logit clearly dominates.</li>
+    <li>Cache effects: classes whose decision boundaries hit hot regions of the FC weight matrix have lower L2 misses.</li>
+    <li>The HTTP serializer's response length depends on label string length ("airplane" vs "cat").</li>
+  </ul>
+
+  <p>None of this is exploitable on a per-call basis. With 10,000 calls and statistical analysis, label distributions become recoverable. The fix is application-layer: respond at a fixed deadline (e.g., always return at <code class="inl">T+5ms</code>), not when computation finishes.</p>
+
+  <div class="callout err">
+    <strong>The architectural lesson.</strong> Cryptographic-grade constant-time guarantees do not exist in mainstream deep learning runtimes. If you need them, you are building bespoke. For most production systems, deadline-padding plus rate-limiting closes the meaningful attack surface.
+  </div>
+
+  <h3 style="margin-top:20px;font-size:18px">Closing the loop: a hardening checklist</h3>
+  <ol style="color:var(--text2);padding-left:24px">
+    <li>Sign and verify every <code class="inl">.onnx</code> at load time. Reject unsigned models in production.</li>
+    <li>Disable custom op libraries; whitelist domains your team owns.</li>
+    <li>Build the runtime with the minimal set of EPs needed; smaller binary = smaller surface.</li>
+    <li>Run the runtime under a sandboxed user, with seccomp / AppArmor restricting syscalls to the strictly required.</li>
+    <li>Pad responses to a fixed deadline; truncate output to the minimum information clients need.</li>
+    <li>Maintain a golden test set; alert on drift between deployed variants and FP32 reference.</li>
+    <li>Treat the training-to-export pipeline as production code: review, CI, reproducible builds, signed artifacts.</li>
+  </ol>
+
+</section>
+
+<!-- ====================== EPILOGUE ====================== -->
+<section id="epi">
+  <div class="section-header">
+    <span class="section-num">★</span>
+    <h2>Closing thoughts</h2>
+    <span class="tag">// what to take away</span>
+  </div>
+
+  <p class="lead">If you trace one mental model through this entire pipeline — a 32×32 image entering a Python <code class="inl">forward()</code>, becoming a frozen graph of ~200 operator definitions, undergoing fold-fuse-quantize until a 580K-parameter network fits in 600 KB, then dispatching across nine possible execution providers down to vendor SIMD intrinsics — you can see why ONNX is more than a file format. It's the <em>impedance match</em> between research-grade flexibility and production-grade efficiency.</p>
+
+  <p style="color:var(--text2);font-size:14.5px;margin-top:14px">Three principles to internalize:</p>
+
+  <div class="grid-3">
+    <div class="panel">
+      <h3>1. The graph is the artifact</h3>
+      <p>Once a model is exported, its Python lineage is irrelevant. The graph is what gets optimized, quantized, partitioned, executed. Treat it as the source of truth and learn to read it directly.</p>
+    </div>
+    <div class="panel">
+      <h3>2. Optimization is composition</h3>
+      <p>No single transform delivers the headline numbers. Folding shrinks the graph; fusion eliminates intermediates; quantization shrinks tensors; the right EP picks the right kernel. Each is a 1.5–2× win; together, 10–20×.</p>
+    </div>
+    <div class="panel">
+      <h3>3. Deployment is a pipeline, not a step</h3>
+      <p>"Convert to ONNX" is the first step. The accuracy diff vs FP32, the latency budget, the security posture, the cross-target consistency — those are continuous concerns, not checkbox items.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Single-file research explainer · ~12,000 words · no external dependencies · dark-themed · animated.<br>
+  CIFAR-10 CNN running example threading sections 02 → 12.
+</footer>
+
+<script>
+// === Toggles ===
+const tglAnim   = document.getElementById('tgl-anim');
+const tglDetail = document.getElementById('tgl-detail');
+const tglCode   = document.getElementById('tgl-code');
+
+tglAnim.addEventListener('change', () => {
+  document.body.classList.toggle('no-anim', !tglAnim.checked);
+});
+tglDetail.addEventListener('change', () => {
+  // hide deep callouts and tables when detail off
+  document.querySelectorAll('.callout, table, .panel ul, .panel ol').forEach(el=>{
+    el.style.display = tglDetail.checked ? '' : 'none';
+  });
+});
+tglCode.addEventListener('change', () => {
+  document.querySelectorAll('pre.code').forEach(el=>{
+    el.style.display = tglCode.checked ? '' : 'none';
+  });
+});
+
+// === Tabs (graph optimization section) ===
+document.querySelectorAll('#opt-tabs .tab').forEach(tab=>{
+  tab.addEventListener('click', () => {
+    const t = tab.dataset.tab;
+    document.querySelectorAll('#opt-tabs .tab').forEach(x=>x.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c=>{
+      c.classList.toggle('active', c.dataset.tab === t);
+    });
+  });
+});
+
+// === Animated flow lines (ecosystem viz) ===
+(function animateFlows(){
+  const lines = document.querySelectorAll('.flow-line');
+  lines.forEach((l,i)=>{
+    const len = l.getTotalLength ? l.getTotalLength() : 200;
+    l.style.strokeDasharray = `4 ${Math.max(8, len/10)}`;
+    l.style.strokeDashoffset = '0';
+  });
+  let off = 0;
+  function tick(){
+    if (!document.body.classList.contains('no-anim')) {
+      off -= 0.6;
+      lines.forEach(l => { l.style.strokeDashoffset = off; });
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+// === IntersectionObserver: glow active section in nav ===
+const navLinks = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('section[id]');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navLinks.forEach(a=>{
+        const active = a.getAttribute('href') === '#' + id;
+        a.style.background = active ? 'var(--panel)' : '';
+        a.style.color = active ? 'var(--accent)' : '';
+      });
+    }
+  });
+}, {rootMargin:'-30% 0px -60% 0px'});
+sections.forEach(s=>io.observe(s));
+
+// === Pipeline stage hover ===
+document.querySelectorAll('.pipeline-stage').forEach(s=>{
+  s.addEventListener('click', ()=>{
+    document.querySelectorAll('.pipeline-stage').forEach(x=>x.classList.remove('active'));
+    s.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
