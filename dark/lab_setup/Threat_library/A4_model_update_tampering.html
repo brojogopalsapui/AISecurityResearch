@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A4 | Model Update Tampering</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f5f7fb;
+    --panel: #ffffff;
+    --panel-2: #eef3f8;
+    --ink: #10151c;
+    --muted: #5e6c7a;
+    --soft: #8795a4;
+    --line: #d8e0e8;
+    --line-strong: #b9c5d1;
+    --navy: #172333;
+    --cyan: #00a7bd;
+    --blue: #2c70d8;
+    --green: #158b55;
+    --lime: #74b816;
+    --amber: #c77900;
+    --orange: #f26d21;
+    --red: #d63447;
+    --violet: #7656d6;
+    --rose: #bd476a;
+    --shadow: 0 18px 44px rgba(29, 44, 61, 0.13);
+    --radius: 8px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      linear-gradient(90deg, rgba(16, 21, 28, 0.04) 1px, transparent 1px),
+      linear-gradient(rgba(16, 21, 28, 0.035) 1px, transparent 1px),
+      linear-gradient(140deg, #f5f7fb 0%, #edf4f7 45%, #f8f9fb 100%);
+    background-size: 28px 28px, 28px 28px, auto;
+    color: var(--ink);
+    font: 15px/1.58 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(0, 167, 189, 0.12), transparent 32%),
+      linear-gradient(290deg, rgba(242, 109, 33, 0.12), transparent 34%);
+    opacity: 0.9;
+    z-index: -1;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .app {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 18px 0 54px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    min-height: 72px;
+    padding: 12px 0;
+    background: rgba(245, 247, 251, 0.84);
+    border-bottom: 1px solid rgba(185, 197, 209, 0.65);
+    backdrop-filter: blur(16px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(135deg, rgba(0, 167, 189, 0.2), transparent 46%),
+      linear-gradient(315deg, rgba(242, 109, 33, 0.2), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(23, 35, 51, 0.1);
+  }
+
+  .brand-mark span {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--navy);
+  }
+
+  .brand-mark span:nth-child(1) {
+    top: 13px;
+  }
+
+  .brand-mark span:nth-child(2) {
+    top: 21px;
+    background: var(--cyan);
+  }
+
+  .brand-mark span:nth-child(3) {
+    top: 29px;
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.12;
+    font-weight: 780;
+  }
+
+  .brand p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .crumbs,
+  .pill-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .crumbs {
+    justify-content: flex-end;
+  }
+
+  .crumbs a,
+  .crumbs span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 31px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .crumbs a:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    align-items: stretch;
+    margin: 18px 0;
+  }
+
+  .hero-card,
+  .side-card,
+  .section,
+  .nav-card,
+  .mini-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-card {
+    padding: 22px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 820;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(214, 52, 71, 0.12);
+  }
+
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+
+  .hero h2 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 54px);
+    line-height: 1.02;
+    letter-spacing: 0;
+  }
+
+  .hero .lede {
+    max-width: 850px;
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .side-card {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+  }
+
+  .fact b {
+    display: block;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .fact span {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .toc {
+    position: sticky;
+    top: 92px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: var(--shadow);
+    padding: 14px;
+  }
+
+  .toc b {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .toc a {
+    display: block;
+    border-radius: 7px;
+    padding: 7px 8px;
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    background: var(--panel-2);
+    color: var(--navy);
+  }
+
+  .content {
+    display: grid;
+    gap: 18px;
+  }
+
+  .section {
+    overflow: hidden;
+  }
+
+  .section-heading {
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(238, 243, 248, 0.92);
+  }
+
+  .section-heading h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .section-heading p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .section-body {
+    padding: 16px;
+  }
+
+  .section-body p:last-child,
+  .mini-card p:last-child,
+  .callout p:last-child {
+    margin-bottom: 0;
+  }
+
+  .grid-2,
+  .grid-3 {
+    display: grid;
+    gap: 12px;
+  }
+
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mini-card {
+    box-shadow: none;
+    padding: 14px;
+  }
+
+  .mini-card h3 {
+    margin: 0 0 7px;
+    font-size: 15px;
+  }
+
+  .mini-card p,
+  .mini-card li,
+  .section-body li {
+    color: var(--muted);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 25px;
+    border-radius: 999px;
+    padding: 4px 9px;
+    background: rgba(214, 52, 71, 0.1);
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .tag.def {
+    background: rgba(21, 139, 85, 0.1);
+    color: var(--green);
+  }
+
+  .tag.hw {
+    background: rgba(242, 109, 33, 0.12);
+    color: var(--orange);
+  }
+
+  .tag.info {
+    background: rgba(44, 112, 216, 0.1);
+    color: var(--blue);
+  }
+
+  .tag.supply {
+    background: rgba(199, 121, 0, 0.1);
+    color: var(--amber);
+  }
+
+  .callout {
+    border: 1px solid rgba(214, 52, 71, 0.26);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 14px;
+  }
+
+  .callout.safe {
+    border-color: rgba(21, 139, 85, 0.28);
+    border-left-color: var(--green);
+  }
+
+  .architecture-viz {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .viz-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fbfcfe;
+    overflow: hidden;
+  }
+
+  .viz-panel svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .viz-controls {
+    display: grid;
+    gap: 8px;
+  }
+
+  .viz-controls button,
+  .copy-button {
+    min-height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--navy);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 720;
+  }
+
+  .viz-controls button.is-active {
+    color: #fff;
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .viz-status {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+  }
+
+  .viz-status b {
+    display: block;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .viz-status span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .zone {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.4;
+  }
+
+  .zone.factory {
+    fill: rgba(199, 121, 0, 0.08);
+    stroke: rgba(199, 121, 0, 0.42);
+  }
+
+  .zone.gateway {
+    fill: rgba(118, 86, 214, 0.08);
+    stroke: rgba(118, 86, 214, 0.42);
+  }
+
+  .zone.private {
+    fill: rgba(21, 139, 85, 0.08);
+    stroke: rgba(21, 139, 85, 0.42);
+  }
+
+  .zone-label {
+    fill: var(--muted);
+    font-size: 11px;
+    font-weight: 780;
+    text-transform: uppercase;
+  }
+
+  .node,
+  .artifact-card {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 8px 14px rgba(23, 35, 51, 0.1));
+  }
+
+  .node-title {
+    fill: var(--ink);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .node-sub {
+    fill: var(--muted);
+    font-size: 10px;
+    font-weight: 650;
+  }
+
+  .flow {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.65;
+  }
+
+  .flow.build {
+    stroke: var(--amber);
+  }
+
+  .flow.private {
+    stroke: var(--green);
+  }
+
+  .flow.attack {
+    stroke: var(--red);
+    stroke-dasharray: 8 7;
+  }
+
+  .flow.def {
+    stroke: var(--green);
+  }
+
+  .flow.is-muted {
+    opacity: 0.18;
+  }
+
+  .flow.is-hot {
+    opacity: 1;
+    stroke-width: 5;
+    filter: drop-shadow(0 0 7px rgba(214, 52, 71, 0.35));
+  }
+
+  .policy-box {
+    fill: rgba(214, 52, 71, 0.12);
+    stroke: var(--red);
+    stroke-width: 1.5;
+  }
+
+  .policy-box.good {
+    fill: rgba(21, 139, 85, 0.13);
+    stroke: var(--green);
+  }
+
+  .policy-label {
+    fill: var(--navy);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .artifact-good {
+    fill: rgba(21, 139, 85, 0.13);
+    stroke: var(--green);
+  }
+
+  .artifact-bad {
+    fill: rgba(214, 52, 71, 0.12);
+    stroke: var(--red);
+  }
+
+  .packet {
+    fill: var(--red);
+    filter: drop-shadow(0 0 6px rgba(214, 52, 71, 0.35));
+  }
+
+  .lab-output {
+    min-height: 224px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--muted);
+    font-size: 12px;
+    white-space: pre-wrap;
+  }
+
+  .log-ok {
+    color: var(--green);
+  }
+
+  .log-warn {
+    color: var(--amber);
+  }
+
+  .log-bad {
+    color: var(--red);
+  }
+
+  .code-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #0f1723;
+  }
+
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: #172333;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .copy-button {
+    min-height: 30px;
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 5px 9px;
+    font-size: 12px;
+  }
+
+  .mini-card .copy-button {
+    border-color: var(--line-strong);
+    background: #fff;
+    color: var(--navy);
+  }
+
+  pre {
+    margin: 0;
+    max-height: 580px;
+    overflow: auto;
+    padding: 14px;
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  pre code {
+    color: #d9e6f2;
+  }
+
+  .formula {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--navy);
+  }
+
+  .matrix {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .matrix th,
+  .matrix td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 13px;
+  }
+
+  .matrix th {
+    background: var(--panel-2);
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .matrix tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .nav-card {
+    display: block;
+    min-height: 92px;
+    padding: 14px;
+    text-decoration: none;
+  }
+
+  .nav-card b {
+    display: block;
+    color: var(--navy);
+  }
+
+  .nav-card span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .nav-card.muted {
+    opacity: 0.62;
+  }
+
+  .nav-card:hover {
+    border-color: var(--navy);
+  }
+
+  @media (max-width: 980px) {
+    .hero,
+    .layout,
+    .architecture-viz {
+      grid-template-columns: 1fr;
+    }
+
+    .toc {
+      position: static;
+    }
+
+    .grid-2,
+    .grid-3,
+    .nav-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      width: min(100% - 20px, 1180px);
+    }
+
+    .topbar {
+      grid-template-columns: 1fr;
+    }
+
+    .crumbs {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 1ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <h1>Edge AI Security Atlas</h1>
+        <p>Threat Library deep dive for model artifact integrity, signed update gates, and Jetson deployment trust.</p>
+      </div>
+    </div>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../edge_ai_attack_theater.html">Main atlas</a>
+      <span>Threat Library</span>
+      <span>A4</span>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-card">
+      <span class="eyebrow">A4 / Software attack / Critical</span>
+      <h2 id="page-title">Model Update Tampering</h2>
+      <p class="lede">A model update artifact is altered between the GPU workstation and the Jetson deployment path. The Jetson may still load a valid-looking ONNX or TensorRT rebuild input, but the behavior is no longer the behavior that was trained, tested, signed off, or compared against the FPGA baseline.</p>
+    </div>
+    <aside class="side-card" aria-label="Attack summary">
+      <div class="fact"><b>Architecture point</b><span>GPU factory to Jetson model transfer and rebuild path</span></div>
+      <div class="fact"><b>Primary control</b><span>D7 Signed Model Artifacts</span></div>
+      <div class="fact"><b>Secondary controls</b><span>D1 Auth, D4 Private Backend Subnet, D6 Sanitized Logging, D9 Signed Bitstream for FPGA parity</span></div>
+      <div class="fact"><b>Lab safety scope</b><span>Local toy artifact signing and verification only</span></div>
+    </aside>
+  </section>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Article sections">
+      <b>Article map</b>
+      <a href="#where">Where It Appears</a>
+      <a href="#model">Threat Model</a>
+      <a href="#intuition">Attack Intuition</a>
+      <a href="#technical">Technical Explanation</a>
+      <a href="#math">Mathematical View</a>
+      <a href="#lab">Safe Lab Demonstration</a>
+      <a href="#code">Local Lab Code</a>
+      <a href="#setup">Your Edge AI Setup</a>
+      <a href="#signals">Observable Signals</a>
+      <a href="#impact">Impact Analysis</a>
+      <a href="#mapping">Framework Mapping</a>
+      <a href="#defenses">Defense Mapping</a>
+      <a href="#research">Research Notes</a>
+      <a href="#takeaways">Key Takeaways</a>
+    </nav>
+
+    <article class="content">
+      <section class="section" id="where">
+        <div class="section-heading">
+          <h2>Where It Appears In The Edge AI Architecture</h2>
+          <p>A4 sits in the trusted artifact path before runtime inference ever begins.</p>
+        </div>
+        <div class="section-body">
+          <div class="architecture-viz">
+            <div class="viz-panel">
+              <svg id="a4-map" viewBox="0 0 860 430" role="img" aria-label="A4 model update tampering visualization">
+                <defs>
+                  <marker id="arrow-amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#c77900"></path>
+                  </marker>
+                  <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#158b55"></path>
+                  </marker>
+                  <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#d63447"></path>
+                  </marker>
+                </defs>
+
+                <rect class="zone factory" x="26" y="52" width="230" height="310" rx="8"></rect>
+                <text class="zone-label" x="44" y="78">GPU model factory</text>
+                <rect class="zone gateway" x="304" y="52" width="236" height="310" rx="8"></rect>
+                <text class="zone-label" x="322" y="78">Transfer and gate</text>
+                <rect class="zone private" x="586" y="52" width="248" height="310" rx="8"></rect>
+                <text class="zone-label" x="604" y="78">Jetson runtime</text>
+
+                <rect class="node" x="66" y="116" width="150" height="82" rx="8"></rect>
+                <text class="node-title" x="94" y="148">RTX workstation</text>
+                <text class="node-sub" x="88" y="170">train, export ONNX</text>
+
+                <rect id="artifact-clean" class="artifact-card artifact-good" x="82" y="244" width="118" height="54" rx="8"></rect>
+                <text class="node-title" x="106" y="268">model.onnx</text>
+                <text class="node-sub" x="100" y="288">sha256 + manifest</text>
+
+                <rect id="policy-box" class="policy-box" x="342" y="138" width="162" height="64" rx="32"></rect>
+                <text id="policy-label" class="policy-label" x="372" y="174">NO VERIFY</text>
+
+                <rect id="artifact-tampered" class="artifact-card artifact-bad" x="366" y="244" width="118" height="54" rx="8"></rect>
+                <text class="node-title" x="394" y="268">artifact</text>
+                <text id="artifact-label" class="node-sub" x="386" y="288">tampered bytes</text>
+
+                <rect class="node" x="632" y="116" width="156" height="82" rx="8"></rect>
+                <text class="node-title" x="662" y="148">Jetson Orin</text>
+                <text class="node-sub" x="654" y="170">loads TensorRT engine</text>
+
+                <rect class="node" x="632" y="244" width="156" height="72" rx="8"></rect>
+                <text class="node-title" x="654" y="274">Runtime behavior</text>
+                <text id="runtime-label" class="node-sub" x="656" y="294">unknown model state</text>
+
+                <path id="flow-build" class="flow build is-hot" d="M 216 156 C 270 156 304 168 342 168" marker-end="url(#arrow-amber)"></path>
+                <path id="flow-tamper" class="flow attack is-hot" d="M 200 272 C 252 298 316 300 366 274" marker-end="url(#arrow-red)"></path>
+                <path id="flow-deploy" class="flow attack is-hot" d="M 504 168 C 552 164 586 158 632 156" marker-end="url(#arrow-red)"></path>
+                <path id="flow-runtime" class="flow attack is-hot" d="M 710 198 C 710 220 710 232 710 244" marker-end="url(#arrow-red)"></path>
+                <circle id="packet-dot" class="packet" cx="520" cy="165" r="7"></circle>
+              </svg>
+            </div>
+            <div class="viz-controls">
+              <button class="is-active" type="button" data-state="vulnerable">Unsigned update</button>
+              <button type="button" data-state="signed">D7 signature gate</button>
+              <button type="button" data-state="rollback">Measured rollback</button>
+              <div class="viz-status" aria-live="polite">
+                <b id="viz-title">Tampered artifact loads</b>
+                <span id="viz-copy">The Jetson accepts a changed model artifact because the loader trusts path and filename instead of cryptographic provenance.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="model">
+        <div class="section-heading">
+          <h2>Threat Model</h2>
+          <p>The attacker can alter or replace a model artifact before it reaches the Jetson runtime.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Attacker capability</h3>
+              <p>The attacker may compromise a build workspace, artifact directory, transfer step, update share, deployment script, or weakly protected model registry. They do not need to reach the public inference endpoint if the update path is trusted without verification.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Security assumption being tested</h3>
+              <p>The Jetson should only load model artifacts produced by the trusted GPU workstation pipeline and approved by integrity metadata. A4 tests whether filename, directory, or operator habit has accidentally become the trust anchor.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Assets at risk</h3>
+              <p>Model weights, preprocessing graph, output labels, calibration metadata, TensorRT rebuild inputs, benchmark comparability, update history, and downstream decisions that trust Jetson predictions.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Out of scope</h3>
+              <p>No real model poisoning instructions, no third-party registry abuse, no malware-bearing model formats, and no deployment to live devices. The included lab signs and verifies toy JSON artifacts only.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="intuition">
+        <div class="section-heading">
+          <h2>Attack Intuition</h2>
+          <p>The model artifact is code-like operational state, not a passive data file.</p>
+        </div>
+        <div class="section-body">
+          <p>A model update changes what the system believes. If an artifact named <code>model.onnx</code> is replaced after evaluation but before deployment, normal API tests can still pass: the route is reachable, TensorRT rebuilds an engine, and the Jetson returns predictions. The failure is semantic integrity. The loaded model is not the one you approved.</p>
+          <p>A4 is especially damaging because it persists across requests. Unlike a single adversarial input, a tampered update changes future behavior for every user until detected and rolled back. It can also poison research conclusions: Jetson and Zynq comparisons become meaningless if the Jetson model is not bit-for-bit tied to the evaluated artifact.</p>
+          <div class="callout safe">
+            <p><strong>Safe framing:</strong> this page demonstrates artifact integrity only. The lab uses harmless JSON files and HMAC signatures to show how a loader should reject tampering. It does not train, modify, or deploy a real malicious model.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="technical">
+        <div class="section-heading">
+          <h2>Technical Explanation</h2>
+          <p>The vulnerable pattern is "load latest artifact"; the secure pattern is "verify then load exact artifact."</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card">
+              <h3>Vulnerable sequence</h3>
+              <ol>
+                <li>GPU workstation exports <code>model.onnx</code> and copies it to a transfer directory.</li>
+                <li>A deployment script on Jetson loads the path without checking a signed digest or provenance record.</li>
+                <li>A changed artifact keeps the same filename and becomes the runtime model.</li>
+              </ol>
+            </div>
+            <div class="mini-card">
+              <h3>Secure sequence</h3>
+              <ol>
+                <li>Build pipeline computes a digest over the exact artifact bytes and signs a manifest.</li>
+                <li>Jetson verifies manifest signature, digest, model version, allowed producer, and rollback policy.</li>
+                <li>Only verified artifacts are promoted to the active runtime slot.</li>
+              </ol>
+            </div>
+            <div class="mini-card">
+              <h3>Edge AI-specific detail</h3>
+              <p>The model artifact may trigger secondary artifacts such as TensorRT engines, INT8 calibration caches, preprocessing configs, and class-label maps. D7 should cover the complete model bundle, not only one ONNX file.</p>
+            </div>
+          </div>
+          <p>A signed model pipeline also creates a useful measurement boundary. If an inference result was produced by model version <code>v17</code>, you should be able to prove which artifact hash, calibration file, label map, and deployment decision produced it.</p>
+        </div>
+      </section>
+
+      <section class="section" id="math">
+        <div class="section-heading">
+          <h2>Mathematical Formulation</h2>
+          <p>A4 is an integrity failure in the mapping from approved artifact to deployed function.</p>
+        </div>
+        <div class="section-body">
+          <div class="formula">
+Approved model: f_theta
+Deployed model: f_theta'
+Integrity objective: f_theta' == f_theta under artifact identity H(A)
+
+Artifact bundle:
+A = {weights, graph, preprocessing, labels, calibration, metadata}
+
+Manifest:
+M = {artifact_hash = H(A), version, producer, timestamp, policy}
+signature = Sign(sk_producer, H(M))
+
+Secure load condition:
+Load(A, M, signature) =
+  Verify(pk_producer, H(M), signature)
+  * ConstantTimeEqual(H(A), M.artifact_hash)
+  * VersionAllowed(M.version)
+  * ProducerAllowed(M.producer)
+
+Conceptual backdoor behavior, for analysis only:
+f_theta'(x) = target_label when trigger_condition(x) is true
+f_theta'(x) = f_theta(x) otherwise
+          </div>
+          <p>The final line is a conceptual risk model, not an implementation recipe. The practical defense is to make any unauthorized change to <code>A</code> fail before runtime by binding artifact bytes to a signed manifest and deployment policy.</p>
+        </div>
+      </section>
+
+      <section class="section" id="lab">
+        <div class="section-heading">
+          <h2>Step-By-Step Safe Lab Demonstration</h2>
+          <p>The lab shows how signed manifests change loader behavior for a toy artifact bundle.</p>
+        </div>
+        <div class="section-body">
+          <ol>
+            <li>Save the Python code from the next section as <code>a4_model_update_integrity_lab.py</code>.</li>
+            <li>Run <code>python3 a4_model_update_integrity_lab.py --mode vulnerable</code>. The vulnerable loader accepts a changed toy artifact.</li>
+            <li>Run <code>python3 a4_model_update_integrity_lab.py --mode secure</code>. The secure loader rejects the changed toy artifact because the digest no longer matches the signed manifest.</li>
+            <li>Review the generated log lines: <code>artifact_loaded</code>, <code>artifact_rejected</code>, digest prefix, signature status, and rollback selection.</li>
+            <li>Map the same logic to your real pipeline: ONNX file, TensorRT engine cache, label map, calibration table, model card, and deployment record.</li>
+          </ol>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Interactive toy replay</h3>
+              <p>Replay the expected local behavior directly in the page. It is display-only and does not touch the filesystem or devices.</p>
+              <button class="copy-button" type="button" id="simulate-lab">Replay artifact simulation</button>
+            </div>
+            <div class="lab-output" id="lab-output" aria-live="polite">ready: no artifact simulation replayed yet</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="code">
+        <div class="section-heading">
+          <h2>Full Code For A Local Simulated Lab</h2>
+          <p>This code signs and verifies toy JSON artifacts. It never loads real ML models or contacts a network service.</p>
+        </div>
+        <div class="section-body">
+          <div class="code-card">
+            <div class="code-head">
+              <span>a4_model_update_integrity_lab.py</span>
+              <button class="copy-button" type="button" data-copy="lab-python">Copy</button>
+            </div>
+            <pre><code id="lab-python">#!/usr/bin/env python3
+"""
+A4 local-only simulator: model update tampering.
+
+This lab uses harmless JSON artifacts and HMAC signatures to model the
+integrity gate a Jetson deployment script should apply before loading a
+model bundle. It does not train, modify, or execute a real ML model.
+"""
+
+import argparse
+import hashlib
+import hmac
+import json
+import shutil
+import tempfile
+from pathlib import Path
+
+LAB_SECRET = b"local-demo-signing-key"
+
+
+def canonical_json(document):
+    return json.dumps(document, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def sha256_bytes(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def sign_bytes(data):
+    return hmac.new(LAB_SECRET, data, hashlib.sha256).hexdigest()
+
+
+def write_json(path, document):
+    path.write_text(json.dumps(document, indent=2, sort_keys=True), encoding="utf-8")
+
+
+def read_json(path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def build_clean_bundle(root):
+    bundle = {
+        "kind": "toy-edge-classifier",
+        "version": "v4.0-clean",
+        "producer": "gpu-workstation",
+        "labels": ["synthetic-cat", "synthetic-dog"],
+        "weights_digest_hint": "demo-only-no-real-weights",
+        "expected_backend": "jetson",
+        "behavior_note": "approved synthetic baseline",
+    }
+    artifact_bytes = canonical_json(bundle)
+    artifact_hash = sha256_bytes(artifact_bytes)
+    manifest = {
+        "artifact": "model_bundle.json",
+        "artifact_hash": artifact_hash,
+        "version": bundle["version"],
+        "producer": bundle["producer"],
+        "policy": "jetson-prod-allowlist",
+    }
+    manifest_bytes = canonical_json(manifest)
+    signature = {"hmac_sha256": sign_bytes(manifest_bytes)}
+    write_json(root / "model_bundle.json", bundle)
+    write_json(root / "manifest.json", manifest)
+    write_json(root / "manifest.sig", signature)
+    return artifact_hash
+
+
+def tamper_bundle(root):
+    bundle_path = root / "model_bundle.json"
+    bundle = read_json(bundle_path)
+    bundle["version"] = "v4.0-replaced"
+    bundle["behavior_note"] = "changed after approval"
+    bundle["labels"] = ["synthetic-cat", "synthetic-dog", "unexpected-class"]
+    write_json(bundle_path, bundle)
+    return sha256_bytes(canonical_json(bundle))
+
+
+def verify_bundle(root):
+    artifact = read_json(root / "model_bundle.json")
+    manifest = read_json(root / "manifest.json")
+    signature = read_json(root / "manifest.sig")
+    manifest_bytes = canonical_json(manifest)
+    expected_sig = sign_bytes(manifest_bytes)
+    signature_ok = hmac.compare_digest(signature["hmac_sha256"], expected_sig)
+    artifact_hash = sha256_bytes(canonical_json(artifact))
+    digest_ok = hmac.compare_digest(artifact_hash, manifest["artifact_hash"])
+    producer_ok = manifest["producer"] == "gpu-workstation"
+    version_ok = manifest["version"].startswith("v4.")
+    return {
+        "signature_ok": signature_ok,
+        "digest_ok": digest_ok,
+        "producer_ok": producer_ok,
+        "version_ok": version_ok,
+        "artifact_hash": artifact_hash,
+        "manifest_hash": manifest["artifact_hash"],
+        "artifact_version": artifact["version"],
+        "manifest_version": manifest["version"],
+    }
+
+
+def vulnerable_loader(root):
+    artifact = read_json(root / "model_bundle.json")
+    print(
+        "event=artifact_loaded mode=vulnerable version=%s labels=%s note=%s"
+        % (artifact["version"], len(artifact["labels"]), artifact["behavior_note"])
+    )
+    return True
+
+
+def secure_loader(root):
+    result = verify_bundle(root)
+    checks = [
+        result["signature_ok"],
+        result["digest_ok"],
+        result["producer_ok"],
+        result["version_ok"],
+    ]
+    if all(checks):
+        print(
+            "event=artifact_loaded mode=secure version=%s digest=%s"
+            % (result["manifest_version"], result["artifact_hash"][:16])
+        )
+        return True
+    print(
+        "event=artifact_rejected mode=secure signature_ok=%s digest_ok=%s artifact_digest=%s manifest_digest=%s"
+        % (
+            result["signature_ok"],
+            result["digest_ok"],
+            result["artifact_hash"][:16],
+            result["manifest_hash"][:16],
+        )
+    )
+    print("event=rollback_selected slot=previous_verified_model reason=integrity_failure")
+    return False
+
+
+def run(mode):
+    root = Path(tempfile.mkdtemp(prefix="a4_model_integrity_"))
+    try:
+        clean_hash = build_clean_bundle(root)
+        tampered_hash = tamper_bundle(root)
+        print("event=build clean_digest=%s tampered_digest=%s" % (clean_hash[:16], tampered_hash[:16]))
+        if mode == "vulnerable":
+            vulnerable_loader(root)
+        else:
+            secure_loader(root)
+    finally:
+        shutil.rmtree(root)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["vulnerable", "secure"], default="vulnerable")
+    args = parser.parse_args()
+    run(args.mode)
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+          </div>
+
+          <div class="code-card" style="margin-top:12px;">
+            <div class="code-head">
+              <span>local simulator commands</span>
+              <button class="copy-button" type="button" data-copy="lab-client">Copy</button>
+            </div>
+            <pre><code id="lab-client"># Vulnerable loader: accepts the changed toy artifact by path.
+python3 a4_model_update_integrity_lab.py --mode vulnerable
+
+# Secure loader: verifies signature, digest, producer, and version policy.
+python3 a4_model_update_integrity_lab.py --mode secure
+
+# Expected defensive result:
+# event=artifact_rejected mode=secure signature_ok=True digest_ok=False ...
+# event=rollback_selected slot=previous_verified_model reason=integrity_failure
+</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="setup">
+        <div class="section-heading">
+          <h2>Practical Example For Your GPU + Pi + Jetson + Zynq Setup</h2>
+          <p>A4 is about preserving equivalence between what was evaluated and what is deployed.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Expected topology</h3>
+              <p>The GPU workstation trains in PyTorch, exports ONNX, and produces model metadata. The Pi gateway or deployment script moves artifacts toward the private Jetson backend. The Jetson builds or loads TensorRT state. The Zynq path may receive a corresponding quantized or synthesized representation for comparison.</p>
+              <div class="pill-row">
+                <span class="tag supply">GPU factory</span>
+                <span class="tag info">Pi transfer gate</span>
+                <span class="tag hw">Jetson runtime</span>
+              </div>
+            </div>
+            <div class="mini-card">
+              <h3>A4 failure mode</h3>
+              <p>The Jetson loads a replacement <code>model.onnx</code> or related bundle after evaluation has passed. The Pi still dispatches normally, users still receive predictions, and the private subnet still holds, but the model behavior has silently changed.</p>
+              <div class="pill-row">
+                <span class="tag">model.onnx drift</span>
+                <span class="tag">TensorRT rebuild</span>
+                <span class="tag def">D7 missing</span>
+              </div>
+            </div>
+          </div>
+          <p>For your research portal, bind every performance result to artifact identity. A Jetson latency plot should include model hash, TensorRT engine hash, precision mode, calibration hash, label-map hash, and deployment signature status. FPGA comparisons should reference the corresponding signed bitstream path under D9.</p>
+        </div>
+      </section>
+
+      <section class="section" id="signals">
+        <div class="section-heading">
+          <h2>Observable Signals Or Logs</h2>
+          <p>A4 should create strong provenance logs before runtime inference begins.</p>
+        </div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead>
+              <tr><th>Signal</th><th>Vulnerable observation</th><th>Hardened observation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Deployment log</td><td>Loaded model.onnx from path, no digest or signer recorded</td><td>artifact_verified version=v4 digest=... signer=gpu-workstation</td></tr>
+              <tr><td>Digest check</td><td>Missing or calculated after promotion only</td><td>Digest calculated before promotion and compared to signed manifest</td></tr>
+              <tr><td>Behavior canary</td><td>Baseline test set not tied to update gate</td><td>Canary accuracy, confidence drift, and label-map checks run before activation</td></tr>
+              <tr><td>Jetson trace</td><td>TensorRT engine rebuilt from unknown ONNX input</td><td>Engine cache keyed by verified ONNX hash and calibration hash</td></tr>
+              <tr><td>Rollback</td><td>Manual operator recovery after bad behavior is noticed</td><td>Automatic refusal and previous verified slot retained</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="impact">
+        <div class="section-heading">
+          <h2>Impact Analysis</h2>
+          <p>A4 is primarily an integrity attack with persistent operational consequences.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card">
+              <h3>Integrity</h3>
+              <p>The deployed model may make different predictions from the approved model while preserving normal API behavior. If output drives decisions, those decisions inherit the tampered model's behavior.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Confidentiality</h3>
+              <p>A tampered artifact can expose model metadata through altered outputs or, in unsafe serialization formats, increase host compromise risk. This page avoids executable model formats and treats such formats as a separate hardening topic.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Availability</h3>
+              <p>Bad artifacts can fail TensorRT conversion, crash preprocessing assumptions, or trigger fallback loops that make the Jetson backend unavailable while the Pi continues dispatching work.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="mapping">
+        <div class="section-heading">
+          <h2>Mapping To CIA, STRIDE, PASTA, And MITRE ATLAS</h2>
+          <p>A4 maps naturally to AI supply-chain and model-manipulation risk.</p>
+        </div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead>
+              <tr><th>Framework</th><th>A4 mapping</th><th>Research interpretation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>CIA</td><td>Integrity primary; Availability and Confidentiality secondary</td><td>Prove that only approved model bundles become runtime state and that bad updates fail closed.</td></tr>
+              <tr><td>STRIDE</td><td>Tampering, Elevation of Privilege, Repudiation, Denial of Service</td><td>An unauthorized actor changes a trusted artifact, gains influence over predictions, and may leave poor provenance evidence.</td></tr>
+              <tr><td>PASTA</td><td>Stage 2 technical scope, Stage 3 decomposition, Stage 4 threat analysis, Stage 5 vulnerability analysis, Stage 6 attack modeling</td><td>Decompose the model supply chain into build, sign, transfer, verify, promote, rollback, and runtime phases.</td></tr>
+              <tr><td>MITRE ATLAS</td><td>Relevant to AI Supply Chain Compromise, Manipulate AI Model, Poison AI Model, and Publish Poisoned Models concepts in ATLAS-style AI threat modeling.</td><td>A4 is the local lab version of a poisoned or replaced model artifact entering deployment.</td></tr>
+              <tr><td>MITRE ATT&amp;CK</td><td>Related to supply-chain compromise and poisoned pipeline execution concepts.</td><td>Traditional CI/CD compromise can become AI-specific when the modified output is a model artifact rather than application code.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="defenses">
+        <div class="section-heading">
+          <h2>Defense Mapping To Existing D1-D11 Controls</h2>
+          <p>D7 is the direct control; D9 is the FPGA counterpart for bitstreams.</p>
+        </div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead>
+              <tr><th>Control</th><th>Role against A4</th><th>Validation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>D7 Signed Model Artifacts</td><td>Primary control. Sign model bundles, verify digests and signer identity on Jetson before promotion, and retain a previous verified slot for rollback.</td><td>Tampered artifact is rejected before TensorRT rebuild or runtime activation.</td></tr>
+              <tr><td>D6 Sanitized Logging</td><td>Records digest, version, signer, policy decision, and rollback reason without exposing model internals or secrets.</td><td>Each deployment event has traceable artifact identity and a safe audit trail.</td></tr>
+              <tr><td>D1 JWT Auth + Object Checks</td><td>Protects artifact management APIs so only authorized maintainers can request deployment or rollback.</td><td>Unauthorized model update request returns 401 or 403 before file movement.</td></tr>
+              <tr><td>D4 Private Backend Subnet</td><td>Reduces direct access to Jetson update endpoints, but does not replace artifact verification.</td><td>Client VLAN cannot write to Jetson model directories or service ports.</td></tr>
+              <tr><td>D9 Signed Bitstream + PS Boundary</td><td>Provides the equivalent integrity principle for Zynq bitstreams and PS-to-PL trust boundaries.</td><td>Model and bitstream comparisons reference both D7 and D9 signatures.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="research">
+        <div class="section-heading">
+          <h2>Research Notes: What To Measure Experimentally</h2>
+          <p>A4 is a strong candidate for reproducibility and provenance experiments.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Integrity gate effectiveness</h3>
+              <p>Measure whether every altered byte in ONNX, label map, calibration, preprocessing config, or model card causes deployment refusal. Record false accepts and false rejects.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Deployment overhead</h3>
+              <p>Measure digest time, signature verification time, manifest parsing time, TensorRT rebuild delay, and total update downtime on the Jetson.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Behavior drift</h3>
+              <p>Run a fixed canary suite before and after each verified update. Track confidence distribution shift, class confusion changes, and backend-specific latency changes.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Rollback reliability</h3>
+              <p>Measure how quickly the system returns to the previous verified model after a failed update and whether result logs preserve both attempted and active artifact identities.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="takeaways">
+        <div class="section-heading">
+          <h2>Key Takeaways</h2>
+          <p>A model update is a security event, not just a file copy.</p>
+        </div>
+        <div class="section-body">
+          <ul>
+            <li>A4 changes persistent model behavior by altering the artifact before runtime activation.</li>
+            <li>The Jetson should verify a signed manifest and exact artifact digest before loading or rebuilding TensorRT state.</li>
+            <li>The complete model bundle includes weights, graph, preprocessing, label map, calibration, metadata, and deployment policy.</li>
+            <li>Every benchmark and inference result should be attributable to a verified model artifact identity.</li>
+          </ul>
+        </div>
+      </section>
+
+      <nav class="nav-grid" aria-label="Related pages">
+        <a class="nav-card" href="A3_broken_object_authorization.html">
+          <b>Previous threat: A3</b>
+          <span>Broken Object Authorization. Protects result objects after inference.</span>
+        </a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html">
+          <b>Related defense: D7</b>
+          <span>Signed Model Artifacts. Dedicated page planned in Defense_matrix.</span>
+        </a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html">
+          <b>Related threat: A11</b>
+          <span>Supply Chain / Container CVE. Shares the build-pipeline risk surface.</span>
+        </a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html">
+          <b>Next threat: A5</b>
+          <span>Direct Backend Exposure. Dedicated page planned next.</span>
+        </a>
+      </nav>
+    </article>
+  </div>
+</main>
+
+<script>
+const states = {
+  vulnerable: {
+    title: "Tampered artifact loads",
+    copy: "The Jetson accepts a changed model artifact because the loader trusts path and filename instead of cryptographic provenance.",
+    policy: "NO VERIFY",
+    artifact: "tampered bytes",
+    runtime: "unknown model state",
+    good: false,
+    hot: ["flow-build", "flow-tamper", "flow-deploy", "flow-runtime"],
+    packet: [520, 165]
+  },
+  signed: {
+    title: "Signature gate rejects",
+    copy: "D7 compares artifact digest against a signed manifest before TensorRT rebuild or runtime promotion.",
+    policy: "VERIFY DIGEST",
+    artifact: "digest mismatch",
+    runtime: "load refused",
+    good: true,
+    hot: ["flow-build", "flow-tamper"],
+    packet: [424, 244]
+  },
+  rollback: {
+    title: "Previous verified slot stays active",
+    copy: "The rejected update is logged, and the Jetson keeps serving the prior verified artifact.",
+    policy: "VERIFY + ROLLBACK",
+    artifact: "rejected update",
+    runtime: "previous verified model",
+    good: true,
+    hot: ["flow-build", "flow-tamper", "flow-runtime"],
+    packet: [710, 244]
+  }
+};
+
+function setVizState(key) {
+  const state = states[key];
+  if (!state) return;
+  document.querySelectorAll(".viz-controls button[data-state]").forEach(button => {
+    button.classList.toggle("is-active", button.dataset.state === key);
+  });
+  document.querySelectorAll(".flow").forEach(flow => {
+    flow.classList.toggle("is-hot", state.hot.includes(flow.id));
+    flow.classList.toggle("is-muted", !state.hot.includes(flow.id));
+  });
+  const policy = document.getElementById("policy-box");
+  policy.setAttribute("class", "policy-box" + (state.good ? " good" : ""));
+  document.getElementById("policy-label").textContent = state.policy;
+  document.getElementById("artifact-tampered").setAttribute("class", "artifact-card " + (state.good ? "artifact-good" : "artifact-bad"));
+  document.getElementById("artifact-label").textContent = state.artifact;
+  document.getElementById("runtime-label").textContent = state.runtime;
+  document.getElementById("viz-title").textContent = state.title;
+  document.getElementById("viz-copy").textContent = state.copy;
+  const packet = document.getElementById("packet-dot");
+  packet.setAttribute("cx", state.packet[0]);
+  packet.setAttribute("cy", state.packet[1]);
+  packet.setAttribute("fill", state.good ? "#158b55" : "#d63447");
+}
+
+document.querySelector(".viz-controls").addEventListener("click", event => {
+  const button = event.target.closest("button[data-state]");
+  if (button) setVizState(button.dataset.state);
+});
+
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", async () => {
+    const target = document.getElementById(button.dataset.copy);
+    if (!target) return;
+    try {
+      await navigator.clipboard.writeText(target.innerText);
+      const original = button.textContent;
+      button.textContent = "Copied";
+      setTimeout(() => {
+        button.textContent = original;
+      }, 1200);
+    } catch (error) {
+      button.textContent = "Select text";
+    }
+  });
+});
+
+document.getElementById("simulate-lab").addEventListener("click", () => {
+  const lines = [
+    "vulnerable mode:",
+    "[build] clean_digest=approved tampered_digest=changed",
+    "[loader] event=artifact_loaded mode=vulnerable version=v4.0-replaced labels=3 note=changed after approval",
+    "[runtime] Jetson would now serve an unverified toy bundle",
+    "",
+    "secure mode:",
+    "[verify] signature_ok=True digest_ok=False producer_ok=True version_ok=True",
+    "[loader] event=artifact_rejected mode=secure reason=digest_mismatch",
+    "[rollback] event=rollback_selected slot=previous_verified_model reason=integrity_failure"
+  ];
+  const output = document.getElementById("lab-output");
+  output.innerHTML = lines.map(line => {
+    if (line.includes("vulnerable") || line.includes("artifact_loaded") || line.includes("unverified")) return "<span class=\"log-bad\">" + line + "</span>";
+    if (line.includes("secure") || line.includes("artifact_rejected") || line.includes("rollback")) return "<span class=\"log-ok\">" + line + "</span>";
+    if (line.includes("digest_ok=False")) return "<span class=\"log-warn\">" + line + "</span>";
+    return line;
+  }).join("\n");
+});
+
+setVizState("vulnerable");
+</script>
+</body>
+</html>
