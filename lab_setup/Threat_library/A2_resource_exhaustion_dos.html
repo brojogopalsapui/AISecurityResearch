@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2 | Resource Exhaustion / DoS</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f5f7fb;
+    --panel: #ffffff;
+    --panel-2: #eef3f8;
+    --ink: #10151c;
+    --muted: #5e6c7a;
+    --soft: #8795a4;
+    --line: #d8e0e8;
+    --line-strong: #b9c5d1;
+    --navy: #172333;
+    --cyan: #00a7bd;
+    --blue: #2c70d8;
+    --green: #158b55;
+    --lime: #74b816;
+    --amber: #c77900;
+    --orange: #f26d21;
+    --red: #d63447;
+    --violet: #7656d6;
+    --rose: #bd476a;
+    --shadow: 0 18px 44px rgba(29, 44, 61, 0.13);
+    --radius: 8px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      linear-gradient(90deg, rgba(16, 21, 28, 0.04) 1px, transparent 1px),
+      linear-gradient(rgba(16, 21, 28, 0.035) 1px, transparent 1px),
+      linear-gradient(140deg, #f5f7fb 0%, #edf4f7 45%, #f8f9fb 100%);
+    background-size: 28px 28px, 28px 28px, auto;
+    color: var(--ink);
+    font: 15px/1.58 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(0, 167, 189, 0.12), transparent 32%),
+      linear-gradient(290deg, rgba(242, 109, 33, 0.12), transparent 34%);
+    opacity: 0.9;
+    z-index: -1;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .app {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 18px 0 54px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    min-height: 72px;
+    padding: 12px 0;
+    background: rgba(245, 247, 251, 0.84);
+    border-bottom: 1px solid rgba(185, 197, 209, 0.65);
+    backdrop-filter: blur(16px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(135deg, rgba(0, 167, 189, 0.2), transparent 46%),
+      linear-gradient(315deg, rgba(242, 109, 33, 0.2), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(23, 35, 51, 0.1);
+  }
+
+  .brand-mark span {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--navy);
+  }
+
+  .brand-mark span:nth-child(1) {
+    top: 13px;
+  }
+
+  .brand-mark span:nth-child(2) {
+    top: 21px;
+    background: var(--cyan);
+  }
+
+  .brand-mark span:nth-child(3) {
+    top: 29px;
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.12;
+    font-weight: 780;
+  }
+
+  .brand p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .crumbs,
+  .pill-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .crumbs {
+    justify-content: flex-end;
+  }
+
+  .crumbs a,
+  .crumbs span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 31px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .crumbs a:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    align-items: stretch;
+    margin: 18px 0;
+  }
+
+  .hero-card,
+  .side-card,
+  .section,
+  .nav-card,
+  .mini-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-card {
+    padding: 22px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 820;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(214, 52, 71, 0.12);
+  }
+
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+
+  .hero h2 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 54px);
+    line-height: 1.02;
+    letter-spacing: 0;
+  }
+
+  .hero .lede {
+    max-width: 850px;
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .side-card {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+  }
+
+  .fact b {
+    display: block;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .fact span {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .toc {
+    position: sticky;
+    top: 92px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: var(--shadow);
+    padding: 14px;
+  }
+
+  .toc b {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .toc a {
+    display: block;
+    border-radius: 7px;
+    padding: 7px 8px;
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    background: var(--panel-2);
+    color: var(--navy);
+  }
+
+  .content {
+    display: grid;
+    gap: 18px;
+  }
+
+  .section {
+    overflow: hidden;
+  }
+
+  .section-heading {
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(238, 243, 248, 0.92);
+  }
+
+  .section-heading h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .section-heading p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .section-body {
+    padding: 16px;
+  }
+
+  .section-body p:last-child,
+  .mini-card p:last-child,
+  .callout p:last-child {
+    margin-bottom: 0;
+  }
+
+  .grid-2,
+  .grid-3 {
+    display: grid;
+    gap: 12px;
+  }
+
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mini-card {
+    box-shadow: none;
+    padding: 14px;
+  }
+
+  .mini-card h3 {
+    margin: 0 0 7px;
+    font-size: 15px;
+  }
+
+  .mini-card p,
+  .mini-card li,
+  .section-body li {
+    color: var(--muted);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 25px;
+    border-radius: 999px;
+    padding: 4px 9px;
+    background: rgba(214, 52, 71, 0.1);
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .tag.def {
+    background: rgba(21, 139, 85, 0.1);
+    color: var(--green);
+  }
+
+  .tag.hw {
+    background: rgba(242, 109, 33, 0.12);
+    color: var(--orange);
+  }
+
+  .tag.info {
+    background: rgba(44, 112, 216, 0.1);
+    color: var(--blue);
+  }
+
+  .callout {
+    border: 1px solid rgba(214, 52, 71, 0.26);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 14px;
+  }
+
+  .callout.safe {
+    border-color: rgba(21, 139, 85, 0.28);
+    border-left-color: var(--green);
+  }
+
+  .architecture-viz {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .viz-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fbfcfe;
+    overflow: hidden;
+  }
+
+  .viz-panel svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .viz-controls {
+    display: grid;
+    gap: 8px;
+  }
+
+  .viz-controls button,
+  .copy-button {
+    min-height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--navy);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 720;
+  }
+
+  .viz-controls button.is-active {
+    color: #fff;
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .viz-status {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+  }
+
+  .viz-status b {
+    display: block;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .viz-status span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .zone {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.4;
+  }
+
+  .zone.public {
+    fill: rgba(44, 112, 216, 0.08);
+    stroke: rgba(44, 112, 216, 0.42);
+  }
+
+  .zone.gateway {
+    fill: rgba(118, 86, 214, 0.08);
+    stroke: rgba(118, 86, 214, 0.42);
+  }
+
+  .zone.private {
+    fill: rgba(21, 139, 85, 0.08);
+    stroke: rgba(21, 139, 85, 0.42);
+  }
+
+  .zone-label {
+    fill: var(--muted);
+    font-size: 11px;
+    font-weight: 780;
+    text-transform: uppercase;
+  }
+
+  .node,
+  .queue-cell,
+  .meter-box {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 8px 14px rgba(23, 35, 51, 0.1));
+  }
+
+  .node-title {
+    fill: var(--ink);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .node-sub,
+  .meter-label {
+    fill: var(--muted);
+    font-size: 10px;
+    font-weight: 650;
+  }
+
+  .flow {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.65;
+  }
+
+  .flow.public {
+    stroke: var(--blue);
+  }
+
+  .flow.private {
+    stroke: var(--green);
+  }
+
+  .flow.attack {
+    stroke: var(--red);
+    stroke-dasharray: 8 7;
+  }
+
+  .flow.def {
+    stroke: var(--green);
+  }
+
+  .flow.is-muted {
+    opacity: 0.18;
+  }
+
+  .flow.is-hot {
+    opacity: 1;
+    stroke-width: 5;
+    filter: drop-shadow(0 0 7px rgba(214, 52, 71, 0.35));
+  }
+
+  .queue-fill {
+    fill: rgba(214, 52, 71, 0.18);
+    stroke: var(--red);
+  }
+
+  .queue-fill.good {
+    fill: rgba(21, 139, 85, 0.14);
+    stroke: var(--green);
+  }
+
+  .meter-fill {
+    fill: var(--red);
+  }
+
+  .meter-fill.good {
+    fill: var(--green);
+  }
+
+  .packet {
+    fill: var(--red);
+    filter: drop-shadow(0 0 6px rgba(214, 52, 71, 0.35));
+  }
+
+  .lab-output {
+    min-height: 224px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--muted);
+    font-size: 12px;
+    white-space: pre-wrap;
+  }
+
+  .log-ok {
+    color: var(--green);
+  }
+
+  .log-warn {
+    color: var(--amber);
+  }
+
+  .log-bad {
+    color: var(--red);
+  }
+
+  .code-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #0f1723;
+  }
+
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: #172333;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .copy-button {
+    min-height: 30px;
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 5px 9px;
+    font-size: 12px;
+  }
+
+  .mini-card .copy-button {
+    border-color: var(--line-strong);
+    background: #fff;
+    color: var(--navy);
+  }
+
+  pre {
+    margin: 0;
+    max-height: 560px;
+    overflow: auto;
+    padding: 14px;
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  pre code {
+    color: #d9e6f2;
+  }
+
+  .formula {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--navy);
+  }
+
+  .matrix {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .matrix th,
+  .matrix td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 13px;
+  }
+
+  .matrix th {
+    background: var(--panel-2);
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .matrix tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .nav-card {
+    display: block;
+    min-height: 92px;
+    padding: 14px;
+    text-decoration: none;
+  }
+
+  .nav-card b {
+    display: block;
+    color: var(--navy);
+  }
+
+  .nav-card span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .nav-card.muted {
+    opacity: 0.62;
+  }
+
+  .nav-card:hover {
+    border-color: var(--navy);
+  }
+
+  @media (max-width: 980px) {
+    .hero,
+    .layout,
+    .architecture-viz {
+      grid-template-columns: 1fr;
+    }
+
+    .toc {
+      position: static;
+    }
+
+    .grid-2,
+    .grid-3,
+    .nav-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      width: min(100% - 20px, 1180px);
+    }
+
+    .topbar {
+      grid-template-columns: 1fr;
+    }
+
+    .crumbs {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 1ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <h1>Edge AI Security Atlas</h1>
+        <p>Threat Library deep dive for gateway overload, backend queue saturation, and safe rate-limit validation.</p>
+      </div>
+    </div>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../edge_ai_attack_theater.html">Main atlas</a>
+      <span>Threat Library</span>
+      <span>A2</span>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-card">
+      <span class="eyebrow">A2 / Software attack / High</span>
+      <h2 id="page-title">Resource Exhaustion / DoS</h2>
+      <p class="lede">A public inference path accepts more work than the Pi gateway, request parser, async queue, Jetson worker, or Zynq accelerator can safely absorb. The failure mode is not only downtime: overload changes latency, creates retry storms, burns power, heats devices, hides telemetry, and can distort Jetson versus FPGA benchmark results.</p>
+    </div>
+    <aside class="side-card" aria-label="Attack summary">
+      <div class="fact"><b>Architecture point</b><span>Client ingress through switch and Raspberry Pi gateway</span></div>
+      <div class="fact"><b>Primary control</b><span>D2 Rate Limit + Body Cap</span></div>
+      <div class="fact"><b>Secondary controls</b><span>D1 Auth, D4 Private Backend Subnet, D5 Query Anomaly Detection, D6 Sanitized Logging</span></div>
+      <div class="fact"><b>Lab safety scope</b><span>Discrete local simulator only; no network traffic generator</span></div>
+    </aside>
+  </section>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Article sections">
+      <b>Article map</b>
+      <a href="#where">Where It Appears</a>
+      <a href="#model">Threat Model</a>
+      <a href="#intuition">Attack Intuition</a>
+      <a href="#technical">Technical Explanation</a>
+      <a href="#math">Mathematical View</a>
+      <a href="#lab">Safe Lab Demonstration</a>
+      <a href="#code">Local Lab Code</a>
+      <a href="#setup">Your Edge AI Setup</a>
+      <a href="#signals">Observable Signals</a>
+      <a href="#impact">Impact Analysis</a>
+      <a href="#mapping">Framework Mapping</a>
+      <a href="#defenses">Defense Mapping</a>
+      <a href="#research">Research Notes</a>
+      <a href="#takeaways">Key Takeaways</a>
+    </nav>
+
+    <article class="content">
+      <section class="section" id="where">
+        <div class="section-heading">
+          <h2>Where It Appears In The Edge AI Architecture</h2>
+          <p>A2 lives across the ingress path, but the first defensible choke point is the Pi gateway.</p>
+        </div>
+        <div class="section-body">
+          <div class="architecture-viz">
+            <div class="viz-panel">
+              <svg id="a2-map" viewBox="0 0 840 430" role="img" aria-label="A2 queue saturation visualization">
+                <defs>
+                  <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#2c70d8"></path>
+                  </marker>
+                  <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#158b55"></path>
+                  </marker>
+                  <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#d63447"></path>
+                  </marker>
+                </defs>
+
+                <rect class="zone public" x="24" y="52" width="190" height="310" rx="8"></rect>
+                <text class="zone-label" x="42" y="78">Public client side</text>
+                <rect class="zone gateway" x="258" y="52" width="250" height="310" rx="8"></rect>
+                <text class="zone-label" x="276" y="78">Gateway / DMZ</text>
+                <rect class="zone private" x="552" y="52" width="264" height="310" rx="8"></rect>
+                <text class="zone-label" x="570" y="78">Private backends</text>
+
+                <rect class="node" x="62" y="164" width="118" height="82" rx="8"></rect>
+                <text class="node-title" x="84" y="196">Client</text>
+                <text class="node-sub" x="76" y="218">valid requests</text>
+
+                <rect class="node" x="286" y="102" width="190" height="70" rx="8"></rect>
+                <text class="node-title" x="316" y="132">Pi ingress</text>
+                <text class="node-sub" x="318" y="154">Nginx + FastAPI</text>
+
+                <rect class="node" x="286" y="204" width="190" height="86" rx="8"></rect>
+                <text class="node-title" x="318" y="235">Bounded queue</text>
+                <text class="node-sub" x="316" y="257">workers, timeout, retry</text>
+
+                <rect id="q1" class="queue-cell queue-fill" x="306" y="312" width="24" height="24" rx="4"></rect>
+                <rect id="q2" class="queue-cell queue-fill" x="336" y="312" width="24" height="24" rx="4"></rect>
+                <rect id="q3" class="queue-cell queue-fill" x="366" y="312" width="24" height="24" rx="4"></rect>
+                <rect id="q4" class="queue-cell queue-fill" x="396" y="312" width="24" height="24" rx="4"></rect>
+                <rect id="q5" class="queue-cell queue-fill" x="426" y="312" width="24" height="24" rx="4"></rect>
+                <text id="queue-label" class="node-sub" x="302" y="354">queue full: accept path keeps growing</text>
+
+                <rect class="node" x="596" y="104" width="158" height="78" rx="8"></rect>
+                <text class="node-title" x="630" y="136">Jetson</text>
+                <text class="node-sub" x="624" y="158">TensorRT worker</text>
+
+                <rect class="node" x="596" y="234" width="158" height="78" rx="8"></rect>
+                <text class="node-title" x="628" y="266">Zynq-7020</text>
+                <text class="node-sub" x="616" y="288">PS + PL worker</text>
+
+                <path id="flow-client" class="flow attack is-hot" d="M 180 206 C 224 206 246 138 286 138" marker-end="url(#arrow-red)"></path>
+                <path id="flow-queue" class="flow attack is-hot" d="M 381 172 C 381 186 381 194 381 204" marker-end="url(#arrow-red)"></path>
+                <path id="flow-jetson" class="flow private is-hot" d="M 476 138 C 520 132 552 138 596 142" marker-end="url(#arrow-green)"></path>
+                <path id="flow-zynq" class="flow private is-hot" d="M 476 250 C 520 260 552 272 596 274" marker-end="url(#arrow-green)"></path>
+
+                <rect class="meter-box" x="60" y="290" width="120" height="22" rx="11"></rect>
+                <rect id="rate-meter" class="meter-fill" x="62" y="292" width="112" height="18" rx="9"></rect>
+                <text id="meter-text" class="meter-label" x="78" y="327">arrival rate &gt; service rate</text>
+
+                <circle id="packet-dot" class="packet" cx="232" cy="190" r="7"></circle>
+              </svg>
+            </div>
+            <div class="viz-controls">
+              <button class="is-active" type="button" data-state="saturated">Saturated queue</button>
+              <button type="button" data-state="limited">D2 admission control</button>
+              <button type="button" data-state="balanced">Stable research run</button>
+              <div class="viz-status" aria-live="polite">
+                <b id="viz-title">Queue saturation</b>
+                <span id="viz-copy">Arrival rate exceeds backend service capacity, so waiting time and reject risk rise sharply.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="model">
+        <div class="section-heading">
+          <h2>Threat Model</h2>
+          <p>The attacker is a client that can submit valid-looking inference work to the public gateway.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Attacker capability</h3>
+              <p>The attacker can send syntactically valid requests, vary image size, choose expensive input shapes, repeat requests over time, and observe status code, latency, and service degradation. They do not need backend network access, SSH, switch admin privileges, or physical board access.</p>
+            </div>
+            <div class="mini-card">
+              <h3>System assumption being tested</h3>
+              <p>The gateway should bound work before expensive parsing and before accelerator dispatch. A2 tests whether the Pi can reject excess demand gracefully while preserving service for authorized, ordinary traffic.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Assets at risk</h3>
+              <p>Gateway CPU and memory, request queues, Jetson GPU worker availability, Zynq PS service availability, PL accelerator scheduling windows, latency benchmarks, thermal budget, logs, and operator trust in experimental measurements.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Out of scope</h3>
+              <p>No third-party testing, no live flood scripts, no packet generators, no bypass of cloud or ISP controls, and no instructions for attacking systems outside your owned isolated lab. The included code is a local discrete simulator.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="intuition">
+        <div class="section-heading">
+          <h2>Attack Intuition</h2>
+          <p>An ML inference endpoint transforms small network requests into expensive device work.</p>
+        </div>
+        <div class="section-body">
+          <p>A normal web API often performs lightweight database or cache work. An edge AI endpoint may decode images, resize tensors, copy buffers, dispatch to TensorRT, transfer data through a Zynq PS process, wait for PL completion, and serialize confidence output. The attacker does not need malformed traffic if normal requests are already expensive.</p>
+          <p>A2 is the point where graceful degradation matters. A well-designed gateway should say "not now" early with 429 or 503, reject oversized bodies with 413, and preserve bounded queues. A vulnerable gateway accepts work faster than the backends complete it, which converts traffic into latency, memory pressure, retries, and benchmark contamination.</p>
+          <div class="callout safe">
+            <p><strong>Safe framing:</strong> this article models overload using synthetic arrival events. It does not open sockets, spawn concurrent clients, or contact a service. Use it to design controls before running any controlled validation on your own Pi gateway.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="technical">
+        <div class="section-heading">
+          <h2>Technical Explanation</h2>
+          <p>Resource exhaustion is usually a chain of small missing limits, not one dramatic bug.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card">
+              <h3>Ingress pressure</h3>
+              <ol>
+                <li>Large request bodies consume socket buffers, reverse-proxy memory, and parser time.</li>
+                <li>Image decoding and resizing can be more expensive than the raw byte count suggests.</li>
+                <li>Missing body caps allow oversized work to reach Python or model preprocessing.</li>
+              </ol>
+            </div>
+            <div class="mini-card">
+              <h3>Queue pressure</h3>
+              <ol>
+                <li>Async APIs can accept work faster than accelerator workers complete it.</li>
+                <li>Unbounded queues hide failure until latency and memory become the failure signal.</li>
+                <li>Retries can amplify load when clients interpret slow responses as lost requests.</li>
+              </ol>
+            </div>
+            <div class="mini-card">
+              <h3>Backend pressure</h3>
+              <p>Jetson saturation may show up as GPU utilization, thermal throttling, and memory pressure. Zynq saturation may show up as PS worker queue growth, DMA waits, PL busy intervals, and longer end-to-end latency despite deterministic hardware kernels.</p>
+            </div>
+          </div>
+          <p>Defensive design should be layered: reject unauthenticated calls first, cap request bodies at the proxy, enforce per-user and global token buckets, bound the dispatch queue, set backend timeouts, use circuit breakers, and log rejection reasons without storing payloads.</p>
+        </div>
+      </section>
+
+      <section class="section" id="math">
+        <div class="section-heading">
+          <h2>Mathematical Formulation Of Queue Saturation And Rate Limiting</h2>
+          <p>The security control objective is to keep admitted work below stable service capacity.</p>
+        </div>
+        <div class="section-body">
+          <div class="formula">
+Let arrival rate be lambda requests/second.
+Let c be the number of backend workers.
+Let mu be the per-worker service rate.
+Utilization: rho = lambda / (c * mu)
+
+Stable queue condition: rho &lt; 1
+Saturation condition: rho &gt;= 1, or queue length Q(t) reaches capacity K.
+
+Request cost model:
+w_i = alpha * bytes_i + beta * decode_ms_i + gamma * backend_ms_i + delta * retry_i
+
+Admission rule:
+accept_i = AuthValid(i) * BodyWithinCap(i) * TokenAvailable(user_i, w_i) * QueueHasRoom(K)
+
+Token bucket:
+tokens(t) = min(B, tokens(t - dt) + r * dt)
+accept if tokens(t) &gt;= w_i, then tokens(t) = tokens(t) - w_i
+
+For an M/M/1/K approximation:
+P_block = ((1 - rho) * rho^K) / (1 - rho^(K + 1)), rho != 1
+          </div>
+          <p>For your lab, the exact queueing model does not need to be perfect. The important research result is empirical: as admitted arrival rate approaches service capacity, tail latency and queue depth rise nonlinearly. D2 should shift the failure from backend saturation to early, measured rejection.</p>
+        </div>
+      </section>
+
+      <section class="section" id="lab">
+        <div class="section-heading">
+          <h2>Step-By-Step Safe Lab Demonstration</h2>
+          <p>The demonstration compares vulnerable admission with bounded admission using synthetic request arrivals.</p>
+        </div>
+        <div class="section-body">
+          <ol>
+            <li>Save the Python code from the next section as <code>a2_queue_saturation_lab.py</code>.</li>
+            <li>Run <code>python3 a2_queue_saturation_lab.py --scenario vulnerable</code> to simulate a gateway that accepts excess work.</li>
+            <li>Run <code>python3 a2_queue_saturation_lab.py --scenario protected</code> to simulate body caps, a token bucket, and a bounded queue.</li>
+            <li>Compare accepted requests, 413 rejects, 429 rejects, peak queue length, backend utilization, and p95 latency.</li>
+            <li>Translate the protected parameters into your Pi gateway design: Nginx body cap, FastAPI queue limit, per-token request budget, backend worker concurrency, and timeout policy.</li>
+          </ol>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Interactive toy replay</h3>
+              <p>Replay the expected local simulator contrast directly in the page. This is a display-only model; it does not send traffic anywhere.</p>
+              <button class="copy-button" type="button" id="simulate-lab">Replay queue simulation</button>
+            </div>
+            <div class="lab-output" id="lab-output" aria-live="polite">ready: no simulation replayed yet</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="code">
+        <div class="section-heading">
+          <h2>Full Code For A Local Simulated Lab</h2>
+          <p>This is a deterministic queue simulator. It never opens a port, calls a host, or generates live traffic.</p>
+        </div>
+        <div class="section-body">
+          <div class="code-card">
+            <div class="code-head">
+              <span>a2_queue_saturation_lab.py</span>
+              <button class="copy-button" type="button" data-copy="lab-python">Copy</button>
+            </div>
+            <pre><code id="lab-python">#!/usr/bin/env python3
+"""
+A2 local-only simulator: resource exhaustion and defensive admission control.
+
+This script is intentionally a discrete simulator. It does not open sockets,
+spawn request clients, or contact any endpoint. Use it to reason about your
+own Pi gateway queue, Jetson worker, and Zynq worker limits.
+"""
+
+import argparse
+import heapq
+import random
+from dataclasses import dataclass
+from statistics import mean
+
+
+@dataclass
+class Request:
+    req_id: int
+    arrival_ms: int
+    size_bytes: int
+    backend: str
+    service_ms: int
+    cost: float
+
+
+@dataclass
+class Event:
+    time_ms: int
+    req: Request
+
+    def __lt__(self, other):
+        return self.time_ms &lt; other.time_ms
+
+
+class TokenBucket:
+    def __init__(self, capacity, refill_per_second):
+        self.capacity = float(capacity)
+        self.tokens = float(capacity)
+        self.refill_per_ms = float(refill_per_second) / 1000.0
+        self.last_ms = 0
+
+    def allow(self, now_ms, cost):
+        elapsed = max(0, now_ms - self.last_ms)
+        self.tokens = min(self.capacity, self.tokens + elapsed * self.refill_per_ms)
+        self.last_ms = now_ms
+        if self.tokens &gt;= cost:
+            self.tokens -= cost
+            return True
+        return False
+
+
+class GatewaySimulator:
+    def __init__(self, scenario):
+        self.scenario = scenario
+        self.max_queue = 10 if scenario == "protected" else 10_000
+        self.body_cap = 256_000 if scenario == "protected" else 10_000_000
+        self.bucket = TokenBucket(capacity=14, refill_per_second=8)
+        self.queue = []
+        self.events = []
+        self.inflight = {"jetson": 0, "zynq": 0}
+        self.backend_limit = {"jetson": 2, "zynq": 1}
+        self.stats = {
+            "accepted": 0,
+            "rejected_413": 0,
+            "rejected_429": 0,
+            "completed": 0,
+            "peak_queue": 0,
+            "latencies": [],
+            "backend_busy_ms": {"jetson": 0, "zynq": 0},
+        }
+        self.logs = []
+
+    def log(self, message):
+        if len(self.logs) &lt; 18:
+            self.logs.append(message)
+
+    def admit(self, req):
+        if req.size_bytes &gt; self.body_cap:
+            self.stats["rejected_413"] += 1
+            self.log(f"t={req.arrival_ms:05d} status=413 req={req.req_id} bytes={req.size_bytes}")
+            return
+
+        if self.scenario == "protected" and not self.bucket.allow(req.arrival_ms, req.cost):
+            self.stats["rejected_429"] += 1
+            self.log(f"t={req.arrival_ms:05d} status=429 req={req.req_id} reason=token_bucket")
+            return
+
+        if self.inflight_total() + len(self.queue) &gt;= self.max_queue:
+            self.stats["rejected_429"] += 1
+            self.log(f"t={req.arrival_ms:05d} status=429 req={req.req_id} reason=queue_full")
+            return
+
+        self.stats["accepted"] += 1
+        self.queue.append(req)
+        self.stats["peak_queue"] = max(self.stats["peak_queue"], len(self.queue))
+        self.dispatch(req.arrival_ms)
+
+    def inflight_total(self):
+        return self.inflight["jetson"] + self.inflight["zynq"]
+
+    def dispatch(self, now_ms):
+        still_waiting = []
+        for req in self.queue:
+            if self.inflight[req.backend] &lt; self.backend_limit[req.backend]:
+                self.inflight[req.backend] += 1
+                finish_ms = now_ms + req.service_ms
+                self.stats["backend_busy_ms"][req.backend] += req.service_ms
+                heapq.heappush(self.events, Event(finish_ms, req))
+                self.log(f"t={now_ms:05d} dispatch req={req.req_id} backend={req.backend} finish={finish_ms}")
+            else:
+                still_waiting.append(req)
+        self.queue = still_waiting
+        self.stats["peak_queue"] = max(self.stats["peak_queue"], len(self.queue))
+
+    def complete_until(self, now_ms):
+        while self.events and self.events[0].time_ms &lt;= now_ms:
+            event = heapq.heappop(self.events)
+            req = event.req
+            self.inflight[req.backend] -= 1
+            self.stats["completed"] += 1
+            latency = event.time_ms - req.arrival_ms
+            self.stats["latencies"].append(latency)
+            self.log(f"t={event.time_ms:05d} status=200 req={req.req_id} backend={req.backend} latency_ms={latency}")
+            self.dispatch(event.time_ms)
+
+    def drain(self):
+        while self.events:
+            self.complete_until(self.events[0].time_ms)
+
+    def summary(self):
+        latencies = sorted(self.stats["latencies"])
+        p95 = latencies[int(0.95 * (len(latencies) - 1))] if latencies else 0
+        avg = round(mean(latencies), 2) if latencies else 0
+        return {
+            "scenario": self.scenario,
+            "accepted": self.stats["accepted"],
+            "completed": self.stats["completed"],
+            "rejected_413": self.stats["rejected_413"],
+            "rejected_429": self.stats["rejected_429"],
+            "peak_queue": self.stats["peak_queue"],
+            "avg_latency_ms": avg,
+            "p95_latency_ms": p95,
+            "backend_busy_ms": self.stats["backend_busy_ms"],
+        }
+
+
+def make_requests(seed, total, interval_ms):
+    random.seed(seed)
+    requests = []
+    for req_id in range(total):
+        arrival_ms = req_id * interval_ms
+        backend = "jetson" if req_id % 3 != 0 else "zynq"
+        base_service = 48 if backend == "jetson" else 62
+        jitter = random.randint(0, 24)
+        large_body = req_id % 17 == 0
+        size_bytes = 480_000 if large_body else random.randint(32_000, 180_000)
+        decode_ms = int(size_bytes / 16_000)
+        service_ms = base_service + jitter + decode_ms
+        cost = 1.0 + size_bytes / 200_000 + service_ms / 100.0
+        requests.append(Request(req_id, arrival_ms, size_bytes, backend, service_ms, cost))
+    return requests
+
+
+def run(scenario):
+    sim = GatewaySimulator(scenario)
+    # The arrival pattern is intentionally synthetic and local. It represents
+    # a busy lab interval, not instructions for generating network traffic.
+    for req in make_requests(seed=7, total=90, interval_ms=18):
+        sim.complete_until(req.arrival_ms)
+        sim.admit(req)
+    sim.drain()
+    return sim
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scenario", choices=["vulnerable", "protected"], default="vulnerable")
+    args = parser.parse_args()
+    sim = run(args.scenario)
+    print("sample_logs:")
+    for line in sim.logs:
+        print("  " + line)
+    print("summary:")
+    for key, value in sim.summary().items():
+        print(f"  {key}: {value}")
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+          </div>
+
+          <div class="code-card" style="margin-top:12px;">
+            <div class="code-head">
+              <span>local simulator commands</span>
+              <button class="copy-button" type="button" data-copy="lab-client">Copy</button>
+            </div>
+            <pre><code id="lab-client"># Vulnerable admission model: accepts excess work and lets queueing absorb the failure.
+python3 a2_queue_saturation_lab.py --scenario vulnerable
+
+# Protected admission model: body cap, token bucket, and bounded queue reject early.
+python3 a2_queue_saturation_lab.py --scenario protected
+
+# Suggested comparison fields:
+# accepted, rejected_413, rejected_429, peak_queue, avg_latency_ms, p95_latency_ms, backend_busy_ms
+</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="setup">
+        <div class="section-heading">
+          <h2>Practical Example For Your Pi Gateway, Jetson, And Zynq Setup</h2>
+          <p>A2 contaminates both security and performance research if overload is not controlled.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Expected topology</h3>
+              <p>The client VLAN reaches only the Raspberry Pi gateway. The Pi handles TLS, auth, body limits, validation, logging, and dispatch. Jetson Orin Nano and Zynq-7020 sit on the private subnet behind the switch and should receive only admitted work from the Pi.</p>
+              <div class="pill-row">
+                <span class="tag info">Client VLAN</span>
+                <span class="tag">Pi gateway</span>
+                <span class="tag hw">Jetson + Zynq private</span>
+              </div>
+            </div>
+            <div class="mini-card">
+              <h3>A2 failure mode</h3>
+              <p>The Pi accepts too much work, queues grow, and backend workers stay busy. Jetson timing becomes dominated by queue delay and thermal effects. Zynq timing becomes dominated by PS queueing and PL busy windows. The result can look like an accelerator comparison, but it is actually an admission-control experiment.</p>
+              <div class="pill-row">
+                <span class="tag">429 missing</span>
+                <span class="tag">413 missing</span>
+                <span class="tag def">D2 absent</span>
+              </div>
+            </div>
+          </div>
+          <p>For your lab, treat D2 as part of the measurement harness. Before comparing Jetson and FPGA throughput, define the maximum admitted rate, body size, queue capacity, timeout, retry policy, and backend concurrency. This keeps "GPU versus FPGA" results from being quietly shaped by gateway overload.</p>
+        </div>
+      </section>
+
+      <section class="section" id="signals">
+        <div class="section-heading">
+          <h2>Observable Signals Or Logs</h2>
+          <p>Good A2 telemetry distinguishes early rejection from backend saturation.</p>
+        </div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead>
+              <tr><th>Signal</th><th>Vulnerable observation</th><th>Hardened observation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>HTTP status</td><td>Many slow 200s, occasional 500s or timeouts under pressure</td><td>413 for oversized bodies, 429 for quota or queue pressure, 503 for circuit breaker</td></tr>
+              <tr><td>Gateway queue</td><td>Unbounded or opaque growth; memory pressure becomes the first clear signal</td><td>Bounded queue depth with explicit reject counter</td></tr>
+              <tr><td>Jetson logs</td><td>High GPU utilization, rising inference latency, thermal throttling risk</td><td>Stable backend rate; rejected excess requests never reach TensorRT</td></tr>
+              <tr><td>Zynq logs</td><td>PS worker backlog, DMA wait time, PL busy intervals near 100 percent</td><td>Stable accelerator window; clear Pi-side admission decisions</td></tr>
+              <tr><td>Research metrics</td><td>P95 and p99 latency dominated by queue delay</td><td>Tail latency bounded for admitted work; excess demand visible as 429/413 counts</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="impact">
+        <div class="section-heading">
+          <h2>Impact Analysis</h2>
+          <p>A2 primarily targets availability, but it can disturb integrity and confidentiality research too.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card">
+              <h3>Availability</h3>
+              <p>The obvious impact is degraded or unavailable inference. Queue saturation can block legitimate users, starve accelerator workers, and keep the gateway in a slow-failure mode instead of a clean reject mode.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Integrity</h3>
+              <p>Timeouts, retries, partial preprocessing failures, and fallback routing can change which backend answers a request. If downstream decisions assume stable latency and backend choice, overload can alter behavior.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Confidentiality</h3>
+              <p>Overload can amplify timing side channels. When queues are visible through response delay, a caller may infer backend load, dispatch policy, or whether another experiment is running.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="mapping">
+        <div class="section-heading">
+          <h2>Mapping To CIA, STRIDE, PASTA, And MITRE ATLAS</h2>
+          <p>Use these labels to keep overload experiments tied to security objectives.</p>
+        </div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead>
+              <tr><th>Framework</th><th>A2 mapping</th><th>Research interpretation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>CIA</td><td>Availability primary; Integrity and Confidentiality secondary</td><td>Protect service continuity while preventing overload from distorting backend routing or timing signals.</td></tr>
+              <tr><td>STRIDE</td><td>Denial of Service; Repudiation if logs are insufficient</td><td>Reject excess demand early and preserve enough sanitized telemetry to attribute pressure to user, token, route, and reason.</td></tr>
+              <tr><td>PASTA</td><td>Stage 3 decomposition, Stage 4 threat analysis, Stage 5 vulnerability analysis, Stage 6 attack modeling</td><td>Model each queue, worker, body parser, and backend as a resource with capacity and failure semantics.</td></tr>
+              <tr><td>MITRE ATLAS</td><td>Relevant to AI denial-of-service and cost-harvesting style concerns, including AML.T0034 Cost Harvesting and public-facing application exposure such as AML.T0049 Exploit Public Facing Application.</td><td>A2 is often an impact technique and an enabling condition for timing analysis or extraction by forcing backend stress states.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="defenses">
+        <div class="section-heading">
+          <h2>Defense Mapping To Existing D1-D11 Controls</h2>
+          <p>D2 is the direct mitigation, but A2 should be validated across the gateway stack.</p>
+        </div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead>
+              <tr><th>Control</th><th>Role against A2</th><th>Validation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>D2 Rate Limit + Body Cap</td><td>Primary control. Caps request bodies, bounds queue size, limits per-user and global request cost, and rejects early with 413, 429, or 503.</td><td>Replay synthetic workload in an owned lab and confirm excess demand does not reach Jetson or Zynq.</td></tr>
+              <tr><td>D1 JWT Auth + Object Checks</td><td>Allows per-user quotas and prevents anonymous callers from consuming accelerator budget.</td><td>Missing or invalid token receives 401 before body parsing and queue admission.</td></tr>
+              <tr><td>D4 Private Backend Subnet</td><td>Prevents clients from bypassing the Pi and saturating Jetson or Zynq service ports directly.</td><td>Client VLAN cannot connect to backend ports; only Pi private interface can reach them.</td></tr>
+              <tr><td>D5 Query Anomaly Detection</td><td>Detects extraction-like or stress-like request distributions that stay under simple rate limits.</td><td>Alert on unusual body sizes, entropy, request intervals, backend targeting, and repeated timeout edges.</td></tr>
+              <tr><td>D6 Sanitized Logging</td><td>Preserves reject and queue evidence without storing request bodies or tokens.</td><td>Logs include route, status, reason, user id, body hash, size bucket, queue depth, and backend when dispatched.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="research">
+        <div class="section-heading">
+          <h2>Research Notes: What To Measure Experimentally</h2>
+          <p>The measurable goal is controlled degradation, not heroic throughput.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Admission-control curve</h3>
+              <p>Sweep admitted arrival rate below and above capacity. Plot accepted rate, rejected rate, average queue depth, p95 latency, and p99 latency. The protected system should convert overload into early rejects rather than unbounded delay.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Backend fairness</h3>
+              <p>Measure whether Jetson and Zynq receive fair work under pressure. A poorly designed dispatcher may starve one backend or route all hard requests to the same accelerator.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Thermal and power coupling</h3>
+              <p>Track Jetson temperature, Zynq board rails, CPU load on the Pi, and PL busy intervals. A2 can turn a software queue problem into hardware measurement noise.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Retry amplification</h3>
+              <p>Measure how client timeout and retry policies affect effective arrival rate. A safe gateway should include retry-after headers and idempotency guidance for clients.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="takeaways">
+        <div class="section-heading">
+          <h2>Key Takeaways</h2>
+          <p>A2 is best handled by explicit budgets at every transition from network to accelerator.</p>
+        </div>
+        <div class="section-body">
+          <ul>
+            <li>A2 targets the finite capacity of the Pi parser, gateway queue, Jetson worker, and Zynq PS/PL path.</li>
+            <li>D2 should reject excess demand before expensive parsing and before backend dispatch.</li>
+            <li>Body caps, token buckets, bounded queues, backend timeouts, circuit breakers, and sanitized logs work as a layered control set.</li>
+            <li>For research, overload must be measured separately from accelerator performance or it will contaminate Jetson versus FPGA comparisons.</li>
+          </ul>
+        </div>
+      </section>
+
+      <nav class="nav-grid" aria-label="Related pages">
+        <a class="nav-card" href="A1_unauthenticated_inference_endpoint.html">
+          <b>Previous threat: A1</b>
+          <span>Unauthenticated Inference Endpoint. Often enables anonymous resource use.</span>
+        </a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html">
+          <b>Related defense: D2</b>
+          <span>Rate Limit + Body Cap. Dedicated page planned in Defense_matrix.</span>
+        </a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html">
+          <b>Related threat: A18</b>
+          <span>Timing Side-Channel via Dispatch. Queue pressure can amplify timing leakage.</span>
+        </a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html">
+          <b>Next threat: A3</b>
+          <span>Broken Object Authorization. Dedicated page planned next.</span>
+        </a>
+      </nav>
+    </article>
+  </div>
+</main>
+
+<script>
+const states = {
+  saturated: {
+    title: "Queue saturation",
+    copy: "Arrival rate exceeds backend service capacity, so waiting time and reject risk rise sharply.",
+    queue: 5,
+    meter: 112,
+    good: false,
+    hot: ["flow-client", "flow-queue", "flow-jetson", "flow-zynq"],
+    packet: [232, 190],
+    queueText: "queue full: accept path keeps growing",
+    meterText: "arrival rate > service rate"
+  },
+  limited: {
+    title: "Early rejection",
+    copy: "D2 caps body size, drains tokens, and returns 413 or 429 before backend saturation.",
+    queue: 2,
+    meter: 54,
+    good: true,
+    hot: ["flow-client", "flow-queue"],
+    packet: [380, 204],
+    queueText: "bounded queue: excess demand rejected",
+    meterText: "admitted rate <= budget"
+  },
+  balanced: {
+    title: "Stable research run",
+    copy: "The gateway admits work below measured capacity so latency reflects accelerator behavior.",
+    queue: 1,
+    meter: 38,
+    good: true,
+    hot: ["flow-client", "flow-queue", "flow-jetson", "flow-zynq"],
+    packet: [520, 172],
+    queueText: "queue low: measurements stay interpretable",
+    meterText: "arrival rate < service rate"
+  }
+};
+
+function setVizState(key) {
+  const state = states[key];
+  if (!state) return;
+  document.querySelectorAll(".viz-controls button[data-state]").forEach(button => {
+    button.classList.toggle("is-active", button.dataset.state === key);
+  });
+  document.querySelectorAll(".flow").forEach(flow => {
+    flow.classList.toggle("is-hot", state.hot.includes(flow.id));
+    flow.classList.toggle("is-muted", !state.hot.includes(flow.id));
+  });
+  for (let i = 1; i <= 5; i += 1) {
+    const cell = document.getElementById("q" + i);
+    cell.setAttribute("class", "queue-cell " + (i <= state.queue ? "queue-fill" : "") + (state.good && i <= state.queue ? " good" : ""));
+  }
+  const meter = document.getElementById("rate-meter");
+  meter.setAttribute("width", state.meter);
+  meter.setAttribute("class", "meter-fill" + (state.good ? " good" : ""));
+  document.getElementById("queue-label").textContent = state.queueText;
+  document.getElementById("meter-text").textContent = state.meterText;
+  document.getElementById("viz-title").textContent = state.title;
+  document.getElementById("viz-copy").textContent = state.copy;
+  const packet = document.getElementById("packet-dot");
+  packet.setAttribute("cx", state.packet[0]);
+  packet.setAttribute("cy", state.packet[1]);
+  packet.setAttribute("fill", state.good ? "#158b55" : "#d63447");
+}
+
+document.querySelector(".viz-controls").addEventListener("click", event => {
+  const button = event.target.closest("button[data-state]");
+  if (button) setVizState(button.dataset.state);
+});
+
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", async () => {
+    const target = document.getElementById(button.dataset.copy);
+    if (!target) return;
+    try {
+      await navigator.clipboard.writeText(target.innerText);
+      const original = button.textContent;
+      button.textContent = "Copied";
+      setTimeout(() => {
+        button.textContent = original;
+      }, 1200);
+    } catch (error) {
+      button.textContent = "Select text";
+    }
+  });
+});
+
+document.getElementById("simulate-lab").addEventListener("click", () => {
+  const lines = [
+    "vulnerable admission:",
+    "[summary] accepted=90 rejected_413=0 rejected_429=0 peak_queue=23 p95_latency_ms=770",
+    "[gateway] slow 200s continue while queue depth rises",
+    "[backend] jetson_busy_ms=3986 zynq_busy_ms=2474",
+    "",
+    "protected admission:",
+    "[summary] accepted=12 rejected_413=6 rejected_429=72 peak_queue=1 p95_latency_ms=84",
+    "[gateway] 413 body_too_large and 429 token_bucket before dispatch",
+    "[backend] stable utilization; excess demand does not reach Jetson or Zynq"
+  ];
+  const output = document.getElementById("lab-output");
+  output.innerHTML = lines.map(line => {
+    if (line.includes("vulnerable") || line.includes("slow") || line.includes("peak_queue=23")) return "<span class=\"log-bad\">" + line + "</span>";
+    if (line.includes("protected") || line.includes("413") || line.includes("429") || line.includes("stable")) return "<span class=\"log-ok\">" + line + "</span>";
+    if (line.includes("backend")) return "<span class=\"log-warn\">" + line + "</span>";
+    return line;
+  }).join("\n");
+});
+
+setVizState("saturated");
+</script>
+</body>
+</html>

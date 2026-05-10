@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edge AI Security Atlas | Interactive Attack Surface</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f5f7fb;
+    --panel: #ffffff;
+    --panel-2: #eef3f8;
+    --ink: #10151c;
+    --muted: #5e6c7a;
+    --soft: #8795a4;
+    --line: #d8e0e8;
+    --line-strong: #b9c5d1;
+    --navy: #172333;
+    --cyan: #00a7bd;
+    --blue: #2c70d8;
+    --green: #158b55;
+    --lime: #74b816;
+    --amber: #c77900;
+    --orange: #f26d21;
+    --red: #d63447;
+    --violet: #7656d6;
+    --rose: #bd476a;
+    --shadow: 0 18px 44px rgba(29, 44, 61, 0.13);
+    --radius: 8px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      linear-gradient(90deg, rgba(16, 21, 28, 0.04) 1px, transparent 1px),
+      linear-gradient(rgba(16, 21, 28, 0.035) 1px, transparent 1px),
+      linear-gradient(140deg, #f5f7fb 0%, #edf4f7 45%, #f8f9fb 100%);
+    background-size: 28px 28px, 28px 28px, auto;
+    color: var(--ink);
+    font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(0, 167, 189, 0.12), transparent 32%),
+      linear-gradient(290deg, rgba(242, 109, 33, 0.12), transparent 34%);
+    opacity: 0.9;
+    z-index: -1;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  .app {
+    width: min(1540px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 18px 0 54px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    min-height: 72px;
+    padding: 12px 0;
+    background: rgba(245, 247, 251, 0.82);
+    border-bottom: 1px solid rgba(185, 197, 209, 0.65);
+    backdrop-filter: blur(16px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(135deg, rgba(0, 167, 189, 0.2), transparent 46%),
+      linear-gradient(315deg, rgba(242, 109, 33, 0.2), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(23, 35, 51, 0.1);
+  }
+
+  .brand-mark span {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--navy);
+  }
+
+  .brand-mark span:nth-child(1) {
+    top: 13px;
+  }
+
+  .brand-mark span:nth-child(2) {
+    top: 21px;
+    background: var(--cyan);
+  }
+
+  .brand-mark span:nth-child(3) {
+    top: 29px;
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.12;
+    font-weight: 780;
+  }
+
+  .brand p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    max-width: 860px;
+  }
+
+  .top-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 31px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .chip strong {
+    color: var(--ink);
+    font-weight: 760;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 4px rgba(21, 139, 85, 0.12);
+  }
+
+  .intro-band {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 400px;
+    gap: 18px;
+    align-items: stretch;
+    margin: 18px 0;
+  }
+
+  .brief {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.74);
+    box-shadow: var(--shadow);
+    padding: 18px;
+  }
+
+  .brief h2 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    line-height: 1.16;
+  }
+
+  .brief p {
+    margin: 0;
+    color: var(--muted);
+    max-width: 980px;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .metric {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.78);
+    padding: 14px;
+    min-height: 74px;
+  }
+
+  .metric b {
+    display: block;
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .metric span {
+    display: block;
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .metric.sw b {
+    color: var(--red);
+  }
+
+  .metric.hw b {
+    color: var(--orange);
+  }
+
+  .metric.def b {
+    color: var(--green);
+  }
+
+  .metric.zone b {
+    color: var(--violet);
+  }
+
+  .control-strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.82);
+    padding: 10px;
+  }
+
+  .segmented {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .segmented button,
+  .ghost-button {
+    min-height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--navy);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 720;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+  }
+
+  .segmented button:hover,
+  .ghost-button:hover {
+    transform: translateY(-1px);
+    border-color: var(--navy);
+  }
+
+  .segmented button.is-active {
+    color: #fff;
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .segmented button[data-scenario="software"].is-active {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  .segmented button[data-scenario="hardware"].is-active {
+    background: var(--orange);
+    border-color: var(--orange);
+  }
+
+  .segmented button[data-scenario="defense"].is-active {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .map-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 390px;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .map-panel,
+  .inspector,
+  .library,
+  .telemetry {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: var(--shadow);
+  }
+
+  .map-panel {
+    overflow: hidden;
+  }
+
+  .map-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(238, 243, 248, 0.9);
+  }
+
+  .map-toolbar h2 {
+    margin: 0;
+    font-size: 17px;
+  }
+
+  .map-toolbar p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .map-toolbar .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    justify-content: flex-end;
+  }
+
+  .filter-button {
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--muted);
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 720;
+  }
+
+  .filter-button.is-active {
+    color: #fff;
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .map-stage {
+    position: relative;
+    min-height: 760px;
+    background:
+      linear-gradient(90deg, rgba(23, 35, 51, 0.05) 1px, transparent 1px),
+      linear-gradient(rgba(23, 35, 51, 0.05) 1px, transparent 1px),
+      #fbfcfe;
+    background-size: 32px 32px;
+  }
+
+  svg#security-map {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .zone {
+    fill: #ffffff;
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+  }
+
+  .zone.factory {
+    fill: rgba(199, 121, 0, 0.08);
+    stroke: rgba(199, 121, 0, 0.42);
+  }
+
+  .zone.public {
+    fill: rgba(44, 112, 216, 0.08);
+    stroke: rgba(44, 112, 216, 0.42);
+  }
+
+  .zone.gateway {
+    fill: rgba(118, 86, 214, 0.08);
+    stroke: rgba(118, 86, 214, 0.42);
+  }
+
+  .zone.private {
+    fill: rgba(21, 139, 85, 0.08);
+    stroke: rgba(21, 139, 85, 0.42);
+  }
+
+  .zone.physical {
+    fill: rgba(242, 109, 33, 0.09);
+    stroke: rgba(242, 109, 33, 0.5);
+    stroke-dasharray: 9 7;
+  }
+
+  .zone-label {
+    fill: var(--muted);
+    font-size: 12px;
+    font-weight: 780;
+    text-transform: uppercase;
+  }
+
+  .flow-line {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.6;
+  }
+
+  .flow-line.training {
+    stroke: var(--amber);
+  }
+
+  .flow-line.public-flow {
+    stroke: var(--blue);
+  }
+
+  .flow-line.gateway-flow {
+    stroke: var(--violet);
+  }
+
+  .flow-line.private-flow {
+    stroke: var(--green);
+  }
+
+  .flow-line.hardware-flow {
+    stroke: var(--orange);
+    stroke-dasharray: 7 8;
+  }
+
+  .flow-line.attack-flow {
+    stroke: var(--red);
+    stroke-dasharray: 8 7;
+  }
+
+  .flow-line.is-highlighted {
+    opacity: 1;
+    stroke-width: 5;
+    filter: drop-shadow(0 0 7px rgba(0, 167, 189, 0.35));
+  }
+
+  .map-node {
+    cursor: pointer;
+  }
+
+  .node-card {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 8px 18px rgba(23, 35, 51, 0.12));
+    transition: fill 160ms ease, stroke 160ms ease;
+  }
+
+  .map-node:hover .node-card,
+  .map-node.is-selected .node-card {
+    stroke: var(--navy);
+    fill: #faffff;
+  }
+
+  .node-title {
+    fill: var(--ink);
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .node-sub {
+    fill: var(--muted);
+    font-size: 11px;
+    font-weight: 650;
+  }
+
+  .node-code {
+    fill: var(--navy);
+    font-size: 10px;
+    font-weight: 720;
+  }
+
+  .node-badge {
+    fill: var(--panel-2);
+    stroke: var(--line-strong);
+  }
+
+  .chiplet {
+    stroke: rgba(16, 21, 28, 0.2);
+    stroke-width: 1.2;
+  }
+
+  .chiplet.ps {
+    fill: rgba(118, 86, 214, 0.16);
+  }
+
+  .chiplet.pl {
+    fill: rgba(242, 109, 33, 0.16);
+  }
+
+  .chiplet-label {
+    fill: var(--navy);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .marker {
+    cursor: pointer;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .marker-core {
+    fill: var(--red);
+    stroke: #fff;
+    stroke-width: 3;
+    transition: transform 160ms ease;
+  }
+
+  .marker.hw .marker-core {
+    fill: var(--orange);
+  }
+
+  .marker.def .marker-core {
+    fill: var(--green);
+  }
+
+  .marker-ring {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 2;
+    opacity: 0.34;
+    animation: markerPulse 2.4s ease-out infinite;
+  }
+
+  .marker.hw .marker-ring {
+    stroke: var(--orange);
+  }
+
+  .marker.def .marker-ring {
+    stroke: var(--green);
+  }
+
+  .marker:hover .marker-core,
+  .marker.is-selected .marker-core {
+    transform: scale(1.28);
+  }
+
+  .marker.is-selected .marker-ring {
+    opacity: 0.9;
+    animation-duration: 1.2s;
+  }
+
+  .marker-label {
+    fill: #fff;
+    font-size: 10px;
+    font-weight: 900;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+  }
+
+  .marker.hidden {
+    display: none;
+  }
+
+  @keyframes markerPulse {
+    0% {
+      r: 11;
+      opacity: 0.45;
+    }
+    100% {
+      r: 26;
+      opacity: 0;
+    }
+  }
+
+  .packet {
+    opacity: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 0 7px rgba(0, 167, 189, 0.8));
+  }
+
+  .packet .packet-core {
+    fill: var(--cyan);
+  }
+
+  .packet.attack .packet-core {
+    fill: var(--red);
+  }
+
+  .packet.hardware .packet-core {
+    fill: var(--orange);
+  }
+
+  .packet.defense .packet-core {
+    fill: var(--green);
+  }
+
+  .inspector {
+    position: sticky;
+    top: 88px;
+    overflow: hidden;
+  }
+
+  .inspector-header {
+    min-height: 110px;
+    padding: 16px;
+    color: #fff;
+    background:
+      linear-gradient(135deg, rgba(0, 167, 189, 0.28), transparent 42%),
+      linear-gradient(315deg, rgba(242, 109, 33, 0.24), transparent 40%),
+      var(--navy);
+  }
+
+  .eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 11px;
+    font-weight: 760;
+    text-transform: uppercase;
+  }
+
+  .inspector-title {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.16;
+  }
+
+  .inspector-subtitle {
+    margin: 8px 0 0;
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 13px;
+  }
+
+  .inspector-body {
+    padding: 16px;
+  }
+
+  .risk-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin: 0 0 14px;
+  }
+
+  .risk-dot {
+    height: 7px;
+    border-radius: 999px;
+    background: var(--line);
+  }
+
+  .risk-dot.filled.low {
+    background: var(--green);
+  }
+
+  .risk-dot.filled.medium {
+    background: var(--amber);
+  }
+
+  .risk-dot.filled.high,
+  .risk-dot.filled.critical {
+    background: var(--red);
+  }
+
+  .risk-dot.filled.hardware {
+    background: var(--orange);
+  }
+
+  .detail-block {
+    border-top: 1px solid var(--line);
+    padding: 13px 0 0;
+    margin-top: 13px;
+  }
+
+  .detail-block:first-child {
+    border-top: 0;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .detail-block h3 {
+    margin: 0 0 7px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 820;
+    text-transform: uppercase;
+  }
+
+  .detail-block p {
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .detail-list {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .detail-list li {
+    position: relative;
+    padding-left: 14px;
+    color: var(--ink);
+  }
+
+  .detail-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: #fff;
+    padding: 3px 8px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 760;
+  }
+
+  .tag-pill.sw {
+    color: var(--red);
+    border-color: rgba(214, 52, 71, 0.36);
+    background: rgba(214, 52, 71, 0.07);
+  }
+
+  .tag-pill.hw {
+    color: var(--orange);
+    border-color: rgba(242, 109, 33, 0.4);
+    background: rgba(242, 109, 33, 0.08);
+  }
+
+  .tag-pill.def {
+    color: var(--green);
+    border-color: rgba(21, 139, 85, 0.36);
+    background: rgba(21, 139, 85, 0.08);
+  }
+
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .quick-actions button {
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: var(--panel-2);
+    padding: 9px 10px;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 760;
+  }
+
+  .library {
+    margin-top: 18px;
+    overflow: hidden;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(238, 243, 248, 0.92);
+  }
+
+  .section-heading h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .section-heading p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .library-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .threat-card {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    min-height: 122px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+    text-align: left;
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .threat-card:hover,
+  .threat-card.is-selected {
+    transform: translateY(-2px);
+    border-color: var(--navy);
+    box-shadow: 0 12px 24px rgba(29, 44, 61, 0.12);
+  }
+
+  .threat-card.hidden {
+    display: none;
+  }
+
+  .threat-card .topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .threat-card .id {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 26px;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--red);
+    font-size: 12px;
+    font-weight: 880;
+  }
+
+  .threat-card.hw .id {
+    background: var(--orange);
+  }
+
+  .threat-card.def .id {
+    background: var(--green);
+  }
+
+  .threat-card .severity {
+    color: var(--soft);
+    font-size: 11px;
+    font-weight: 760;
+    text-transform: uppercase;
+  }
+
+  .threat-card h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  .threat-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  a.threat-card {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .threat-card .card-action {
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 780;
+    text-transform: uppercase;
+  }
+
+  .defense-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .defense-card {
+    min-height: 112px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+    text-align: left;
+  }
+
+  .defense-card:hover {
+    border-color: var(--green);
+  }
+
+  .defense-card b {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 25px;
+    border-radius: 999px;
+    background: rgba(21, 139, 85, 0.1);
+    color: var(--green);
+    font-size: 12px;
+  }
+
+  .defense-card h3 {
+    margin: 9px 0 5px;
+    font-size: 14px;
+    line-height: 1.24;
+  }
+
+  .defense-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .telemetry {
+    margin-top: 18px;
+    overflow: hidden;
+  }
+
+  .telemetry-body {
+    position: relative;
+    min-height: 72px;
+    overflow: hidden;
+    background: var(--navy);
+    color: #fff;
+  }
+
+  .telemetry-track {
+    display: inline-flex;
+    align-items: center;
+    gap: 22px;
+    white-space: nowrap;
+    padding: 20px 0;
+    animation: stream 64s linear infinite;
+  }
+
+  .log-item {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .log-item.ok {
+    color: #98e7bf;
+  }
+
+  .log-item.warn {
+    color: #ffd18a;
+  }
+
+  .log-item.err {
+    color: #ff9daa;
+  }
+
+  .log-item.hw {
+    color: #ffb283;
+  }
+
+  @keyframes stream {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .tour-rail {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 14px 0 0;
+  }
+
+  .tour-step {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 10px;
+  }
+
+  .tour-step b {
+    display: block;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .tour-step span {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  @media (max-width: 1180px) {
+    .intro-band,
+    .map-shell {
+      grid-template-columns: 1fr;
+    }
+
+    .inspector {
+      position: static;
+    }
+
+    .library-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .defense-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .app {
+      width: min(100% - 20px, 1540px);
+    }
+
+    .topbar,
+    .control-strip,
+    .map-toolbar,
+    .section-heading {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+
+    .topbar {
+      display: block;
+    }
+
+    .top-actions {
+      justify-content: flex-start;
+      margin-top: 12px;
+    }
+
+    .brand {
+      align-items: flex-start;
+    }
+
+    .brand h1 {
+      font-size: 21px;
+    }
+
+    .brief h2 {
+      font-size: 21px;
+    }
+
+    .metrics,
+    .library-grid,
+    .defense-grid,
+    .tour-rail,
+    .quick-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .map-stage {
+      min-height: auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 1ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <h1>Edge AI Security Atlas</h1>
+        <p>Architecture, software attacks, hardware attacks, and controls for the GPU, Jetson, Raspberry Pi gateway, switch, and Zynq-7020 lab.</p>
+      </div>
+    </div>
+    <div class="top-actions" aria-label="Lab status">
+      <span class="chip"><span class="status-dot"></span><strong>Live map</strong></span>
+      <span class="chip"><strong>18</strong> attacks</span>
+      <span class="chip"><strong>11</strong> defenses</span>
+      <span class="chip"><strong>Zynq</strong> enabled</span>
+    </div>
+  </header>
+
+  <section class="intro-band" aria-labelledby="overview-title">
+    <div class="brief">
+      <h2 id="overview-title">One lab, three security stories.</h2>
+      <p>The Raspberry Pi is the trust boundary. Jetson and Zynq stay private. The GPU workstation produces both model and bitstream artifacts. The new lesson is that adding FPGA acceleration does not just add speed; it adds bitstream integrity, PS-to-PL trust, timing leaks, power traces, EM probes, and glitch attacks.</p>
+      <div class="tour-rail" aria-label="System story">
+        <div class="tour-step"><b>Build</b><span>GPU factory exports model.onnx and signed cnn.bit.</span></div>
+        <div class="tour-step"><b>Enter</b><span>Client requests hit the Pi gateway only.</span></div>
+        <div class="tour-step"><b>Dispatch</b><span>Pi routes to Jetson GPU or Zynq FPGA.</span></div>
+        <div class="tour-step"><b>Attack</b><span>Software paths target auth, APIs, networks, and supply chain.</span></div>
+        <div class="tour-step"><b>Probe</b><span>Hardware paths target silicon through power, EM, and faults.</span></div>
+      </div>
+    </div>
+    <div class="metrics" aria-label="Map summary metrics">
+      <div class="metric sw"><b>12</b><span>Software attacks</span></div>
+      <div class="metric hw"><b>6</b><span>Hardware attacks</span></div>
+      <div class="metric def"><b>11</b><span>Defense controls</span></div>
+      <div class="metric zone"><b>5</b><span>Trust surfaces</span></div>
+    </div>
+  </section>
+
+  <section class="control-strip" aria-label="Scenario controls">
+    <div class="segmented" id="scenario-controls">
+      <button class="is-active" data-scenario="legit" type="button">Legitimate Inference</button>
+      <button data-scenario="software" type="button">Software Breach</button>
+      <button data-scenario="hardware" type="button">Hardware Probe</button>
+      <button data-scenario="defense" type="button">Defense Drill</button>
+    </div>
+    <button class="ghost-button" id="tour-next" type="button">Next Finding</button>
+  </section>
+
+  <section class="map-shell" aria-label="Interactive attack surface">
+    <div class="map-panel">
+      <div class="map-toolbar">
+        <div>
+          <h2>Animated Architecture Map</h2>
+          <p>Select a flow, marker, device, or library item. Animated particles show the active path.</p>
+        </div>
+        <div class="filters" id="filter-controls" aria-label="Marker filters">
+          <button class="filter-button is-active" data-filter="all" type="button">All</button>
+          <button class="filter-button" data-filter="sw" type="button">Software</button>
+          <button class="filter-button" data-filter="hw" type="button">Hardware</button>
+          <button class="filter-button" data-filter="def" type="button">Defenses</button>
+        </div>
+      </div>
+
+      <div class="map-stage">
+        <svg id="security-map" viewBox="0 0 1180 760" role="img" aria-label="Edge AI lab topology with attack and defense markers">
+          <defs>
+            <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#2c70d8"></path>
+            </marker>
+            <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#158b55"></path>
+            </marker>
+            <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#f26d21"></path>
+            </marker>
+            <marker id="arrow-violet" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#7656d6"></path>
+            </marker>
+            <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#d63447"></path>
+            </marker>
+          </defs>
+
+          <rect class="zone factory" x="28" y="36" width="265" height="214" rx="8"></rect>
+          <text class="zone-label" x="44" y="62">Remote factory</text>
+          <rect class="zone public" x="28" y="286" width="265" height="220" rx="8"></rect>
+          <text class="zone-label" x="44" y="312">Public client side</text>
+          <rect class="zone gateway" x="340" y="120" width="238" height="470" rx="8"></rect>
+          <text class="zone-label" x="356" y="146">Gateway / DMZ</text>
+          <rect class="zone private" x="636" y="52" width="504" height="428" rx="8"></rect>
+          <text class="zone-label" x="652" y="78">Private inference backends</text>
+          <rect class="zone physical" x="636" y="520" width="504" height="196" rx="8"></rect>
+          <text class="zone-label" x="652" y="546">Physical silicon surface</text>
+
+          <path id="path-model" class="flow-line training" d="M 246 142 C 320 138 372 188 422 262" marker-end="url(#arrow-violet)"></path>
+          <path id="path-bitstream" class="flow-line hardware-flow" d="M 246 184 C 430 230 624 255 720 355" marker-end="url(#arrow-orange)"></path>
+          <path id="path-client-switch" class="flow-line public-flow" d="M 250 386 C 292 382 320 386 362 410" marker-end="url(#arrow-blue)"></path>
+          <path id="path-switch-pi" class="flow-line gateway-flow" d="M 498 410 C 530 390 548 352 548 310" marker-end="url(#arrow-violet)"></path>
+          <path id="path-pi-jetson" class="flow-line private-flow" d="M 578 276 C 632 220 680 180 752 166" marker-end="url(#arrow-green)"></path>
+          <path id="path-pi-zynq" class="flow-line private-flow" d="M 578 398 C 624 398 662 398 710 398" marker-end="url(#arrow-green)"></path>
+          <path id="path-direct-backend" class="flow-line attack-flow" d="M 250 386 C 422 320 574 298 752 166" marker-end="url(#arrow-red)"></path>
+          <path id="path-physical-zynq" class="flow-line hardware-flow" d="M 252 612 C 390 632 556 650 750 615 C 840 598 918 576 994 578" marker-end="url(#arrow-orange)"></path>
+          <path id="path-dispatch-leak" class="flow-line attack-flow" d="M 548 310 C 620 300 682 290 744 396" marker-end="url(#arrow-red)"></path>
+
+          <g class="map-node" data-node="gpu" tabindex="0" transform="translate(56 92)">
+            <rect class="node-card" width="190" height="118" rx="8"></rect>
+            <rect class="node-badge" x="14" y="14" width="76" height="24" rx="12"></rect>
+            <text class="node-code" x="24" y="30">RTX 5080</text>
+            <text class="node-title" x="14" y="58">GPU Workstation</text>
+            <text class="node-sub" x="14" y="80">PyTorch, CUDA, Vivado</text>
+            <text class="node-sub" x="14" y="99">exports model + bitstream</text>
+          </g>
+
+          <g class="map-node" data-node="client" tabindex="0" transform="translate(56 342)">
+            <rect class="node-card" width="190" height="104" rx="8"></rect>
+            <rect class="node-badge" x="14" y="14" width="88" height="24" rx="12"></rect>
+            <text class="node-code" x="24" y="30">192.168.10.100</text>
+            <text class="node-title" x="14" y="58">Operator Client</text>
+            <text class="node-sub" x="14" y="80">SSH, curl, Burp, Wireshark</text>
+          </g>
+
+          <g class="map-node" data-node="scope" tabindex="0" transform="translate(56 558)">
+            <rect class="node-card" width="190" height="104" rx="8"></rect>
+            <rect class="node-badge" x="14" y="14" width="94" height="24" rx="12"></rect>
+            <text class="node-code" x="24" y="30">side-channel</text>
+            <text class="node-title" x="14" y="58">Probe Rig</text>
+            <text class="node-sub" x="14" y="80">power, EM, glitch capture</text>
+          </g>
+
+          <g class="map-node" data-node="switch" tabindex="0" transform="translate(362 354)">
+            <rect class="node-card" width="136" height="104" rx="8"></rect>
+            <rect class="node-badge" x="14" y="14" width="54" height="24" rx="12"></rect>
+            <text class="node-code" x="24" y="30">L2</text>
+            <text class="node-title" x="14" y="58">SG108PE</text>
+            <text class="node-sub" x="14" y="80">VLAN, mirror, PoE</text>
+          </g>
+
+          <g class="map-node" data-node="pi" tabindex="0" transform="translate(422 214)">
+            <rect class="node-card" width="156" height="216" rx="8"></rect>
+            <rect class="node-badge" x="14" y="14" width="83" height="24" rx="12"></rect>
+            <text class="node-code" x="24" y="30">trust edge</text>
+            <text class="node-title" x="14" y="60">Raspberry Pi CM4</text>
+            <text class="node-sub" x="14" y="84">LAN1 192.168.10.2</text>
+            <text class="node-sub" x="14" y="104">Nginx + FastAPI</text>
+            <text class="node-sub" x="14" y="124">JWT, WAF, rate limit</text>
+            <line x1="14" y1="146" x2="142" y2="146" stroke="#d8e0e8"></line>
+            <text class="node-sub" x="14" y="170">LAN2 192.168.30.1</text>
+            <text class="node-sub" x="14" y="190">dispatches to GPU/FPGA</text>
+          </g>
+
+          <g class="map-node" data-node="jetson" tabindex="0" transform="translate(752 110)">
+            <rect class="node-card" width="174" height="132" rx="8"></rect>
+            <rect class="node-badge" x="14" y="14" width="80" height="24" rx="12"></rect>
+            <text class="node-code" x="24" y="30">:8001 private</text>
+            <text class="node-title" x="14" y="60">Jetson Orin Nano</text>
+            <text class="node-sub" x="14" y="84">TensorRT FP16 / INT8</text>
+            <text class="node-sub" x="14" y="104">no public IP</text>
+          </g>
+
+          <g class="map-node" data-node="zynq" tabindex="0" transform="translate(710 318)">
+            <rect class="node-card" width="394" height="146" rx="8"></rect>
+            <rect class="node-badge" x="14" y="14" width="80" height="24" rx="12"></rect>
+            <text class="node-code" x="24" y="30">:8002 private</text>
+            <text class="node-title" x="14" y="60">Zynq-7020 FPGA Backend</text>
+            <text class="node-sub" x="14" y="84">PS Cortex-A9 + PL accelerator</text>
+            <rect class="chiplet ps" x="218" y="30" width="72" height="88" rx="6"></rect>
+            <text class="chiplet-label" x="239" y="57">PS</text>
+            <text class="node-sub" x="230" y="78">Linux</text>
+            <text class="node-sub" x="230" y="96">DMA</text>
+            <rect class="chiplet pl" x="306" y="30" width="72" height="88" rx="6"></rect>
+            <text class="chiplet-label" x="327" y="57">PL</text>
+            <text class="node-sub" x="316" y="78">CNN</text>
+            <text class="node-sub" x="316" y="96">DSPs</text>
+            <line x1="290" y1="74" x2="306" y2="74" stroke="#c77900" stroke-width="3" stroke-dasharray="4 4"></line>
+          </g>
+
+          <g id="marker-layer"></g>
+
+          <g id="packet-layer" aria-hidden="true">
+            <g class="packet"><circle class="packet-core" r="6"></circle></g>
+            <g class="packet"><circle class="packet-core" r="5"></circle></g>
+            <g class="packet"><circle class="packet-core" r="4"></circle></g>
+            <g class="packet"><circle class="packet-core" r="6"></circle></g>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <aside class="inspector" aria-live="polite">
+      <div class="inspector-header">
+        <span class="eyebrow" id="inspect-eyebrow">Selected view</span>
+        <h2 class="inspector-title" id="inspect-title">Legitimate Inference Flow</h2>
+        <p class="inspector-subtitle" id="inspect-subtitle">Client -> Pi gateway -> Jetson or Zynq. The backends never face the public client network directly.</p>
+      </div>
+      <div class="inspector-body" id="inspect-body"></div>
+    </aside>
+  </section>
+
+  <section class="library" aria-labelledby="library-title">
+    <div class="section-heading">
+      <div>
+        <h2 id="library-title">Threat Library</h2>
+        <p>Every attack from the concept is preserved, condensed, and mapped to the architecture.</p>
+      </div>
+      <div class="pill-row">
+        <span class="tag-pill sw">A1-A12 software</span>
+        <span class="tag-pill hw">A13-A18 hardware</span>
+      </div>
+    </div>
+    <div class="library-grid" id="threat-grid"></div>
+  </section>
+
+  <section class="library" aria-labelledby="defense-title">
+    <div class="section-heading">
+      <div>
+        <h2 id="defense-title">Defense Matrix</h2>
+        <p>Controls are clickable too. Each one highlights the attacks it reduces.</p>
+      </div>
+      <span class="tag-pill def">11 controls</span>
+    </div>
+    <div class="defense-grid" id="defense-grid"></div>
+  </section>
+
+  <section class="telemetry" aria-labelledby="telemetry-title">
+    <div class="section-heading">
+      <div>
+        <h2 id="telemetry-title">Animated Lab Telemetry</h2>
+        <p>The log stream reinforces what normal, blocked, and silicon-level events look like.</p>
+      </div>
+    </div>
+    <div class="telemetry-body">
+      <div class="telemetry-track" id="telemetry-track"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const threatData = {
+  A1: {
+    type: "sw",
+    title: "Unauthenticated Inference Endpoint",
+    href: "Threat_library/A1_unauthenticated_inference_endpoint.html",
+    severity: "high",
+    node: "pi",
+    marker: [420, 264],
+    paths: ["path-client-switch", "path-switch-pi"],
+    where: "Pi gateway POST /api/v1/infer",
+    summary: "A public inference endpoint accepts requests without a bearer token, giving anonymous users free access to both accelerators.",
+    method: ["Send a normal image upload with no Authorization header.", "Observe gateway returns predictions instead of 401.", "Use confidence and timing output to profile Jetson versus Zynq."],
+    impact: ["Prediction leakage", "Free compute", "Timing fingerprint", "Service abuse"],
+    defense: "D1",
+    pillars: ["Confidentiality", "Integrity", "Availability"]
+  },
+  A2: {
+    type: "sw",
+    title: "Resource Exhaustion / DoS",
+    href: "Threat_library/A2_resource_exhaustion_dos.html",
+    severity: "high",
+    node: "pi",
+    marker: [358, 410],
+    paths: ["path-client-switch", "path-switch-pi", "path-pi-jetson", "path-pi-zynq"],
+    where: "Client ingress through switch and Pi",
+    summary: "Large uploads or high request concurrency fill queues and pin the GPU and FPGA workers.",
+    method: ["Upload oversized images.", "Flood concurrent inference calls.", "Use malformed media that crashes image parsing before validation."],
+    impact: ["Availability loss", "Thermal load", "Power comparison data under stress"],
+    defense: "D2",
+    pillars: ["Availability"]
+  },
+  A3: {
+    type: "sw",
+    title: "Broken Object Authorization",
+    severity: "high",
+    node: "pi",
+    marker: [548, 312],
+    paths: ["path-client-switch", "path-switch-pi"],
+    where: "Pi API results and admin routes",
+    summary: "Authentication succeeds, but object-level ownership checks are missing, so one user reads another user's results.",
+    method: ["Read your own result id.", "Increment the id in the URL.", "Harvest results if the API does not filter by owner."],
+    impact: ["Uploaded images", "Predictions", "Metadata", "Admin logs"],
+    defense: "D1",
+    pillars: ["Confidentiality", "Integrity"]
+  },
+  A4: {
+    type: "sw",
+    title: "Model Update Tampering",
+    severity: "critical",
+    node: "gpu",
+    marker: [300, 160],
+    paths: ["path-model", "path-pi-jetson"],
+    where: "GPU factory to Jetson model transfer",
+    summary: "A backdoored model artifact replaces model.onnx, causing persistent malicious predictions while normal tests still pass.",
+    method: ["Compromise artifact transfer or build credentials.", "Replace model.onnx with a trigger-based backdoor.", "Let Jetson rebuild a TensorRT engine from the malicious model."],
+    impact: ["Persistent model behavior control", "Stealthy accuracy-preserving backdoor", "Downstream decision compromise"],
+    defense: "D7",
+    pillars: ["Integrity"]
+  },
+  A5: {
+    type: "sw",
+    title: "Direct Backend Exposure",
+    severity: "high",
+    node: "jetson",
+    marker: [748, 166],
+    paths: ["path-direct-backend"],
+    where: "Jetson :8001 or Zynq :8002 reachable from client LAN",
+    summary: "The client bypasses the Pi gateway and reaches private accelerators directly.",
+    method: ["Curl Jetson or Zynq from the client LAN.", "Skip JWT, validation, rate limits, and gateway logs.", "Probe JetPack or PetaLinux versions for CVEs."],
+    impact: ["Gateway controls voided", "Direct model access", "OS reconnaissance"],
+    defense: "D4",
+    pillars: ["Confidentiality", "Integrity", "Availability"]
+  },
+  A6: {
+    type: "sw",
+    title: "Model Extraction via Querying",
+    severity: "medium",
+    node: "pi",
+    marker: [520, 448],
+    paths: ["path-client-switch", "path-switch-pi", "path-pi-jetson", "path-pi-zynq"],
+    where: "Public /api/v1/infer over many sessions",
+    summary: "Repeated low-rate queries collect enough input-output pairs to train a substitute model and learn dispatch timing.",
+    method: ["Stay under simple rate limits.", "Vary inputs for days or weeks.", "Train a clone and cluster latency by backend."],
+    impact: ["Functional model clone", "Decision boundary knowledge", "Accelerator fingerprint"],
+    defense: "D5",
+    pillars: ["Confidentiality"]
+  },
+  A7: {
+    type: "sw",
+    title: "Adversarial Input",
+    severity: "medium",
+    node: "client",
+    marker: [154, 330],
+    paths: ["path-client-switch", "path-switch-pi", "path-pi-jetson", "path-pi-zynq"],
+    where: "Crafted client-side images",
+    summary: "Small perturbations flip classifier output on both TensorRT and FPGA INT8 implementations.",
+    method: ["Train or steal a surrogate.", "Generate FGSM or PGD-style image changes.", "Send valid JPEGs that pass the gateway."],
+    impact: ["Wrong decisions", "Bypass of model-based filters", "Transferability findings"],
+    defense: "D8",
+    pillars: ["Integrity"]
+  },
+  A8: {
+    type: "sw",
+    title: "Log Leakage",
+    severity: "medium",
+    node: "pi",
+    marker: [606, 392],
+    paths: ["path-switch-pi", "path-pi-jetson", "path-pi-zynq"],
+    where: "Pi, Jetson stdout, and Zynq PetaLinux logs",
+    summary: "Request bodies, tokens, or routing decisions land in logs and become recoverable later.",
+    method: ["Grab a log tarball.", "Search for request bodies or Authorization values.", "Decode stored base64 images."],
+    impact: ["User images", "Tokens", "Internal IPs", "Dispatch metadata"],
+    defense: "D6",
+    pillars: ["Confidentiality"]
+  },
+  A9: {
+    type: "sw",
+    title: "Passive Network Sniffing",
+    severity: "medium",
+    node: "switch",
+    marker: [418, 470],
+    paths: ["path-client-switch", "path-switch-pi", "path-pi-zynq"],
+    where: "Switch mirror, ARP spoof, or cleartext links",
+    summary: "Without TLS, traffic reveals images, JWTs, predictions, and possibly bitstreams.",
+    method: ["Mirror a switch port or position as MITM.", "Filter traffic by API port.", "Reconstruct payloads from packet capture."],
+    impact: ["JWT replay", "Image leakage", "Prediction leakage", "Bitstream exposure"],
+    defense: "D3",
+    pillars: ["Confidentiality"]
+  },
+  A10: {
+    type: "sw",
+    title: "SSH Brute Force",
+    severity: "medium",
+    node: "client",
+    marker: [154, 454],
+    paths: ["path-client-switch", "path-switch-pi", "path-pi-zynq"],
+    where: "Pi, Jetson, and Zynq SSH endpoints",
+    summary: "Default or weak credentials on any device can lead to root access and persistent accelerator compromise.",
+    method: ["Try default PetaLinux or weak SSH credentials.", "Reuse stolen credentials.", "Use root to alter services or bitstream loading."],
+    impact: ["Root on devices", "Crypto-mining or service abuse", "FPGA persistence"],
+    defense: "D4",
+    pillars: ["Confidentiality", "Integrity", "Availability"]
+  },
+  A11: {
+    type: "sw",
+    title: "Supply Chain / Container CVE",
+    severity: "medium",
+    node: "gpu",
+    marker: [154, 230],
+    paths: ["path-model", "path-bitstream"],
+    where: "GPU build environment, Docker, dependencies, Vivado IP",
+    summary: "A compromised package, container, or third-party HLS IP block pollutes the model or bitstream at build time.",
+    method: ["Install a typosquatted package.", "Build from an unscanned base image.", "Use a malicious HLS IP core."],
+    impact: ["Training secret leakage", "Backdoored artifacts", "Hard-to-detect FPGA Trojan"],
+    defense: "D7",
+    pillars: ["Integrity", "Confidentiality"]
+  },
+  A12: {
+    type: "sw",
+    title: "VLAN Hopping",
+    severity: "medium",
+    node: "switch",
+    marker: [344, 356],
+    paths: ["path-client-switch", "path-direct-backend"],
+    where: "Managed switch trunk or access port misconfiguration",
+    summary: "Incorrect VLAN setup lets a client cross into the private accelerator network.",
+    method: ["Plug into a misconfigured port.", "Craft tagged frames.", "Reach Jetson and Zynq directly."],
+    impact: ["Same blast radius as direct backend exposure", "Lateral movement", "Private subnet reconnaissance"],
+    defense: "D4",
+    pillars: ["Confidentiality", "Integrity"]
+  },
+  A13: {
+    type: "hw",
+    title: "Power Side-Channel",
+    severity: "high",
+    node: "zynq",
+    marker: [952, 610],
+    paths: ["path-physical-zynq"],
+    where: "Zynq Vccint rail during PL inference",
+    summary: "Power traces leak data-dependent switching from CNN MAC operations.",
+    method: ["Add a shunt or use a capture board.", "Trigger on start-of-inference.", "Correlate many traces with predicted switching."],
+    impact: ["Model weights", "Feature maps", "Input-dependent leakage", "Research trace plots"],
+    defense: "D10",
+    pillars: ["Confidentiality"]
+  },
+  A14: {
+    type: "hw",
+    title: "Electromagnetic Emanation",
+    severity: "high",
+    node: "zynq",
+    marker: [1036, 590],
+    paths: ["path-physical-zynq"],
+    where: "Near-field probe over Zynq package",
+    summary: "A contactless EM probe observes localized switching activity in the FPGA fabric.",
+    method: ["Hover a near-field probe above the package.", "Synchronize with the AXI start signal.", "Move probe position to localize layers."],
+    impact: ["Same leakage class as power SCA", "Floorplan hints", "Stealthier physical probing"],
+    defense: "D10",
+    pillars: ["Confidentiality"]
+  },
+  A15: {
+    type: "hw",
+    title: "Voltage / Clock Glitch",
+    severity: "high",
+    node: "zynq",
+    marker: [838, 658],
+    paths: ["path-physical-zynq"],
+    where: "Zynq power rail or external clock",
+    summary: "A precise voltage or clock fault causes wrong MAC results or bypasses a critical check.",
+    method: ["Trigger on inference start.", "Sweep offset and pulse width.", "Watch for output flips or auth bypass."],
+    impact: ["Targeted misclassification", "Integrity bypass", "Potential PS instruction fault"],
+    defense: "D11",
+    pillars: ["Integrity"]
+  },
+  A16: {
+    type: "hw",
+    title: "Bitstream Tampering",
+    severity: "critical",
+    node: "zynq",
+    marker: [1038, 438],
+    paths: ["path-bitstream"],
+    where: "cnn.bit transfer and PS-side loader",
+    summary: "A malicious bitstream inserts a hardware Trojan directly into the PL datapath.",
+    method: ["Compromise Vivado pipeline or transfer.", "Insert trigger logic or malicious routing.", "Load through PCAP or persistent flash."],
+    impact: ["Total FPGA integrity compromise", "Reboot persistence", "Software reinstall survival"],
+    defense: "D9",
+    pillars: ["Integrity"]
+  },
+  A17: {
+    type: "hw",
+    title: "PS-to-PL Trust Violation",
+    severity: "medium",
+    node: "zynq",
+    marker: [690, 286],
+    paths: ["path-pi-zynq"],
+    where: "AXI bridge between Cortex-A9 PS and PL fabric",
+    summary: "Compromised PS Linux reads PL memory or rewrites PL control registers.",
+    method: ["Gain PS access through SSH or kernel issue.", "Use memory-mapped AXI interfaces.", "Read activations or alter control registers."],
+    impact: ["Live activations", "Runtime model behavior change", "On-chip boundary demo"],
+    defense: "D9",
+    pillars: ["Confidentiality", "Integrity"]
+  },
+  A18: {
+    type: "hw",
+    title: "Timing Side-Channel via Dispatch",
+    severity: "medium",
+    node: "pi",
+    marker: [658, 336],
+    paths: ["path-client-switch", "path-switch-pi", "path-dispatch-leak"],
+    where: "Pi gateway routing between Jetson and Zynq",
+    summary: "Latency differences reveal which backend handled a request and leak load, policy, or model characteristics.",
+    method: ["Send paired probe requests.", "Cluster response latency.", "Infer backend choice and queue depth."],
+    impact: ["Dispatcher fingerprint", "Backend targeting", "Covert load signal"],
+    defense: "D5",
+    pillars: ["Confidentiality"]
+  }
+};
+
+const defenseData = {
+  D1: {
+    title: "JWT Auth + Object Checks",
+    covers: ["A1", "A3"],
+    node: "pi",
+    marker: [520, 280],
+    paths: ["path-client-switch", "path-switch-pi"],
+    explain: "Validate bearer tokens before FastAPI work, then enforce owner checks on every result read."
+  },
+  D2: {
+    title: "Rate Limit + Body Cap",
+    covers: ["A2"],
+    node: "pi",
+    marker: [540, 360],
+    paths: ["path-client-switch", "path-switch-pi"],
+    explain: "Cap upload body size, bound async queues, and return 429 or 503 before memory or accelerators saturate."
+  },
+  D3: {
+    title: "TLS and mTLS",
+    covers: ["A9"],
+    node: "switch",
+    marker: [392, 386],
+    paths: ["path-client-switch", "path-switch-pi", "path-pi-jetson", "path-pi-zynq"],
+    explain: "Encrypt client traffic and optionally use mTLS between Pi and the private accelerators."
+  },
+  D4: {
+    title: "Private Backend Subnet",
+    covers: ["A5", "A10", "A12"],
+    node: "pi",
+    marker: [602, 404],
+    paths: ["path-pi-jetson", "path-pi-zynq"],
+    explain: "Keep Jetson and Zynq on LAN2 only. Bind services to private interfaces and enforce VLAN rules."
+  },
+  D5: {
+    title: "Query Anomaly Detection",
+    covers: ["A6", "A18"],
+    node: "pi",
+    marker: [576, 438],
+    paths: ["path-client-switch", "path-switch-pi", "path-dispatch-leak"],
+    explain: "Track per-user volume, entropy, drift, and accelerator timing to spot extraction and dispatch fingerprinting."
+  },
+  D6: {
+    title: "Sanitized Logging",
+    covers: ["A8"],
+    node: "pi",
+    marker: [610, 350],
+    paths: ["path-switch-pi", "path-pi-jetson", "path-pi-zynq"],
+    explain: "Log size, MIME, latency, user id, status, and body hash. Never log request bodies or Authorization."
+  },
+  D7: {
+    title: "Signed Model Artifacts",
+    covers: ["A4", "A11"],
+    node: "gpu",
+    marker: [336, 200],
+    paths: ["path-model"],
+    explain: "Pin model hashes and signatures. Jetson loads only artifacts from the signed allow-list."
+  },
+  D8: {
+    title: "Input Validation",
+    covers: ["A7"],
+    node: "pi",
+    marker: [442, 332],
+    paths: ["path-client-switch", "path-switch-pi"],
+    explain: "Verify MIME, magic bytes, dimensions, and re-encode images before they reach either accelerator."
+  },
+  D9: {
+    title: "Signed Bitstream + PS Boundary",
+    covers: ["A16", "A17"],
+    node: "zynq",
+    marker: [790, 354],
+    paths: ["path-bitstream", "path-pi-zynq"],
+    explain: "Use Zynq bitstream authentication, eFUSE or BBRAM keys, TrustZone, and AXI memory protection."
+  },
+  D10: {
+    title: "PL Side-Channel Hardening",
+    covers: ["A13", "A14"],
+    node: "zynq",
+    marker: [966, 526],
+    paths: ["path-physical-zynq"],
+    explain: "Mask MAC operations, randomize schedules, add dummy cycles, and compare leakage versus DSP/LUT cost."
+  },
+  D11: {
+    title: "XADC Glitch Detection",
+    covers: ["A15"],
+    node: "zynq",
+    marker: [1034, 526],
+    paths: ["path-physical-zynq"],
+    explain: "Use the Zynq XADC to detect voltage and thermal anomalies, then rerun or refuse suspect inference."
+  }
+};
+
+const nodeData = {
+  gpu: {
+    title: "GPU Workstation",
+    subtitle: "Remote model and bitstream factory",
+    role: "Trains models in PyTorch, exports ONNX, and builds FPGA bitstreams through Vivado or Vitis HLS.",
+    trust: "Highest privilege producer. If this workstation or its build pipeline is compromised, every downstream accelerator can inherit the problem.",
+    tags: ["A4", "A11", "A16", "D7"]
+  },
+  client: {
+    title: "Operator Client",
+    subtitle: "Legitimate user and red-team machine",
+    role: "Runs SSH, curl, Burp, ZAP, Wireshark, and ChipWhisperer software. From the gateway perspective, it is untrusted.",
+    trust: "Can initiate normal API requests, API abuse, adversarial inputs, sniffing attempts, and physical capture workflows.",
+    tags: ["A1", "A6", "A7", "A10", "A18"]
+  },
+  scope: {
+    title: "Probe Rig",
+    subtitle: "Physical tooling with no network path",
+    role: "Captures power and EM traces or injects voltage and clock faults against the Zynq board.",
+    trust: "This bypasses firewalls and API logs because the attack happens at the silicon and board level.",
+    tags: ["A13", "A14", "A15", "D10", "D11"]
+  },
+  switch: {
+    title: "TP-Link SG108PE",
+    subtitle: "Managed L2 fabric",
+    role: "Provides VLAN segmentation, PoE, and port mirroring for capture experiments.",
+    trust: "Useful for measurement, but misconfiguration can expose private backends or leak traffic.",
+    tags: ["A9", "A12", "D3", "D4"]
+  },
+  pi: {
+    title: "Raspberry Pi CM4 Gateway",
+    subtitle: "The trust boundary",
+    role: "Terminates client traffic, applies TLS, auth, body limits, validation, logging policy, and accelerator dispatch.",
+    trust: "The single choke point. If clients can skip it, most network-side controls disappear.",
+    tags: ["A1", "A2", "A3", "A6", "A8", "A18", "D1", "D2", "D5", "D6"]
+  },
+  jetson: {
+    title: "Jetson Orin Nano",
+    subtitle: "Private TensorRT backend",
+    role: "Runs FP16 or INT8 inference behind the Pi gateway on the private LAN.",
+    trust: "Should never have a public client path. Its main value here is a GPU baseline for Zynq comparison.",
+    tags: ["A4", "A5", "D4", "D7"]
+  },
+  zynq: {
+    title: "Zynq-7020 FPGA Backend",
+    subtitle: "PS plus PL accelerator",
+    role: "Runs a REST shim on Cortex-A9 PS and a CNN accelerator in programmable logic. The AXI bridge is an internal trust boundary.",
+    trust: "Adds hardware-native risks: bitstream auth, PL side channels, EM leakage, glitching, and PS-to-PL access control.",
+    tags: ["A13", "A14", "A15", "A16", "A17", "A18", "D9", "D10", "D11"]
+  }
+};
+
+const scenarioPaths = {
+  legit: ["path-client-switch", "path-switch-pi", "path-pi-jetson", "path-pi-zynq"],
+  software: ["path-client-switch", "path-switch-pi", "path-direct-backend"],
+  hardware: ["path-physical-zynq", "path-bitstream"],
+  defense: ["path-client-switch", "path-switch-pi", "path-pi-jetson", "path-pi-zynq", "path-bitstream"]
+};
+
+const scenarioCopy = {
+  legit: {
+    eyebrow: "Scenario playback",
+    title: "Legitimate Inference Flow",
+    subtitle: "Client -> Pi gateway -> Jetson or Zynq. The backends never face the public client network directly.",
+    body: "A valid request enters through the public client side, receives authentication and validation at the Pi, then dispatches to either the Jetson GPU backend or the Zynq FPGA backend on the private LAN.",
+    bullets: ["The Pi is the only public-facing inference endpoint.", "Jetson and Zynq live on 192.168.30.0/24.", "The same model can be compared across GPU and FPGA implementations."]
+  },
+  software: {
+    eyebrow: "Scenario playback",
+    title: "Software Breach Flow",
+    subtitle: "API, network, model supply-chain, auth, logging, and VLAN mistakes.",
+    body: "Software attacks start from client traffic or the build pipeline. They try to bypass the gateway, poison artifacts, exhaust compute, or extract the model over time.",
+    bullets: ["Most software controls sit at the Pi gateway.", "A5 and A12 are especially dangerous because they skip the gateway.", "A4 and A11 are supply-chain attacks that compromise artifacts before deployment."]
+  },
+  hardware: {
+    eyebrow: "Scenario playback",
+    title: "Hardware Probe Flow",
+    subtitle: "The Zynq adds a physical attack plane that no firewall can see.",
+    body: "Hardware attacks touch the board, silicon, or bitstream path. They can recover information from power and EM leakage, inject faults, or load a malicious accelerator.",
+    bullets: ["A13 and A14 are confidentiality attacks against switching leakage.", "A15 is an integrity attack against computation itself.", "A16 is the hardware analog of model tampering."]
+  },
+  defense: {
+    eyebrow: "Scenario playback",
+    title: "Defense Drill",
+    subtitle: "Controls reduce blast radius and create measurable research outputs.",
+    body: "Each defense should be validated by replaying the mapped attack and measuring what changed: blocked request, lower leakage, extra latency, DSP cost, or fewer exposed routes.",
+    bullets: ["Network controls isolate private backends.", "Artifact controls protect models and bitstreams.", "XADC and PL masking bring hardware attacks into measurable scope."]
+  }
+};
+
+const telemetryItems = [
+  ["ok", "[200] /api/v1/infer accel=jetson latency=47ms"],
+  ["ok", "[200] /api/v1/infer accel=zynq latency=38ms"],
+  ["warn", "[429] rate limit triggered at Pi gateway"],
+  ["err", "[401] missing bearer token blocked before FastAPI"],
+  ["err", "[413] oversized image rejected by Nginx"],
+  ["hw", "[xadc] Vccint droop detected during inference"],
+  ["hw", "[bitstream] cnn.bit signature verified before PCAP"],
+  ["err", "[bitstream] invalid signature load refused"],
+  ["hw", "[trace] power capture batch=50000 target=Zynq PL"],
+  ["warn", "[drop] direct connect to :8001 blocked by LAN2 policy"],
+  ["warn", "[drop] direct connect to :8002 blocked by LAN2 policy"],
+  ["hw", "[thermal] die temperature anomaly logged"],
+  ["warn", "[anomaly] extraction-like query distribution"]
+];
+
+let selectedId = null;
+let activeScenario = "legit";
+let activeFilter = "all";
+let animationPaths = scenarioPaths.legit.slice();
+let tourIndex = -1;
+
+const markerLayer = document.getElementById("marker-layer");
+const threatGrid = document.getElementById("threat-grid");
+const defenseGrid = document.getElementById("defense-grid");
+const packetLayer = document.getElementById("packet-layer");
+const packetEls = Array.from(packetLayer.querySelectorAll(".packet"));
+const inspectEyebrow = document.getElementById("inspect-eyebrow");
+const inspectTitle = document.getElementById("inspect-title");
+const inspectSubtitle = document.getElementById("inspect-subtitle");
+const inspectBody = document.getElementById("inspect-body");
+const tourOrder = Object.keys(threatData);
+
+function severityScore(severity) {
+  return { low: 1, medium: 2, high: 3, critical: 4 }[severity] || 1;
+}
+
+function createSvgNode(name, attrs = {}, text = "") {
+  const node = document.createElementNS("http://www.w3.org/2000/svg", name);
+  Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+  if (text) node.textContent = text;
+  return node;
+}
+
+function markerClass(id, type) {
+  if (id.startsWith("D")) return "marker def";
+  return type === "hw" ? "marker hw" : "marker";
+}
+
+function renderMarkers() {
+  Object.entries(threatData).forEach(([id, item]) => {
+    const group = createSvgNode("g", {
+      class: markerClass(id, item.type),
+      "data-id": id,
+      tabindex: "0",
+      transform: `translate(${item.marker[0]} ${item.marker[1]})`
+    });
+    group.appendChild(createSvgNode("circle", { class: "marker-ring", r: 12 }));
+    group.appendChild(createSvgNode("circle", { class: "marker-core", r: 13 }));
+    group.appendChild(createSvgNode("text", { class: "marker-label", y: "1" }, id.replace("A", "")));
+    markerLayer.appendChild(group);
+  });
+
+  Object.entries(defenseData).forEach(([id, item]) => {
+    const group = createSvgNode("g", {
+      class: "marker def",
+      "data-id": id,
+      tabindex: "0",
+      transform: `translate(${item.marker[0]} ${item.marker[1]})`
+    });
+    group.appendChild(createSvgNode("circle", { class: "marker-ring", r: 12 }));
+    group.appendChild(createSvgNode("circle", { class: "marker-core", r: 13 }));
+    group.appendChild(createSvgNode("text", { class: "marker-label", y: "1" }, id.replace("D", "")));
+    markerLayer.appendChild(group);
+  });
+}
+
+function renderThreatCards() {
+  threatGrid.innerHTML = Object.entries(threatData).map(([id, item]) => `
+    <${item.href ? `a href="${item.href}"` : `button type="button"`} class="threat-card ${item.type === "hw" ? "hw" : ""}" data-id="${id}" data-type="${item.type}">
+      <span class="topline"><span class="id">${id}</span><span class="severity">${item.severity}</span></span>
+      <h3>${item.title}</h3>
+      <p>${item.where}</p>
+      ${item.href ? `<span class="card-action">Open deep dive</span>` : ""}
+    </${item.href ? "a" : "button"}>
+  `).join("");
+}
+
+function renderDefenseCards() {
+  defenseGrid.innerHTML = Object.entries(defenseData).map(([id, item]) => `
+    <button class="defense-card" type="button" data-id="${id}">
+      <b>${id}</b>
+      <h3>${item.title}</h3>
+      <p>Covers ${item.covers.join(", ")}</p>
+    </button>
+  `).join("");
+}
+
+function renderTelemetry() {
+  const items = telemetryItems.concat(telemetryItems).map(([type, text]) => `<span class="log-item ${type}">${text}</span>`).join("");
+  document.getElementById("telemetry-track").innerHTML = items;
+}
+
+function riskBars(severity, type) {
+  const score = severityScore(severity);
+  const cls = type === "hw" ? "hardware" : severity;
+  return `
+    <div class="risk-row" aria-label="Risk level ${severity}">
+      ${[0, 1, 2, 3].map(i => `<span class="risk-dot ${i < score ? `filled ${cls}` : ""}"></span>`).join("")}
+    </div>
+  `;
+}
+
+function pills(items, extraClass = "") {
+  return `<div class="pill-row">${items.map(item => {
+    let cls = extraClass;
+    if (String(item).startsWith("A")) cls = threatData[item]?.type === "hw" ? "hw" : "sw";
+    if (String(item).startsWith("D")) cls = "def";
+    return `<span class="tag-pill ${cls}">${item}</span>`;
+  }).join("")}</div>`;
+}
+
+function highlightPaths(paths = []) {
+  document.querySelectorAll(".flow-line").forEach(path => path.classList.toggle("is-highlighted", paths.includes(path.id)));
+  animationPaths = paths.length ? paths.slice() : scenarioPaths[activeScenario].slice();
+}
+
+function highlightNode(nodeId) {
+  document.querySelectorAll(".map-node").forEach(node => {
+    node.classList.toggle("is-selected", node.dataset.node === nodeId);
+  });
+}
+
+function highlightSelected(id) {
+  document.querySelectorAll(".marker").forEach(marker => {
+    marker.classList.toggle("is-selected", marker.dataset.id === id);
+  });
+  document.querySelectorAll(".threat-card").forEach(card => {
+    card.classList.toggle("is-selected", card.dataset.id === id);
+  });
+}
+
+function showScenario(key) {
+  const data = scenarioCopy[key];
+  selectedId = null;
+  activeScenario = key;
+  highlightSelected(null);
+  highlightNode(null);
+  highlightPaths(scenarioPaths[key]);
+  inspectEyebrow.textContent = data.eyebrow;
+  inspectTitle.textContent = data.title;
+  inspectSubtitle.textContent = data.subtitle;
+  inspectBody.innerHTML = `
+    <div class="detail-block"><h3>Concept</h3><p>${data.body}</p></div>
+    <div class="detail-block"><h3>What to notice</h3><ul class="detail-list">${data.bullets.map(item => `<li>${item}</li>`).join("")}</ul></div>
+    <div class="detail-block"><h3>Useful entry points</h3>${pills(["A1", "A5", "A13", "A16", "D4", "D9"])}</div>
+  `;
+  packetEls.forEach(packet => {
+    packet.classList.remove("attack", "hardware", "defense");
+    if (key === "software") packet.classList.add("attack");
+    if (key === "hardware") packet.classList.add("hardware");
+    if (key === "defense") packet.classList.add("defense");
+  });
+}
+
+function showThreat(id) {
+  const item = threatData[id];
+  if (!item) return;
+  selectedId = id;
+  highlightSelected(id);
+  highlightNode(item.node);
+  highlightPaths(item.paths);
+  inspectEyebrow.textContent = `${item.type === "hw" ? "Hardware attack" : "Software attack"} / ${id} / ${item.severity}`;
+  inspectTitle.textContent = item.title;
+  inspectSubtitle.textContent = item.where;
+  inspectBody.innerHTML = `
+    ${riskBars(item.severity, item.type)}
+    <div class="detail-block"><h3>Plain-English Risk</h3><p>${item.summary}</p></div>
+    <div class="detail-block"><h3>Attacker Path</h3><ul class="detail-list">${item.method.map(step => `<li>${step}</li>`).join("")}</ul></div>
+    <div class="detail-block"><h3>What They Affect</h3><ul class="detail-list">${item.impact.map(step => `<li>${step}</li>`).join("")}</ul></div>
+    <div class="detail-block"><h3>Mapped Control</h3>${pills([item.defense])}</div>
+    <div class="detail-block"><h3>CIA Impact</h3>${pills(item.pillars, item.type === "hw" ? "hw" : "sw")}</div>
+    <div class="quick-actions">
+      <button type="button" data-jump-defense="${item.defense}">Show Control</button>
+      <button type="button" data-reset-scenario="${item.type === "hw" ? "hardware" : "software"}">Replay Scenario</button>
+    </div>
+  `;
+  packetEls.forEach(packet => {
+    packet.classList.remove("attack", "hardware", "defense");
+    packet.classList.add(item.type === "hw" ? "hardware" : "attack");
+  });
+}
+
+function showDefense(id) {
+  const item = defenseData[id];
+  if (!item) return;
+  selectedId = id;
+  highlightSelected(id);
+  highlightNode(item.node);
+  highlightPaths(item.paths);
+  inspectEyebrow.textContent = `Defense control / ${id}`;
+  inspectTitle.textContent = item.title;
+  inspectSubtitle.textContent = `Covers ${item.covers.join(", ")}`;
+  inspectBody.innerHTML = `
+    <div class="detail-block"><h3>How It Works</h3><p>${item.explain}</p></div>
+    <div class="detail-block"><h3>Reduced Attacks</h3>${pills(item.covers)}</div>
+    <div class="detail-block"><h3>Validation Idea</h3><p>Replay the mapped attack before and after enabling this control, then capture the outcome. For hardware controls, measure overhead too: latency, DSP/LUT cost, trace correlation, or rerun rate.</p></div>
+    <div class="quick-actions">
+      <button type="button" data-jump-threat="${item.covers[0]}">Show First Attack</button>
+      <button type="button" data-reset-scenario="defense">Replay Defense</button>
+    </div>
+  `;
+  packetEls.forEach(packet => {
+    packet.classList.remove("attack", "hardware");
+    packet.classList.add("defense");
+  });
+}
+
+function showNode(id) {
+  const item = nodeData[id];
+  if (!item) return;
+  selectedId = `node:${id}`;
+  highlightSelected(null);
+  highlightNode(id);
+  const relatedPaths = [];
+  item.tags.forEach(tag => {
+    const source = threatData[tag] || defenseData[tag];
+    if (source?.paths) relatedPaths.push(...source.paths);
+  });
+  highlightPaths([...new Set(relatedPaths)]);
+  inspectEyebrow.textContent = "Device / trust role";
+  inspectTitle.textContent = item.title;
+  inspectSubtitle.textContent = item.subtitle;
+  inspectBody.innerHTML = `
+    <div class="detail-block"><h3>Role</h3><p>${item.role}</p></div>
+    <div class="detail-block"><h3>Trust Meaning</h3><p>${item.trust}</p></div>
+    <div class="detail-block"><h3>Relevant Items</h3>${pills(item.tags)}</div>
+  `;
+}
+
+function applyFilter(filter) {
+  activeFilter = filter;
+  document.querySelectorAll(".marker").forEach(marker => {
+    const id = marker.dataset.id;
+    let visible = filter === "all";
+    if (filter === "sw") visible = id.startsWith("A") && threatData[id]?.type === "sw";
+    if (filter === "hw") visible = id.startsWith("A") && threatData[id]?.type === "hw";
+    if (filter === "def") visible = id.startsWith("D");
+    marker.classList.toggle("hidden", !visible);
+  });
+  document.querySelectorAll(".threat-card").forEach(card => {
+    let visible = filter === "all" || filter === card.dataset.type;
+    if (filter === "def") visible = false;
+    card.classList.toggle("hidden", !visible);
+  });
+}
+
+function bindEvents() {
+  document.getElementById("scenario-controls").addEventListener("click", event => {
+    const button = event.target.closest("button[data-scenario]");
+    if (!button) return;
+    document.querySelectorAll("#scenario-controls button").forEach(btn => btn.classList.remove("is-active"));
+    button.classList.add("is-active");
+    showScenario(button.dataset.scenario);
+  });
+
+  document.getElementById("filter-controls").addEventListener("click", event => {
+    const button = event.target.closest("button[data-filter]");
+    if (!button) return;
+    document.querySelectorAll("#filter-controls button").forEach(btn => btn.classList.remove("is-active"));
+    button.classList.add("is-active");
+    applyFilter(button.dataset.filter);
+  });
+
+  markerLayer.addEventListener("click", event => {
+    const marker = event.target.closest(".marker");
+    if (!marker) return;
+    const id = marker.dataset.id;
+    if (id.startsWith("A")) showThreat(id);
+    if (id.startsWith("D")) showDefense(id);
+  });
+
+  markerLayer.addEventListener("keydown", event => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const marker = event.target.closest(".marker");
+    if (!marker) return;
+    event.preventDefault();
+    const id = marker.dataset.id;
+    if (id.startsWith("A")) showThreat(id);
+    if (id.startsWith("D")) showDefense(id);
+  });
+
+  document.querySelectorAll(".map-node").forEach(node => {
+    node.addEventListener("click", () => showNode(node.dataset.node));
+    node.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        showNode(node.dataset.node);
+      }
+    });
+  });
+
+  threatGrid.addEventListener("click", event => {
+    const card = event.target.closest("[data-id]");
+    if (card?.matches("a[href]")) return;
+    if (card) showThreat(card.dataset.id);
+  });
+
+  defenseGrid.addEventListener("click", event => {
+    const card = event.target.closest("[data-id]");
+    if (card) showDefense(card.dataset.id);
+  });
+
+  inspectBody.addEventListener("click", event => {
+    const defenseButton = event.target.closest("[data-jump-defense]");
+    const threatButton = event.target.closest("[data-jump-threat]");
+    const scenarioButton = event.target.closest("[data-reset-scenario]");
+    if (defenseButton) showDefense(defenseButton.dataset.jumpDefense);
+    if (threatButton) showThreat(threatButton.dataset.jumpThreat);
+    if (scenarioButton) {
+      const key = scenarioButton.dataset.resetScenario;
+      document.querySelectorAll("#scenario-controls button").forEach(btn => btn.classList.toggle("is-active", btn.dataset.scenario === key));
+      showScenario(key);
+    }
+  });
+
+  document.getElementById("tour-next").addEventListener("click", () => {
+    tourIndex = (tourIndex + 1) % tourOrder.length;
+    const id = tourOrder[tourIndex];
+    showThreat(id);
+    const filter = threatData[id].type;
+    document.querySelectorAll("#filter-controls button").forEach(btn => btn.classList.toggle("is-active", btn.dataset.filter === filter));
+    applyFilter(filter);
+  });
+}
+
+function animatePackets(time) {
+  const paths = animationPaths.map(id => document.getElementById(id)).filter(Boolean);
+  if (!paths.length) {
+    requestAnimationFrame(animatePackets);
+    return;
+  }
+  packetEls.forEach((packet, index) => {
+    const path = paths[index % paths.length];
+    const length = path.getTotalLength();
+    const speed = 0.00013 + index * 0.000018;
+    const phase = (time * speed + index * 0.27) % 1;
+    const point = path.getPointAtLength(length * phase);
+    packet.setAttribute("transform", `translate(${point.x} ${point.y})`);
+    packet.style.opacity = "1";
+  });
+  requestAnimationFrame(animatePackets);
+}
+
+function init() {
+  renderMarkers();
+  renderThreatCards();
+  renderDefenseCards();
+  renderTelemetry();
+  bindEvents();
+  showScenario("legit");
+  applyFilter("all");
+  requestAnimationFrame(animatePackets);
+}
+
+init();
+</script>
+</body>
+</html>
