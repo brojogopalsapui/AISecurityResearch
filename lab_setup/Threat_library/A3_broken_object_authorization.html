@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A3 | Broken Object Authorization</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f5f7fb;
+    --panel: #ffffff;
+    --panel-2: #eef3f8;
+    --ink: #10151c;
+    --muted: #5e6c7a;
+    --soft: #8795a4;
+    --line: #d8e0e8;
+    --line-strong: #b9c5d1;
+    --navy: #172333;
+    --cyan: #00a7bd;
+    --blue: #2c70d8;
+    --green: #158b55;
+    --lime: #74b816;
+    --amber: #c77900;
+    --orange: #f26d21;
+    --red: #d63447;
+    --violet: #7656d6;
+    --rose: #bd476a;
+    --shadow: 0 18px 44px rgba(29, 44, 61, 0.13);
+    --radius: 8px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      linear-gradient(90deg, rgba(16, 21, 28, 0.04) 1px, transparent 1px),
+      linear-gradient(rgba(16, 21, 28, 0.035) 1px, transparent 1px),
+      linear-gradient(140deg, #f5f7fb 0%, #edf4f7 45%, #f8f9fb 100%);
+    background-size: 28px 28px, 28px 28px, auto;
+    color: var(--ink);
+    font: 15px/1.58 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(0, 167, 189, 0.12), transparent 32%),
+      linear-gradient(290deg, rgba(242, 109, 33, 0.12), transparent 34%);
+    opacity: 0.9;
+    z-index: -1;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .app {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 18px 0 54px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    min-height: 72px;
+    padding: 12px 0;
+    background: rgba(245, 247, 251, 0.84);
+    border-bottom: 1px solid rgba(185, 197, 209, 0.65);
+    backdrop-filter: blur(16px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(135deg, rgba(0, 167, 189, 0.2), transparent 46%),
+      linear-gradient(315deg, rgba(242, 109, 33, 0.2), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(23, 35, 51, 0.1);
+  }
+
+  .brand-mark span {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--navy);
+  }
+
+  .brand-mark span:nth-child(1) {
+    top: 13px;
+  }
+
+  .brand-mark span:nth-child(2) {
+    top: 21px;
+    background: var(--cyan);
+  }
+
+  .brand-mark span:nth-child(3) {
+    top: 29px;
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.12;
+    font-weight: 780;
+  }
+
+  .brand p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .crumbs,
+  .pill-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .crumbs {
+    justify-content: flex-end;
+  }
+
+  .crumbs a,
+  .crumbs span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 31px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .crumbs a:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    align-items: stretch;
+    margin: 18px 0;
+  }
+
+  .hero-card,
+  .side-card,
+  .section,
+  .nav-card,
+  .mini-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-card {
+    padding: 22px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 820;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(214, 52, 71, 0.12);
+  }
+
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+
+  .hero h2 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 54px);
+    line-height: 1.02;
+    letter-spacing: 0;
+  }
+
+  .hero .lede {
+    max-width: 850px;
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .side-card {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+  }
+
+  .fact b {
+    display: block;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .fact span {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .toc {
+    position: sticky;
+    top: 92px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: var(--shadow);
+    padding: 14px;
+  }
+
+  .toc b {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .toc a {
+    display: block;
+    border-radius: 7px;
+    padding: 7px 8px;
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    background: var(--panel-2);
+    color: var(--navy);
+  }
+
+  .content {
+    display: grid;
+    gap: 18px;
+  }
+
+  .section {
+    overflow: hidden;
+  }
+
+  .section-heading {
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(238, 243, 248, 0.92);
+  }
+
+  .section-heading h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .section-heading p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .section-body {
+    padding: 16px;
+  }
+
+  .section-body p:last-child,
+  .mini-card p:last-child,
+  .callout p:last-child {
+    margin-bottom: 0;
+  }
+
+  .grid-2,
+  .grid-3 {
+    display: grid;
+    gap: 12px;
+  }
+
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mini-card {
+    box-shadow: none;
+    padding: 14px;
+  }
+
+  .mini-card h3 {
+    margin: 0 0 7px;
+    font-size: 15px;
+  }
+
+  .mini-card p,
+  .mini-card li,
+  .section-body li {
+    color: var(--muted);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 25px;
+    border-radius: 999px;
+    padding: 4px 9px;
+    background: rgba(214, 52, 71, 0.1);
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .tag.def {
+    background: rgba(21, 139, 85, 0.1);
+    color: var(--green);
+  }
+
+  .tag.hw {
+    background: rgba(242, 109, 33, 0.12);
+    color: var(--orange);
+  }
+
+  .tag.info {
+    background: rgba(44, 112, 216, 0.1);
+    color: var(--blue);
+  }
+
+  .callout {
+    border: 1px solid rgba(214, 52, 71, 0.26);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 14px;
+  }
+
+  .callout.safe {
+    border-color: rgba(21, 139, 85, 0.28);
+    border-left-color: var(--green);
+  }
+
+  .architecture-viz {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .viz-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fbfcfe;
+    overflow: hidden;
+  }
+
+  .viz-panel svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .viz-controls {
+    display: grid;
+    gap: 8px;
+  }
+
+  .viz-controls button,
+  .copy-button {
+    min-height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--navy);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 720;
+  }
+
+  .viz-controls button.is-active {
+    color: #fff;
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .viz-status {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+  }
+
+  .viz-status b {
+    display: block;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .viz-status span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .zone {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.4;
+  }
+
+  .zone.public {
+    fill: rgba(44, 112, 216, 0.08);
+    stroke: rgba(44, 112, 216, 0.42);
+  }
+
+  .zone.gateway {
+    fill: rgba(118, 86, 214, 0.08);
+    stroke: rgba(118, 86, 214, 0.42);
+  }
+
+  .zone.private {
+    fill: rgba(21, 139, 85, 0.08);
+    stroke: rgba(21, 139, 85, 0.42);
+  }
+
+  .zone-label {
+    fill: var(--muted);
+    font-size: 11px;
+    font-weight: 780;
+    text-transform: uppercase;
+  }
+
+  .node,
+  .object-card {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 8px 14px rgba(23, 35, 51, 0.1));
+  }
+
+  .node-title {
+    fill: var(--ink);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .node-sub {
+    fill: var(--muted);
+    font-size: 10px;
+    font-weight: 650;
+  }
+
+  .flow {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.65;
+  }
+
+  .flow.public {
+    stroke: var(--blue);
+  }
+
+  .flow.private {
+    stroke: var(--green);
+  }
+
+  .flow.attack {
+    stroke: var(--red);
+    stroke-dasharray: 8 7;
+  }
+
+  .flow.def {
+    stroke: var(--green);
+  }
+
+  .flow.is-muted {
+    opacity: 0.18;
+  }
+
+  .flow.is-hot {
+    opacity: 1;
+    stroke-width: 5;
+    filter: drop-shadow(0 0 7px rgba(214, 52, 71, 0.35));
+  }
+
+  .policy-box {
+    fill: rgba(214, 52, 71, 0.12);
+    stroke: var(--red);
+    stroke-width: 1.5;
+  }
+
+  .policy-box.good {
+    fill: rgba(21, 139, 85, 0.13);
+    stroke: var(--green);
+  }
+
+  .policy-label {
+    fill: var(--navy);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .object-owned {
+    fill: rgba(21, 139, 85, 0.14);
+    stroke: var(--green);
+  }
+
+  .object-cross {
+    fill: rgba(214, 52, 71, 0.12);
+    stroke: var(--red);
+  }
+
+  .packet {
+    fill: var(--red);
+    filter: drop-shadow(0 0 6px rgba(214, 52, 71, 0.35));
+  }
+
+  .lab-output {
+    min-height: 218px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--muted);
+    font-size: 12px;
+    white-space: pre-wrap;
+  }
+
+  .log-ok {
+    color: var(--green);
+  }
+
+  .log-warn {
+    color: var(--amber);
+  }
+
+  .log-bad {
+    color: var(--red);
+  }
+
+  .code-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #0f1723;
+  }
+
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: #172333;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .copy-button {
+    min-height: 30px;
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 5px 9px;
+    font-size: 12px;
+  }
+
+  .mini-card .copy-button {
+    border-color: var(--line-strong);
+    background: #fff;
+    color: var(--navy);
+  }
+
+  pre {
+    margin: 0;
+    max-height: 560px;
+    overflow: auto;
+    padding: 14px;
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  pre code {
+    color: #d9e6f2;
+  }
+
+  .formula {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--navy);
+  }
+
+  .matrix {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .matrix th,
+  .matrix td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 13px;
+  }
+
+  .matrix th {
+    background: var(--panel-2);
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .matrix tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .nav-card {
+    display: block;
+    min-height: 92px;
+    padding: 14px;
+    text-decoration: none;
+  }
+
+  .nav-card b {
+    display: block;
+    color: var(--navy);
+  }
+
+  .nav-card span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .nav-card.muted {
+    opacity: 0.62;
+  }
+
+  .nav-card:hover {
+    border-color: var(--navy);
+  }
+
+  @media (max-width: 980px) {
+    .hero,
+    .layout,
+    .architecture-viz {
+      grid-template-columns: 1fr;
+    }
+
+    .toc {
+      position: static;
+    }
+
+    .grid-2,
+    .grid-3,
+    .nav-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      width: min(100% - 20px, 1180px);
+    }
+
+    .topbar {
+      grid-template-columns: 1fr;
+    }
+
+    .crumbs {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 1ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <h1>Edge AI Security Atlas</h1>
+        <p>Threat Library deep dive for result ownership, tenant isolation, and object-level authorization on the Pi gateway.</p>
+      </div>
+    </div>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../edge_ai_attack_theater.html">Main atlas</a>
+      <span>Threat Library</span>
+      <span>A3</span>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-card">
+      <span class="eyebrow">A3 / Software attack / High</span>
+      <h2 id="page-title">Broken Object Authorization</h2>
+      <p class="lede">A user authenticates successfully, but the Pi gateway reads or modifies an inference result by client-supplied object ID without proving the object belongs to that user. In an Edge AI lab, this can leak uploaded-image metadata, predictions, backend routing decisions, latency records, and experiment results across users or projects.</p>
+    </div>
+    <aside class="side-card" aria-label="Attack summary">
+      <div class="fact"><b>Architecture point</b><span>Pi API result routes and admin-style object lookups</span></div>
+      <div class="fact"><b>Primary control</b><span>D1 JWT Auth + Object Checks</span></div>
+      <div class="fact"><b>Secondary controls</b><span>D6 Sanitized Logging, D5 Query Anomaly Detection, D4 Private Backend Subnet</span></div>
+      <div class="fact"><b>Lab safety scope</b><span>Local toy users and synthetic result records only</span></div>
+    </aside>
+  </section>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Article sections">
+      <b>Article map</b>
+      <a href="#where">Where It Appears</a>
+      <a href="#model">Threat Model</a>
+      <a href="#intuition">Attack Intuition</a>
+      <a href="#technical">Technical Explanation</a>
+      <a href="#math">Mathematical View</a>
+      <a href="#lab">Safe Lab Demonstration</a>
+      <a href="#code">Local Lab Code</a>
+      <a href="#setup">Your Edge AI Setup</a>
+      <a href="#signals">Observable Signals</a>
+      <a href="#impact">Impact Analysis</a>
+      <a href="#mapping">Framework Mapping</a>
+      <a href="#defenses">Defense Mapping</a>
+      <a href="#research">Research Notes</a>
+      <a href="#takeaways">Key Takeaways</a>
+    </nav>
+
+    <article class="content">
+      <section class="section" id="where">
+        <div class="section-heading">
+          <h2>Where It Appears In The Edge AI Architecture</h2>
+          <p>A3 appears after authentication, when the gateway maps a result ID to stored inference state.</p>
+        </div>
+        <div class="section-body">
+          <div class="architecture-viz">
+            <div class="viz-panel">
+              <svg id="a3-map" viewBox="0 0 850 430" role="img" aria-label="A3 object authorization visualization">
+                <defs>
+                  <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#2c70d8"></path>
+                  </marker>
+                  <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#158b55"></path>
+                  </marker>
+                  <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#d63447"></path>
+                  </marker>
+                </defs>
+
+                <rect class="zone public" x="24" y="52" width="190" height="310" rx="8"></rect>
+                <text class="zone-label" x="42" y="78">Authenticated client</text>
+                <rect class="zone gateway" x="258" y="52" width="260" height="310" rx="8"></rect>
+                <text class="zone-label" x="276" y="78">Pi result API</text>
+                <rect class="zone private" x="564" y="52" width="260" height="310" rx="8"></rect>
+                <text class="zone-label" x="582" y="78">Result store</text>
+
+                <rect class="node" x="62" y="132" width="118" height="82" rx="8"></rect>
+                <text class="node-title" x="82" y="164">User A</text>
+                <text class="node-sub" x="78" y="186">valid token</text>
+
+                <rect class="node" x="62" y="244" width="118" height="82" rx="8"></rect>
+                <text class="node-title" x="82" y="276">User B</text>
+                <text class="node-sub" x="75" y="298">owns R-2002</text>
+
+                <rect class="node" x="296" y="112" width="184" height="86" rx="8"></rect>
+                <text class="node-title" x="322" y="144">GET /results/{id}</text>
+                <text class="node-sub" x="324" y="166">auth ok, object check?</text>
+
+                <rect id="policy-box" class="policy-box" x="314" y="232" width="146" height="50" rx="25"></rect>
+                <text id="policy-label" class="policy-label" x="338" y="262">ID EXISTS ONLY</text>
+
+                <rect id="obj-a" class="object-card object-owned" x="604" y="112" width="164" height="76" rx="8"></rect>
+                <text class="node-title" x="626" y="144">R-1001</text>
+                <text class="node-sub" x="626" y="166">owner=user-a</text>
+
+                <rect id="obj-b" class="object-card object-cross" x="604" y="230" width="164" height="76" rx="8"></rect>
+                <text class="node-title" x="626" y="262">R-2002</text>
+                <text class="node-sub" x="626" y="284">owner=user-b</text>
+
+                <path id="flow-client" class="flow public is-hot" d="M 180 174 C 222 174 254 154 296 154" marker-end="url(#arrow-blue)"></path>
+                <path id="flow-policy" class="flow attack is-hot" d="M 388 198 C 388 214 388 222 388 232" marker-end="url(#arrow-red)"></path>
+                <path id="flow-own" class="flow private is-muted" d="M 480 150 C 522 150 560 150 604 150" marker-end="url(#arrow-green)"></path>
+                <path id="flow-cross" class="flow attack is-hot" d="M 480 168 C 524 208 558 252 604 268" marker-end="url(#arrow-red)"></path>
+                <circle id="packet-dot" class="packet" cx="532" cy="218" r="7"></circle>
+              </svg>
+            </div>
+            <div class="viz-controls">
+              <button class="is-active" type="button" data-state="vulnerable">ID-only lookup</button>
+              <button type="button" data-state="secure">Owner check enforced</button>
+              <button type="button" data-state="audited">D1 + audit signal</button>
+              <div class="viz-status" aria-live="polite">
+                <b id="viz-title">Cross-user object read</b>
+                <span id="viz-copy">A valid token reads a result object owned by a different user because the API only checks that the ID exists.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="model">
+        <div class="section-heading">
+          <h2>Threat Model</h2>
+          <p>The attacker is authenticated but not authorized for the target object.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Attacker capability</h3>
+              <p>The attacker has a legitimate account or lab token and can call result routes that are meant for normal users. They can observe their own result IDs, infer naming patterns, change path parameters, and compare status codes and response shapes.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Security assumption being tested</h3>
+              <p>Authentication proves who the caller is. It does not prove that the caller can read, delete, compare, export, or rerun a specific result object. A3 tests whether every object lookup is scoped by user, project, tenant, role, and action.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Assets at risk</h3>
+              <p>Uploaded image metadata, prediction labels, confidence scores, backend choice, latency records, model version, experiment notes, admin logs, and saved benchmark comparisons between Jetson and Zynq.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Out of scope</h3>
+              <p>No real account probing, no third-party API testing, no credential abuse, and no access attempts against systems you do not own. The included code uses two toy users and synthetic local result records.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="intuition">
+        <div class="section-heading">
+          <h2>Attack Intuition</h2>
+          <p>A3 begins where A1 ends: the caller may be logged in, but object ownership is still unproven.</p>
+        </div>
+        <div class="section-body">
+          <p>A user submits an image and receives a result such as <code>R-1001</code>. The browser later calls <code>GET /api/v1/results/R-1001</code>. If the server simply loads whichever object ID appears in the URL, changing the ID to <code>R-2002</code> may return another user's inference record. This is the classic broken object-level authorization pattern applied to ML result storage.</p>
+          <p>The bug is easy to miss because the route already has authentication. Unit tests may prove that anonymous requests are blocked, while never proving that a logged-in user is constrained to their own objects. In research portals, that mistake can leak not only predictions but experimental metadata: which backend ran, which model hash was used, how long the accelerator took, and whether a sample is part of a sensitive dataset.</p>
+          <div class="callout safe">
+            <p><strong>Safe framing:</strong> the demonstration below is a localhost toy service with hard-coded users and synthetic records. It exists to teach the defensive check, not to test external APIs.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="technical">
+        <div class="section-heading">
+          <h2>Technical Explanation</h2>
+          <p>Object authorization must be part of the query and the policy decision, not an afterthought.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card">
+              <h3>Vulnerable sequence</h3>
+              <ol>
+                <li>Gateway validates the bearer token and extracts <code>user-a</code>.</li>
+                <li>Route receives <code>result_id=R-2002</code> from the client path.</li>
+                <li>Database query loads <code>R-2002</code> by ID alone and returns it.</li>
+              </ol>
+            </div>
+            <div class="mini-card">
+              <h3>Secure sequence</h3>
+              <ol>
+                <li>Gateway validates token, role, tenant, and project context.</li>
+                <li>Object query is scoped by <code>result_id</code> and <code>owner_id</code> or equivalent policy.</li>
+                <li>Cross-user reads return 403 or indistinguishable 404, with safe audit logging.</li>
+              </ol>
+            </div>
+            <div class="mini-card">
+              <h3>Edge AI-specific detail</h3>
+              <p>The object may not be just a row. It can reference an image blob, feature vector, model version, backend route, Zynq timing trace, or Jetson TensorRT engine metadata. Ownership must cover the whole object graph.</p>
+            </div>
+          </div>
+          <p>A robust implementation avoids trusting client-supplied IDs as the security boundary. Use opaque IDs for enumeration resistance, but do not confuse unpredictability with authorization. The real control is policy: subject, action, object, owner, tenant, and purpose.</p>
+        </div>
+      </section>
+
+      <section class="section" id="math">
+        <div class="section-heading">
+          <h2>Mathematical Formulation</h2>
+          <p>A3 is a missing predicate in the authorization relation.</p>
+        </div>
+        <div class="section-body">
+          <div class="formula">
+Subject s = authenticated caller
+Object o = inference result, uploaded image, benchmark run, or log bundle
+Action a = read, delete, export, compare, rerun
+
+Allow_vulnerable(s, a, o) = Authenticated(s) * ObjectExists(o)
+
+Allow_secure(s, a, o) =
+  Authenticated(s)
+  * ObjectExists(o)
+  * Permitted(policy, s, a, o)
+  * SameTenant(s, o)
+  * PurposeAllowed(s, a, o)
+
+Information leaked by one object:
+I(o) = H(prediction, confidence, model_version, backend, latency, input_metadata)
+
+Expected leakage from ID probing:
+E[leakage] = sum_o P(guess o) * Allow_vulnerable(s, read, o) * I(o)
+          </div>
+          <p>The secure check is not "does this ID exist?" It is "does this subject have this action on this object under the current policy?" The experimental goal is to prove that changing the ID changes only the authorization decision, not the user's effective access.</p>
+        </div>
+      </section>
+
+      <section class="section" id="lab">
+        <div class="section-heading">
+          <h2>Step-By-Step Safe Lab Demonstration</h2>
+          <p>The lab contrasts authenticated ID-only access with authenticated owner-scoped access.</p>
+        </div>
+        <div class="section-body">
+          <ol>
+            <li>Save the Python code from the next section as <code>a3_object_authorization_lab.py</code>.</li>
+            <li>Start vulnerable mode with <code>python3 a3_object_authorization_lab.py --mode vulnerable</code>.</li>
+            <li>Request <code>R-1001</code> using User A's token. This should succeed because User A owns it.</li>
+            <li>Request <code>R-2002</code> using User A's token. Vulnerable mode incorrectly returns User B's synthetic result.</li>
+            <li>Restart with <code>python3 a3_object_authorization_lab.py --mode secure</code>.</li>
+            <li>Repeat the cross-user request. Secure mode returns 403 and logs a safe object-authorization denial.</li>
+          </ol>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Interactive toy replay</h3>
+              <p>Replay the expected local behavior without starting the Python server. The output is illustrative and sends no requests.</p>
+              <button class="copy-button" type="button" id="simulate-lab">Replay object-check simulation</button>
+            </div>
+            <div class="lab-output" id="lab-output" aria-live="polite">ready: no object-check simulation replayed yet</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="code">
+        <div class="section-heading">
+          <h2>Full Code For A Local Simulated Lab</h2>
+          <p>The server binds to 127.0.0.1 and uses toy tokens, users, and synthetic result objects only.</p>
+        </div>
+        <div class="section-body">
+          <div class="code-card">
+            <div class="code-head">
+              <span>a3_object_authorization_lab.py</span>
+              <button class="copy-button" type="button" data-copy="lab-python">Copy</button>
+            </div>
+            <pre><code id="lab-python">#!/usr/bin/env python3
+"""
+A3 local-only simulator: broken object authorization.
+
+This toy API binds to 127.0.0.1 and uses synthetic result objects.
+It demonstrates why authentication is not enough: every object lookup
+must also enforce ownership or an equivalent authorization policy.
+"""
+
+import argparse
+import json
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import urlparse
+
+TOKENS = {
+    "Bearer token-user-a": {"user_id": "user-a", "role": "researcher", "tenant": "edge-lab"},
+    "Bearer token-user-b": {"user_id": "user-b", "role": "researcher", "tenant": "edge-lab"},
+    "Bearer token-admin": {"user_id": "admin-1", "role": "admin", "tenant": "edge-lab"},
+}
+
+RESULTS = {
+    "R-1001": {
+        "owner_id": "user-a",
+        "tenant": "edge-lab",
+        "label": "synthetic-cat",
+        "confidence": 0.934,
+        "backend": "jetson",
+        "latency_ms": 47,
+        "model_hash": "onnx-demo-7ad3",
+    },
+    "R-2002": {
+        "owner_id": "user-b",
+        "tenant": "edge-lab",
+        "label": "synthetic-dog",
+        "confidence": 0.881,
+        "backend": "zynq",
+        "latency_ms": 38,
+        "model_hash": "bit-demo-19fe",
+    },
+}
+
+
+def can_read_result(principal, result):
+    if principal["role"] == "admin" and principal["tenant"] == result["tenant"]:
+        return True
+    return principal["user_id"] == result["owner_id"] and principal["tenant"] == result["tenant"]
+
+
+class ResultHandler(BaseHTTPRequestHandler):
+    server_version = "A3LocalGateway/1.0"
+
+    def log_message(self, fmt, *args):
+        print("%s - %s" % (self.log_date_time_string(), fmt % args))
+
+    def _send_json(self, status, document):
+        body = json.dumps(document, indent=2).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _principal(self):
+        token = self.headers.get("Authorization", "")
+        return TOKENS.get(token)
+
+    def do_GET(self):
+        parsed = urlparse(self.path)
+        parts = [part for part in parsed.path.split("/") if part]
+        if len(parts) != 4 or parts[:3] != ["api", "v1", "results"]:
+            self._send_json(404, {"error": "not found"})
+            return
+
+        principal = self._principal()
+        if not principal:
+            self._send_json(401, {"error": "missing or invalid bearer token"})
+            print("event=reject reason=missing_auth route=/api/v1/results")
+            return
+
+        result_id = parts[3]
+        result = RESULTS.get(result_id)
+        if not result:
+            self._send_json(404, {"error": "result not found"})
+            print("event=object_miss user=%s result_id=%s" % (principal["user_id"], result_id))
+            return
+
+        if self.server.mode == "secure" and not can_read_result(principal, result):
+            self._send_json(403, {"error": "object access denied"})
+            print(
+                "event=object_denied user=%s result_id=%s owner=%s action=read"
+                % (principal["user_id"], result_id, result["owner_id"])
+            )
+            return
+
+        response = {"result_id": result_id, "result": result}
+        self._send_json(200, response)
+        print(
+            "event=object_read mode=%s user=%s result_id=%s owner=%s backend=%s"
+            % (self.server.mode, principal["user_id"], result_id, result["owner_id"], result["backend"])
+        )
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["vulnerable", "secure"], default="vulnerable")
+    parser.add_argument("--port", type=int, default=8081)
+    args = parser.parse_args()
+
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), ResultHandler)
+    server.mode = args.mode
+    print("A3 local lab listening on http://127.0.0.1:%s mode=%s" % (args.port, args.mode))
+    print("Toy tokens: Bearer token-user-a, Bearer token-user-b, Bearer token-admin")
+    server.serve_forever()
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+          </div>
+
+          <div class="code-card" style="margin-top:12px;">
+            <div class="code-head">
+              <span>localhost client checks</span>
+              <button class="copy-button" type="button" data-copy="lab-client">Copy</button>
+            </div>
+            <pre><code id="lab-client"># Terminal 1: intentionally vulnerable toy service
+python3 a3_object_authorization_lab.py --mode vulnerable
+
+# User A reads their own result.
+curl -s http://127.0.0.1:8081/api/v1/results/R-1001 \
+  -H "Authorization: Bearer token-user-a"
+
+# User A reads User B's result in vulnerable mode. This is the local-only A3 demonstration.
+curl -i -s http://127.0.0.1:8081/api/v1/results/R-2002 \
+  -H "Authorization: Bearer token-user-a"
+
+# Terminal 1: secure toy service
+python3 a3_object_authorization_lab.py --mode secure
+
+# User A still reads their own result.
+curl -s http://127.0.0.1:8081/api/v1/results/R-1001 \
+  -H "Authorization: Bearer token-user-a"
+
+# Cross-user read is blocked by object ownership policy.
+curl -i -s http://127.0.0.1:8081/api/v1/results/R-2002 \
+  -H "Authorization: Bearer token-user-a"
+</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="setup">
+        <div class="section-heading">
+          <h2>Practical Example For Your Edge AI + FPGA + Jetson Setup</h2>
+          <p>A3 protects result records produced by both private backends.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Expected topology</h3>
+              <p>The Pi gateway creates a result object after dispatching inference to Jetson or Zynq. The object may contain prediction output, backend name, latency, model hash, input digest, and experiment tag. That object should be attached to a user, project, tenant, and retention policy.</p>
+              <div class="pill-row">
+                <span class="tag info">Pi result API</span>
+                <span class="tag hw">Jetson result</span>
+                <span class="tag hw">Zynq result</span>
+              </div>
+            </div>
+            <div class="mini-card">
+              <h3>A3 failure mode</h3>
+              <p>User A submits to Jetson and sees <code>R-1001</code>. User B submits to Zynq and gets <code>R-2002</code>. If User A can fetch <code>R-2002</code>, the Pi leaks another user's prediction and backend metadata without any direct backend exposure.</p>
+              <div class="pill-row">
+                <span class="tag">IDOR</span>
+                <span class="tag">cross-user result</span>
+                <span class="tag def">D1 missing object check</span>
+              </div>
+            </div>
+          </div>
+          <p>In your portal, the object graph matters. A result object can point to stored images, trace bundles, model versions, and accelerator benchmark records. Secure design should authorize each object family consistently, not only the top-level result row.</p>
+        </div>
+      </section>
+
+      <section class="section" id="signals">
+        <div class="section-heading">
+          <h2>Observable Signals Or Logs</h2>
+          <p>A3 should be visible as object-scope denies, not backend events.</p>
+        </div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead>
+              <tr><th>Signal</th><th>Vulnerable observation</th><th>Hardened observation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>HTTP status</td><td>200 when user changes result ID to another user's object</td><td>403 or policy-shaped 404 for cross-user object access</td></tr>
+              <tr><td>Gateway log</td><td>event=object_read user=user-a result_id=R-2002 owner=user-b</td><td>event=object_denied user=user-a result_id=R-2002 action=read</td></tr>
+              <tr><td>Backend log</td><td>No new inference needed; data leaks from result store</td><td>No backend call; denial occurs at Pi result API</td></tr>
+              <tr><td>Database query</td><td>SELECT by result_id only</td><td>SELECT scoped by result_id plus owner, tenant, project, or policy join</td></tr>
+              <tr><td>Detection metric</td><td>Repeated object misses or cross-owner reads may blend into normal 200s</td><td>Object-denied counter, user/object mismatch rate, and suspicious ID-walk patterns</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="impact">
+        <div class="section-heading">
+          <h2>Impact Analysis</h2>
+          <p>A3 is mostly a confidentiality and integrity issue, with research-process consequences.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card">
+              <h3>Confidentiality</h3>
+              <p>Cross-user reads expose predictions, confidence scores, sample metadata, backend routing, model hashes, and possibly links to uploaded images or trace bundles.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Integrity</h3>
+              <p>If write, delete, rerun, export, or label-update routes share the same flaw, one user can manipulate another user's experimental records or training feedback.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Availability</h3>
+              <p>Availability is secondary, but unauthorized delete or rerun operations can remove results, trigger extra backend work, or corrupt experiment queues.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="mapping">
+        <div class="section-heading">
+          <h2>Mapping To CIA, STRIDE, PASTA, And MITRE ATLAS</h2>
+          <p>A3 is an API authorization problem that can expose AI model behavior and data.</p>
+        </div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead>
+              <tr><th>Framework</th><th>A3 mapping</th><th>Research interpretation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>CIA</td><td>Confidentiality and Integrity primary; Availability secondary</td><td>Protect result objects and related artifacts from cross-user read, write, delete, export, and rerun actions.</td></tr>
+              <tr><td>STRIDE</td><td>Elevation of Privilege, Information Disclosure, Tampering, Repudiation</td><td>A normal user gains object-level access beyond their policy and may leave insufficient audit evidence.</td></tr>
+              <tr><td>PASTA</td><td>Stage 3 decomposition, Stage 4 threat analysis, Stage 5 vulnerability analysis, Stage 6 attack modeling</td><td>Decompose result, image, log, model-version, and benchmark objects; test each action with cross-user fixtures.</td></tr>
+              <tr><td>OWASP API Security</td><td>API1:2023 Broken Object Level Authorization</td><td>Every endpoint that receives an object ID and acts on a record needs object-level authorization, not only authentication.</td></tr>
+              <tr><td>MITRE ATLAS</td><td>Relevant to model exposure and exfiltration-through-inference concerns, including AML.T0024 Exfiltration via ML Inference API when result access exposes model behavior or inference outputs.</td><td>A3 can leak AI outputs and model metadata from stored objects rather than live inference alone.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="defenses">
+        <div class="section-heading">
+          <h2>Defense Mapping To Existing D1-D11 Controls</h2>
+          <p>D1 is the primary control because it includes both authentication and object checks.</p>
+        </div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead>
+              <tr><th>Control</th><th>Role against A3</th><th>Validation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>D1 JWT Auth + Object Checks</td><td>Primary control. Validate token, derive subject context, and enforce object ownership or policy on every result action.</td><td>Cross-user reads, exports, deletes, reruns, and label updates return 403 or policy-shaped 404.</td></tr>
+              <tr><td>D6 Sanitized Logging</td><td>Records object-denied events without storing tokens, request bodies, or sensitive images.</td><td>Logs include user id, action, object id hash, owner mismatch, tenant, status, and trace id.</td></tr>
+              <tr><td>D5 Query Anomaly Detection</td><td>Detects ID walking, repeated object misses, and abnormal result-export patterns.</td><td>Alert on high object-denied rates or many neighboring result IDs from one user.</td></tr>
+              <tr><td>D4 Private Backend Subnet</td><td>Does not fix A3 directly, but ensures result access remains mediated by the Pi gateway rather than backend side routes.</td><td>Client VLAN cannot fetch backend-local result or benchmark files.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="research">
+        <div class="section-heading">
+          <h2>Research Notes: What To Measure Experimentally</h2>
+          <p>A3 is well suited for automated cross-user authorization tests.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Object action matrix</h3>
+              <p>For each object type, test read, list, export, delete, compare, rerun, and annotate. The expected result is own object allowed, cross-user object denied, admin scoped by policy, and unrelated tenant denied.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Query-level enforcement</h3>
+              <p>Measure whether secure queries use owner or policy scope at the database layer, not just post-query filtering. Post-query checks can still leak timing and existence signals.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Enumeration resistance</h3>
+              <p>Compare sequential IDs and opaque IDs. Opaque IDs reduce guessability, but the authorization test must still fail safely if a valid cross-user ID is known.</p>
+            </div>
+            <div class="mini-card">
+              <h3>Audit quality</h3>
+              <p>Measure object-denied counts, ID-walk patterns, cross-owner mismatch rates, and whether logs contain enough context for incident response without leaking payloads.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="takeaways">
+        <div class="section-heading">
+          <h2>Key Takeaways</h2>
+          <p>Authentication is a starting point, not an object-level access decision.</p>
+        </div>
+        <div class="section-body">
+          <ul>
+            <li>A3 occurs when the gateway loads objects by client-supplied ID without proving the caller may act on that object.</li>
+            <li>Result objects in Edge AI carry sensitive model behavior, backend routing, and experiment metadata, not just labels.</li>
+            <li>D1 must enforce object ownership or policy on every read, list, export, delete, rerun, and annotation route.</li>
+            <li>Automated tests should include cross-user fixtures for every object family in the portal.</li>
+          </ul>
+        </div>
+      </section>
+
+      <nav class="nav-grid" aria-label="Related pages">
+        <a class="nav-card" href="A2_resource_exhaustion_dos.html">
+          <b>Previous threat: A2</b>
+          <span>Resource Exhaustion / DoS. Admission controls reduce abuse around result-generating routes.</span>
+        </a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html">
+          <b>Related defense: D1</b>
+          <span>JWT Auth + Object Checks. Dedicated page planned in Defense_matrix.</span>
+        </a>
+        <a class="nav-card" href="A1_unauthenticated_inference_endpoint.html">
+          <b>Related threat: A1</b>
+          <span>Unauthenticated access and broken object checks should be tested together.</span>
+        </a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html">
+          <b>Next threat: A4</b>
+          <span>Model Update Tampering. Dedicated page planned next.</span>
+        </a>
+      </nav>
+    </article>
+  </div>
+</main>
+
+<script>
+const states = {
+  vulnerable: {
+    title: "Cross-user object read",
+    copy: "A valid token reads a result object owned by a different user because the API only checks that the ID exists.",
+    policy: "ID EXISTS ONLY",
+    good: false,
+    hot: ["flow-client", "flow-policy", "flow-cross"],
+    ownMuted: true,
+    packet: [532, 218]
+  },
+  secure: {
+    title: "Owner check enforced",
+    copy: "The gateway evaluates subject, action, object, owner, and tenant before returning a result.",
+    policy: "OWNER CHECK",
+    good: true,
+    hot: ["flow-client", "flow-policy"],
+    ownMuted: true,
+    packet: [388, 232]
+  },
+  audited: {
+    title: "Denied event measured",
+    copy: "D1 blocks the cross-user read while D6 records a safe object_denied event for research metrics.",
+    policy: "POLICY + LOG",
+    good: true,
+    hot: ["flow-client", "flow-policy"],
+    ownMuted: true,
+    packet: [388, 232]
+  }
+};
+
+function setVizState(key) {
+  const state = states[key];
+  if (!state) return;
+  document.querySelectorAll(".viz-controls button[data-state]").forEach(button => {
+    button.classList.toggle("is-active", button.dataset.state === key);
+  });
+  document.querySelectorAll(".flow").forEach(flow => {
+    flow.classList.toggle("is-hot", state.hot.includes(flow.id));
+    flow.classList.toggle("is-muted", !state.hot.includes(flow.id));
+  });
+  const policy = document.getElementById("policy-box");
+  policy.setAttribute("class", "policy-box" + (state.good ? " good" : ""));
+  document.getElementById("policy-label").textContent = state.policy;
+  document.getElementById("obj-b").setAttribute("class", "object-card " + (state.good ? "object-owned" : "object-cross"));
+  document.getElementById("viz-title").textContent = state.title;
+  document.getElementById("viz-copy").textContent = state.copy;
+  const packet = document.getElementById("packet-dot");
+  packet.setAttribute("cx", state.packet[0]);
+  packet.setAttribute("cy", state.packet[1]);
+  packet.setAttribute("fill", state.good ? "#158b55" : "#d63447");
+}
+
+document.querySelector(".viz-controls").addEventListener("click", event => {
+  const button = event.target.closest("button[data-state]");
+  if (button) setVizState(button.dataset.state);
+});
+
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", async () => {
+    const target = document.getElementById(button.dataset.copy);
+    if (!target) return;
+    try {
+      await navigator.clipboard.writeText(target.innerText);
+      const original = button.textContent;
+      button.textContent = "Copied";
+      setTimeout(() => {
+        button.textContent = original;
+      }, 1200);
+    } catch (error) {
+      button.textContent = "Select text";
+    }
+  });
+});
+
+document.getElementById("simulate-lab").addEventListener("click", () => {
+  const lines = [
+    "vulnerable mode:",
+    "[request] user=user-a GET /api/v1/results/R-2002",
+    "[gateway] event=object_read mode=vulnerable user=user-a result_id=R-2002 owner=user-b backend=zynq",
+    "[client] 200 result={label: synthetic-dog, backend: zynq, latency_ms: 38}",
+    "",
+    "secure mode:",
+    "[request] user=user-a GET /api/v1/results/R-2002",
+    "[gateway] event=object_denied user=user-a result_id=R-2002 owner=user-b action=read",
+    "[backend] no Jetson or Zynq dispatch needed; result-store decision only",
+    "[client] 403 error=object access denied"
+  ];
+  const output = document.getElementById("lab-output");
+  output.innerHTML = lines.map(line => {
+    if (line.includes("vulnerable") || line.includes("object_read") || line.includes("200 result")) return "<span class=\"log-bad\">" + line + "</span>";
+    if (line.includes("secure") || line.includes("object_denied") || line.includes("403")) return "<span class=\"log-ok\">" + line + "</span>";
+    if (line.includes("backend")) return "<span class=\"log-warn\">" + line + "</span>";
+    return line;
+  }).join("\n");
+});
+
+setVizState("vulnerable");
+</script>
+</body>
+</html>
