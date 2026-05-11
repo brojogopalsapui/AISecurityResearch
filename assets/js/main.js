@@ -55,11 +55,45 @@ function preserveLightHomeLinks() {
   });
 }
 
+function enhanceSubcontentActionRows() {
+  const rows = document.querySelectorAll(".subcontent-back-row");
+  if (!rows.length) return;
+
+  const syncLabels = () => {
+    document.querySelectorAll("[data-subcontent-fullscreen]").forEach((button) => {
+      button.textContent = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
+    });
+  };
+
+  rows.forEach((row) => {
+    if (row.querySelector("[data-subcontent-fullscreen]")) return;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "subcontent-fullscreen";
+    button.dataset.subcontentFullscreen = "true";
+    button.addEventListener("click", async () => {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen?.();
+      } else {
+        await document.exitFullscreen?.();
+      }
+      syncLabels();
+    });
+
+    row.appendChild(button);
+  });
+
+  document.addEventListener("fullscreenchange", syncLabels);
+  syncLabels();
+}
+
 syncLightModePreference();
 
 document.addEventListener("DOMContentLoaded", () => {
   markDarkVersionLinks();
   preserveLightHomeLinks();
+  enhanceSubcontentActionRows();
 
   const menuButtons = document.querySelectorAll(".menu-btn");
 

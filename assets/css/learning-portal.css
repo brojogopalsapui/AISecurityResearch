@@ -683,6 +683,94 @@ details .answer{margin-top:.8rem}
   box-shadow: 0 14px 28px rgba(28,39,51,.10);
 }
 
+.lab-teaser-panel{
+  padding:1.25rem;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.99), rgba(245,250,255,.98)),
+    radial-gradient(circle at 86% 18%, rgba(47,109,246,.12), transparent 38%) !important;
+}
+
+.lab-teaser-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(320px,430px);
+  gap:1.35rem;
+  align-items:center;
+}
+
+.lab-teaser-copy{
+  position:relative;
+  z-index:1;
+  padding:.25rem .1rem .25rem .1rem;
+}
+
+.lab-teaser-copy h2{
+  margin:.35rem 0 0;
+}
+
+.lab-teaser-copy p{
+  max-width:70ch;
+  margin:.55rem 0 0;
+}
+
+.lab-teaser-visual{
+  position:relative;
+  display:block;
+  min-height:250px;
+  border-radius:26px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#eff6ff,#ffffff);
+  border:1px solid rgba(32,58,87,.12);
+  box-shadow:0 22px 44px rgba(23,53,87,.14);
+  isolation:isolate;
+}
+
+.lab-teaser-visual::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(47,109,246,.08), transparent 42%, rgba(240,178,77,.12));
+  pointer-events:none;
+  z-index:1;
+}
+
+.lab-teaser-visual img{
+  display:block;
+  width:100%;
+  min-height:250px;
+  aspect-ratio:16/10.6;
+  object-fit:cover;
+  transform:scale(1.01);
+  transition:transform .28s ease, filter .28s ease;
+}
+
+.lab-teaser-visual:hover img{
+  transform:scale(1.045);
+  filter:saturate(1.08) contrast(1.04);
+}
+
+.lab-teaser-status{
+  position:absolute;
+  right:14px;
+  bottom:14px;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  min-height:34px;
+  padding:0 .78rem;
+  border-radius:999px;
+  background:#10203b;
+  color:#ffffff;
+  font-size:.78rem;
+  font-weight:800;
+  box-shadow:0 12px 24px rgba(16,32,59,.22);
+}
+
+@media (max-width:900px){
+  .lab-teaser-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 
 /* AI Security Pulse section on homepage */
 .pulse-home .section-head p{max-width:860px}

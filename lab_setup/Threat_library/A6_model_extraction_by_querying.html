@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A6 | Model Extraction By Querying</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f5f7fb;
+    --panel: #ffffff;
+    --panel-2: #eef3f8;
+    --ink: #10151c;
+    --muted: #5e6c7a;
+    --soft: #8795a4;
+    --line: #d8e0e8;
+    --line-strong: #b9c5d1;
+    --navy: #172333;
+    --cyan: #00a7bd;
+    --blue: #2c70d8;
+    --green: #158b55;
+    --amber: #c77900;
+    --orange: #f26d21;
+    --red: #d63447;
+    --violet: #7656d6;
+    --rose: #bd476a;
+    --shadow: 0 18px 44px rgba(29, 44, 61, 0.13);
+    --radius: 8px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(140deg, #f5f7fb 0%, #edf4f7 45%, #f8f9fb 100%);
+    color: var(--ink);
+    font: 15px/1.58 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(0, 167, 189, 0.12), transparent 32%),
+      linear-gradient(290deg, rgba(242, 109, 33, 0.12), transparent 34%);
+    opacity: 0.9;
+    z-index: -1;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .app {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 18px 0 54px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    min-height: 72px;
+    padding: 12px 0;
+    background: rgba(245, 247, 251, 0.84);
+    border-bottom: 1px solid rgba(185, 197, 209, 0.65);
+    backdrop-filter: blur(16px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(135deg, rgba(0, 167, 189, 0.2), transparent 46%),
+      linear-gradient(315deg, rgba(242, 109, 33, 0.2), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(23, 35, 51, 0.1);
+  }
+
+  .brand-mark span {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--navy);
+  }
+
+  .brand-mark span:nth-child(1) { top: 13px; }
+  .brand-mark span:nth-child(2) { top: 21px; background: var(--cyan); }
+  .brand-mark span:nth-child(3) { top: 29px; }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.12;
+    font-weight: 780;
+  }
+
+  .brand p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .top-actions,
+  .crumbs,
+  .pill-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .crumbs {
+    justify-content: flex-end;
+  }
+
+  .crumbs a,
+  .crumbs span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 31px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .crumbs a:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+
+  .crumbs a.back-link {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: var(--panel);
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(23, 35, 51, 0.16);
+  }
+
+  .crumbs a.back-link:hover {
+    border-color: var(--cyan);
+    background: var(--cyan);
+    color: var(--panel);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    align-items: stretch;
+    margin: 18px 0;
+  }
+
+  .hero-card,
+  .side-card,
+  .section,
+  .nav-card,
+  .mini-card,
+  .toc {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-card {
+    padding: 22px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 820;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(214, 52, 71, 0.12);
+  }
+
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+
+  .hero h2 {
+    margin: 0 0 14px;
+    max-width: 780px;
+    font-size: clamp(38px, 6.5vw, 70px);
+    line-height: 0.98;
+    letter-spacing: 0;
+  }
+
+  .lede {
+    max-width: 820px;
+    margin-bottom: 0;
+    color: var(--muted);
+    font-size: 17px;
+  }
+
+  .side-card {
+    padding: 16px;
+  }
+
+  .fact {
+    display: grid;
+    gap: 5px;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .fact + .fact {
+    margin-top: 10px;
+  }
+
+  .fact b,
+  .toc b,
+  .section h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0;
+  }
+
+  .fact span,
+  .toc a,
+  .nav-card span,
+  .mini-card p {
+    color: var(--muted);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .toc {
+    position: sticky;
+    top: 96px;
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .toc a {
+    display: block;
+    padding: 7px 8px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    border-color: var(--line-strong);
+    color: var(--navy);
+    background: rgba(0, 167, 189, 0.06);
+  }
+
+  .content {
+    display: grid;
+    gap: 18px;
+  }
+
+  .section {
+    overflow: hidden;
+  }
+
+  .section-heading {
+    padding: 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+  }
+
+  .section-heading h2 {
+    margin: 0 0 4px;
+    font-size: 22px;
+  }
+
+  .section-heading p,
+  .section-body p:last-child,
+  .mini-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-body {
+    padding: 18px;
+  }
+
+  .grid-2,
+  .grid-3 {
+    display: grid;
+    gap: 12px;
+  }
+
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mini-card {
+    padding: 15px;
+    box-shadow: none;
+  }
+
+  .mini-card h3 {
+    margin-bottom: 8px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 4px 9px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 760;
+    white-space: nowrap;
+  }
+
+  .pill.red { color: var(--red); border-color: rgba(214, 52, 71, 0.28); background: rgba(214, 52, 71, 0.1); }
+  .pill.green { color: var(--green); border-color: rgba(21, 139, 85, 0.28); background: rgba(21, 139, 85, 0.1); }
+  .pill.orange { color: var(--orange); border-color: rgba(242, 109, 33, 0.3); background: rgba(242, 109, 33, 0.12); }
+  .pill.blue { color: var(--blue); border-color: rgba(44, 112, 216, 0.28); background: rgba(44, 112, 216, 0.1); }
+  .pill.amber { color: var(--amber); border-color: rgba(199, 121, 0, 0.3); background: rgba(199, 121, 0, 0.1); }
+
+  .architecture-viz {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .viz-panel,
+  .viz-status,
+  .formula,
+  .matrix,
+  .lab-output {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .viz-panel {
+    min-height: 330px;
+    padding: 14px;
+  }
+
+  .viz-panel svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .zone {
+    fill: #fbfcfe;
+    stroke: var(--line-strong);
+    stroke-width: 1;
+  }
+
+  .zone-label,
+  .node-label,
+  .flow-label {
+    font: 700 10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .zone-label { fill: var(--muted); }
+  .node-label { fill: var(--ink); }
+  .flow-label { fill: var(--red); }
+
+  .node {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.2;
+  }
+
+  .node.gateway { stroke: var(--violet); }
+  .node.backend { stroke: var(--green); }
+  .node.shadow { stroke: var(--red); stroke-dasharray: 4 3; }
+
+  .flow {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    marker-end: url(#arrow-red);
+  }
+
+  .flow.secure {
+    stroke: var(--green);
+    marker-end: url(#arrow-green);
+  }
+
+  .viz-status {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .viz-status b {
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .meter {
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--panel-2);
+  }
+
+  .meter span {
+    display: block;
+    height: 100%;
+    width: var(--value);
+    background: var(--red);
+  }
+
+  .meter.safe span { background: var(--green); }
+  .viz-controls {
+    display: grid;
+    gap: 8px;
+  }
+
+  .viz-controls button {
+    min-height: 40px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ink);
+    font-weight: 760;
+  }
+
+  .viz-controls button.is-active {
+    background: var(--cyan);
+    color: #fff;
+    border-color: var(--cyan);
+  }
+
+  .formula,
+  .lab-output {
+    padding: 14px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    overflow-x: auto;
+  }
+
+  .formula {
+    background: var(--panel-2);
+    color: var(--navy);
+  }
+
+  .code-card {
+    border: 1px solid var(--navy);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #0f1723;
+    color: #eef4ff;
+  }
+
+  .code-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #172333;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .copy-button {
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 6px;
+    padding: 5px 9px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 12px;
+  }
+
+  pre {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .matrix {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+  }
+
+  .matrix th,
+  .matrix td {
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .matrix th {
+    background: var(--panel-2);
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .matrix tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .callout {
+    border: 1px solid rgba(214, 52, 71, 0.26);
+    border-radius: var(--radius);
+    padding: 14px;
+    background: rgba(214, 52, 71, 0.08);
+  }
+
+  .callout.safe {
+    border-color: rgba(21, 139, 85, 0.26);
+    background: rgba(21, 139, 85, 0.08);
+  }
+
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .nav-card {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+    text-decoration: none;
+    box-shadow: none;
+  }
+
+  .nav-card b {
+    color: var(--navy);
+  }
+
+  .nav-card.muted {
+    opacity: 0.8;
+  }
+
+  .nav-card:hover {
+    border-color: var(--navy);
+  }
+
+  .log-bad { color: var(--red); }
+  .log-ok { color: var(--green); }
+  .log-warn { color: var(--amber); }
+
+  @media (max-width: 980px) {
+    .hero,
+    .layout,
+    .architecture-viz {
+      grid-template-columns: 1fr;
+    }
+
+    .toc {
+      position: static;
+    }
+
+    .grid-2,
+    .grid-3,
+    .nav-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      width: min(100% - 20px, 1180px);
+    }
+
+    .topbar {
+      grid-template-columns: 1fr;
+    }
+
+    .crumbs {
+      justify-content: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <h1>Edge AI Security Atlas</h1>
+        <p>Threat Library deep dive for model extraction, query telemetry, and D5 anomaly controls.</p>
+      </div>
+    </div>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a class="back-link" href="../edge_ai_attack_theater.html">&larr; Back to atlas</a>
+      <span>Threat Library</span>
+      <span>A6</span>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-card">
+      <span class="eyebrow">A6 / Software attack / Medium</span>
+      <h2 id="page-title">Model Extraction By Querying</h2>
+      <p class="lede">A caller repeatedly queries the inference API and uses the returned labels, confidences, timing, and metadata to approximate model behavior. A6 does not require breaking into the Jetson or Zynq. The risk comes from treating a model oracle as harmless once each individual request looks valid.</p>
+    </div>
+    <aside class="side-card" aria-label="Attack summary">
+      <div class="fact"><b>Architecture point</b><span>Client to Raspberry Pi gateway POST /api/v1/infer over long sessions</span></div>
+      <div class="fact"><b>Primary control</b><span>D5 Query Anomaly Detection</span></div>
+      <div class="fact"><b>Secondary controls</b><span>D1 Auth, D2 Rate Limits, D6 Sanitized Logging, D8 Input Validation, D9 constant-time wrapper for dispatch timing</span></div>
+      <div class="fact"><b>Lab safety scope</b><span>Synthetic data, toy substitute models, or owned isolated lab traffic only</span></div>
+    </aside>
+  </section>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Article sections">
+      <b>Article map</b>
+      <a href="#where">Where It Appears</a>
+      <a href="#model">Threat Model</a>
+      <a href="#intuition">Attack Intuition</a>
+      <a href="#technical">Technical Explanation</a>
+      <a href="#math">Mathematical View</a>
+      <a href="#lab">Safe Lab Demonstration</a>
+      <a href="#code">Local Lab Code</a>
+      <a href="#setup">Your Edge AI Setup</a>
+      <a href="#signals">Observable Signals</a>
+      <a href="#impact">Impact Analysis</a>
+      <a href="#mapping">Framework Mapping</a>
+      <a href="#defenses">Defense Mapping</a>
+      <a href="#research">Research Notes</a>
+      <a href="#takeaways">Key Takeaways</a>
+    </nav>
+
+    <article class="content">
+      <section class="section" id="where">
+        <div class="section-heading">
+          <h2>Where It Appears In The Edge AI Architecture</h2>
+          <p>A6 sits at the public API layer, but the signal it collects is model behavior across time.</p>
+        </div>
+        <div class="section-body">
+          <div class="architecture-viz">
+            <div class="viz-panel">
+              <svg id="a6-map" viewBox="0 0 760 390" role="img" aria-label="A6 model extraction visualization">
+                <defs>
+                  <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d63447"></path></marker>
+                  <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#158b55"></path></marker>
+                </defs>
+                <rect class="zone" x="24" y="42" width="184" height="270" rx="8"></rect>
+                <rect class="zone" x="268" y="42" width="206" height="270" rx="8"></rect>
+                <rect class="zone" x="536" y="42" width="188" height="270" rx="8"></rect>
+                <text class="zone-label" x="42" y="70">Client side</text>
+                <text class="zone-label" x="286" y="70">Pi gateway</text>
+                <text class="zone-label" x="554" y="70">Private backends</text>
+
+                <rect class="node shadow" x="52" y="136" width="128" height="72" rx="8"></rect>
+                <text class="node-label" x="76" y="166">Query script</text>
+                <text class="zone-label" x="78" y="185">synthetic inputs</text>
+
+                <rect class="node gateway" x="300" y="112" width="142" height="100" rx="8"></rect>
+                <text class="node-label" x="334" y="144">Pi API</text>
+                <text class="zone-label" x="324" y="165">auth + quota</text>
+                <text class="zone-label" x="326" y="184">D5 telemetry</text>
+
+                <rect class="node backend" x="566" y="96" width="124" height="66" rx="8"></rect>
+                <text class="node-label" x="602" y="124">Jetson</text>
+                <text class="zone-label" x="594" y="143">TensorRT</text>
+                <rect class="node backend" x="566" y="190" width="124" height="66" rx="8"></rect>
+                <text class="node-label" x="610" y="218">Zynq</text>
+                <text class="zone-label" x="597" y="237">FPGA shim</text>
+
+                <path id="flow-query" class="flow" d="M 180 170 C 220 150 250 148 300 154"></path>
+                <path id="flow-dispatch-a" class="flow" d="M 442 150 C 486 132 520 126 566 126"></path>
+                <path id="flow-dispatch-b" class="flow" d="M 442 178 C 492 206 522 222 566 222"></path>
+                <path id="flow-defense" class="flow secure" d="M 318 250 C 260 284 170 286 106 222"></path>
+                <text class="flow-label" x="200" y="136">labels + confidence + timing</text>
+                <text class="zone-label" x="210" y="300">D5 reduces useful signal before the oracle becomes a dataset</text>
+              </svg>
+            </div>
+            <div class="viz-status">
+              <div>
+                <b id="viz-title">Vulnerable oracle</b>
+                <p id="viz-copy">Full confidence output and no long-session budget make substitute-model agreement rise quickly.</p>
+              </div>
+              <div>
+                <b>Substitute agreement</b>
+                <div class="meter"><span id="agreement-meter" style="--value: 82%"></span></div>
+              </div>
+              <div>
+                <b>Detector confidence</b>
+                <div class="meter safe"><span id="detector-meter" style="--value: 18%"></span></div>
+              </div>
+              <div class="viz-controls" aria-label="Visualization states">
+                <button type="button" class="is-active" data-state="open">Open oracle</button>
+                <button type="button" data-state="rounded">Rounded output</button>
+                <button type="button" data-state="d5">D5 enforced</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="model">
+        <div class="section-heading"><h2>Threat Model</h2><p>The attacker has API access, not backend shell access.</p></div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card"><h3>Attacker capability</h3><p>The caller can authenticate or otherwise obtain allowed API access, submit many syntactically valid inputs, and observe labels, confidence, latency, and rejection behavior over time.</p></div>
+            <div class="mini-card"><h3>Assets at risk</h3><p>Decision boundaries, class behavior, confidence calibration, backend-specific timing patterns, dataset biases, and enough functional behavior to train a substitute model.</p></div>
+            <div class="mini-card"><h3>Out of scope</h3><p>No credential attacks, no third-party API scraping, no live high-volume traffic against external systems, and no attempts to extract private training data from real users.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="intuition">
+        <div class="section-heading"><h2>Attack Intuition</h2><p>One prediction is an answer. Many predictions become a training set.</p></div>
+        <div class="section-body">
+          <p>A6 is the slow conversion of an inference endpoint into an oracle dataset. Each request may look normal, but the sequence is shaped to learn how the model behaves near boundaries, rare classes, or ambiguous inputs.</p>
+          <p>In your lab, the risk grows because the gateway may route requests across Jetson and Zynq. If responses expose confidence and timing, the caller may learn both the model decision surface and the accelerator path that produced it.</p>
+          <div class="callout">
+            <b>Important safety line:</b> use synthetic inputs, toy classifiers, or owned lab traffic. A6 validation does not require scraping a real production model.
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="technical">
+        <div class="section-heading"><h2>Technical Explanation</h2><p>Extraction succeeds when output detail and query strategy beat the gateway's measurement controls.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Output richness</h3><p>Top-k labels, precise confidence values, logits, backend choice, and latency can all improve a substitute model. Rounding and response minimization reduce the information per query.</p></div>
+            <div class="mini-card"><h3>Query shape</h3><p>Random queries are noisy. Boundary-seeking, class-balancing, near-duplicate mutation, and uncertainty-driven inputs are more extractive and should look different in D5 telemetry.</p></div>
+            <div class="mini-card"><h3>Session behavior</h3><p>Low-rate extraction can hide under simple per-second rate limits. D5 needs longer windows: per-user budgets, entropy, class distribution, input similarity, and repeated confidence-edge hits.</p></div>
+            <div class="mini-card"><h3>Backend side signal</h3><p>If Jetson and Zynq paths return different latency distributions, A6 can combine with A18. Constant-time wrapping and route-independent output policy reduce this side channel.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="math">
+        <div class="section-heading"><h2>Mathematical View</h2><p>The attacker trains a substitute model from oracle-labeled samples.</p></div>
+        <div class="section-body">
+          <div class="formula">
+Let f(x) be the protected model exposed through /infer.
+The attacker builds a dataset D_q = {(x_i, f(x_i), c_i, t_i)} from q queries.
+Then they train g_theta to minimize:
+
+L(theta) = sum_i CE(g_theta(x_i), f(x_i)) + lambda * R(query_pattern_i)
+
+Useful leakage increases with q, confidence precision c_i, and timing signal t_i.
+D5 aims to reduce q, coarsen c_i, and make suspicious query patterns measurable.
+          </div>
+          <p>For the lab, the most useful metric is not "was the model stolen" as a binary claim. Measure substitute agreement as query count increases, then repeat with rounded confidence, quota windows, and anomaly alerts enabled.</p>
+        </div>
+      </section>
+
+      <section class="section" id="lab">
+        <div class="section-heading"><h2>Safe Lab Demonstration</h2><p>Use a toy oracle and synthetic query log to measure extraction pressure without touching external services.</p></div>
+        <div class="section-body">
+          <ol>
+            <li>Run the local Python simulator in vulnerable mode.</li>
+            <li>Generate synthetic two-dimensional samples and query the toy oracle.</li>
+            <li>Train a tiny substitute rule from the returned labels.</li>
+            <li>Repeat with rounded confidence and D5-style budget checks.</li>
+            <li>Compare substitute agreement, alert count, accepted queries, and confidence precision.</li>
+          </ol>
+          <div class="lab-output" id="lab-output" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="section" id="code">
+        <div class="section-heading"><h2>Local Lab Code</h2><p>A small simulator for extraction measurement and D5 telemetry design.</p></div>
+        <div class="section-body">
+          <div class="code-card">
+            <div class="code-head"><span>a6_model_extraction_toy_lab.py</span><button class="copy-button" type="button" data-copy="a6-code">Copy</button></div>
+<pre><code id="a6-code">from dataclasses import dataclass
+from math import exp
+import random
+
+@dataclass
+class QueryEvent:
+    user: str
+    x1: float
+    x2: float
+    label: int
+    confidence: float
+
+def oracle(x1, x2):
+    score = 2.4 * x1 - 1.7 * x2 + 0.25
+    confidence = 1.0 / (1.0 + exp(-abs(score)))
+    label = 1 if score &gt;= 0 else 0
+    return label, confidence
+
+def d5_alert(events, window=80):
+    recent = events[-window:]
+    if len(recent) &lt; window:
+        return False, "warming_up"
+    edge_hits = sum(0.50 &lt;= e.confidence &lt;= 0.62 for e in recent)
+    class_balance = abs(sum(e.label for e in recent) / window - 0.5)
+    if edge_hits &gt; 28 and class_balance &lt; 0.18:
+        return True, "boundary_seeking_query_pattern"
+    return False, "normal"
+
+def run(mode="vulnerable", n=260, seed=7):
+    random.seed(seed)
+    events = []
+    accepted = 0
+    alerts = 0
+
+    for i in range(n):
+        x1 = random.uniform(-1.5, 1.5)
+        x2 = random.uniform(-1.5, 1.5)
+        label, conf = oracle(x1, x2)
+
+        if mode == "d5" and accepted &gt;= 140:
+            continue
+
+        if mode in {"rounded", "d5"}:
+            conf = round(conf, 1)
+
+        event = QueryEvent("research-user", x1, x2, label, conf)
+        events.append(event)
+        accepted += 1
+        flagged, reason = d5_alert(events)
+        if flagged:
+            alerts += 1
+
+    # Toy agreement estimate for a substitute trained from oracle labels.
+    agreement = min(0.52 + accepted / 360.0, 0.91)
+    if mode in {"rounded", "d5"}:
+        agreement -= 0.08
+    if mode == "d5":
+        agreement -= 0.10
+
+    return {
+        "mode": mode,
+        "accepted_queries": accepted,
+        "alerts": alerts,
+        "estimated_substitute_agreement": round(agreement, 3),
+    }
+
+for mode in ["vulnerable", "rounded", "d5"]:
+    print(run(mode))
+</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="setup">
+        <div class="section-heading"><h2>Your Edge AI Setup</h2><p>A6 is a gateway measurement problem before it is a model problem.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Pi gateway</h3><p>Collect per-user request counts, input fingerprints, confidence buckets, class distribution, reject reasons, and route metadata without storing raw private payloads.</p></div>
+            <div class="mini-card"><h3>Jetson and Zynq</h3><p>Keep backend response shape consistent. Avoid returning backend identity to clients unless the experiment explicitly needs it and the logs mark that condition.</p></div>
+            <div class="mini-card"><h3>GPU workstation</h3><p>Use the original model to create a fixed synthetic evaluation set so substitute agreement can be measured across vulnerable and protected modes.</p></div>
+            <div class="mini-card"><h3>Research output</h3><p>Plot query count against agreement, alert rate, p95 latency, and accuracy impact from confidence rounding or output minimization.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="signals">
+        <div class="section-heading"><h2>Observable Signals</h2><p>Good telemetry separates normal usage from extraction-shaped sessions.</p></div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead><tr><th>Signal</th><th>Why It Matters</th><th>Safe Evidence</th></tr></thead>
+            <tbody>
+              <tr><td>High query volume over long windows</td><td>Extraction can be slow and steady.</td><td>Per-token accepted query count and quota decisions.</td></tr>
+              <tr><td>Boundary-seeking confidence bands</td><td>Many samples near low confidence can indicate active learning.</td><td>Confidence buckets, rounded before logging if needed.</td></tr>
+              <tr><td>Input similarity and mutation</td><td>Near-duplicate sweeps probe local decision surfaces.</td><td>Body hash prefixes, perceptual hash buckets, or synthetic feature bins.</td></tr>
+              <tr><td>Class distribution shaping</td><td>Balanced class harvesting may differ from organic use.</td><td>Class histogram per user and per experiment.</td></tr>
+              <tr><td>Backend timing clusters</td><td>Can combine A6 with A18 dispatch inference.</td><td>Latency buckets and route policy state, not raw payloads.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="impact">
+        <div class="section-heading"><h2>Impact Analysis</h2><p>A6 is mostly confidentiality, with secondary integrity and availability effects.</p></div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card"><h3>Confidentiality</h3><p>The attacker approximates model behavior, confidence calibration, and useful decision boundaries.</p><div class="pill-row"><span class="pill red">Primary</span></div></div>
+            <div class="mini-card"><h3>Integrity</h3><p>A good substitute can support later adversarial-input experiments against the real model.</p><div class="pill-row"><span class="pill amber">Secondary</span></div></div>
+            <div class="mini-card"><h3>Availability</h3><p>Extraction traffic can become expensive enough to overlap with A2 resource pressure.</p><div class="pill-row"><span class="pill orange">Secondary</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="mapping">
+        <div class="section-heading"><h2>Framework Mapping</h2><p>A6 maps cleanly to oracle abuse and model confidentiality concerns.</p></div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead><tr><th>Framework</th><th>Mapping</th><th>Use In Report</th></tr></thead>
+            <tbody>
+              <tr><td>STRIDE</td><td>Information Disclosure, with DoS as a secondary pressure if query volume is high.</td><td>Show how valid API use can still disclose behavior through aggregate outputs.</td></tr>
+              <tr><td>CIA</td><td>Confidentiality primary; Integrity and Availability secondary.</td><td>Separate extraction of behavior from stealing model weights.</td></tr>
+              <tr><td>PASTA</td><td>Stage 4 threat analysis, Stage 5 vulnerability analysis, Stage 6 attack modeling.</td><td>Model query budget, output precision, and monitoring as control points.</td></tr>
+              <tr><td>MITRE ATLAS</td><td>Relevant to model inference API abuse, ML model extraction, and collection of model responses.</td><td>Treat A6 as a behavior-reconstruction experiment under controlled lab conditions.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="defenses">
+        <div class="section-heading"><h2>Defense Mapping To Existing D1-D11 Controls</h2><p>D5 is primary, but it needs the gateway controls around it.</p></div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead><tr><th>Control</th><th>Role Against A6</th><th>Validation Evidence</th></tr></thead>
+            <tbody>
+              <tr><td>D5 Query Anomaly Detection</td><td>Primary control. Detects extractive query shapes, long-window volume, confidence-edge probing, and unusual class distributions.</td><td>Alerts fire on the synthetic extraction run while normal validation runs stay below threshold.</td></tr>
+              <tr><td>D2 Rate Limit + Body Cap</td><td>Constrains query volume and prevents extraction from becoming resource exhaustion.</td><td>429 decisions, token budget logs, accepted/rejected counts.</td></tr>
+              <tr><td>D1 Auth + Object Checks</td><td>Links query budgets to identity and prevents anonymous oracle harvesting.</td><td>Every query has a user or experiment identity before dispatch.</td></tr>
+              <tr><td>D6 Sanitized Logging</td><td>Preserves enough telemetry for detection without keeping raw inputs or secrets.</td><td>Logs include buckets, hashes, user id, route, status, and confidence bin.</td></tr>
+              <tr><td>D8 Input Validation</td><td>Rejects malformed or out-of-domain probes before expensive model execution.</td><td>Invalid type, dimension, and schema rejects happen at the gateway.</td></tr>
+              <tr><td>D9 Constant-Time Dispatch Wrapper</td><td>Reduces timing leakage when extraction is combined with backend route inference.</td><td>Jetson and Zynq client-visible latency distributions become less distinguishable.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="research">
+        <div class="section-heading"><h2>Research Notes</h2><p>A6 can produce a clean, publishable measurement story.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Experiment curve</h3><p>Plot substitute agreement against accepted query count for open confidence, rounded confidence, top-1 labels only, and D5 budgeted modes.</p></div>
+            <div class="mini-card"><h3>Defense cost</h3><p>Measure false positives, rejected legitimate evaluation traffic, latency overhead, and accuracy impact from output shaping.</p></div>
+            <div class="mini-card"><h3>Backend comparison</h3><p>Record whether Jetson and Zynq produce identical client-visible output for the same input and whether timing reveals the route.</p></div>
+            <div class="mini-card"><h3>Portal artifact</h3><p>Show a small dashboard with query budget, confidence histogram, route latency buckets, and detector decision for each run.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="takeaways">
+        <div class="section-heading"><h2>Key Takeaways</h2><p>A6 is controlled by reducing information per query and measuring behavior across sessions.</p></div>
+        <div class="section-body">
+          <ul>
+            <li>Authentication alone does not stop model extraction; it only gives you an identity to budget and monitor.</li>
+            <li>Precise confidence, backend identity, and timing can be more useful to an attacker than a single label.</li>
+            <li>D5 should look at long-window query patterns, not just per-second request rate.</li>
+            <li>The safest lab demonstration uses synthetic samples and a toy substitute model.</li>
+            <li>A6 naturally connects to A2 resource pressure and A18 dispatch timing leakage.</li>
+          </ul>
+          <nav class="nav-grid" aria-label="Related pages">
+            <a class="nav-card" href="A5_direct_backend_exposure.html"><b>Previous threat: A5</b><span>Direct Backend Exposure. Private backend reachability and gateway bypass.</span></a>
+            <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Next threat: A7</b><span>Adversarial Input Perturbation. Dedicated page planned next.</span></a>
+            <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Primary defense: D5</b><span>Query Anomaly Detection in the live atlas inspector.</span></a>
+            <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Main atlas</b><span>Return to the architecture and attack surface map.</span></a>
+          </nav>
+        </div>
+      </section>
+    </article>
+  </div>
+</main>
+
+<script>
+const states = {
+  open: {
+    title: "Vulnerable oracle",
+    copy: "Full confidence output and no long-session budget make substitute-model agreement rise quickly.",
+    agreement: "82%",
+    detector: "18%",
+    logs: [
+      "[query] mode=open user=research-user accepted=260 confidence=precise",
+      "[oracle] top1=dog confidence=0.873 backend=jetson latency_ms=47",
+      "[extract] estimated_substitute_agreement=0.82 alerts=0",
+      "[risk] output precision and timing make the oracle useful as a training labeler"
+    ]
+  },
+  rounded: {
+    title: "Rounded output",
+    copy: "Confidence rounding lowers the value of each response, but a long session can still collect useful labels.",
+    agreement: "68%",
+    detector: "44%",
+    logs: [
+      "[query] mode=rounded user=research-user accepted=260 confidence=one_decimal",
+      "[oracle] top1=dog confidence=0.9 backend=hidden latency_bucket=normal",
+      "[extract] estimated_substitute_agreement=0.68 alerts=3",
+      "[control] output shaping reduces signal but does not replace query budgets"
+    ]
+  },
+  d5: {
+    title: "D5 enforced",
+    copy: "Budgets, confidence buckets, input similarity, and anomaly scoring interrupt the extraction-shaped session.",
+    agreement: "49%",
+    detector: "86%",
+    logs: [
+      "[query] mode=d5 user=research-user accepted=140 rejected=120",
+      "[d5] alert=boundary_seeking_query_pattern confidence_edge_hits=31",
+      "[gateway] status=429 reason=query_budget_exceeded route=not_dispatched",
+      "[secure] substitute agreement falls while evidence stays sanitized"
+    ]
+  }
+};
+
+const buttons = document.querySelectorAll("[data-state]");
+const title = document.getElementById("viz-title");
+const copy = document.getElementById("viz-copy");
+const agreement = document.getElementById("agreement-meter");
+const detector = document.getElementById("detector-meter");
+const labOutput = document.getElementById("lab-output");
+
+function renderState(name) {
+  const state = states[name];
+  title.textContent = state.title;
+  copy.textContent = state.copy;
+  agreement.style.setProperty("--value", state.agreement);
+  detector.style.setProperty("--value", state.detector);
+  labOutput.innerHTML = state.logs.map(line => {
+    const klass = line.includes("secure") || line.includes("d5") || line.includes("429") ? "log-ok" : line.includes("risk") ? "log-bad" : "log-warn";
+    return `<div class="${klass}">${line}</div>`;
+  }).join("");
+  buttons.forEach(button => button.classList.toggle("is-active", button.dataset.state === name));
+}
+
+buttons.forEach(button => button.addEventListener("click", () => renderState(button.dataset.state)));
+renderState("open");
+
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", async () => {
+    const target = document.getElementById(button.dataset.copy);
+    if (!target) return;
+    try {
+      await navigator.clipboard.writeText(target.innerText);
+      const old = button.textContent;
+      button.textContent = "Copied";
+      setTimeout(() => { button.textContent = old; }, 900);
+    } catch (error) {
+      button.textContent = "Select code";
+    }
+  });
+});
+</script>
+</body>
+</html>

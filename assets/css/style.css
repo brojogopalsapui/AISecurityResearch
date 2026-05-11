@@ -4382,6 +4382,35 @@ body.subpage::before{
   }
 }
 
+.subcontent-back-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.subcontent-fullscreen{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  padding:0 1rem;
+  border-radius:999px;
+  border:1px solid rgba(32,58,87,.12);
+  background:linear-gradient(180deg,#ffffff,#eef5ff);
+  color:#203a57;
+  font-weight:800;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:0 10px 22px rgba(20,43,71,.06);
+}
+
+.subcontent-fullscreen:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 28px rgba(20,43,71,.1);
+}
+
 @media (max-width: 760px){
   .archive-year-summary{
     grid-template-columns:auto 1fr;

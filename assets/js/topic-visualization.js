@@ -103,8 +103,9 @@
     const defaultLens = config.defaultLens && config.lenses[config.defaultLens] ? config.defaultLens : lenses[0][0];
 
     root.innerHTML = `
-      <div class="tv-back-row">
+      <div class="tv-top-actions">
         <a class="tv-back-link" href="${escapeHtml(config.backHref)}">← ${escapeHtml(config.backLabel)}</a>
+        <button class="tv-fullscreen-btn" type="button" data-tv-fullscreen>Fullscreen</button>
       </div>
       <section class="tv-hero">
         <article class="tv-hero-card">
@@ -231,5 +232,24 @@
     });
 
     syncLens(defaultLens);
+
+    const fullscreenButton = root.querySelector('[data-tv-fullscreen]');
+    if (fullscreenButton) {
+      const syncFullscreenLabel = () => {
+        fullscreenButton.textContent = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+      };
+
+      fullscreenButton.addEventListener('click', async () => {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen?.();
+        } else {
+          await document.exitFullscreen?.();
+        }
+        syncFullscreenLabel();
+      });
+
+      document.addEventListener('fullscreenchange', syncFullscreenLabel);
+      syncFullscreenLabel();
+    }
   });
 })();

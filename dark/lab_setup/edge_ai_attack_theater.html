@@ -692,12 +692,12 @@
         <p>Jetson or Zynq backend services become reachable from paths that should only reach the Pi gateway.</p>
         <div class="catalog-meta">LAN2 / firewall / backend isolation</div>
       </a>
-      <button class="catalog-card attack" type="button" data-inspect="A6" aria-label="Inspect A6 model extraction">
-        <div class="catalog-id-row"><span class="catalog-id">A6</span><span class="catalog-status">Inspector</span></div>
+      <a class="catalog-card attack" href="Threat_library/A6_model_extraction_by_querying.html" aria-label="Open A6 model extraction by querying deep dive">
+        <div class="catalog-id-row"><span class="catalog-id">A6</span><span class="catalog-status linked">Deep dive</span></div>
         <h3>Model Extraction by Querying</h3>
         <p>Repeated black-box queries approximate decision boundaries or recover sensitive model behavior.</p>
         <div class="catalog-meta">Query telemetry / anomaly detection / D5</div>
-      </button>
+      </a>
       <button class="catalog-card attack" type="button" data-inspect="A7" aria-label="Inspect A7 adversarial input perturbation">
         <div class="catalog-id-row"><span class="catalog-id">A7</span><span class="catalog-status">Inspector</span></div>
         <h3>Adversarial Input Perturbation</h3>
@@ -1003,6 +1003,7 @@ const THREATS = {
     "title": "Model Extraction via Repeated Querying",
     "severity": "medium",
     "where": "Public /api/v1/infer over long sessions",
+    "href": "Threat_library/A6_model_extraction_by_querying.html",
     "realistic": "Even authenticated APIs can leak behavior over time if query budgets and output controls are weak.",
     "howAttack": [
       "Safe lab: generate synthetic query logs and train a toy substitute model offline.",

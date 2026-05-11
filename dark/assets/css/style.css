@@ -2819,6 +2819,95 @@ body.portal-page[data-page="home"] .hero .metric-card span{
   color:#eef5ff!important;
 }
 
+.lab-teaser-panel{
+  padding:1.25rem!important;
+  background:
+    linear-gradient(135deg, rgba(24,38,61,.98), rgba(13,26,45,.99)),
+    radial-gradient(circle at 86% 18%, rgba(106,169,255,.20), transparent 38%)!important;
+  border-color:rgba(151,190,255,.20)!important;
+}
+
+.lab-teaser-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(320px,430px);
+  gap:1.35rem;
+  align-items:center;
+}
+
+.lab-teaser-copy{
+  position:relative;
+  z-index:1;
+  padding:.25rem .1rem;
+}
+
+.lab-teaser-copy h2{
+  margin:.35rem 0 0;
+}
+
+.lab-teaser-copy p{
+  max-width:70ch;
+  margin:.55rem 0 0;
+}
+
+.lab-teaser-visual{
+  position:relative;
+  display:block;
+  min-height:250px;
+  border-radius:26px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#0b1628,#07111f);
+  border:1px solid rgba(151,190,255,.20);
+  box-shadow:0 24px 52px rgba(0,0,0,.32);
+  isolation:isolate;
+}
+
+.lab-teaser-visual::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(106,169,255,.12), transparent 42%, rgba(255,180,84,.10));
+  pointer-events:none;
+  z-index:1;
+}
+
+.lab-teaser-visual img{
+  display:block;
+  width:100%;
+  min-height:250px;
+  aspect-ratio:16/10.6;
+  object-fit:cover;
+  transform:scale(1.01);
+  transition:transform .28s ease, filter .28s ease;
+}
+
+.lab-teaser-visual:hover img{
+  transform:scale(1.045);
+  filter:saturate(1.08) contrast(1.04);
+}
+
+.lab-teaser-status{
+  position:absolute;
+  right:14px;
+  bottom:14px;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  min-height:34px;
+  padding:0 .78rem;
+  border-radius:999px;
+  background:linear-gradient(135deg,#8cc4ff,#69ddf0);
+  color:#07111f;
+  font-size:.78rem;
+  font-weight:800;
+  box-shadow:0 12px 24px rgba(83,229,246,.22);
+}
+
+@media (max-width:900px){
+  .lab-teaser-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 body.portal-page a.trending-link,
 body.portal-page .nav a.trending-link,
 body.portal-page .footer-grid a.trending-link,
@@ -5143,6 +5232,35 @@ body.portal-page[data-page="trending"] .accordion.is-open{
     animation:none;
     opacity:.35;
   }
+}
+
+.tv-back-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.tv-fullscreen-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:0 1rem;
+  border-radius:999px;
+  border:1px solid rgba(160,190,255,.18);
+  background:linear-gradient(180deg,rgba(17,26,40,.96),rgba(23,34,50,.96));
+  color:#dceaff;
+  font-weight:800;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:0 14px 28px rgba(0,0,0,.25);
+}
+
+.tv-fullscreen-link:hover{
+  transform:translateY(-1px);
+  box-shadow:0 18px 34px rgba(0,0,0,.32);
 }
 
 @media (max-width: 760px){
