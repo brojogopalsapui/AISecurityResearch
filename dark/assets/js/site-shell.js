@@ -192,7 +192,7 @@
                 <small>Brojogopal Sapui</small>
               </span>
             </a>
-            <a class="shell-theme-switch" href="${lightHref}">Light Version</a>
+            <a class="shell-theme-switch shell-theme-switch--header" href="${lightHref}">Light Version</a>
             <button class="shell-menu-btn" id="shellMenuBtn" aria-label="Open navigation" aria-controls="shellNav" aria-expanded="false">
               <span></span><span></span><span></span>
             </button>
