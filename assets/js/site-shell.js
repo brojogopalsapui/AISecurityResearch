@@ -1,5 +1,126 @@
 (function(){
   const SITE_VARIANT_KEY = 'portalPreferredVersion';
+  const PORTAL_FULLSCREEN_FRAME_PARAM = 'fullscreenFrame';
+
+  function isPortalFullscreenFrame() {
+    try {
+      return window.self !== window.top && new URL(window.location.href).searchParams.get(PORTAL_FULLSCREEN_FRAME_PARAM) === '1';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function fullscreenFrameUrl(href = window.location.href) {
+    const url = new URL(href, window.location.href);
+    url.searchParams.set(PORTAL_FULLSCREEN_FRAME_PARAM, '1');
+    return url.href;
+  }
+
+  function displayUrlFromFrame(frame) {
+    try {
+      const url = new URL(frame.contentWindow.location.href);
+      url.searchParams.delete(PORTAL_FULLSCREEN_FRAME_PARAM);
+      return url.href;
+    } catch (error) {
+      return '';
+    }
+  }
+
+  function prepareFullscreenFrame(frame) {
+    try {
+      const doc = frame.contentDocument;
+      if (!doc) return;
+
+      if (!doc.getElementById('portal-fullscreen-frame-style')) {
+        const style = doc.createElement('style');
+        style.id = 'portal-fullscreen-frame-style';
+        style.textContent = `
+          .global-fullscreen-toggle,
+          .subcontent-fullscreen,
+          .tv-fullscreen-link{display:none!important}
+        `;
+        doc.head.appendChild(style);
+      }
+
+      doc.querySelectorAll('a[href]').forEach((link) => {
+        if (link.hasAttribute('download')) return;
+        const target = (link.getAttribute('target') || '').toLowerCase();
+        if (target && target !== '_self') return;
+
+        const url = new URL(link.getAttribute('href'), doc.location.href);
+        if (url.origin !== window.location.origin) return;
+        if (!/^https?:$/.test(url.protocol)) return;
+        url.searchParams.set(PORTAL_FULLSCREEN_FRAME_PARAM, '1');
+        link.setAttribute('href', url.href);
+      });
+    } catch (error) {
+      // Cross-origin destinations cannot be adjusted; leave them alone.
+    }
+  }
+
+  function ensureFullscreenOverlayStyles() {
+    if (document.getElementById('portal-fullscreen-overlay-style')) return;
+
+    const style = document.createElement('style');
+    style.id = 'portal-fullscreen-overlay-style';
+    style.textContent = `
+      .portal-fullscreen-overlay{position:fixed;inset:0;z-index:2147483647;background:#020817}
+      .portal-fullscreen-frame{width:100%;height:100%;border:0;background:#fff}
+      .portal-fullscreen-exit{position:fixed;top:12px;right:12px;z-index:2}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function closePersistentFullscreenOverlay(syncLocation = false) {
+    const overlay = document.querySelector('[data-portal-fullscreen-overlay]');
+    const frame = overlay?.querySelector('iframe');
+    const nextHref = syncLocation && frame ? displayUrlFromFrame(frame) : '';
+
+    overlay?.remove();
+    document.documentElement.classList.remove('portal-fullscreen-active');
+
+    if (nextHref && nextHref !== window.location.href) {
+      window.location.href = nextHref;
+    }
+  }
+
+  function openPersistentFullscreenOverlay() {
+    if (document.querySelector('[data-portal-fullscreen-overlay]')) return;
+
+    ensureFullscreenOverlayStyles();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'portal-fullscreen-overlay';
+    overlay.dataset.portalFullscreenOverlay = 'true';
+
+    const frame = document.createElement('iframe');
+    frame.className = 'portal-fullscreen-frame';
+    frame.title = 'Fullscreen site view';
+    frame.src = fullscreenFrameUrl();
+
+    const exitButton = document.createElement('button');
+    exitButton.type = 'button';
+    exitButton.className = 'global-fullscreen-toggle portal-fullscreen-exit';
+    exitButton.textContent = 'exit full screen';
+    exitButton.setAttribute('aria-label', 'Exit fullscreen');
+    exitButton.setAttribute('aria-pressed', 'true');
+
+    frame.addEventListener('load', () => prepareFullscreenFrame(frame));
+    exitButton.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen?.();
+        }
+      } catch (error) {
+        // Keep the manual exit path usable if the browser blocks the promise.
+      }
+      closePersistentFullscreenOverlay(true);
+    });
+
+    overlay.append(frame, exitButton);
+    document.body.appendChild(overlay);
+    document.documentElement.classList.add('portal-fullscreen-active');
+  }
 
   function depthPrefix(){
     const depth = Number(document.body?.dataset?.depth || 0);
@@ -46,6 +167,8 @@
   }
 
   function initGlobalFullscreenToggle() {
+    if (isPortalFullscreenFrame()) return;
+
     const target = document.fullscreenEnabled === false ? null : document.documentElement;
     if (!target?.requestFullscreen) return;
 
@@ -81,8 +204,10 @@
         try {
           if (!document.fullscreenElement) {
             await target.requestFullscreen?.();
+            openPersistentFullscreenOverlay();
           } else {
             await document.exitFullscreen?.();
+            closePersistentFullscreenOverlay(true);
           }
         } catch (error) {
           // Some embedded browsers block fullscreen; leave the page usable.
@@ -94,6 +219,9 @@
     if (!window.__globalFullscreenToggleBound) {
       window.__globalFullscreenToggleBound = true;
       document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+          closePersistentFullscreenOverlay(true);
+        }
         document.querySelectorAll('[data-global-fullscreen]').forEach((fullscreenButton) => {
           const isFullscreen = Boolean(document.fullscreenElement);
           fullscreenButton.textContent = isFullscreen ? 'exit full screen' : 'full screen';
