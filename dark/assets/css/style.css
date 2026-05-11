@@ -2829,8 +2829,8 @@ body.portal-page[data-page="home"] .hero .metric-card span{
 
 .lab-teaser-grid{
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(320px,430px);
-  gap:1.35rem;
+  grid-template-columns:minmax(0,1fr) minmax(260px,360px);
+  gap:1rem;
   align-items:center;
 }
 
@@ -2852,7 +2852,10 @@ body.portal-page[data-page="home"] .hero .metric-card span{
 .lab-teaser-visual{
   position:relative;
   display:block;
-  min-height:250px;
+  width:100%;
+  max-width:360px;
+  min-height:218px;
+  justify-self:end;
   border-radius:26px;
   overflow:hidden;
   background:linear-gradient(180deg,#0b1628,#07111f);
@@ -2873,7 +2876,7 @@ body.portal-page[data-page="home"] .hero .metric-card span{
 .lab-teaser-visual img{
   display:block;
   width:100%;
-  min-height:250px;
+  min-height:218px;
   aspect-ratio:16/10.6;
   object-fit:cover;
   transform:scale(1.01);
@@ -2902,9 +2905,14 @@ body.portal-page[data-page="home"] .hero .metric-card span{
   box-shadow:0 12px 24px rgba(83,229,246,.22);
 }
 
-@media (max-width:900px){
+@media (max-width:760px){
   .lab-teaser-grid{
     grid-template-columns:1fr;
+  }
+
+  .lab-teaser-visual{
+    max-width:none;
+    justify-self:stretch;
   }
 }
 
