@@ -4659,3 +4659,83 @@ body.subpage::before{
     0 30px 68px rgba(23,53,87,.15),
     0 0 0 1px rgba(33,87,213,.07)!important;
 }
+
+/* Stronger light contrast pass: grey stage, pure white subpage boxes */
+body{
+  background:
+    radial-gradient(circle at 6% 10%, rgba(45,103,246,.055), transparent 24%),
+    radial-gradient(circle at 92% 8%, rgba(240,178,77,.055), transparent 21%),
+    linear-gradient(180deg,#d9e1eb 0%,#e5ebf2 44%,#f1f4f7 100%)!important;
+}
+
+.page-hero,
+.section,
+.section.alt{
+  background:transparent!important;
+}
+
+.section + .section::before{
+  background:linear-gradient(90deg, rgba(15,31,50,0), rgba(15,31,50,.18), rgba(15,31,50,0))!important;
+}
+
+.hero-visual,
+.content-card,
+.post-card,
+.topic-card,
+.section-card,
+.cta,
+.resource-card,
+.watch-note,
+.watch-block,
+.resource-mini,
+.toc,
+.page-figure,
+.lifecycle-fig,
+.landscape-card,
+.compact-figure,
+.accordion,
+.foundational-figure,
+.stat-card,
+.snapshot-box,
+.mini-card,
+.callout,
+.resource-note,
+.watch-bottom-note,
+.table-wrap,
+.page-hero .content-card,
+.page-hero .hero-visual,
+.page-hero .topic-card,
+.page-hero .section-card,
+.page-hero .resource-card,
+.page-hero .watch-note,
+.page-hero .toc,
+.page-hero .snapshot-box,
+.page-hero .mini-card,
+.page-hero .stat-card,
+.page-hero .accordion{
+  background:#ffffff!important;
+  border:1.9px solid rgba(15,31,50,.22)!important;
+  box-shadow:
+    0 30px 76px rgba(22,44,70,.18),
+    0 0 0 1px rgba(255,255,255,.96) inset!important;
+  backdrop-filter:none!important;
+}
+
+.content-card:hover,
+.post-card:hover,
+.topic-card:hover,
+.section-card:hover,
+.cta:hover,
+.resource-card:hover,
+.watch-note:hover,
+.accordion:hover,
+.foundational-figure:hover,
+.stat-card:hover,
+.hero-visual:hover,
+.page-figure:hover,
+.toc:hover{
+  border-color:rgba(33,87,213,.34)!important;
+  box-shadow:
+    0 36px 86px rgba(22,44,70,.22),
+    0 0 0 1px rgba(33,87,213,.09)!important;
+}

@@ -1114,6 +1114,63 @@ body{
   border-color:rgba(18,36,58,.18);
 }
 
+/* Stronger light contrast pass: grey stage, pure white cards */
+body{
+  background:
+    radial-gradient(circle at 5% 8%, rgba(47,109,246,.06), transparent 24%),
+    radial-gradient(circle at 96% 10%, rgba(255,182,72,.055), transparent 20%),
+    linear-gradient(180deg,#d9e1eb 0%,#e5ebf2 44%,#f1f4f7 100%)!important;
+}
+
+.hero,
+.section,
+.section.alt{
+  background:transparent!important;
+}
+
+.section + .section::before{
+  background:linear-gradient(90deg, rgba(15,31,50,0), rgba(15,31,50,.18), rgba(15,31,50,0))!important;
+}
+
+.card,
+.quick-card,
+.feature-card,
+.info-card,
+.watch-card,
+.faq-card,
+.panel,
+.footer-panel,
+.profile-card,
+.support-card,
+.topic-card,
+.foundation-card,
+.portal-visual,
+.hero-search,
+.metric-card,
+.mini-link,
+.lab-teaser-panel{
+  background:#ffffff!important;
+  border:1.9px solid rgba(15,31,50,.22)!important;
+  box-shadow:
+    0 30px 76px rgba(22,44,70,.18),
+    0 0 0 1px rgba(255,255,255,.96) inset!important;
+}
+
+.quick-card:hover,
+.feature-card:hover,
+.watch-card:hover,
+.mini-link:hover,
+.foundation-card:hover,
+.topic-card:hover,
+.footer-links a:hover,
+.profile-card:hover,
+.lab-teaser-panel:hover{
+  border-color:rgba(33,87,213,.34)!important;
+  box-shadow:
+    0 36px 86px rgba(22,44,70,.22),
+    0 0 0 1px rgba(33,87,213,.09)!important;
+}
+
 /* Light portal surface pass: soft page stage with crisp white panels */
 body{
   background:
