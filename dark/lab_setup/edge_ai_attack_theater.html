@@ -66,6 +66,22 @@
   .header-meta { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-2); line-height: 1.7; }
   .header-meta .live { color: var(--green); }
   .header-meta .new { color: var(--hw-orange); }
+  .atlas-back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    margin-bottom: 8px;
+    padding: 7px 11px;
+    border: 1px solid var(--text-0);
+    border-radius: 3px;
+    background: var(--text-0);
+    color: var(--bg-0);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .atlas-back:hover { border-color: var(--cyan); background: var(--cyan); color: var(--bg-0); }
   .pulse { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 6px; animation: pulse 1.6s ease-in-out infinite; }
   @keyframes pulse { 50% { opacity: 0.3; } }
 
@@ -120,10 +136,11 @@
   .attack-marker:hover .attack-dot { fill: var(--red-glow); transform: scale(1.4); transform-box: fill-box; transform-origin: center; }
   .attack-marker.is-active .attack-dot { fill: var(--red-glow); transform: scale(1.45); transform-box: fill-box; transform-origin: center; }
   .attack-marker.is-active .attack-pulse { stroke-width: 2; opacity: 0.95; }
-  .attack-label { fill: var(--red); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; pointer-events: none; }
+  .attack-label { fill: var(--red); stroke: var(--bg-1); stroke-width: 3px; stroke-linejoin: round; paint-order: stroke; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; pointer-events: none; }
   .attack-label.hw { fill: var(--hw-orange); }
   .secure-marker .secure-dot { fill: var(--green); opacity: 0.9; }
   .secure-marker .secure-ring { fill: none; stroke: var(--green); stroke-width: 1; opacity: 0.4; }
+  .secure-marker .attack-label { fill: var(--green); }
   .secure-marker.is-active .secure-dot { fill: var(--green); filter: drop-shadow(0 0 8px var(--green)); }
 
   .link { fill: none; stroke-width: 1.5; }
@@ -240,10 +257,14 @@
   .catalog-card { appearance: none; -webkit-appearance: none; width: 100%; min-height: 178px; display: flex; flex-direction: column; gap: 9px; padding: 15px; border: 1px solid var(--line); border-top: 3px solid var(--red); border-radius: 6px; background: var(--bg-1); color: var(--text-0); text-align: left; text-decoration: none; cursor: pointer; transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease; font: inherit; }
   .catalog-card:hover { transform: translateY(-2px); background: var(--bg-2); border-color: var(--line-strong); }
   .catalog-card:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+  .catalog-card.attack { border-top-color: var(--red); }
   .catalog-card.hardware { border-top-color: var(--hw-orange); }
   .catalog-card.defense { border-top-color: var(--green); }
   .catalog-id-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .catalog-id { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-0); border: 1px solid var(--line-strong); border-radius: 3px; padding: 4px 7px; letter-spacing: 0.08em; }
+  .catalog-card.attack .catalog-id { color: var(--red); border-color: rgba(255, 77, 109, 0.42); background: rgba(255, 77, 109, 0.08); }
+  .catalog-card.hardware .catalog-id { color: var(--hw-orange); border-color: rgba(255, 140, 66, 0.44); background: rgba(255, 140, 66, 0.09); }
+  .catalog-card.defense .catalog-id { color: var(--green); border-color: rgba(0, 255, 163, 0.34); background: rgba(0, 255, 163, 0.07); }
   .catalog-status { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-2); border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
   .catalog-status.linked { color: var(--cyan); border-color: rgba(77, 208, 225, 0.35); background: rgba(77, 208, 225, 0.07); }
   .catalog-card h3 { font-size: 17px; line-height: 1.25; margin: 0; color: var(--text-0); letter-spacing: 0; }
@@ -289,6 +310,8 @@
     .catalog-header { flex-direction: column; align-items: flex-start; gap: 10px; }
     .catalog-grid { grid-template-columns: 1fr; }
     .catalog-card { min-height: auto; }
+    header { flex-direction: column; gap: 16px; }
+    .header-meta { text-align: left; }
     h1 { font-size: 26px; }
   }
 </style>
@@ -302,6 +325,7 @@
       <p class="subtitle">Live topology of the GPU / Jetson / Z7-7020 FPGA / Raspberry&nbsp;Pi gateway lab. Click red markers for software attacks, orange markers for hardware/silicon attacks, green for defenses, and any device for its role and trust level. Attack notes are scoped to owned, isolated lab validation.</p>
     </div>
     <div class="header-meta">
+      <a class="atlas-back" href="../index.html">&larr; Back to site</a>
       <div><span class="live"><span class="pulse"></span>SESSION ACTIVE</span></div>
       <div>v0.2 // <span class="new">ZYNQ-7020 ADDED</span></div>
       <div>OPERATOR: research_node_01</div>

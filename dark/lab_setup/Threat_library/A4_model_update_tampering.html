@@ -179,6 +179,20 @@
     color: var(--navy);
   }
 
+  .crumbs a.back-link {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: var(--panel);
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(23, 35, 51, 0.16);
+  }
+
+  .crumbs a.back-link:hover {
+    border-color: var(--cyan);
+    background: var(--cyan);
+    color: var(--panel);
+  }
+
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 340px;
@@ -945,7 +959,7 @@
       </div>
     </div>
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="../edge_ai_attack_theater.html">Main atlas</a>
+      <a class="back-link" href="../edge_ai_attack_theater.html">&larr; Back to atlas</a>
       <span>Threat Library</span>
       <span>A4</span>
     </nav>
