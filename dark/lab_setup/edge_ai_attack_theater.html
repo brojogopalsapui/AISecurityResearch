@@ -94,6 +94,9 @@
   svg.architecture { width: 100%; display: block; }
 
   .zone-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; fill: var(--text-2); }
+  .zone-tab-bg { fill: var(--bg-1); stroke: var(--line-strong); stroke-width: 1; opacity: 0.94; }
+  .zone-tab-title { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .zone-tab-sub { font-family: 'JetBrains Mono', monospace; font-size: 8px; fill: var(--text-2); letter-spacing: 0.1em; text-transform: uppercase; }
 
   .node-card { cursor: pointer; }
   .node-bg { fill: var(--bg-2); stroke: var(--line-strong); stroke-width: 1; transition: all 0.25s ease; }
@@ -319,19 +322,39 @@
 
         <!-- ZONE BOXES -->
         <rect class="zone-box training" x="30" y="60" width="240" height="220" rx="6" />
-        <text class="zone-label" x="40" y="80" fill="#f5c451">// REMOTE • MODEL FACTORY + BITSTREAM BUILD</text>
+        <g class="zone-tab" transform="translate(42,70)">
+          <rect class="zone-tab-bg" width="190" height="38" rx="4" />
+          <text class="zone-tab-title" x="10" y="15" fill="#f5c451">REMOTE</text>
+          <text class="zone-tab-sub" x="10" y="30">MODEL + BITSTREAM BUILD</text>
+        </g>
 
         <rect class="zone-box public" x="30" y="320" width="240" height="380" rx="6" />
-        <text class="zone-label" x="40" y="340" fill="#58a6ff">// CLIENT • PUBLIC SIDE</text>
+        <g class="zone-tab" transform="translate(42,330)">
+          <rect class="zone-tab-bg" width="148" height="38" rx="4" />
+          <text class="zone-tab-title" x="10" y="15" fill="#58a6ff">CLIENT</text>
+          <text class="zone-tab-sub" x="10" y="30">PUBLIC SIDE</text>
+        </g>
 
         <rect class="zone-box" x="320" y="60" width="430" height="780" rx="6" />
-        <text class="zone-label" x="330" y="80" fill="#a78bfa">// GATEWAY • DMZ • TRUST BOUNDARY</text>
+        <g class="zone-tab" transform="translate(332,70)">
+          <rect class="zone-tab-bg" width="180" height="38" rx="4" />
+          <text class="zone-tab-title" x="10" y="15" fill="#a78bfa">GATEWAY / DMZ</text>
+          <text class="zone-tab-sub" x="10" y="30">TRUST BOUNDARY</text>
+        </g>
 
         <rect class="zone-box private" x="800" y="60" width="370" height="510" rx="6" />
-        <text class="zone-label" x="810" y="80" fill="#00b873">// PRIVATE BACKEND • INFERENCE</text>
+        <g class="zone-tab" transform="translate(812,70)">
+          <rect class="zone-tab-bg" width="184" height="38" rx="4" />
+          <text class="zone-tab-title" x="10" y="15" fill="#00b873">PRIVATE BACKEND</text>
+          <text class="zone-tab-sub" x="10" y="30">INFERENCE LAN2</text>
+        </g>
 
         <rect class="zone-box physical" x="800" y="595" width="370" height="240" rx="6" />
-        <text class="zone-label" x="810" y="615" fill="#f97583">// PHYSICAL ATTACK SURFACE • SILICON</text>
+        <g class="zone-tab" transform="translate(812,605)">
+          <rect class="zone-tab-bg" width="210" height="38" rx="4" />
+          <text class="zone-tab-title" x="10" y="15" fill="#f97583">PHYSICAL SURFACE</text>
+          <text class="zone-tab-sub" x="10" y="30">SILICON + BOARD ACCESS</text>
+        </g>
         <g class="physical-surface-card" transform="translate(820,648)">
           <rect class="physical-surface-bg" width="154" height="136" rx="4" />
           <text class="physical-surface-title" x="12" y="22">PROBE TARGETS</text>
@@ -523,7 +546,7 @@
         <!-- SW (existing) -->
         <g class="attack-marker" data-id="A1" transform="translate(560, 330)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="-25" y="-10">A1</text></g>
         <g class="attack-marker" data-id="A2" transform="translate(430, 470)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="10" y="22">A2</text></g>
-        <g class="attack-marker" data-id="A3" transform="translate(660, 400)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="10" y="-8">A3</text></g>
+        <g class="attack-marker" data-id="A3" transform="translate(720, 400)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="10" y="-8">A3</text></g>
         <g class="attack-marker" data-id="A4" transform="translate(395, 200)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="10" y="-8">A4</text></g>
         <g class="attack-marker" data-id="A5" transform="translate(820, 200)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="-25" y="-8">A5</text></g>
         <g class="attack-marker" data-id="A6" transform="translate(615, 510)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="10" y="22">A6</text></g>
@@ -531,7 +554,7 @@
         <g class="attack-marker" data-id="A8" transform="translate(740, 350)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="10" y="22">A8</text></g>
         <g class="attack-marker" data-id="A9" transform="translate(380, 540)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="10" y="22">A9</text></g>
         <g class="attack-marker" data-id="A10" transform="translate(150, 500)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="-32" y="22">A10</text></g>
-        <g class="attack-marker" data-id="A11" transform="translate(150, 250)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="10" y="-8">A11</text></g>
+        <g class="attack-marker" data-id="A11" transform="translate(220, 250)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="-34" y="-12">A11</text></g>
         <g class="attack-marker" data-id="A12" transform="translate(345, 410)"><circle class="attack-pulse" r="6" /><circle class="attack-dot" r="6" /><text class="attack-label" x="-32" y="-8">A12</text></g>
 
         <!-- HW (NEW: A13-A18) -->
@@ -544,7 +567,7 @@
 
         <!-- DEFENSES (existing) -->
         <g class="attack-marker secure-marker" data-id="D1" transform="translate(660, 360)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="10" y="-8" fill="#00ffa3">D1</text></g>
-        <g class="attack-marker secure-marker" data-id="D2" transform="translate(660, 450)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="10" y="22" fill="#00ffa3">D2</text></g>
+        <g class="attack-marker secure-marker" data-id="D2" transform="translate(660, 450)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="12" y="-14" fill="#00ffa3">D2</text></g>
         <g class="attack-marker secure-marker" data-id="D3" transform="translate(560, 420)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="-30" y="22" fill="#00ffa3">D3</text></g>
         <g class="attack-marker secure-marker" data-id="D4" transform="translate(800, 470)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="-30" y="22" fill="#00ffa3">D4</text></g>
         <g class="attack-marker secure-marker" data-id="D5" transform="translate(560, 470)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="-30" y="22" fill="#00ffa3">D5</text></g>
@@ -554,7 +577,7 @@
 
         <!-- DEFENSES (NEW: D9-D11 for HW) -->
         <g class="attack-marker secure-marker" data-id="D9" transform="translate(740, 280)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="10" y="-8" fill="#00ffa3">D9</text></g>
-        <g class="attack-marker secure-marker" data-id="D10" transform="translate(990, 470)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="10" y="-8" fill="#00ffa3">D10</text></g>
+        <g class="attack-marker secure-marker" data-id="D10" transform="translate(1120, 500)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="-20" y="34" fill="#00ffa3">D10</text></g>
         <g class="attack-marker secure-marker" data-id="D11" transform="translate(990, 540)"><circle class="secure-ring" r="9" /><circle class="secure-dot" r="5" /><text class="attack-label" x="10" y="22" fill="#00ffa3">D11</text></g>
 
         <!-- Animated packets -->

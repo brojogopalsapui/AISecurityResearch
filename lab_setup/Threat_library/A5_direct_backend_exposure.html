@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A5 | Direct Backend Exposure</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f5f7fb;
+    --panel: #ffffff;
+    --panel-2: #eef3f8;
+    --ink: #10151c;
+    --muted: #5e6c7a;
+    --soft: #8795a4;
+    --line: #d8e0e8;
+    --line-strong: #b9c5d1;
+    --navy: #172333;
+    --cyan: #00a7bd;
+    --blue: #2c70d8;
+    --green: #158b55;
+    --lime: #74b816;
+    --amber: #c77900;
+    --orange: #f26d21;
+    --red: #d63447;
+    --violet: #7656d6;
+    --rose: #bd476a;
+    --shadow: 0 18px 44px rgba(29, 44, 61, 0.13);
+    --radius: 8px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      linear-gradient(90deg, rgba(16, 21, 28, 0.04) 1px, transparent 1px),
+      linear-gradient(rgba(16, 21, 28, 0.035) 1px, transparent 1px),
+      linear-gradient(140deg, #f5f7fb 0%, #edf4f7 45%, #f8f9fb 100%);
+    background-size: 28px 28px, 28px 28px, auto;
+    color: var(--ink);
+    font: 15px/1.58 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(0, 167, 189, 0.12), transparent 32%),
+      linear-gradient(290deg, rgba(242, 109, 33, 0.12), transparent 34%);
+    opacity: 0.9;
+    z-index: -1;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .app {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 18px 0 54px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    min-height: 72px;
+    padding: 12px 0;
+    background: rgba(245, 247, 251, 0.84);
+    border-bottom: 1px solid rgba(185, 197, 209, 0.65);
+    backdrop-filter: blur(16px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(135deg, rgba(0, 167, 189, 0.2), transparent 46%),
+      linear-gradient(315deg, rgba(242, 109, 33, 0.2), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(23, 35, 51, 0.1);
+  }
+
+  .brand-mark span {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--navy);
+  }
+
+  .brand-mark span:nth-child(1) {
+    top: 13px;
+  }
+
+  .brand-mark span:nth-child(2) {
+    top: 21px;
+    background: var(--cyan);
+  }
+
+  .brand-mark span:nth-child(3) {
+    top: 29px;
+  }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.12;
+    font-weight: 780;
+  }
+
+  .brand p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .crumbs,
+  .pill-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .crumbs {
+    justify-content: flex-end;
+  }
+
+  .crumbs a,
+  .crumbs span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 31px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .crumbs a:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    align-items: stretch;
+    margin: 18px 0;
+  }
+
+  .hero-card,
+  .side-card,
+  .section,
+  .nav-card,
+  .mini-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-card {
+    padding: 22px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 820;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(214, 52, 71, 0.12);
+  }
+
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+
+  .hero h2 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 54px);
+    line-height: 1.02;
+    letter-spacing: 0;
+  }
+
+  .hero .lede {
+    max-width: 850px;
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .side-card {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+  }
+
+  .fact b {
+    display: block;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .fact span {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .toc {
+    position: sticky;
+    top: 92px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: var(--shadow);
+    padding: 14px;
+  }
+
+  .toc b {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .toc a {
+    display: block;
+    border-radius: 7px;
+    padding: 7px 8px;
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    background: var(--panel-2);
+    color: var(--navy);
+  }
+
+  .content {
+    display: grid;
+    gap: 18px;
+  }
+
+  .section {
+    overflow: hidden;
+  }
+
+  .section-heading {
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(238, 243, 248, 0.92);
+  }
+
+  .section-heading h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .section-heading p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .section-body {
+    padding: 16px;
+  }
+
+  .section-body p:last-child,
+  .mini-card p:last-child,
+  .callout p:last-child {
+    margin-bottom: 0;
+  }
+
+  .grid-2,
+  .grid-3 {
+    display: grid;
+    gap: 12px;
+  }
+
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mini-card {
+    box-shadow: none;
+    padding: 14px;
+  }
+
+  .mini-card h3 {
+    margin: 0 0 7px;
+    font-size: 15px;
+  }
+
+  .mini-card p,
+  .mini-card li,
+  .section-body li {
+    color: var(--muted);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 25px;
+    border-radius: 999px;
+    padding: 4px 9px;
+    background: rgba(214, 52, 71, 0.1);
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .tag.def {
+    background: rgba(21, 139, 85, 0.1);
+    color: var(--green);
+  }
+
+  .tag.hw {
+    background: rgba(242, 109, 33, 0.12);
+    color: var(--orange);
+  }
+
+  .tag.info {
+    background: rgba(44, 112, 216, 0.1);
+    color: var(--blue);
+  }
+
+  .tag.supply {
+    background: rgba(199, 121, 0, 0.1);
+    color: var(--amber);
+  }
+
+  .callout {
+    border: 1px solid rgba(214, 52, 71, 0.26);
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 14px;
+  }
+
+  .callout.safe {
+    border-color: rgba(21, 139, 85, 0.28);
+    border-left-color: var(--green);
+  }
+
+  .architecture-viz {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .viz-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fbfcfe;
+    overflow: hidden;
+  }
+
+  .viz-panel svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .viz-controls {
+    display: grid;
+    gap: 8px;
+  }
+
+  .viz-controls button,
+  .copy-button {
+    min-height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--navy);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 720;
+  }
+
+  .viz-controls button.is-active {
+    color: #fff;
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+
+  .viz-status {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+  }
+
+  .viz-status b {
+    display: block;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .viz-status span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .zone {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.4;
+  }
+
+  .zone.factory {
+    fill: rgba(199, 121, 0, 0.08);
+    stroke: rgba(199, 121, 0, 0.42);
+  }
+
+  .zone.gateway {
+    fill: rgba(118, 86, 214, 0.08);
+    stroke: rgba(118, 86, 214, 0.42);
+  }
+
+  .zone.private {
+    fill: rgba(21, 139, 85, 0.08);
+    stroke: rgba(21, 139, 85, 0.42);
+  }
+
+  .zone-label {
+    fill: var(--muted);
+    font-size: 11px;
+    font-weight: 780;
+    text-transform: uppercase;
+  }
+
+  .node,
+  .artifact-card {
+    fill: #fff;
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 8px 14px rgba(23, 35, 51, 0.1));
+  }
+
+  .node-title {
+    fill: var(--ink);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .node-sub {
+    fill: var(--muted);
+    font-size: 10px;
+    font-weight: 650;
+  }
+
+  .flow {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.65;
+  }
+
+  .flow.build {
+    stroke: var(--amber);
+  }
+
+  .flow.private {
+    stroke: var(--green);
+  }
+
+  .flow.attack {
+    stroke: var(--red);
+    stroke-dasharray: 8 7;
+  }
+
+  .flow.def {
+    stroke: var(--green);
+  }
+
+  .flow.is-muted {
+    opacity: 0.18;
+  }
+
+  .flow.is-hot {
+    opacity: 1;
+    stroke-width: 5;
+    filter: drop-shadow(0 0 7px rgba(214, 52, 71, 0.35));
+  }
+
+  .policy-box {
+    fill: rgba(214, 52, 71, 0.12);
+    stroke: var(--red);
+    stroke-width: 1.5;
+  }
+
+  .policy-box.good {
+    fill: rgba(21, 139, 85, 0.13);
+    stroke: var(--green);
+  }
+
+  .policy-label {
+    fill: var(--navy);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .artifact-good {
+    fill: rgba(21, 139, 85, 0.13);
+    stroke: var(--green);
+  }
+
+  .artifact-bad {
+    fill: rgba(214, 52, 71, 0.12);
+    stroke: var(--red);
+  }
+
+  .packet {
+    fill: var(--red);
+    filter: drop-shadow(0 0 6px rgba(214, 52, 71, 0.35));
+  }
+
+  .lab-output {
+    min-height: 224px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--muted);
+    font-size: 12px;
+    white-space: pre-wrap;
+  }
+
+  .log-ok {
+    color: var(--green);
+  }
+
+  .log-warn {
+    color: var(--amber);
+  }
+
+  .log-bad {
+    color: var(--red);
+  }
+
+  .code-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #0f1723;
+  }
+
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: #172333;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .copy-button {
+    min-height: 30px;
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 5px 9px;
+    font-size: 12px;
+  }
+
+  .mini-card .copy-button {
+    border-color: var(--line-strong);
+    background: #fff;
+    color: var(--navy);
+  }
+
+  pre {
+    margin: 0;
+    max-height: 580px;
+    overflow: auto;
+    padding: 14px;
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  pre code {
+    color: #d9e6f2;
+  }
+
+  .formula {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+    padding: 14px;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--navy);
+  }
+
+  .matrix {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .matrix th,
+  .matrix td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 13px;
+  }
+
+  .matrix th {
+    background: var(--panel-2);
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .matrix tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .nav-card {
+    display: block;
+    min-height: 92px;
+    padding: 14px;
+    text-decoration: none;
+  }
+
+  .nav-card b {
+    display: block;
+    color: var(--navy);
+  }
+
+  .nav-card span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .nav-card.muted {
+    opacity: 0.62;
+  }
+
+  .nav-card:hover {
+    border-color: var(--navy);
+  }
+
+  @media (max-width: 980px) {
+    .hero,
+    .layout,
+    .architecture-viz {
+      grid-template-columns: 1fr;
+    }
+
+    .toc {
+      position: static;
+    }
+
+    .grid-2,
+    .grid-3,
+    .nav-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      width: min(100% - 20px, 1180px);
+    }
+
+    .topbar {
+      grid-template-columns: 1fr;
+    }
+
+    .crumbs {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 1ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <h1>Edge AI Security Atlas</h1>
+        <p>Threat Library deep dive for backend isolation, VLAN boundaries, and gateway-only accelerator access.</p>
+      </div>
+    </div>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../edge_ai_attack_theater.html">Main atlas</a>
+      <span>Threat Library</span>
+      <span>A5</span>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-card">
+      <span class="eyebrow">A5 / Software attack / High</span>
+      <h2 id="page-title">Direct Backend Exposure</h2>
+      <p class="lede">Jetson Orin Nano or Zynq-7020 backend services become reachable from the client side instead of being reachable only through the Raspberry Pi gateway. The immediate risk is gateway-control bypass: authentication, rate limits, request shaping, audit logging, and dispatch policy no longer mediate access to the accelerators.</p>
+    </div>
+    <aside class="side-card" aria-label="Attack summary">
+      <div class="fact"><b>Architecture point</b><span>Client VLAN to private backend boundary around Jetson :8001 and Zynq :8002</span></div>
+      <div class="fact"><b>Primary control</b><span>D4 Private Backend Subnet</span></div>
+      <div class="fact"><b>Secondary controls</b><span>D1 Auth, D2 Rate Limits, D3 TLS, D5 Anomaly Detection, D6 Logging, D8 Timeouts</span></div>
+      <div class="fact"><b>Lab safety scope</b><span>Local policy simulation and synthetic logs only</span></div>
+    </aside>
+  </section>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Article sections">
+      <b>Article map</b>
+      <a href="#where">Where It Appears</a>
+      <a href="#model">Threat Model</a>
+      <a href="#intuition">Attack Intuition</a>
+      <a href="#technical">Technical Explanation</a>
+      <a href="#math">Mathematical View</a>
+      <a href="#lab">Safe Lab Demonstration</a>
+      <a href="#code">Local Lab Code</a>
+      <a href="#setup">Your Edge AI Setup</a>
+      <a href="#signals">Observable Signals</a>
+      <a href="#impact">Impact Analysis</a>
+      <a href="#mapping">Framework Mapping</a>
+      <a href="#defenses">Defense Mapping</a>
+      <a href="#research">Research Notes</a>
+      <a href="#takeaways">Key Takeaways</a>
+    </nav>
+
+    <article class="content">
+      <section class="section" id="where">
+        <div class="section-heading">
+          <h2>Where It Appears In The Edge AI Architecture</h2>
+          <p>A5 sits at the boundary between public client access and private accelerator services.</p>
+        </div>
+        <div class="section-body">
+          <div class="architecture-viz">
+            <div class="viz-panel">
+              <svg id="a5-map" viewBox="0 0 860 430" role="img" aria-label="A5 direct backend exposure visualization">
+                <defs>
+                  <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2c70d8"></path></marker>
+                  <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#158b55"></path></marker>
+                  <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d63447"></path></marker>
+                  <marker id="arrow-violet" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#7656d6"></path></marker>
+                </defs>
+
+                <rect class="zone public" x="28" y="50" width="230" height="320" rx="8"></rect>
+                <text class="zone-label" x="46" y="78">Client / public side</text>
+                <rect class="zone gateway" x="310" y="50" width="210" height="320" rx="8"></rect>
+                <text class="zone-label" x="328" y="78">Pi gateway / trust boundary</text>
+                <rect class="zone private" x="570" y="50" width="262" height="320" rx="8"></rect>
+                <text class="zone-label" x="588" y="78">Private LAN2 accelerators</text>
+
+                <rect class="node" x="76" y="134" width="130" height="76" rx="8"></rect>
+                <text class="node-title" x="102" y="164">Client laptop</text>
+                <text class="node-sub" x="98" y="184">192.168.10.100</text>
+
+                <rect id="switch-node" class="node" x="92" y="264" width="98" height="54" rx="8"></rect>
+                <text class="node-title" x="112" y="295">Switch</text>
+
+                <rect class="node" x="346" y="136" width="138" height="96" rx="8"></rect>
+                <text class="node-title" x="374" y="166">Raspberry Pi</text>
+                <text class="node-sub" x="366" y="187">LAN1 :8000</text>
+                <text class="node-sub" x="366" y="205">LAN2 gateway</text>
+
+                <rect id="policy-gate" class="gate warn" x="350" y="268" width="132" height="52" rx="26"></rect>
+                <text id="policy-label" class="gate-label" x="371" y="299">FLAT LAN</text>
+
+                <rect class="node" x="620" y="116" width="150" height="78" rx="8"></rect>
+                <text class="node-title" x="650" y="146">Jetson Orin</text>
+                <text class="node-sub" x="648" y="166">:8001 inference</text>
+
+                <rect class="node" x="620" y="250" width="150" height="82" rx="8"></rect>
+                <text class="node-title" x="646" y="280">Zynq-7020</text>
+                <text class="node-sub" x="646" y="300">:8002 FPGA REST</text>
+
+                <path id="flow-client-pi" class="flow public is-hot" d="M 206 170 C 262 170 304 176 346 176" marker-end="url(#arrow-blue)"></path>
+                <path id="flow-pi-jetson" class="flow private is-muted" d="M 484 168 C 530 150 572 144 620 150" marker-end="url(#arrow-green)"></path>
+                <path id="flow-pi-zynq" class="flow private is-muted" d="M 484 204 C 534 240 574 274 620 286" marker-end="url(#arrow-green)"></path>
+                <path id="flow-direct-jetson" class="flow attack is-hot" d="M 206 154 C 334 72 502 76 620 138" marker-end="url(#arrow-red)"></path>
+                <path id="flow-direct-zynq" class="flow attack is-hot" d="M 190 292 C 304 376 500 382 620 304" marker-end="url(#arrow-red)"></path>
+                <path id="flow-block" class="flow auth is-muted" d="M 258 292 C 300 292 322 292 350 292" marker-end="url(#arrow-violet)"></path>
+                <circle id="packet-dot" class="packet" cx="540" cy="104" r="7"></circle>
+                <text id="exposure-label" class="zone-label" x="328" y="354">client reaches backend ports directly</text>
+              </svg>
+            </div>
+            <div class="viz-controls">
+              <button class="is-active" type="button" data-state="exposed">Flat / exposed LAN</button>
+              <button type="button" data-state="gateway">Gateway-only path</button>
+              <button type="button" data-state="strict">D4 strict allow-list</button>
+              <div class="viz-status" aria-live="polite">
+                <b id="viz-title">Backends bypass the Pi</b>
+                <span id="viz-copy">Client-side traffic can reach Jetson :8001 or Zynq :8002 directly, so gateway authentication, throttling, and logging are skipped.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="model">
+        <div class="section-heading">
+          <h2>Threat Model</h2>
+          <p>The attacker is on the owned client side of the lab and can attempt to reach backend service addresses that should be private.</p>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Attacker capability</h3><p>The attacker controls a client device on the public or lab client VLAN, such as the MacBook or ThinkPad. They can generate synthetic validation traffic inside the owned lab, but the safe lab below uses a policy simulator instead of live probing.</p></div>
+            <div class="mini-card"><h3>Trust assumption being tested</h3><p>Jetson and Zynq services are private accelerators. They should accept inference work only from the Raspberry Pi LAN2 interface, not from client hosts, guest networks, mirrored switch ports, or accidental flat-LAN paths.</p></div>
+            <div class="mini-card"><h3>Assets at risk</h3><p>Backend model oracle access, accelerator availability, request auditability, benchmark isolation, Jetson service metadata, Zynq PS REST shim behavior, and any controls enforced only at the Pi gateway.</p></div>
+            <div class="mini-card"><h3>Out of scope</h3><p>No third-party scanning, no brute-force discovery, no exploit payloads, and no instructions to attack external networks. Validation should be limited to owned, isolated lab addresses or the toy simulator provided here.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="intuition">
+        <div class="section-heading"><h2>Attack Intuition</h2><p>Private backend services are safe only if the network actually makes them private.</p></div>
+        <div class="section-body">
+          <p>The Raspberry Pi gateway is supposed to be the choke point. It authenticates callers, enforces rate limits, applies payload limits, chooses Jetson versus Zynq, logs enough telemetry, and hides private backend details. If a client can connect directly to <code>192.168.30.10:8001</code> or <code>192.168.30.20:8002</code>, the logical architecture on the diagram no longer matches the real packet path.</p>
+          <p>A5 is not about breaking a backend service. It is about discovering that the backend service was accidentally placed in the wrong exposure class: bound to all interfaces, bridged through the switch, reachable through a misconfigured VLAN, exposed through a host route, or published by a convenience port forward left over from development.</p>
+          <div class="callout safe"><p><strong>Safe framing:</strong> the demonstration below is a deterministic local simulator. It models reachability decisions from configuration data and synthetic packets; it does not scan any real network or contact Jetson, Zynq, or third-party systems.</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="technical">
+        <div class="section-heading"><h2>Technical Explanation</h2><p>A5 happens when backend reachability is broader than the intended trust boundary.</p></div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card"><h3>Service binding</h3><p>A backend that listens on <code>0.0.0.0</code> or the wrong interface may be reachable from any routed segment. D4 prefers binding Jetson and Zynq services only to LAN2 addresses and rejecting non-Pi sources at the host firewall.</p></div>
+            <div class="mini-card"><h3>VLAN segmentation</h3><p>The switch should keep client LAN and private LAN2 separate. A trunk, access-port mistake, bridge interface, or temporary test cable can flatten the topology and make the private zone reachable.</p></div>
+            <div class="mini-card"><h3>Gateway bypass</h3><p>When direct backend access works, D1, D2, D3, D5, D6, and D8 may be bypassed because those controls live at the Pi path. Defense must exist both at network segmentation and backend host policy.</p></div>
+          </div>
+          <p>The clean design is defense in depth: switch VLAN rules prevent the path, Pi routing controls define the only intended route, backend host firewalls allow only the Pi LAN2 address, and backend services bind only to private interfaces. The gateway then becomes the deliberate policy point rather than a hopeful convention.</p>
+        </div>
+      </section>
+
+      <section class="section" id="math">
+        <div class="section-heading"><h2>Mathematical Formulation</h2><p>Model A5 as a reachability and policy-composition problem.</p></div>
+        <div class="section-body">
+          <div class="formula">Hosts H = {client, pi_lan1, pi_lan2, jetson, zynq}
+Services S = {(jetson, 8001), (zynq, 8002)}
+Trusted source for S: pi_lan2 only
+
+Reachability predicate:
+R(src, dst, port) = Route(src, dst) AND VlanAllows(src, dst) AND HostFirewallAllows(src, dst, port) AND ServiceBound(dst, port)
+
+D4 objective:
+For every client c on public/client VLAN:
+  R(c, jetson, 8001) = false
+  R(c, zynq, 8002) = false
+
+Gateway objective:
+  R(pi_lan2, jetson, 8001) = true
+  R(pi_lan2, zynq, 8002) = true
+
+Exposure score for a configuration C:
+  exposure(C) = count of forbidden tuples where R(tuple) = true
+
+A5 exists when exposure(C) > 0.</div>
+          <p>This framing makes A5 measurable. You can test a configuration by enumerating allowed and forbidden tuples, then proving that the forbidden set is empty while the required gateway paths remain available.</p>
+        </div>
+      </section>
+
+      <section class="section" id="lab">
+        <div class="section-heading"><h2>Step-By-Step Safe Lab Demonstration</h2><p>The lab evaluates synthetic topology policies instead of probing real ports.</p></div>
+        <div class="section-body">
+          <ol>
+            <li>Save the Python code from the next section as <code>a5_backend_exposure_policy_lab.py</code>.</li>
+            <li>Run <code>python3 a5_backend_exposure_policy_lab.py --mode exposed</code> to model a flat or misbound network.</li>
+            <li>Run <code>python3 a5_backend_exposure_policy_lab.py --mode isolated</code> to model D4 segmentation and backend allow-listing.</li>
+            <li>Compare <code>forbidden_allowed</code>, <code>required_allowed</code>, and <code>exposure_score</code>.</li>
+            <li>Translate the same test table to your real lab documentation before any live validation. If you do live validation, keep it to owned addresses and record only defensive allow/drop evidence.</li>
+          </ol>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>Interactive toy replay</h3>
+              <p>Replay expected policy outcomes inside the page. It is display-only and never opens a socket.</p>
+              <button class="copy-button" type="button" id="simulate-lab">Replay policy simulation</button>
+            </div>
+            <div class="lab-output" id="lab-output" aria-live="polite">ready: no policy simulation replayed yet</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="code">
+        <div class="section-heading"><h2>Full Code For A Local Simulated Lab</h2><p>This code computes allow/drop decisions for synthetic packets. It does not scan, connect, sniff, or attack anything.</p></div>
+        <div class="section-body">
+          <div class="code-card">
+            <div class="code-head"><span>a5_backend_exposure_policy_lab.py</span><button class="copy-button" type="button" data-copy="lab-python">Copy</button></div>
+            <pre><code id="lab-python">#!/usr/bin/env python3
+"""
+A5 local-only simulator: direct backend exposure.
+
+This program evaluates synthetic reachability decisions for an owned Edge AI
+lab topology. It does not open sockets, scan ports, sniff traffic, or contact
+Jetson/Zynq/Pi devices. Use it to reason about D4 policy before any real lab
+validation.
+"""
+
+import argparse
+from dataclasses import dataclass
+from typing import Dict, List, Tuple
+
+
+@dataclass(frozen=True)
+class Host:
+    name: str
+    vlan: str
+    ip: str
+
+
+@dataclass(frozen=True)
+class Service:
+    host: str
+    port: int
+    bind: str
+    allowed_sources: Tuple[str, ...]
+
+
+HOSTS: Dict[str, Host] = {
+    "client": Host("client", "client_vlan", "192.168.10.100"),
+    "pi_lan1": Host("pi_lan1", "client_vlan", "192.168.10.2"),
+    "pi_lan2": Host("pi_lan2", "private_lan2", "192.168.30.1"),
+    "jetson": Host("jetson", "private_lan2", "192.168.30.10"),
+    "zynq": Host("zynq", "private_lan2", "192.168.30.20"),
+}
+
+REQUIRED = [("pi_lan2", "jetson", 8001), ("pi_lan2", "zynq", 8002)]
+FORBIDDEN = [("client", "jetson", 8001), ("client", "zynq", 8002)]
+
+
+def build_services(mode: str) -> Dict[Tuple[str, int], Service]:
+    if mode == "exposed":
+        return {
+            ("jetson", 8001): Service("jetson", 8001, "0.0.0.0", ("client", "pi_lan2")),
+            ("zynq", 8002): Service("zynq", 8002, "0.0.0.0", ("client", "pi_lan2")),
+        }
+    return {
+        ("jetson", 8001): Service("jetson", 8001, "192.168.30.10", ("pi_lan2",)),
+        ("zynq", 8002): Service("zynq", 8002, "192.168.30.20", ("pi_lan2",)),
+    }
+
+
+def vlan_allows(src: str, dst: str, mode: str) -> bool:
+    if src == "pi_lan2" and HOSTS[dst].vlan == "private_lan2":
+        return True
+    if mode == "exposed":
+        return True
+    return HOSTS[src].vlan == HOSTS[dst].vlan
+
+
+def route_exists(src: str, dst: str, mode: str) -> bool:
+    if mode == "exposed":
+        return True
+    return src == "pi_lan2" and HOSTS[dst].vlan == "private_lan2"
+
+
+def service_bound(service: Service, dst: str) -> bool:
+    return service.bind == "0.0.0.0" or service.bind == HOSTS[dst].ip
+
+
+def firewall_allows(service: Service, src: str) -> bool:
+    return src in service.allowed_sources
+
+
+def reachability(src: str, dst: str, port: int, mode: str) -> Tuple[bool, List[str]]:
+    services = build_services(mode)
+    service = services.get((dst, port))
+    reasons = []
+    if not service:
+        return False, ["no_service"]
+    checks = {
+        "route": route_exists(src, dst, mode),
+        "vlan": vlan_allows(src, dst, mode),
+        "service_bind": service_bound(service, dst),
+        "host_firewall": firewall_allows(service, src),
+    }
+    for name, ok in checks.items():
+        if not ok:
+            reasons.append("blocked_by_" + name)
+    return all(checks.values()), reasons or ["allowed"]
+
+
+def evaluate(mode: str) -> int:
+    exposure_score = 0
+    print("mode=%s" % mode)
+    for src, dst, port in FORBIDDEN:
+        allowed, reasons = reachability(src, dst, port, mode)
+        if allowed:
+            exposure_score += 1
+        print(
+            "tuple=forbidden src=%s dst=%s port=%s decision=%s reasons=%s"
+            % (src, dst, port, "ALLOW" if allowed else "DROP", ",".join(reasons))
+        )
+    for src, dst, port in REQUIRED:
+        allowed, reasons = reachability(src, dst, port, mode)
+        print(
+            "tuple=required src=%s dst=%s port=%s decision=%s reasons=%s"
+            % (src, dst, port, "ALLOW" if allowed else "DROP", ",".join(reasons))
+        )
+    print("exposure_score=%s" % exposure_score)
+    return exposure_score
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["exposed", "isolated"], default="exposed")
+    args = parser.parse_args()
+    score = evaluate(args.mode)
+    if args.mode == "isolated" and score == 0:
+        print("result=pass d4_private_backend_subnet_enforced")
+    elif score > 0:
+        print("result=fail direct_backend_exposure_present")
+    else:
+        print("result=check_required_paths")
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+          </div>
+
+          <div class="code-card" style="margin-top:12px;">
+            <div class="code-head"><span>local simulator commands</span><button class="copy-button" type="button" data-copy="lab-client">Copy</button></div>
+            <pre><code id="lab-client"># Vulnerable model: client can reach backend services directly in the synthetic policy.
+python3 a5_backend_exposure_policy_lab.py --mode exposed
+
+# Secure model: only Pi LAN2 can reach Jetson :8001 and Zynq :8002.
+python3 a5_backend_exposure_policy_lab.py --mode isolated
+
+# Expected secure result:
+# tuple=forbidden src=client dst=jetson port=8001 decision=DROP ...
+# tuple=forbidden src=client dst=zynq port=8002 decision=DROP ...
+# result=pass d4_private_backend_subnet_enforced
+</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="setup">
+        <div class="section-heading"><h2>Practical Example For Your GPU + Pi + Jetson + Zynq Setup</h2><p>A5 is the question: can the MacBook reach the accelerators without passing through the Pi?</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Intended topology</h3><p>The MacBook or ThinkPad sits on the client side. It talks to the Pi gateway on LAN1. The Pi talks to Jetson and Zynq on LAN2. The switch/VLAN/private subnet design should make Jetson and Zynq invisible from the client path except through gateway-mediated inference.</p><div class="pill-row"><span class="tag info">client VLAN</span><span class="tag def">Pi gateway</span><span class="tag hw">private LAN2</span></div></div>
+            <div class="mini-card"><h3>A5 failure mode</h3><p>A development shortcut exposes Jetson <code>:8001</code> or Zynq <code>:8002</code> to the client network. That might come from flat VLAN membership, service binding to all interfaces, host firewall gaps, a temporary bridge, or a switch port configured as trunk instead of access.</p><div class="pill-row"><span class="tag">gateway bypass</span><span class="tag">backend oracle</span><span class="tag def">D4 required</span></div></div>
+          </div>
+          <p>For your portal experiments, treat D4 as a measurable prerequisite. Before collecting inference latency, throughput, extraction-resistance, or fault-injection results, log the policy state that proves the Pi is the only source allowed to reach the backend services.</p>
+        </div>
+      </section>
+
+      <section class="section" id="signals">
+        <div class="section-heading"><h2>Observable Signals Or Logs</h2><p>A5 should be visible as allow/drop evidence at the switch, Pi, and backend host layers.</p></div>
+        <div class="section-body">
+          <table class="matrix"><thead><tr><th>Layer</th><th>Risk signal</th><th>Healthy D4 signal</th></tr></thead><tbody>
+            <tr><td>Switch / VLAN</td><td>Client port and backend port share the same reachable segment or trunk behavior unexpectedly allows backend traffic.</td><td>Client VLAN and LAN2 are separated; backend ports are access ports in private LAN2 only.</td></tr>
+            <tr><td>Pi gateway</td><td>Backend receives work not reflected in Pi request logs, meaning the gateway was bypassed.</td><td>Every backend request has a corresponding Pi log entry with user, route, backend, and policy decision.</td></tr>
+            <tr><td>Jetson host</td><td>Access logs show client-side source addresses instead of Pi LAN2 source.</td><td>Only Pi LAN2 source appears for inference service connections.</td></tr>
+            <tr><td>Zynq PS</td><td>REST shim sees client-side addresses or unmediated requests to FPGA control endpoints.</td><td>PS firewall allows Pi LAN2 only; unexpected source addresses are dropped before application logic.</td></tr>
+            <tr><td>Research logs</td><td>Benchmark results mix gateway-mediated and direct-backend paths.</td><td>Each run records topology hash, VLAN profile, firewall policy version, and backend source evidence.</td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <section class="section" id="impact">
+        <div class="section-heading"><h2>Impact Analysis</h2><p>Direct backend exposure converts one controlled API into multiple uncontrolled APIs.</p></div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card"><h3>Confidentiality</h3><p>Direct access can expose prediction outputs, confidence patterns, service banners, health metadata, backend timing, and model-oracle behavior without gateway identity binding.</p></div>
+            <div class="mini-card"><h3>Integrity</h3><p>If backend control or management endpoints are reachable, a caller may bypass gateway-side object checks or dispatch policy. Even read-only inference bypass can compromise experiment integrity by mixing paths.</p></div>
+            <div class="mini-card"><h3>Availability</h3><p>Jetson and Zynq services may be easier to overload directly because D2 rate limits, payload caps, and D8 timeout policy often live at the Pi boundary.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="mapping">
+        <div class="section-heading"><h2>Mapping To CIA, STRIDE, PASTA, And MITRE ATLAS</h2><p>A5 is a classic trust-boundary failure with AI-specific oracle and accelerator consequences.</p></div>
+        <div class="section-body">
+          <table class="matrix"><thead><tr><th>Framework</th><th>A5 mapping</th><th>Research interpretation</th></tr></thead><tbody>
+            <tr><td>CIA</td><td>Confidentiality, Integrity, and Availability</td><td>The attacker bypasses gateway controls to reach model-serving backends and accelerator resources directly.</td></tr>
+            <tr><td>STRIDE</td><td>Information Disclosure, Tampering, Denial of Service, Elevation of Privilege, Repudiation</td><td>The path skips identity, audit, authorization, and rate-control layers normally enforced by the Pi.</td></tr>
+            <tr><td>PASTA</td><td>Stage 3 decomposition, Stage 4 threat analysis, Stage 5 vulnerability analysis, Stage 6 attack modeling</td><td>Model trust zones, data flows, and backend service exposure as first-class security assumptions.</td></tr>
+            <tr><td>MITRE ATLAS</td><td>Relevant to model access, discovery, collection, and AI service abuse patterns where an adversary reaches the serving endpoint outside intended controls.</td><td>A5 creates the unmediated model-oracle path that later attacks such as extraction, timing analysis, or backend-specific abuse can depend on.</td></tr>
+            <tr><td>MITRE ATT&amp;CK</td><td>Related to network service discovery, exposed services, lateral movement pathways, and endpoint access control gaps.</td><td>Traditional network exposure becomes AI-specific because the reachable service is an accelerator-backed inference backend.</td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <section class="section" id="defenses">
+        <div class="section-heading"><h2>Defense Mapping To Existing D1-D11 Controls</h2><p>D4 is primary, but A5 shows why gateway and backend controls should reinforce each other.</p></div>
+        <div class="section-body">
+          <table class="matrix"><thead><tr><th>Control</th><th>Role against A5</th><th>Validation</th></tr></thead><tbody>
+            <tr><td>D4 Private Backend Subnet</td><td>Primary control. Put Jetson and Zynq on LAN2, bind services to private interfaces, enforce switch VLANs, and allow only Pi LAN2 as source.</td><td>Forbidden client-to-backend tuples drop; required Pi-to-backend tuples pass.</td></tr>
+            <tr><td>D1 JWT Auth + Object Checks</td><td>Protects the intended public path but can be bypassed if A5 exists. Backend services should still have minimal internal auth for defense in depth.</td><td>Direct backend calls cannot produce useful work without gateway identity or internal service credential.</td></tr>
+            <tr><td>D2 Rate Limit + Body Cap</td><td>Limits public gateway abuse but does not help if clients can skip the gateway. Backend host policy should provide secondary connection limits.</td><td>No backend request is observed without a matching Pi rate-limit decision.</td></tr>
+            <tr><td>D3 TLS Everywhere</td><td>Prevents cleartext on allowed paths and supports mTLS Pi-to-backend authentication.</td><td>Backends accept mTLS client identity from Pi only.</td></tr>
+            <tr><td>D5 Query Anomaly Detection</td><td>Detects model-oracle abuse only if telemetry includes all backend requests. A5 creates blind spots.</td><td>Backend logs and Pi logs reconcile one-to-one.</td></tr>
+            <tr><td>D6 Sanitized Logging</td><td>Provides evidence of gateway bypass by comparing backend source addresses and Pi request IDs.</td><td>Unexpected client source is logged as policy violation without storing sensitive payloads.</td></tr>
+            <tr><td>D8 Backend Timeout / Circuit Breaker</td><td>Protects gateway-mediated backend calls. Backend-local timeouts and process supervisors should also exist.</td><td>Direct overload paths are unavailable; gateway timeout metrics remain authoritative.</td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <section class="section" id="research">
+        <div class="section-heading"><h2>Research Notes: What To Measure Experimentally</h2><p>A5 can be measured with reachability matrices and log reconciliation, not dramatic traffic.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Reachability matrix</h3><p>Enumerate source, destination, port, route, VLAN, firewall, and expected decision. The core metric is forbidden paths allowed versus required paths allowed.</p></div>
+            <div class="mini-card"><h3>Control-plane drift</h3><p>Hash switch config, Pi firewall rules, backend service binding, and backend firewall state. Track whether exposure changes between experiments.</p></div>
+            <div class="mini-card"><h3>Log reconciliation</h3><p>For every backend request, require a matching Pi gateway request ID. A mismatch indicates direct backend access, missing logging, or out-of-band maintenance traffic.</p></div>
+            <div class="mini-card"><h3>Benchmark contamination</h3><p>Compare latency and throughput distributions for gateway-mediated paths versus direct backend paths in a safe, owned lab. Keep them separate in research results.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="takeaways">
+        <div class="section-heading"><h2>Key Takeaways</h2><p>A private backend is a property you continuously verify, not a label on a diagram.</p></div>
+        <div class="section-body">
+          <ul>
+            <li>A5 exists when Jetson or Zynq backend ports are reachable from the client side instead of only from Pi LAN2.</li>
+            <li>The Pi gateway controls are meaningful only if traffic cannot bypass the Pi.</li>
+            <li>D4 should be validated at multiple layers: service bind address, host firewall, Pi routing, switch VLANs, and log reconciliation.</li>
+            <li>For research, record topology and reachability evidence beside every benchmark or security experiment.</li>
+          </ul>
+        </div>
+      </section>
+
+      <nav class="nav-grid" aria-label="Related pages">
+        <a class="nav-card" href="A4_model_update_tampering.html"><b>Previous threat: A4</b><span>Model Update Tampering. Artifact integrity before Jetson runtime.</span></a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Related defense: D4</b><span>Private Backend Subnet. Dedicated page planned in Defense_matrix.</span></a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Related threat: A12</b><span>Switch Misconfiguration. Shares VLAN and segmentation failure modes.</span></a>
+        <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Next threat: A6</b><span>Model Extraction via Repeated Querying. Dedicated page planned next.</span></a>
+      </nav>
+    </article>
+  </div>
+</main>
+
+<script>
+const states = {
+  exposed: {
+    title: 'Backends bypass the Pi',
+    copy: 'Client-side traffic can reach Jetson :8001 or Zynq :8002 directly, so gateway authentication, throttling, and logging are skipped.',
+    policy: 'FLAT LAN',
+    label: 'client reaches backend ports directly',
+    good: false,
+    hot: ['flow-client-pi', 'flow-direct-jetson', 'flow-direct-zynq'],
+    packet: [540, 104]
+  },
+  gateway: {
+    title: 'Only gateway path remains',
+    copy: 'Client traffic terminates at the Pi. The Pi dispatches to Jetson or Zynq on LAN2, preserving the intended trust boundary.',
+    policy: 'GATEWAY ONLY',
+    label: 'client path stops at Pi gateway',
+    good: true,
+    hot: ['flow-client-pi', 'flow-pi-jetson', 'flow-pi-zynq'],
+    packet: [520, 188]
+  },
+  strict: {
+    title: 'D4 allow-list enforced',
+    copy: 'Switch segmentation, service binding, and backend host firewall all agree: only Pi LAN2 can reach backend ports.',
+    policy: 'DROP CLIENT',
+    label: 'forbidden client-to-backend tuples drop',
+    good: true,
+    hot: ['flow-block', 'flow-pi-jetson', 'flow-pi-zynq'],
+    packet: [350, 292]
+  }
+};
+
+function setVizState(key) {
+  const state = states[key];
+  if (!state) return;
+  document.querySelectorAll('.viz-controls button[data-state]').forEach(button => {
+    button.classList.toggle('is-active', button.dataset.state === key);
+  });
+  document.querySelectorAll('.flow').forEach(flow => {
+    flow.classList.toggle('is-hot', state.hot.includes(flow.id));
+    flow.classList.toggle('is-muted', !state.hot.includes(flow.id));
+  });
+  const gate = document.getElementById('policy-gate');
+  gate.setAttribute('class', 'gate ' + (state.good ? 'good' : 'warn'));
+  document.getElementById('policy-label').textContent = state.policy;
+  document.getElementById('exposure-label').textContent = state.label;
+  document.getElementById('viz-title').textContent = state.title;
+  document.getElementById('viz-copy').textContent = state.copy;
+  const packet = document.getElementById('packet-dot');
+  packet.setAttribute('cx', state.packet[0]);
+  packet.setAttribute('cy', state.packet[1]);
+  packet.setAttribute('fill', state.good ? '#158b55' : '#d63447');
+}
+
+document.querySelector('.viz-controls').addEventListener('click', event => {
+  const button = event.target.closest('button[data-state]');
+  if (button) setVizState(button.dataset.state);
+});
+
+document.querySelectorAll('[data-copy]').forEach(button => {
+  button.addEventListener('click', async () => {
+    const target = document.getElementById(button.dataset.copy);
+    if (!target) return;
+    try {
+      await navigator.clipboard.writeText(target.innerText);
+      const original = button.textContent;
+      button.textContent = 'Copied';
+      setTimeout(() => { button.textContent = original; }, 1200);
+    } catch (error) {
+      button.textContent = 'Select text';
+    }
+  });
+});
+
+document.getElementById('simulate-lab').addEventListener('click', () => {
+  const lines = [
+    'exposed mode:',
+    '[tuple=forbidden] client -> jetson:8001 decision=ALLOW reasons=allowed',
+    '[tuple=forbidden] client -> zynq:8002 decision=ALLOW reasons=allowed',
+    '[summary] exposure_score=2 result=fail direct_backend_exposure_present',
+    '',
+    'isolated mode:',
+    '[tuple=forbidden] client -> jetson:8001 decision=DROP reasons=blocked_by_route,blocked_by_vlan,blocked_by_host_firewall',
+    '[tuple=forbidden] client -> zynq:8002 decision=DROP reasons=blocked_by_route,blocked_by_vlan,blocked_by_host_firewall',
+    '[tuple=required] pi_lan2 -> jetson:8001 decision=ALLOW reasons=allowed',
+    '[tuple=required] pi_lan2 -> zynq:8002 decision=ALLOW reasons=allowed',
+    '[summary] exposure_score=0 result=pass d4_private_backend_subnet_enforced'
+  ];
+  const output = document.getElementById('lab-output');
+  output.innerHTML = lines.map(line => {
+    if (line.includes('exposed') || line.includes('fail') || (line.includes('forbidden') && line.includes('ALLOW'))) return '<span class="log-bad">' + line + '</span>';
+    if (line.includes('isolated') || line.includes('DROP') || line.includes('required') || line.includes('pass')) return '<span class="log-ok">' + line + '</span>';
+    return line;
+  }).join('\n');
+});
+
+setVizState('exposed');
+</script>
+</body>
+</html>
