@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A8 | Unsafe / Sensitive Logging</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f5f7fb;
+    --panel: #ffffff;
+    --panel-2: #eef3f8;
+    --ink: #10151c;
+    --muted: #5e6c7a;
+    --soft: #8795a4;
+    --line: #d8e0e8;
+    --line-strong: #b9c5d1;
+    --navy: #172333;
+    --cyan: #00a7bd;
+    --blue: #2c70d8;
+    --green: #158b55;
+    --amber: #c77900;
+    --orange: #f26d21;
+    --red: #d63447;
+    --violet: #7656d6;
+    --shadow: 0 18px 44px rgba(29, 44, 61, 0.13);
+    --radius: 8px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(140deg, #f5f7fb 0%, #edf4f7 45%, #f8f9fb 100%);
+    color: var(--ink);
+    font: 15px/1.58 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(0, 167, 189, 0.12), transparent 32%),
+      linear-gradient(290deg, rgba(242, 109, 33, 0.12), transparent 34%);
+    opacity: 0.9;
+    z-index: -1;
+  }
+
+  a { color: inherit; }
+  button { font: inherit; cursor: pointer; }
+
+  .app {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 18px 0 54px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    min-height: 72px;
+    padding: 12px 0;
+    background: rgba(245, 247, 251, 0.84);
+    border-bottom: 1px solid rgba(185, 197, 209, 0.65);
+    backdrop-filter: blur(16px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(135deg, rgba(0, 167, 189, 0.2), transparent 46%),
+      linear-gradient(315deg, rgba(242, 109, 33, 0.2), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(23, 35, 51, 0.1);
+  }
+
+  .brand-mark span {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--navy);
+  }
+
+  .brand-mark span:nth-child(1) { top: 13px; }
+  .brand-mark span:nth-child(2) { top: 21px; background: var(--cyan); }
+  .brand-mark span:nth-child(3) { top: 29px; }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.12;
+    font-weight: 780;
+  }
+
+  .brand p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .crumbs,
+  .pill-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .crumbs { justify-content: flex-end; }
+
+  .crumbs a,
+  .crumbs span,
+  .fullscreen-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 31px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .fullscreen-button {
+    color: #007474;
+    background: rgba(231, 255, 252, 0.9);
+    border-color: rgba(0, 116, 116, 0.2);
+    font-weight: 800;
+  }
+
+  .crumbs a:hover,
+  .fullscreen-button:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+
+  .crumbs a.back-link {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: var(--panel);
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(23, 35, 51, 0.16);
+  }
+
+  .crumbs a.back-link:hover {
+    border-color: var(--cyan);
+    background: var(--cyan);
+    color: var(--panel);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    align-items: stretch;
+    margin: 18px 0;
+  }
+
+  .hero-card,
+  .side-card,
+  .section,
+  .nav-card,
+  .mini-card,
+  .toc {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-card { padding: 22px; }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 820;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(214, 52, 71, 0.12);
+  }
+
+  h2,
+  h3,
+  p { margin-top: 0; }
+
+  .hero h2 {
+    margin: 0 0 14px;
+    max-width: 780px;
+    font-size: clamp(38px, 6.5vw, 70px);
+    line-height: 0.98;
+    letter-spacing: 0;
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 840px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+
+  .side-card {
+    padding: 16px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px;
+    background: #fff;
+  }
+
+  .fact b {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .fact span,
+  .toc a,
+  .nav-card span,
+  .section-heading p,
+  .section-body p,
+  li {
+    color: var(--muted);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 245px minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .toc {
+    position: sticky;
+    top: 92px;
+    align-self: start;
+    padding: 12px;
+  }
+
+  .toc b,
+  .toc a {
+    display: block;
+  }
+
+  .toc b {
+    margin-bottom: 8px;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .toc a {
+    border-radius: 6px;
+    padding: 7px 8px;
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    background: rgba(0, 167, 189, 0.08);
+    color: var(--navy);
+  }
+
+  .content {
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+  }
+
+  .section { overflow: hidden; }
+
+  .section-heading {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+  }
+
+  .section-heading h2 {
+    margin: 0 0 4px;
+    font-size: 24px;
+  }
+
+  .section-heading p,
+  .section-body p:last-child { margin-bottom: 0; }
+
+  .section-body { padding: 18px; }
+
+  .grid-2,
+  .grid-3,
+  .nav-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .nav-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .mini-card,
+  .nav-card {
+    padding: 14px;
+  }
+
+  .mini-card h3,
+  .nav-card b {
+    display: block;
+    margin: 0 0 6px;
+    color: var(--navy);
+    font-size: 15px;
+  }
+
+  .nav-card {
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .nav-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--cyan);
+  }
+
+  .nav-card.muted { background: rgba(255, 255, 255, 0.55); }
+
+  .pill-row { margin-top: 10px; }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: 760;
+  }
+
+  .pill.red { color: var(--red); border-color: rgba(214, 52, 71, 0.28); background: rgba(214, 52, 71, 0.1); }
+  .pill.green { color: var(--green); border-color: rgba(21, 139, 85, 0.28); background: rgba(21, 139, 85, 0.1); }
+  .pill.orange { color: var(--orange); border-color: rgba(242, 109, 33, 0.3); background: rgba(242, 109, 33, 0.12); }
+  .pill.blue { color: var(--blue); border-color: rgba(44, 112, 216, 0.28); background: rgba(44, 112, 216, 0.1); }
+  .pill.amber { color: var(--amber); border-color: rgba(199, 121, 0, 0.3); background: rgba(199, 121, 0, 0.1); }
+
+  .architecture-viz {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 265px;
+    gap: 14px;
+  }
+
+  .viz-panel,
+  .viz-status,
+  .formula,
+  .matrix,
+  .lab-output {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .viz-panel {
+    overflow: hidden;
+    min-height: 330px;
+  }
+
+  .viz-panel svg {
+    width: 100%;
+    height: 100%;
+    min-height: 330px;
+    display: block;
+  }
+
+  .zone {
+    fill: rgba(0, 167, 189, 0.06);
+    stroke: var(--line);
+  }
+
+  .zone-label,
+  .node-label,
+  .flow-label {
+    font-size: 13px;
+    font-weight: 760;
+    fill: var(--muted);
+  }
+
+  .node-label { fill: var(--ink); }
+  .flow-label { fill: var(--red); }
+
+  .node {
+    fill: var(--panel);
+    stroke: var(--line-strong);
+    stroke-width: 2;
+  }
+
+  .node.gateway { stroke: var(--violet); }
+  .node.backend { stroke: var(--green); }
+  .node.shadow { stroke: var(--red); stroke-dasharray: 4 3; }
+
+  .logline {
+    fill: rgba(44, 112, 216, 0.12);
+    stroke: rgba(44, 112, 216, 0.22);
+  }
+
+  .logline.hot {
+    fill: rgba(214, 52, 71, 0.18);
+    stroke: rgba(214, 52, 71, 0.34);
+  }
+
+  .flow {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 3;
+    marker-end: url(#arrow-red);
+    opacity: 0.9;
+  }
+
+  .flow.secure {
+    stroke: var(--green);
+    marker-end: url(#arrow-green);
+  }
+
+  .flow-muted { opacity: 0.22; }
+  .flow-hot { stroke-width: 4; opacity: 1; }
+
+  .viz-status {
+    padding: 14px;
+    display: grid;
+    gap: 14px;
+  }
+
+  .viz-status b {
+    display: block;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .meter {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    overflow: hidden;
+  }
+
+  .meter span {
+    display: block;
+    width: var(--value);
+    height: 100%;
+    border-radius: inherit;
+    background: var(--red);
+    transition: width 0.3s ease;
+  }
+
+  .meter.safe span { background: var(--green); }
+  .meter.warn span { background: var(--amber); }
+
+  .viz-controls {
+    display: grid;
+    gap: 8px;
+  }
+
+  .viz-controls button,
+  .copy-button {
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--navy);
+    padding: 7px 10px;
+    font-weight: 760;
+  }
+
+  .viz-controls button.is-active {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #fff;
+  }
+
+  .formula {
+    padding: 14px;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--navy);
+    white-space: pre-wrap;
+  }
+
+  .callout {
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    background: rgba(214, 52, 71, 0.08);
+    padding: 12px;
+    color: var(--muted);
+  }
+
+  .callout.safe {
+    border-left-color: var(--green);
+    background: rgba(21, 139, 85, 0.08);
+  }
+
+  .lab-output {
+    margin-top: 12px;
+    min-height: 138px;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    white-space: pre-wrap;
+    color: var(--navy);
+  }
+
+  .log-bad { color: var(--red); }
+  .log-ok { color: var(--green); }
+  .log-warn { color: var(--amber); }
+
+  .code-card {
+    overflow: hidden;
+    border: 1px solid #1f2f44;
+    border-radius: var(--radius);
+    background: #0f1723;
+    color: #d9e6f2;
+  }
+
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #172333;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .copy-button {
+    min-height: 30px;
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 5px 9px;
+    font-size: 12px;
+  }
+
+  pre {
+    margin: 0;
+    max-height: 520px;
+    overflow: auto;
+    padding: 14px;
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .matrix {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+  }
+
+  .matrix th,
+  .matrix td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 13px;
+  }
+
+  .matrix th {
+    background: var(--panel-2);
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .matrix tr:last-child td { border-bottom: 0; }
+
+  @media (max-width: 980px) {
+    .hero,
+    .layout,
+    .architecture-viz {
+      grid-template-columns: 1fr;
+    }
+
+    .toc { position: static; }
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      width: min(100% - 20px, 1180px);
+      padding-top: 10px;
+    }
+
+    .topbar { grid-template-columns: 1fr; }
+    .crumbs { justify-content: flex-start; }
+    .grid-2,
+    .grid-3,
+    .nav-grid { grid-template-columns: 1fr; }
+  }
+
+  :root {
+    color-scheme: dark;
+    --paper: #0d1117;
+    --panel: #111827;
+    --panel-2: #172033;
+    --ink: #eef4ff;
+    --muted: #aab4c5;
+    --soft: #7f8da3;
+    --line: rgba(148, 163, 184, 0.22);
+    --line-strong: rgba(170, 180, 197, 0.34);
+    --navy: #eef4ff;
+    --cyan: #5eead4;
+    --blue: #58a6ff;
+    --green: #00d17d;
+    --amber: #f5c451;
+    --orange: #ff8c42;
+    --red: #ff4d6d;
+    --violet: #a78bfa;
+    --shadow: 0 20px 52px rgba(0, 0, 0, 0.36);
+  }
+
+  body {
+    background: linear-gradient(140deg, #0d1117 0%, #111827 48%, #0b1118 100%);
+  }
+
+  body::before {
+    background:
+      linear-gradient(120deg, rgba(94, 234, 212, 0.11), transparent 32%),
+      linear-gradient(290deg, rgba(255, 140, 66, 0.1), transparent 34%);
+    opacity: 0.82;
+  }
+
+  .topbar {
+    background: rgba(13, 17, 23, 0.86);
+    border-bottom-color: rgba(148, 163, 184, 0.22);
+  }
+
+  .brand-mark {
+    border-color: var(--line-strong);
+    background:
+      linear-gradient(135deg, rgba(94, 234, 212, 0.17), transparent 46%),
+      linear-gradient(315deg, rgba(255, 140, 66, 0.15), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.22);
+  }
+
+  .brand-mark span { background: var(--ink); }
+  .brand-mark span:nth-child(2) { background: var(--cyan); }
+
+  .crumbs a,
+  .crumbs span,
+  .fullscreen-button,
+  .hero-card,
+  .side-card,
+  .section,
+  .nav-card,
+  .mini-card,
+  .toc {
+    background: rgba(17, 24, 39, 0.86);
+    border-color: var(--line);
+  }
+
+  .fullscreen-button {
+    color: #85edff;
+    background: rgba(83, 229, 246, 0.075);
+    border-color: rgba(83, 229, 246, 0.22);
+  }
+
+  .crumbs a:hover,
+  .toc a:hover,
+  .nav-card:hover,
+  .fullscreen-button:hover {
+    border-color: var(--cyan);
+    color: var(--ink);
+  }
+
+  .crumbs a.back-link {
+    color: #071018;
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .crumbs a.back-link:hover {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #071018;
+  }
+
+  .fact,
+  .viz-panel,
+  .viz-status,
+  .formula,
+  .matrix,
+  .lab-output {
+    background: rgba(11, 17, 24, 0.96);
+    border-color: var(--line);
+  }
+
+  .section-heading,
+  .matrix th {
+    background: rgba(23, 32, 51, 0.94);
+    border-color: var(--line);
+  }
+
+  .callout {
+    background: rgba(17, 24, 39, 0.9);
+    border-color: rgba(255, 77, 109, 0.32);
+  }
+
+  .callout.safe { border-color: rgba(0, 209, 125, 0.34); }
+
+  .nav-card.muted {
+    background: rgba(17, 24, 39, 0.62);
+  }
+
+  .viz-controls button {
+    background: rgba(17, 24, 39, 0.92);
+    color: var(--ink);
+    border-color: var(--line-strong);
+  }
+
+  .viz-controls button.is-active {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #071018;
+  }
+
+  .zone,
+  .node {
+    fill: #111827;
+    stroke: var(--line-strong);
+  }
+
+  .logline {
+    fill: rgba(88, 166, 255, 0.16);
+    stroke: rgba(88, 166, 255, 0.2);
+  }
+
+  .logline.hot {
+    fill: rgba(255, 77, 109, 0.2);
+    stroke: rgba(255, 77, 109, 0.34);
+  }
+
+  .code-card {
+    border-color: rgba(148, 163, 184, 0.24);
+    background: #050b12;
+  }
+
+  .code-head {
+    background: #111827;
+  }
+
+  .copy-button {
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <h1>Edge AI Security Atlas</h1>
+        <p>Threat Library deep dive for logging privacy, canary validation, and D6 sanitized evidence controls.</p>
+      </div>
+    </div>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a class="back-link" href="../edge_ai_attack_theater.html">&larr; Back to atlas</a>
+      <button class="fullscreen-button" id="fullscreen-toggle" type="button" aria-pressed="false">full screen</button>
+      <span>Threat Library</span>
+      <span>A8</span>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-card">
+      <span class="eyebrow">A8 / Software attack / Medium</span>
+      <h2 id="page-title">Unsafe / Sensitive Logging</h2>
+      <p class="lede">Request bodies, images, prompts, tokens, labels, internal IPs, route choices, or prediction metadata leak into logs that are easier to copy than the protected service. A8 matters because a clean API can still disclose sensitive evidence through debug output, backend stdout, or retained experiment traces.</p>
+    </div>
+    <aside class="side-card" aria-label="Attack summary">
+      <div class="fact"><b>Architecture point</b><span>Pi gateway, Jetson service logs, Zynq PetaLinux logs, and experiment notebooks</span></div>
+      <div class="fact"><b>Primary control</b><span>D6 Sanitized Logging with body hashing, token redaction, retention limits, and file permissions</span></div>
+      <div class="fact"><b>Secondary controls</b><span>D1 identity discipline, D5 anomaly context, D4 backend isolation, D3 encrypted transport, D8 reject reason hygiene</span></div>
+      <div class="fact"><b>Lab safety scope</b><span>Synthetic log fixtures, canary tokens, owned devices, and no real secrets in test data</span></div>
+    </aside>
+  </section>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Article sections">
+      <b>Article map</b>
+      <a href="#where">Where It Appears</a>
+      <a href="#model">Threat Model</a>
+      <a href="#intuition">Attack Intuition</a>
+      <a href="#technical">Technical Explanation</a>
+      <a href="#math">Policy View</a>
+      <a href="#lab">Safe Lab Demonstration</a>
+      <a href="#code">Local Lab Code</a>
+      <a href="#setup">Your Edge AI Setup</a>
+      <a href="#signals">Observable Signals</a>
+      <a href="#impact">Impact Analysis</a>
+      <a href="#mapping">Framework Mapping</a>
+      <a href="#defenses">Defense Mapping</a>
+      <a href="#research">Research Notes</a>
+      <a href="#takeaways">Key Takeaways</a>
+    </nav>
+
+    <article class="content">
+      <section class="section" id="where">
+        <div class="section-heading">
+          <h2>Where It Appears In The Edge AI Architecture</h2>
+          <p>A8 is an evidence-path problem: the request may be protected, but the logs can become a second, weaker data store.</p>
+        </div>
+        <div class="section-body">
+          <div class="architecture-viz">
+            <div class="viz-panel">
+              <svg id="a8-map" viewBox="0 0 760 390" role="img" aria-label="A8 unsafe sensitive logging visualization">
+                <defs>
+                  <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d63447"></path></marker>
+                  <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#158b55"></path></marker>
+                </defs>
+                <rect class="zone" x="24" y="44" width="170" height="274" rx="8"></rect>
+                <rect class="zone" x="238" y="44" width="220" height="274" rx="8"></rect>
+                <rect class="zone" x="502" y="44" width="220" height="274" rx="8"></rect>
+                <text class="zone-label" x="42" y="72">Client request</text>
+                <text class="zone-label" x="256" y="72">Runtime logs</text>
+                <text class="zone-label" x="520" y="72">D6 evidence store</text>
+
+                <rect class="node shadow" x="56" y="126" width="106" height="94" rx="8"></rect>
+                <text class="node-label" x="76" y="154">payload</text>
+                <text class="zone-label" x="72" y="176">token</text>
+                <text class="zone-label" x="72" y="196">image hash</text>
+
+                <rect class="node gateway" x="266" y="96" width="154" height="66" rx="8"></rect>
+                <text class="node-label" x="300" y="124">Pi logs</text>
+                <text class="zone-label" x="290" y="143">request metadata</text>
+                <rect class="node backend" x="266" y="188" width="154" height="66" rx="8"></rect>
+                <text class="node-label" x="292" y="216">Backend logs</text>
+                <text class="zone-label" x="288" y="235">route + labels</text>
+
+                <rect class="node backend" x="548" y="96" width="138" height="74" rx="8"></rect>
+                <text class="node-label" x="586" y="125">D6</text>
+                <text class="zone-label" x="574" y="145">redacted</text>
+                <rect class="node gateway" x="548" y="206" width="138" height="74" rx="8"></rect>
+                <text class="node-label" x="578" y="235">Audit trail</text>
+                <text class="zone-label" x="570" y="255">safe metrics</text>
+
+                <g transform="translate(284 278)">
+                  <rect class="logline hot" x="0" y="0" width="120" height="13" rx="4"></rect>
+                  <rect class="logline" x="0" y="20" width="92" height="13" rx="4"></rect>
+                  <rect class="logline hot" x="0" y="40" width="132" height="13" rx="4"></rect>
+                </g>
+
+                <path id="flow-leak" class="flow" d="M 162 172 C 206 148 232 130 266 126"></path>
+                <path id="flow-backend" class="flow" d="M 162 194 C 218 230 236 226 266 222"></path>
+                <path id="flow-redact" class="flow secure" d="M 420 128 C 472 116 506 122 548 130"></path>
+                <path id="flow-audit" class="flow secure" d="M 420 222 C 476 252 504 252 548 244"></path>
+                <text class="flow-label" x="176" y="118">unsafe body/token echo</text>
+                <text class="zone-label" x="198" y="348">D6 keeps evidence useful while removing payloads and credentials</text>
+                <text id="prediction-label" class="node-label" x="514" y="312">log state: unsafe</text>
+              </svg>
+            </div>
+            <div class="viz-status">
+              <div>
+                <b id="viz-title">Verbose logs leak data</b>
+                <p id="viz-copy">Debug output preserves request bodies, Authorization headers, labels, and backend route choices.</p>
+              </div>
+              <div>
+                <b>Leak exposure</b>
+                <div class="meter"><span id="stability-meter" style="--value: 82%"></span></div>
+              </div>
+              <div>
+                <b>Redaction coverage</b>
+                <div class="meter safe"><span id="visibility-meter" style="--value: 18%"></span></div>
+              </div>
+              <div>
+                <b>Audit usefulness</b>
+                <div class="meter warn"><span id="defense-meter" style="--value: 42%"></span></div>
+              </div>
+              <div class="viz-controls" aria-label="Visualization states">
+                <button type="button" class="is-active" data-state="verbose">Verbose logs</button>
+                <button type="button" data-state="redacted">D6 redacted</button>
+                <button type="button" data-state="retained">Rotated + retained</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="model">
+        <div class="section-heading"><h2>Threat Model</h2><p>The attacker does not need model access if logs contain the model's evidence trail.</p></div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card"><h3>Attacker capability</h3><p>The attacker can read a copied log file, debug console, notebook artifact, container stdout, or exposed log directory from an owned lab system or misconfigured service.</p></div>
+            <div class="mini-card"><h3>Assets at risk</h3><p>Tokens, user identifiers, image or prompt snippets, model labels, confidence values, route choice, internal IPs, stack traces, artifact paths, and experiment secrets.</p></div>
+            <div class="mini-card"><h3>Out of scope</h3><p>No attempts to access third-party logs, no credential theft exercises, and no storage of real private payloads. Validation uses synthetic fixtures and canaries.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="intuition">
+        <div class="section-heading"><h2>Attack Intuition</h2><p>Logs are often less protected than the systems they describe.</p></div>
+        <div class="section-body">
+          <p>A8 is dangerous because logs are copied, tailed, zipped, uploaded, and retained for debugging. A single verbose line can undo careful API design by preserving the same sensitive data that the application avoids exposing in responses.</p>
+          <p>In your lab, the risk spans multiple layers: Pi gateway access logs, FastAPI debug traces, Jetson stdout, Zynq PetaLinux logs, notebook outputs, and exported experiment artifacts. D6 turns those logs into safe evidence instead of a shadow dataset.</p>
+          <div class="callout safe"><b>Safe validation line:</b> seed synthetic canary tokens and fake payloads into owned log fixtures, then prove scanners and redaction remove them before retention or sharing.</div>
+        </div>
+      </section>
+
+      <section class="section" id="technical">
+        <div class="section-heading"><h2>Technical Explanation</h2><p>A8 is a confidentiality failure caused by observability without a privacy boundary.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Payload echo</h3><p>Request bodies, image snippets, prompts, labels, or debug tensors enter logs through exception handlers, print statements, reverse proxy configs, and notebook cells.</p></div>
+            <div class="mini-card"><h3>Credential echo</h3><p>Authorization headers, cookies, API keys, SCP paths, and signed artifact URLs can appear in access logs or shell histories if logging is not filtered at the boundary.</p></div>
+            <div class="mini-card"><h3>Topology leakage</h3><p>Internal IPs, backend names, route decisions, and latency buckets can help later A5, A6, or A18 experiments if copied without context.</p></div>
+            <div class="mini-card"><h3>Evidence balance</h3><p>Defenders still need observability. D6 keeps method, route, status, size bucket, body hash, user id, trace id, backend class, and reject reason without storing raw sensitive values.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="math">
+        <div class="section-heading"><h2>Policy View</h2><p>A useful log line should maximize evidence while minimizing sensitive content.</p></div>
+        <div class="section-body">
+          <div class="formula">safe_log = {
+  timestamp,
+  trace_id,
+  user_id_hash,
+  route,
+  status,
+  size_bucket,
+  body_sha256_prefix,
+  confidence_bucket,
+  backend_class,
+  reject_reason
+}
+
+never_log = {
+  Authorization,
+  cookies,
+  raw image bytes,
+  prompts,
+  private labels,
+  full object ids,
+  model files,
+  bitstream keys
+}</div>
+          <p>The useful measurement is not whether logs exist. It is whether every retained line obeys a clear allow-list and whether seeded canaries disappear from every Pi, Jetson, Zynq, and notebook artifact.</p>
+        </div>
+      </section>
+
+      <section class="section" id="lab">
+        <div class="section-heading"><h2>Safe Lab Demonstration</h2><p>Use synthetic log fixtures with canary values and prove D6 removes the sensitive fields.</p></div>
+        <div class="section-body">
+          <ol>
+            <li>Create fake gateway, Jetson, and Zynq log lines with a known canary token and fake payload marker.</li>
+            <li>Run the scanner to detect Authorization headers, payload echoes, raw labels, internal IPs, and artifact paths.</li>
+            <li>Apply the D6 redactor and scan again.</li>
+            <li>Verify useful fields remain: route, status, size bucket, trace id, body hash, latency bucket, and reject reason.</li>
+            <li>Record file permissions, rotation policy, and retention window as part of the evidence.</li>
+          </ol>
+          <div class="lab-output" id="lab-output" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="section" id="code">
+        <div class="section-heading"><h2>Local Lab Code</h2><p>A compact canary scanner and redactor for owned synthetic lab logs.</p></div>
+        <div class="section-body">
+          <div class="code-card">
+            <div class="code-head"><span>a8_log_canary_redaction_lab.py</span><button class="copy-button" type="button" data-copy="a8-code">Copy</button></div>
+<pre><code id="a8-code">import hashlib
+import re
+
+CANARY = "CANARY_DO_NOT_LOG_42"
+
+fixtures = [
+    "pi route=/api/v1/infer Authorization=Bearer CANARY_DO_NOT_LOG_42 body=image_bytes status=200 backend=jetson",
+    "jetson stdout label=person confidence=0.982 trace=abc123 payload=CANARY_DO_NOT_LOG_42",
+    "zynq petalinux src=192.168.30.8 model=/opt/models/private.onnx result=vehicle token=CANARY_DO_NOT_LOG_42",
+]
+
+patterns = {
+    "authorization": re.compile(r"Authorization=Bearer\\s+\\S+"),
+    "canary": re.compile(re.escape(CANARY)),
+    "payload": re.compile(r"(body|payload)=\\S+"),
+    "model_path": re.compile(r"model=/\\S+"),
+    "internal_ip": re.compile(r"\\b192\\.168\\.\\d+\\.\\d+\\b"),
+}
+
+def fingerprint(value):
+    return hashlib.sha256(value.encode()).hexdigest()[:12]
+
+def scan(lines):
+    findings = []
+    for i, line in enumerate(lines, 1):
+        for name, pattern in patterns.items():
+            if pattern.search(line):
+                findings.append((i, name))
+    return findings
+
+def redact(line):
+    line = patterns["authorization"].sub("Authorization=[REDACTED]", line)
+    line = patterns["canary"].sub("[CANARY_REDACTED]", line)
+    line = patterns["payload"].sub(lambda m: m.group(1) + "_sha256=" + fingerprint(m.group(0)), line)
+    line = patterns["model_path"].sub("model=[REDACTED_PATH]", line)
+    line = patterns["internal_ip"].sub("192.168.x.x", line)
+    return line
+
+print("[before]", scan(fixtures))
+redacted = [redact(line) for line in fixtures]
+print("[after]", scan(redacted))
+for line in redacted:
+    print(line)
+</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="setup">
+        <div class="section-heading"><h2>Your Edge AI Setup</h2><p>A8 gives you a clean observability-and-privacy experiment across every device.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Pi gateway</h3><p>Use structured logs with an allow-list: route, method, status, trace id, user hash, size bucket, body hash, reject reason, and dispatch class only.</p></div>
+            <div class="mini-card"><h3>Jetson backend</h3><p>Disable raw stdout dumps of tensors, payloads, confidence arrays, and tokens. Align TensorRT service logs with the Pi trace id and D6 fields.</p></div>
+            <div class="mini-card"><h3>Zynq backend</h3><p>Keep PetaLinux and service logs free of bitstream paths, key material, raw request bodies, and private model metadata.</p></div>
+            <div class="mini-card"><h3>GPU workstation</h3><p>Scan notebooks, exported experiment folders, and model-build logs before sharing figures or archiving evidence.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="signals">
+        <div class="section-heading"><h2>Observable Signals</h2><p>D6 should make leakage measurable without keeping the sensitive material itself.</p></div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead><tr><th>Signal</th><th>Why It Matters</th><th>Safe Evidence</th></tr></thead>
+            <tbody>
+              <tr><td>Canary token detection</td><td>Proves whether secrets survive logging and export.</td><td>Scanner finding count before and after D6 redaction.</td></tr>
+              <tr><td>Payload echo detection</td><td>Shows whether bodies, prompts, or image bytes are retained.</td><td>Body hash present; raw body absent.</td></tr>
+              <tr><td>Header redaction</td><td>Authorization and cookies must never enter retained logs.</td><td>Redacted header markers and scanner pass result.</td></tr>
+              <tr><td>Route and backend metadata</td><td>Needed for research, but too much detail can support later attacks.</td><td>Backend class and trace id, not direct sensitive topology dumps.</td></tr>
+              <tr><td>Retention and permissions</td><td>Old logs become long-lived sensitive datasets.</td><td>Rotation config, chmod evidence, and archive age checks.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="impact">
+        <div class="section-heading"><h2>Impact Analysis</h2><p>A8 is mostly confidentiality, with secondary integrity and availability effects.</p></div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card"><h3>Confidentiality</h3><p>Logs reveal secrets, private payloads, prediction metadata, or internal routing that users never intended to publish.</p><div class="pill-row"><span class="pill red">Primary</span></div></div>
+            <div class="mini-card"><h3>Integrity</h3><p>Leaked route and model details can support later targeted input or backend-bypass experiments.</p><div class="pill-row"><span class="pill amber">Secondary</span></div></div>
+            <div class="mini-card"><h3>Availability</h3><p>Verbose logging can amplify disk pressure during A2-style bursts if rotation and size caps are missing.</p><div class="pill-row"><span class="pill orange">Secondary</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="mapping">
+        <div class="section-heading"><h2>Framework Mapping</h2><p>A8 maps to information disclosure through observability and retention systems.</p></div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead><tr><th>Framework</th><th>Mapping</th><th>Use In Report</th></tr></thead>
+            <tbody>
+              <tr><td>STRIDE</td><td>Information Disclosure, with Repudiation relevance because logs also support auditability.</td><td>Show the tension between evidence and sensitive-data minimization.</td></tr>
+              <tr><td>CIA</td><td>Confidentiality primary; Integrity and Availability secondary.</td><td>Separate secret leakage from logging overhead and later attack enablement.</td></tr>
+              <tr><td>PASTA</td><td>Stage 5 vulnerability analysis and Stage 7 risk/impact analysis.</td><td>Model every log sink as a data store with its own access and retention policy.</td></tr>
+              <tr><td>MITRE ATLAS</td><td>Relevant to collection of model responses, credential leakage, and discovery through operational artifacts.</td><td>Treat logs as a controlled research artifact with a documented safe schema.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="defenses">
+        <div class="section-heading"><h2>Defense Mapping To Existing D1-D11 Controls</h2><p>D6 is the primary fix, but surrounding controls reduce what logs can contain.</p></div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead><tr><th>Control</th><th>Role Against A8</th><th>Validation Evidence</th></tr></thead>
+            <tbody>
+              <tr><td>D6 Sanitized Logging</td><td>Primary control. Uses allow-listed fields, body hashing, token redaction, permission hardening, rotation, and retention limits.</td><td>Canary scanner passes across Pi, Jetson, Zynq, notebook, and archive fixtures.</td></tr>
+              <tr><td>D1 Auth + Object Checks</td><td>Keeps identity structured and prevents logs from becoming a substitute authorization layer.</td><td>User id hash and trace id appear; raw token and cross-user object ids do not.</td></tr>
+              <tr><td>D2 Rate Limit + Body Cap</td><td>Limits log volume during request bursts and prevents disk pressure.</td><td>429/413 logs are compact and do not preserve rejected payloads.</td></tr>
+              <tr><td>D5 Query Anomaly Detection</td><td>Provides context for suspicious sessions without storing raw queries.</td><td>Anomaly reason and bucketed metrics remain after redaction.</td></tr>
+              <tr><td>D8 Input Validation</td><td>Reject reasons are useful, but raw invalid payloads should not be retained.</td><td>Reject reason code and body hash are present; malformed body is absent.</td></tr>
+              <tr><td>D3 / D4 Infrastructure Controls</td><td>Limit who can reach logs and how logs move between devices.</td><td>TLS/mTLS, private backend subnet, chmod, and archive access checks are documented.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="research">
+        <div class="section-heading"><h2>Research Notes</h2><p>A8 can become a strong reproducible-security section because it has crisp pass/fail evidence.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Canary experiment</h3><p>Seed known fake secrets and payload markers, then report scanner results before and after D6 on each device.</p></div>
+            <div class="mini-card"><h3>Evidence schema</h3><p>Publish the allowed log schema as part of the lab design so future A1-A18 experiments inherit safe evidence handling.</p></div>
+            <div class="mini-card"><h3>Retention measurement</h3><p>Measure log growth during normal traffic and A2 bursts, then verify rotation, compression, and deletion windows.</p></div>
+            <div class="mini-card"><h3>Cross-device parity</h3><p>Compare Pi, Jetson, and Zynq logs to prove the same redaction policy is enforced across heterogeneous systems.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="takeaways">
+        <div class="section-heading"><h2>Key Takeaways</h2><p>A8 is fixed by designing logs as security artifacts, not debug leftovers.</p></div>
+        <div class="section-body">
+          <ul>
+            <li>A8 turns observability into a confidentiality risk when raw payloads, tokens, or model outputs enter retained logs.</li>
+            <li>D6 should be an allow-list, not a best-effort block-list.</li>
+            <li>Canary tokens make the validation simple: the canary must disappear from every retained artifact.</li>
+            <li>Useful research evidence can remain through route, status, trace id, body hash, bucketed metrics, and reject reasons.</li>
+            <li>A8 connects to A6 and A18 because logs may reveal confidence, route, and timing behavior even when the API response is controlled.</li>
+          </ul>
+          <nav class="nav-grid" aria-label="Related pages">
+            <a class="nav-card" href="A7_adversarial_input_perturbation.html"><b>Previous threat: A7</b><span>Adversarial Input Perturbation. Robustness, D8 validation, and controlled perturbation tests.</span></a>
+            <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Next threat: A9</b><span>Weak TLS / Plaintext Traffic. Dedicated page planned next.</span></a>
+            <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Primary defense: D6</b><span>Sanitized Logging in the live atlas inspector.</span></a>
+            <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Main atlas</b><span>Return to the architecture and attack surface map.</span></a>
+          </nav>
+        </div>
+      </section>
+    </article>
+  </div>
+</main>
+
+<script>
+const states = {
+  verbose: {
+    title: "Verbose logs leak data",
+    copy: "Debug output preserves request bodies, Authorization headers, labels, and backend route choices.",
+    stability: "82%",
+    visibility: "18%",
+    defense: "42%",
+    prediction: "log state: unsafe",
+    hot: ["flow-leak", "flow-backend"],
+    logs: [
+      "[pi] Authorization=Bearer CANARY_DO_NOT_LOG_42 body=image_bytes backend=jetson",
+      "[jetson] label=person confidence=0.982 payload=CANARY_DO_NOT_LOG_42",
+      "[zynq] src=192.168.30.8 model=/opt/models/private.onnx token=CANARY_DO_NOT_LOG_42",
+      "[risk] retained logs contain secrets and payload echoes"
+    ]
+  },
+  redacted: {
+    title: "D6 redaction enforced",
+    copy: "Logs keep traceability, status, body hash, size bucket, and route class while removing tokens and raw payloads.",
+    stability: "24%",
+    visibility: "88%",
+    defense: "78%",
+    prediction: "log state: redacted",
+    hot: ["flow-redact", "flow-audit"],
+    logs: [
+      "[pi] Authorization=[REDACTED] body_sha256=8f2a19c status=200 backend_class=gpu",
+      "[jetson] label_bucket=allowed confidence_bucket=0.9 payload_sha256=8f2a19c",
+      "[zynq] src=192.168.x.x model=[REDACTED_PATH] token=[CANARY_REDACTED]",
+      "[control] useful evidence remains without raw sensitive values"
+    ]
+  },
+  retained: {
+    title: "Rotated and retained safely",
+    copy: "Permissions, rotation, archive scanning, and retention windows prevent old logs from becoming shadow datasets.",
+    stability: "12%",
+    visibility: "94%",
+    defense: "91%",
+    prediction: "log state: retained safely",
+    hot: ["flow-redact", "flow-audit"],
+    logs: [
+      "[rotation] max_size=20MB keep_days=14 archive_scan=pass",
+      "[permissions] pi=0600 jetson=0600 zynq=0600 owner=lab-service",
+      "[scanner] canary_hits=0 raw_payload_hits=0 authorization_hits=0",
+      "[secure] logs are useful for research and safe to retain"
+    ]
+  }
+};
+
+const buttons = document.querySelectorAll("[data-state]");
+const title = document.getElementById("viz-title");
+const copy = document.getElementById("viz-copy");
+const stability = document.getElementById("stability-meter");
+const visibility = document.getElementById("visibility-meter");
+const defense = document.getElementById("defense-meter");
+const prediction = document.getElementById("prediction-label");
+const labOutput = document.getElementById("lab-output");
+
+function renderState(name) {
+  const state = states[name];
+  title.textContent = state.title;
+  copy.textContent = state.copy;
+  stability.style.setProperty("--value", state.stability);
+  visibility.style.setProperty("--value", state.visibility);
+  defense.style.setProperty("--value", state.defense);
+  prediction.textContent = state.prediction;
+  document.querySelectorAll(".flow").forEach(flow => {
+    flow.classList.toggle("flow-hot", state.hot.includes(flow.id));
+    flow.classList.toggle("flow-muted", !state.hot.includes(flow.id));
+  });
+  labOutput.innerHTML = state.logs.map(line => {
+    const klass = line.includes("secure") || line.includes("control") || line.includes("pass") || line.includes("REDACTED") ? "log-ok" : line.includes("risk") || line.includes("CANARY_DO_NOT_LOG") ? "log-bad" : "log-warn";
+    return `<div class="${klass}">${line}</div>`;
+  }).join("");
+  buttons.forEach(button => button.classList.toggle("is-active", button.dataset.state === name));
+}
+
+buttons.forEach(button => button.addEventListener("click", () => renderState(button.dataset.state)));
+renderState("verbose");
+
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", async () => {
+    const target = document.getElementById(button.dataset.copy);
+    if (!target) return;
+    try {
+      await navigator.clipboard.writeText(target.innerText);
+      const old = button.textContent;
+      button.textContent = "Copied";
+      setTimeout(() => { button.textContent = old; }, 900);
+    } catch (error) {
+      button.textContent = "Select code";
+    }
+  });
+});
+
+const fullscreenToggle = document.getElementById("fullscreen-toggle");
+
+function syncFullscreenLabel() {
+  const active = Boolean(document.fullscreenElement);
+  fullscreenToggle.textContent = active ? "exit fullscreen" : "full screen";
+  fullscreenToggle.setAttribute("aria-pressed", String(active));
+}
+
+fullscreenToggle.addEventListener("click", async () => {
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch (error) {
+    fullscreenToggle.textContent = "fullscreen unavailable";
+    setTimeout(syncFullscreenLabel, 1200);
+  }
+});
+
+document.addEventListener("fullscreenchange", syncFullscreenLabel);
+syncFullscreenLabel();
+</script>
+</body>
+</html>

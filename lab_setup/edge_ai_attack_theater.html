@@ -704,12 +704,12 @@
         <p>Small input changes manipulate model output while preserving plausible human-level appearance.</p>
         <div class="catalog-meta">Client input / validation / robustness</div>
       </a>
-      <button class="catalog-card attack" type="button" data-inspect="A8" aria-label="Inspect A8 unsafe sensitive logging">
-        <div class="catalog-id-row"><span class="catalog-id">A8</span><span class="catalog-status">Inspector</span></div>
+      <a class="catalog-card attack" href="Threat_library/A8_unsafe_sensitive_logging.html" aria-label="Open A8 unsafe sensitive logging deep dive">
+        <div class="catalog-id-row"><span class="catalog-id">A8</span><span class="catalog-status linked">Deep dive</span></div>
         <h3>Unsafe / Sensitive Logging</h3>
         <p>Prompts, frames, tokens, or labels leak into logs that are easier to copy than the protected service.</p>
         <div class="catalog-meta">Jetson logs / privacy / evidence trails</div>
-      </button>
+      </a>
       <button class="catalog-card attack" type="button" data-inspect="A9" aria-label="Inspect A9 weak TLS plaintext internal traffic">
         <div class="catalog-id-row"><span class="catalog-id">A9</span><span class="catalog-status">Inspector</span></div>
         <h3>Weak TLS / Plaintext Traffic</h3>
@@ -1045,6 +1045,7 @@ const THREATS = {
     "title": "Log Leakage",
     "severity": "medium",
     "where": "Pi, Jetson stdout, and Zynq PetaLinux logs",
+    "href": "Threat_library/A8_unsafe_sensitive_logging.html",
     "realistic": "Logs can leak request bodies, tokens, internal IPs, dispatch choices, or result metadata.",
     "howAttack": [
       "Safe validation: scan owned lab log fixtures for secrets and payload echoes.",
