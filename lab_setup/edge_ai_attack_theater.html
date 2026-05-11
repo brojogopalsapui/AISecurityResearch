@@ -139,6 +139,9 @@
   .route-badge-text.private { fill: var(--green); }
   .route-badge-text.physical { fill: var(--magenta); }
   .fpga-alert-bg { fill: rgba(255, 140, 66, 0.1); stroke: var(--hw-orange); stroke-width: 0.8; }
+  .physical-surface-bg { fill: rgba(249, 117, 131, 0.07); stroke: var(--magenta); stroke-width: 1; stroke-dasharray: 4 3; }
+  .physical-surface-title { fill: var(--magenta); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .physical-surface-text { fill: var(--text-2); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.05em; }
 
   .packet { opacity: 0; }
   .packet.legit { fill: var(--cyan); filter: drop-shadow(0 0 6px var(--cyan)); }
@@ -329,6 +332,22 @@
 
         <rect class="zone-box physical" x="800" y="595" width="370" height="240" rx="6" />
         <text class="zone-label" x="810" y="615" fill="#f97583">// PHYSICAL ATTACK SURFACE • SILICON</text>
+        <g class="physical-surface-card" transform="translate(820,648)">
+          <rect class="physical-surface-bg" width="154" height="136" rx="4" />
+          <text class="physical-surface-title" x="12" y="22">PROBE TARGETS</text>
+          <text class="physical-surface-text" x="12" y="46">A13 power traces</text>
+          <text class="physical-surface-text" x="12" y="64">A14 EM near-field</text>
+          <text class="physical-surface-text" x="12" y="82">A15 voltage/clock faults</text>
+          <text class="physical-surface-text" x="12" y="108">Contact point: Zynq board</text>
+        </g>
+        <g class="physical-surface-card" transform="translate(996,648)">
+          <rect class="physical-surface-bg" width="154" height="136" rx="4" />
+          <text class="physical-surface-title" x="12" y="22">SILICON DEFENSES</text>
+          <text class="physical-surface-text" x="12" y="46">D10 masking/schedule</text>
+          <text class="physical-surface-text" x="12" y="64">D11 XADC anomaly log</text>
+          <text class="physical-surface-text" x="12" y="82">D9 bitstream auth</text>
+          <text class="physical-surface-text" x="12" y="108">Measured overhead + alerts</text>
+        </g>
 
         <!-- DEVICES -->
 
@@ -491,8 +510,8 @@
         </g>
 
         <!-- Physical probe link (NEW) -->
-        <path id="link-probe" class="link physical" d="M 240,600 C 500,640 700,720 990,710" marker-end="url(#arrow-orange)" />
-        <g class="route-badge" transform="translate(512,650)">
+        <path id="link-probe" class="link physical" d="M 240,600 C 440,640 660,610 875,545" marker-end="url(#arrow-orange)" />
+        <g class="route-badge" transform="translate(500,620)">
           <rect class="route-badge-bg" width="126" height="22" rx="3" />
           <text class="route-badge-text physical" x="10" y="15">PHYSICAL PROBE</text>
         </g>
@@ -702,6 +721,7 @@ const THREATS = {
     "title": "Direct Backend Exposure",
     "severity": "high",
     "where": "Jetson :8001 or Zynq :8002 reachable from client LAN",
+    "href": "Threat_library/A5_direct_backend_exposure.html",
     "realistic": "If private backends are reachable from the client side, the Pi gateway controls no longer mediate inference.",
     "howAttack": [
       "Safe validation only: from an owned lab client, confirm backend service ports are unreachable from the client VLAN.",
@@ -1214,7 +1234,7 @@ const PATHS = {
   ],
   hw: [
     // Side-channel probe path: scope → Zynq die (slow, pulsing)
-    [{x:240,y:600},{x:500,y:650},{x:750,y:700},{x:990,y:680},{x:990,y:440}],
+    [{x:240,y:600},{x:440,y:640},{x:660,y:610},{x:875,y:545}],
     // Bitstream tampering path: GPU PC → bitstream link → Zynq
     [{x:240,y:210},{x:460,y:260},{x:700,y:330},{x:830,y:420}]
   ]
