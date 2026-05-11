@@ -698,12 +698,12 @@
         <p>Repeated black-box queries approximate decision boundaries or recover sensitive model behavior.</p>
         <div class="catalog-meta">Query telemetry / anomaly detection / D5</div>
       </a>
-      <button class="catalog-card attack" type="button" data-inspect="A7" aria-label="Inspect A7 adversarial input perturbation">
-        <div class="catalog-id-row"><span class="catalog-id">A7</span><span class="catalog-status">Inspector</span></div>
+      <a class="catalog-card attack" href="Threat_library/A7_adversarial_input_perturbation.html" aria-label="Open A7 adversarial input perturbation deep dive">
+        <div class="catalog-id-row"><span class="catalog-id">A7</span><span class="catalog-status linked">Deep dive</span></div>
         <h3>Adversarial Input Perturbation</h3>
         <p>Small input changes manipulate model output while preserving plausible human-level appearance.</p>
         <div class="catalog-meta">Client input / validation / robustness</div>
-      </button>
+      </a>
       <button class="catalog-card attack" type="button" data-inspect="A8" aria-label="Inspect A8 unsafe sensitive logging">
         <div class="catalog-id-row"><span class="catalog-id">A8</span><span class="catalog-status">Inspector</span></div>
         <h3>Unsafe / Sensitive Logging</h3>
@@ -1024,6 +1024,7 @@ const THREATS = {
     "title": "Adversarial Input",
     "severity": "medium",
     "where": "Crafted client-side images",
+    "href": "Threat_library/A7_adversarial_input_perturbation.html",
     "realistic": "Small perturbations can change model output even when network controls are correct.",
     "howAttack": [
       "Safe lab: use public toy datasets and local surrogate models only.",

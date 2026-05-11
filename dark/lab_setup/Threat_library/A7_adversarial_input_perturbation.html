@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A7 | Adversarial Input Perturbation</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f5f7fb;
+    --panel: #ffffff;
+    --panel-2: #eef3f8;
+    --ink: #10151c;
+    --muted: #5e6c7a;
+    --soft: #8795a4;
+    --line: #d8e0e8;
+    --line-strong: #b9c5d1;
+    --navy: #172333;
+    --cyan: #00a7bd;
+    --blue: #2c70d8;
+    --green: #158b55;
+    --amber: #c77900;
+    --orange: #f26d21;
+    --red: #d63447;
+    --violet: #7656d6;
+    --rose: #bd476a;
+    --shadow: 0 18px 44px rgba(29, 44, 61, 0.13);
+    --radius: 8px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(140deg, #f5f7fb 0%, #edf4f7 45%, #f8f9fb 100%);
+    color: var(--ink);
+    font: 15px/1.58 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgba(0, 167, 189, 0.12), transparent 32%),
+      linear-gradient(290deg, rgba(242, 109, 33, 0.12), transparent 34%);
+    opacity: 0.9;
+    z-index: -1;
+  }
+
+  a { color: inherit; }
+  button { font: inherit; cursor: pointer; }
+
+  .app {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 18px 0 54px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    min-height: 72px;
+    padding: 12px 0;
+    background: rgba(245, 247, 251, 0.84);
+    border-bottom: 1px solid rgba(185, 197, 209, 0.65);
+    backdrop-filter: blur(16px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .brand-mark {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(135deg, rgba(0, 167, 189, 0.2), transparent 46%),
+      linear-gradient(315deg, rgba(242, 109, 33, 0.2), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(23, 35, 51, 0.1);
+  }
+
+  .brand-mark span {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--navy);
+  }
+
+  .brand-mark span:nth-child(1) { top: 13px; }
+  .brand-mark span:nth-child(2) { top: 21px; background: var(--cyan); }
+  .brand-mark span:nth-child(3) { top: 29px; }
+
+  .brand h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.12;
+    font-weight: 780;
+  }
+
+  .brand p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .crumbs,
+  .pill-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .crumbs { justify-content: flex-end; }
+
+  .crumbs a,
+  .crumbs span,
+  .fullscreen-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 31px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .fullscreen-button {
+    color: #007474;
+    background: rgba(231, 255, 252, 0.9);
+    border-color: rgba(0, 116, 116, 0.2);
+    font-weight: 800;
+  }
+
+  .crumbs a:hover,
+  .fullscreen-button:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+  }
+
+  .crumbs a.back-link {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: var(--panel);
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(23, 35, 51, 0.16);
+  }
+
+  .crumbs a.back-link:hover {
+    border-color: var(--cyan);
+    background: var(--cyan);
+    color: var(--panel);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 18px;
+    align-items: stretch;
+    margin: 18px 0;
+  }
+
+  .hero-card,
+  .side-card,
+  .section,
+  .nav-card,
+  .mini-card,
+  .toc {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-card { padding: 22px; }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 820;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(214, 52, 71, 0.12);
+  }
+
+  h2,
+  h3,
+  p { margin-top: 0; }
+
+  .hero h2 {
+    margin: 0 0 14px;
+    max-width: 780px;
+    font-size: clamp(38px, 6.5vw, 70px);
+    line-height: 0.98;
+    letter-spacing: 0;
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 840px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+
+  .side-card {
+    padding: 16px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px;
+    background: #fff;
+  }
+
+  .fact b {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .fact span {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 245px minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .toc {
+    position: sticky;
+    top: 92px;
+    align-self: start;
+    padding: 12px;
+  }
+
+  .toc b,
+  .toc a {
+    display: block;
+  }
+
+  .toc b {
+    margin-bottom: 8px;
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .toc a {
+    border-radius: 6px;
+    padding: 7px 8px;
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    background: rgba(0, 167, 189, 0.08);
+    color: var(--navy);
+  }
+
+  .content {
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+  }
+
+  .section {
+    overflow: hidden;
+  }
+
+  .section-heading {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+  }
+
+  .section-heading h2 {
+    margin: 0 0 4px;
+    font-size: 24px;
+  }
+
+  .section-heading p,
+  .section-body p:last-child { margin-bottom: 0; }
+
+  .section-heading p,
+  .section-body p,
+  li { color: var(--muted); }
+
+  .section-body {
+    padding: 18px;
+  }
+
+  .grid-2,
+  .grid-3,
+  .nav-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .nav-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .mini-card,
+  .nav-card {
+    padding: 14px;
+  }
+
+  .mini-card h3,
+  .nav-card b {
+    display: block;
+    margin: 0 0 6px;
+    color: var(--navy);
+    font-size: 15px;
+  }
+
+  .nav-card {
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .nav-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--cyan);
+  }
+
+  .nav-card span {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .nav-card.muted {
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  .pill-row { margin-top: 10px; }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: 760;
+  }
+
+  .pill.red { color: var(--red); border-color: rgba(214, 52, 71, 0.28); background: rgba(214, 52, 71, 0.1); }
+  .pill.green { color: var(--green); border-color: rgba(21, 139, 85, 0.28); background: rgba(21, 139, 85, 0.1); }
+  .pill.orange { color: var(--orange); border-color: rgba(242, 109, 33, 0.3); background: rgba(242, 109, 33, 0.12); }
+  .pill.blue { color: var(--blue); border-color: rgba(44, 112, 216, 0.28); background: rgba(44, 112, 216, 0.1); }
+  .pill.amber { color: var(--amber); border-color: rgba(199, 121, 0, 0.3); background: rgba(199, 121, 0, 0.1); }
+
+  .architecture-viz {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 265px;
+    gap: 14px;
+  }
+
+  .viz-panel,
+  .viz-status,
+  .formula,
+  .matrix,
+  .lab-output {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .viz-panel {
+    overflow: hidden;
+    min-height: 330px;
+  }
+
+  .viz-panel svg {
+    width: 100%;
+    height: 100%;
+    min-height: 330px;
+    display: block;
+  }
+
+  .zone {
+    fill: rgba(0, 167, 189, 0.06);
+    stroke: var(--line);
+  }
+
+  .zone-label,
+  .node-label,
+  .flow-label {
+    font-size: 13px;
+    font-weight: 760;
+    fill: var(--muted);
+  }
+
+  .node-label { fill: var(--ink); }
+  .flow-label { fill: var(--red); }
+
+  .node {
+    fill: var(--panel);
+    stroke: var(--line-strong);
+    stroke-width: 2;
+  }
+
+  .node.gateway { stroke: var(--violet); }
+  .node.backend { stroke: var(--green); }
+  .node.shadow { stroke: var(--red); stroke-dasharray: 4 3; }
+
+  .pixel {
+    fill: rgba(44, 112, 216, 0.18);
+    stroke: rgba(44, 112, 216, 0.16);
+  }
+
+  .pixel.hot {
+    fill: rgba(214, 52, 71, 0.28);
+    stroke: rgba(214, 52, 71, 0.32);
+  }
+
+  .flow {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 3;
+    marker-end: url(#arrow-red);
+    opacity: 0.9;
+  }
+
+  .flow.secure {
+    stroke: var(--green);
+    marker-end: url(#arrow-green);
+  }
+
+  .flow-muted { opacity: 0.22; }
+  .flow-hot { stroke-width: 4; opacity: 1; }
+
+  .viz-status {
+    padding: 14px;
+    display: grid;
+    gap: 14px;
+  }
+
+  .viz-status b {
+    display: block;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .meter {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    overflow: hidden;
+  }
+
+  .meter span {
+    display: block;
+    width: var(--value);
+    height: 100%;
+    border-radius: inherit;
+    background: var(--red);
+    transition: width 0.3s ease;
+  }
+
+  .meter.safe span { background: var(--green); }
+  .meter.warn span { background: var(--amber); }
+
+  .viz-controls {
+    display: grid;
+    gap: 8px;
+  }
+
+  .viz-controls button,
+  .copy-button {
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--navy);
+    padding: 7px 10px;
+    font-weight: 760;
+  }
+
+  .viz-controls button.is-active {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #fff;
+  }
+
+  .formula {
+    padding: 14px;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    color: var(--navy);
+    white-space: pre-wrap;
+  }
+
+  .callout {
+    border-left: 4px solid var(--red);
+    border-radius: var(--radius);
+    background: rgba(214, 52, 71, 0.08);
+    padding: 12px;
+    color: var(--muted);
+  }
+
+  .callout.safe {
+    border-left-color: var(--green);
+    background: rgba(21, 139, 85, 0.08);
+  }
+
+  .lab-output {
+    margin-top: 12px;
+    min-height: 138px;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    white-space: pre-wrap;
+    color: var(--navy);
+  }
+
+  .log-bad { color: var(--red); }
+  .log-ok { color: var(--green); }
+  .log-warn { color: var(--amber); }
+
+  .code-card {
+    overflow: hidden;
+    border: 1px solid #1f2f44;
+    border-radius: var(--radius);
+    background: #0f1723;
+    color: #d9e6f2;
+  }
+
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #172333;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 12px;
+    font-weight: 780;
+  }
+
+  .copy-button {
+    min-height: 30px;
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 5px 9px;
+    font-size: 12px;
+  }
+
+  pre {
+    margin: 0;
+    max-height: 520px;
+    overflow: auto;
+    padding: 14px;
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .matrix {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+  }
+
+  .matrix th,
+  .matrix td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 13px;
+  }
+
+  .matrix th {
+    background: var(--panel-2);
+    color: var(--navy);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .matrix tr:last-child td { border-bottom: 0; }
+
+  @media (max-width: 980px) {
+    .hero,
+    .layout,
+    .architecture-viz {
+      grid-template-columns: 1fr;
+    }
+
+    .toc {
+      position: static;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .app {
+      width: min(100% - 20px, 1180px);
+      padding-top: 10px;
+    }
+
+    .topbar {
+      grid-template-columns: 1fr;
+    }
+
+    .crumbs {
+      justify-content: flex-start;
+    }
+
+    .grid-2,
+    .grid-3,
+    .nav-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  :root {
+    color-scheme: dark;
+    --paper: #0d1117;
+    --panel: #111827;
+    --panel-2: #172033;
+    --ink: #eef4ff;
+    --muted: #aab4c5;
+    --soft: #7f8da3;
+    --line: rgba(148, 163, 184, 0.22);
+    --line-strong: rgba(170, 180, 197, 0.34);
+    --navy: #eef4ff;
+    --cyan: #5eead4;
+    --blue: #58a6ff;
+    --green: #00d17d;
+    --amber: #f5c451;
+    --orange: #ff8c42;
+    --red: #ff4d6d;
+    --violet: #a78bfa;
+    --rose: #ff7aa2;
+    --shadow: 0 20px 52px rgba(0, 0, 0, 0.36);
+  }
+
+  body {
+    background: linear-gradient(140deg, #0d1117 0%, #111827 48%, #0b1118 100%);
+  }
+
+  body::before {
+    background:
+      linear-gradient(120deg, rgba(94, 234, 212, 0.11), transparent 32%),
+      linear-gradient(290deg, rgba(255, 140, 66, 0.1), transparent 34%);
+    opacity: 0.82;
+  }
+
+  .topbar {
+    background: rgba(13, 17, 23, 0.86);
+    border-bottom-color: rgba(148, 163, 184, 0.22);
+  }
+
+  .brand-mark {
+    border-color: var(--line-strong);
+    background:
+      linear-gradient(135deg, rgba(94, 234, 212, 0.17), transparent 46%),
+      linear-gradient(315deg, rgba(255, 140, 66, 0.15), transparent 50%),
+      var(--panel);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.22);
+  }
+
+  .brand-mark span { background: var(--ink); }
+  .brand-mark span:nth-child(2) { background: var(--cyan); }
+
+  .crumbs a,
+  .crumbs span,
+  .fullscreen-button,
+  .hero-card,
+  .side-card,
+  .section,
+  .nav-card,
+  .mini-card,
+  .toc {
+    background: rgba(17, 24, 39, 0.86);
+    border-color: var(--line);
+  }
+
+  .fullscreen-button {
+    color: #85edff;
+    background: rgba(83, 229, 246, 0.075);
+    border-color: rgba(83, 229, 246, 0.22);
+  }
+
+  .crumbs a:hover,
+  .toc a:hover,
+  .nav-card:hover,
+  .fullscreen-button:hover {
+    border-color: var(--cyan);
+    color: var(--ink);
+  }
+
+  .crumbs a.back-link {
+    color: #071018;
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .crumbs a.back-link:hover {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #071018;
+  }
+
+  .fact,
+  .viz-panel,
+  .viz-status,
+  .formula,
+  .matrix,
+  .lab-output {
+    background: rgba(11, 17, 24, 0.96);
+    border-color: var(--line);
+  }
+
+  .section-heading,
+  .matrix th {
+    background: rgba(23, 32, 51, 0.94);
+    border-color: var(--line);
+  }
+
+  .callout {
+    background: rgba(17, 24, 39, 0.9);
+    border-color: rgba(255, 77, 109, 0.32);
+  }
+
+  .callout.safe { border-color: rgba(0, 209, 125, 0.34); }
+
+  .nav-card.muted {
+    background: rgba(17, 24, 39, 0.62);
+  }
+
+  .viz-controls button {
+    background: rgba(17, 24, 39, 0.92);
+    color: var(--ink);
+    border-color: var(--line-strong);
+  }
+
+  .viz-controls button.is-active {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #071018;
+  }
+
+  .zone,
+  .node {
+    fill: #111827;
+    stroke: var(--line-strong);
+  }
+
+  .pixel {
+    fill: rgba(88, 166, 255, 0.18);
+    stroke: rgba(88, 166, 255, 0.18);
+  }
+
+  .pixel.hot {
+    fill: rgba(255, 77, 109, 0.26);
+    stroke: rgba(255, 77, 109, 0.34);
+  }
+
+  .code-card {
+    border-color: rgba(148, 163, 184, 0.24);
+    background: #050b12;
+  }
+
+  .code-head {
+    background: #111827;
+  }
+
+  .copy-button {
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <h1>Edge AI Security Atlas</h1>
+        <p>Threat Library deep dive for adversarial inputs, robustness checks, and D8 validation controls.</p>
+      </div>
+    </div>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a class="back-link" href="../edge_ai_attack_theater.html">&larr; Back to atlas</a>
+      <button class="fullscreen-button" id="fullscreen-toggle" type="button" aria-pressed="false">full screen</button>
+      <span>Threat Library</span>
+      <span>A7</span>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-card">
+      <span class="eyebrow">A7 / Software attack / Medium</span>
+      <h2 id="page-title">Adversarial Input Perturbation</h2>
+      <p class="lede">A caller sends a crafted image or sensor input that still appears plausible to a human, but shifts the model toward the wrong class. A7 is not a network bypass. It is an integrity attack against the model decision boundary after the gateway, authentication, and routing controls appear to be working.</p>
+    </div>
+    <aside class="side-card" aria-label="Attack summary">
+      <div class="fact"><b>Architecture point</b><span>Client image upload to Raspberry Pi gateway, then Jetson or Zynq inference path</span></div>
+      <div class="fact"><b>Primary control</b><span>D8 Input Validation, canonicalization, and model-level robustness testing</span></div>
+      <div class="fact"><b>Secondary controls</b><span>D1 identity, D2 body caps, D5 anomaly telemetry, D6 sanitized evidence, D9 route-independent response policy</span></div>
+      <div class="fact"><b>Lab safety scope</b><span>Synthetic samples, public toy datasets, and owned lab models only</span></div>
+    </aside>
+  </section>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Article sections">
+      <b>Article map</b>
+      <a href="#where">Where It Appears</a>
+      <a href="#model">Threat Model</a>
+      <a href="#intuition">Attack Intuition</a>
+      <a href="#technical">Technical Explanation</a>
+      <a href="#math">Mathematical View</a>
+      <a href="#lab">Safe Lab Demonstration</a>
+      <a href="#code">Local Lab Code</a>
+      <a href="#setup">Your Edge AI Setup</a>
+      <a href="#signals">Observable Signals</a>
+      <a href="#impact">Impact Analysis</a>
+      <a href="#mapping">Framework Mapping</a>
+      <a href="#defenses">Defense Mapping</a>
+      <a href="#research">Research Notes</a>
+      <a href="#takeaways">Key Takeaways</a>
+    </nav>
+
+    <article class="content">
+      <section class="section" id="where">
+        <div class="section-heading">
+          <h2>Where It Appears In The Edge AI Architecture</h2>
+          <p>A7 starts at the input boundary and becomes visible when the same plausible sample causes unstable model behavior.</p>
+        </div>
+        <div class="section-body">
+          <div class="architecture-viz">
+            <div class="viz-panel">
+              <svg id="a7-map" viewBox="0 0 760 390" role="img" aria-label="A7 adversarial input perturbation visualization">
+                <defs>
+                  <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d63447"></path></marker>
+                  <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#158b55"></path></marker>
+                </defs>
+                <rect class="zone" x="24" y="42" width="184" height="288" rx="8"></rect>
+                <rect class="zone" x="258" y="42" width="220" height="288" rx="8"></rect>
+                <rect class="zone" x="532" y="42" width="198" height="288" rx="8"></rect>
+                <text class="zone-label" x="42" y="70">Client input</text>
+                <text class="zone-label" x="276" y="70">Pi gateway</text>
+                <text class="zone-label" x="550" y="70">Model backends</text>
+
+                <rect class="node shadow" x="58" y="116" width="112" height="112" rx="8"></rect>
+                <text class="node-label" x="72" y="102">image + tiny delta</text>
+                <g id="pixel-grid" transform="translate(78 136)">
+                  <rect class="pixel" x="0" y="0" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="22" y="0" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel hot" x="44" y="0" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="66" y="0" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="0" y="22" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel hot" x="22" y="22" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="44" y="22" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="66" y="22" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="0" y="44" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="22" y="44" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel hot" x="44" y="44" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="66" y="44" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel hot" x="0" y="66" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="22" y="66" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="44" y="66" width="18" height="18" rx="3"></rect>
+                  <rect class="pixel" x="66" y="66" width="18" height="18" rx="3"></rect>
+                </g>
+
+                <rect class="node gateway" x="292" y="104" width="152" height="126" rx="8"></rect>
+                <text class="node-label" x="318" y="136">Pi API</text>
+                <text class="zone-label" x="316" y="158">mime + size</text>
+                <text class="zone-label" x="316" y="178">decode + re-encode</text>
+                <text class="zone-label" x="316" y="198">D8 canonical input</text>
+
+                <rect class="node backend" x="568" y="94" width="122" height="70" rx="8"></rect>
+                <text class="node-label" x="602" y="124">Jetson</text>
+                <text class="zone-label" x="594" y="143">CNN/TensorRT</text>
+                <rect class="node backend" x="568" y="204" width="122" height="70" rx="8"></rect>
+                <text class="node-label" x="612" y="234">Zynq</text>
+                <text class="zone-label" x="596" y="253">FPGA model</text>
+
+                <path id="flow-input" class="flow" d="M 170 174 C 222 154 250 154 292 160"></path>
+                <path id="flow-clean" class="flow secure" d="M 444 166 C 494 134 522 126 568 126"></path>
+                <path id="flow-transfer" class="flow" d="M 444 190 C 496 222 522 238 568 238"></path>
+                <path id="flow-defense" class="flow secure" d="M 330 262 C 256 294 154 286 100 236"></path>
+                <text class="flow-label" x="184" y="138">perturbed sample</text>
+                <text class="zone-label" x="190" y="316">D8 reduces cheap perturbations before model execution</text>
+                <text id="prediction-label" class="node-label" x="574" y="314">prediction: wrong class</text>
+              </svg>
+            </div>
+            <div class="viz-status">
+              <div>
+                <b id="viz-title">Perturbation succeeds</b>
+                <p id="viz-copy">A tiny bounded change survives decoding and flips the model from the expected class to a target class.</p>
+              </div>
+              <div>
+                <b>Decision stability</b>
+                <div class="meter safe"><span id="stability-meter" style="--value: 24%"></span></div>
+              </div>
+              <div>
+                <b>Perturbation visibility</b>
+                <div class="meter warn"><span id="visibility-meter" style="--value: 18%"></span></div>
+              </div>
+              <div>
+                <b>D8 protection</b>
+                <div class="meter safe"><span id="defense-meter" style="--value: 26%"></span></div>
+              </div>
+              <div class="viz-controls" aria-label="Visualization states">
+                <button type="button" class="is-active" data-state="perturbed">Perturbed</button>
+                <button type="button" data-state="canonicalized">D8 canonicalized</button>
+                <button type="button" data-state="robust">Robust model</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="model">
+        <div class="section-heading"><h2>Threat Model</h2><p>The attacker controls the input, not the backend service.</p></div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card"><h3>Attacker capability</h3><p>The caller can submit valid-looking images or sensor samples, choose repeated variants, and observe final labels, confidence buckets, reject reasons, and latency.</p></div>
+            <div class="mini-card"><h3>Assets at risk</h3><p>Prediction integrity, safety filters, route comparison between Jetson and Zynq, and trust in model decisions under small input changes.</p></div>
+            <div class="mini-card"><h3>Out of scope</h3><p>No evasion against third-party services, no real user data, no physical-world attack deployment, and no attempts to bypass systems outside the owned lab.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="intuition">
+        <div class="section-heading"><h2>Attack Intuition</h2><p>The image looks almost the same, but the model sees a different direction in feature space.</p></div>
+        <div class="section-body">
+          <p>A7 works because many neural models are sensitive to structured changes that are small in pixel space but meaningful to the model's internal representation. The input can pass normal MIME and size checks while still causing an unreliable decision.</p>
+          <p>In your edge lab, A7 is interesting because the same input can be sent through Jetson and Zynq implementations. If the perturbation transfers differently, you get a useful robustness comparison between GPU and FPGA inference paths.</p>
+          <div class="callout safe">
+            <b>Safe validation line:</b> keep A7 experiments inside synthetic data, public toy datasets, or models you own. The goal is robustness measurement and defense evidence, not evasion of a real deployed system.
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="technical">
+        <div class="section-heading"><h2>Technical Explanation</h2><p>A7 is a decision-boundary stress test after basic input parsing succeeds.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Input constraint</h3><p>The perturbation should stay within a small budget such as L-infinity epsilon, JPEG quality drift, brightness shift, crop jitter, or sensor noise envelope.</p></div>
+            <div class="mini-card"><h3>Transfer behavior</h3><p>A perturbation built on a surrogate model may transfer to Jetson or Zynq if the deployed models share architecture, preprocessing, or quantization behavior.</p></div>
+            <div class="mini-card"><h3>Gateway role</h3><p>D8 cannot prove model robustness, but it can reject malformed files, normalize decoding paths, re-encode images, cap dimensions, and remove cheap high-frequency artifacts.</p></div>
+            <div class="mini-card"><h3>Model role</h3><p>Robustness needs model-level evidence: adversarial training, augmentation, randomized smoothing, confidence calibration, abstention thresholds, and comparison against clean accuracy.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="math">
+        <div class="section-heading"><h2>Mathematical View</h2><p>The adversarial sample changes prediction while staying close to the original input.</p></div>
+        <div class="section-body">
+          <div class="formula">Given a clean sample x with label y, choose a small perturbation delta.
+The adversarial input is x_adv = clip(x + delta), subject to ||delta||_inf <= epsilon.
+
+Untargeted objective:
+maximize_delta L(f(x + delta), y)
+
+Targeted objective:
+minimize_delta L(f(x + delta), y_target)
+
+D8 reduces cheap perturbations through canonicalization.
+Robust training reduces sensitivity by optimizing for worst-case samples inside the epsilon ball.</div>
+          <p>For the lab report, avoid claiming universal robustness. Measure clean accuracy, perturbed accuracy, transfer rate between Jetson and Zynq, and the amount of accuracy recovered after D8 and model-level defenses.</p>
+        </div>
+      </section>
+
+      <section class="section" id="lab">
+        <div class="section-heading"><h2>Safe Lab Demonstration</h2><p>Use a toy classifier and synthetic vectors to show the measurement pattern without targeting any external model.</p></div>
+        <div class="section-body">
+          <ol>
+            <li>Create synthetic clean samples with known labels.</li>
+            <li>Apply a bounded perturbation using a toy gradient-sign rule.</li>
+            <li>Measure how often labels flip in vulnerable mode.</li>
+            <li>Repeat after D8-style canonicalization and input noise filtering.</li>
+            <li>Compare clean accuracy, flip rate, reject rate, and route consistency across Jetson and Zynq experiments.</li>
+          </ol>
+          <div class="lab-output" id="lab-output" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="section" id="code">
+        <div class="section-heading"><h2>Local Lab Code</h2><p>A compact simulator for adversarial-input measurement and D8 defense evidence.</p></div>
+        <div class="section-body">
+          <div class="code-card">
+            <div class="code-head"><span>a7_adversarial_input_toy_lab.py</span><button class="copy-button" type="button" data-copy="a7-code">Copy</button></div>
+<pre><code id="a7-code">from dataclasses import dataclass
+import random
+
+@dataclass
+class Sample:
+    features: list[float]
+    label: int
+
+WEIGHTS = [0.9, -1.1, 0.7, -0.4, 1.3, -0.8, 0.5, -0.6]
+
+def score(features):
+    return sum(w * x for w, x in zip(WEIGHTS, features))
+
+def predict(features):
+    return 1 if score(features) &gt;= 0 else 0
+
+def make_sample():
+    features = [random.uniform(-1.0, 1.0) for _ in WEIGHTS]
+    return Sample(features, predict(features))
+
+def perturb(sample, epsilon=0.12):
+    # Toy gradient-sign perturbation against a linear model.
+    direction = 1 if sample.label == 0 else -1
+    delta = [direction * epsilon * (1 if w &gt;= 0 else -1) for w in WEIGHTS]
+    return [max(-1.0, min(1.0, x + d)) for x, d in zip(sample.features, delta)]
+
+def d8_canonicalize(features):
+    # Stand-in for decode normalization, JPEG re-encode, bucketing, and noise filtering.
+    return [round(max(-1.0, min(1.0, x)), 1) for x in features]
+
+def run(mode="vulnerable", n=240, seed=17):
+    random.seed(seed)
+    flips = 0
+    defended_flips = 0
+    rejects = 0
+
+    for _ in range(n):
+        sample = make_sample()
+        adv = perturb(sample)
+
+        if mode == "d8" and any(abs(a - b) &gt; 0.18 for a, b in zip(adv, sample.features)):
+            rejects += 1
+            continue
+
+        observed = d8_canonicalize(adv) if mode in {"d8", "robust"} else adv
+        if predict(observed) != sample.label:
+            flips += 1
+
+        robust_observed = [(c + o) / 2.0 for c, o in zip(d8_canonicalize(adv), sample.features)]
+        if predict(robust_observed) != sample.label:
+            defended_flips += 1
+
+    accepted = n - rejects
+    return {
+        "mode": mode,
+        "accepted": accepted,
+        "rejected": rejects,
+        "raw_flip_rate": round(flips / max(accepted, 1), 3),
+        "robust_reference_flip_rate": round(defended_flips / max(accepted, 1), 3),
+    }
+
+for mode in ["vulnerable", "d8", "robust"]:
+    print(run(mode))
+</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="setup">
+        <div class="section-heading"><h2>Your Edge AI Setup</h2><p>A7 turns the lab into a robustness comparison between preprocessing, Jetson, and Zynq.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Pi gateway</h3><p>Enforce MIME and magic-byte checks, dimension caps, decode-normalize-reencode policy, body hashes, and reject reasons before dispatching to either accelerator.</p></div>
+            <div class="mini-card"><h3>Jetson path</h3><p>Measure TensorRT behavior under clean, perturbed, and canonicalized inputs. Record confidence buckets and abstention decisions without storing private raw images.</p></div>
+            <div class="mini-card"><h3>Zynq path</h3><p>Compare quantized FPGA behavior against Jetson. A7 can reveal whether fixed-point inference is more or less sensitive to a perturbation family.</p></div>
+            <div class="mini-card"><h3>GPU workstation</h3><p>Generate controlled synthetic perturbation sets, run baseline PyTorch evaluation, and publish robustness curves across deployment targets.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="signals">
+        <div class="section-heading"><h2>Observable Signals</h2><p>A7 evidence should preserve privacy while still showing robustness behavior.</p></div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead><tr><th>Signal</th><th>Why It Matters</th><th>Safe Evidence</th></tr></thead>
+            <tbody>
+              <tr><td>High near-duplicate input rate</td><td>Mutation sweeps often probe a local decision boundary.</td><td>Perceptual hash buckets or synthetic feature-bin IDs.</td></tr>
+              <tr><td>Clean versus perturbed accuracy</td><td>Shows whether the model is unstable under bounded changes.</td><td>Aggregate accuracy and flip-rate curves on owned datasets.</td></tr>
+              <tr><td>Gateway canonicalization effect</td><td>D8 should reduce cheap high-frequency artifacts.</td><td>Flip rate before and after re-encoding or bucketing.</td></tr>
+              <tr><td>Jetson/Zynq disagreement</td><td>Different deployment paths may fail differently.</td><td>Route-local labels, confidence buckets, and mismatch counts.</td></tr>
+              <tr><td>Reject and abstention reasons</td><td>Protection should be explainable and measurable.</td><td>Sanitized D6 logs with reason codes and no raw payload.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="impact">
+        <div class="section-heading"><h2>Impact Analysis</h2><p>A7 is primarily an integrity problem because the model returns the wrong decision.</p></div>
+        <div class="section-body">
+          <div class="grid-3">
+            <div class="mini-card"><h3>Integrity</h3><p>The prediction changes while the input still appears valid and plausible.</p><div class="pill-row"><span class="pill red">Primary</span></div></div>
+            <div class="mini-card"><h3>Confidentiality</h3><p>Repeated A7 tests can reveal boundary behavior and support later A6-style substitute modeling.</p><div class="pill-row"><span class="pill amber">Secondary</span></div></div>
+            <div class="mini-card"><h3>Availability</h3><p>Large mutation sweeps can become A2 pressure if body caps and budgets are missing.</p><div class="pill-row"><span class="pill orange">Secondary</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="mapping">
+        <div class="section-heading"><h2>Framework Mapping</h2><p>A7 maps to model integrity, evasion resistance, and secure preprocessing.</p></div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead><tr><th>Framework</th><th>Mapping</th><th>Use In Report</th></tr></thead>
+            <tbody>
+              <tr><td>STRIDE</td><td>Tampering with input semantics and Integrity failure in model output.</td><td>Describe how an accepted input can still manipulate model behavior.</td></tr>
+              <tr><td>CIA</td><td>Integrity primary; Confidentiality and Availability secondary.</td><td>Separate wrong decisions from model extraction or resource exhaustion.</td></tr>
+              <tr><td>PASTA</td><td>Stage 5 vulnerability analysis and Stage 6 attack modeling.</td><td>Model preprocessing, perturbation budget, output stability, and defense evidence.</td></tr>
+              <tr><td>MITRE ATLAS</td><td>Relevant to adversarial ML evasion, input perturbation, and ML inference manipulation.</td><td>Treat A7 as a controlled robustness experiment under owned-lab conditions.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="defenses">
+        <div class="section-heading"><h2>Defense Mapping To Existing D1-D11 Controls</h2><p>D8 is the gateway control, while true robustness needs model-level evidence.</p></div>
+        <div class="section-body">
+          <table class="matrix">
+            <thead><tr><th>Control</th><th>Role Against A7</th><th>Validation Evidence</th></tr></thead>
+            <tbody>
+              <tr><td>D8 Input Validation</td><td>Primary gateway control. Validates type, size, dimensions, decoding, canonicalization, and cheap perturbation removal.</td><td>Malformed inputs reject before dispatch; canonicalization lowers synthetic flip rate.</td></tr>
+              <tr><td>Model Robustness Work</td><td>Adversarial training, augmentation, smoothing, calibration, and abstention reduce boundary sensitivity.</td><td>Clean accuracy and perturbed accuracy curves before and after hardening.</td></tr>
+              <tr><td>D5 Query Anomaly Detection</td><td>Detects mutation sweeps, near-duplicate probing, and high-rate boundary searches.</td><td>Per-user hash-bucket and confidence-shift alerts.</td></tr>
+              <tr><td>D2 Rate Limit + Body Cap</td><td>Prevents perturbation sweeps from becoming an availability problem.</td><td>429 and 413 decisions before Jetson or Zynq dispatch.</td></tr>
+              <tr><td>D6 Sanitized Logging</td><td>Preserves aggregate evidence without leaking raw images or sensitive samples.</td><td>Logs contain route, hash bucket, reject reason, label, and confidence bucket only.</td></tr>
+              <tr><td>D9 Route Consistency</td><td>Reduces client-visible backend differences that could help tune a transfer attack.</td><td>Jetson and Zynq response policy is consistent for the same accepted input.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="research">
+        <div class="section-heading"><h2>Research Notes</h2><p>A7 can become a strong experiment because it connects software ML robustness to hardware deployment realism.</p></div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="mini-card"><h3>Robustness curve</h3><p>Plot accuracy versus perturbation budget for baseline, D8 canonicalized, and robustly trained variants.</p></div>
+            <div class="mini-card"><h3>Deployment comparison</h3><p>Run the same perturbation set through PyTorch, TensorRT on Jetson, and fixed-point Zynq to compare transfer and disagreement.</p></div>
+            <div class="mini-card"><h3>Defense cost</h3><p>Measure latency, reject rate, clean accuracy loss, and false abstention after preprocessing and robustness controls.</p></div>
+            <div class="mini-card"><h3>Portal artifact</h3><p>Show before/after images, confidence buckets, route agreement, and D8 decision logs without exposing raw sensitive inputs.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="takeaways">
+        <div class="section-heading"><h2>Key Takeaways</h2><p>A7 is not fixed by authentication; it needs input normalization and model robustness evidence.</p></div>
+        <div class="section-body">
+          <ul>
+            <li>A7 targets prediction integrity after the request has passed basic API controls.</li>
+            <li>D8 can remove malformed files and cheap perturbations, but it is not a proof of robustness.</li>
+            <li>The strongest lab story compares clean accuracy, perturbed accuracy, and defense overhead.</li>
+            <li>Jetson and Zynq may respond differently to the same perturbed sample because deployment details matter.</li>
+            <li>A7 connects naturally to A6 model extraction and A2 resource pressure when mutation sweeps become large.</li>
+          </ul>
+          <nav class="nav-grid" aria-label="Related pages">
+            <a class="nav-card" href="A6_model_extraction_by_querying.html"><b>Previous threat: A6</b><span>Model Extraction By Querying. Oracle behavior, output shaping, and D5 telemetry.</span></a>
+            <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Next threat: A8</b><span>Unsafe Sensitive Logging. Dedicated page planned next.</span></a>
+            <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Primary defense: D8</b><span>Input Validation in the live atlas inspector.</span></a>
+            <a class="nav-card muted" href="../edge_ai_attack_theater.html"><b>Main atlas</b><span>Return to the architecture and attack surface map.</span></a>
+          </nav>
+        </div>
+      </section>
+    </article>
+  </div>
+</main>
+
+<script>
+const states = {
+  perturbed: {
+    title: "Perturbation succeeds",
+    copy: "A tiny bounded change survives decoding and flips the model from the expected class to a target class.",
+    stability: "24%",
+    visibility: "18%",
+    defense: "26%",
+    prediction: "prediction: wrong class",
+    hot: ["flow-input", "flow-transfer"],
+    logs: [
+      "[input] mode=perturbed epsilon=0.12 perceptual_change=low",
+      "[model] expected=stop_sign observed=speed_limit confidence_bucket=0.8",
+      "[route] jetson=flipped zynq=flipped transfer_rate=high",
+      "[risk] plausible input changed the model decision"
+    ]
+  },
+  canonicalized: {
+    title: "D8 canonicalized",
+    copy: "Decode-normalize-reencode policy removes cheap artifacts and lowers the flip rate, though model robustness is still required.",
+    stability: "63%",
+    visibility: "31%",
+    defense: "68%",
+    prediction: "prediction: stable after D8",
+    hot: ["flow-input", "flow-defense", "flow-clean"],
+    logs: [
+      "[gateway] d8=enabled mime=image/jpeg dimensions=ok reencode=quality_85",
+      "[model] expected=stop_sign observed=stop_sign confidence_bucket=0.7",
+      "[d8] cheap_high_frequency_delta_reduced=true",
+      "[control] canonicalization lowered the flip rate on synthetic samples"
+    ]
+  },
+  robust: {
+    title: "Robust model",
+    copy: "Adversarial training and abstention thresholds improve stability while preserving clean-sample performance targets.",
+    stability: "82%",
+    visibility: "34%",
+    defense: "88%",
+    prediction: "prediction: stable or abstained",
+    hot: ["flow-defense", "flow-clean"],
+    logs: [
+      "[model] robust_variant=true augmentation=bounded_noise abstention=enabled",
+      "[eval] clean_accuracy=0.94 perturbed_accuracy=0.86 abstain_rate=0.04",
+      "[route] jetson_zynq_disagreement=low",
+      "[secure] model-level robustness complements D8 gateway controls"
+    ]
+  }
+};
+
+const buttons = document.querySelectorAll("[data-state]");
+const title = document.getElementById("viz-title");
+const copy = document.getElementById("viz-copy");
+const stability = document.getElementById("stability-meter");
+const visibility = document.getElementById("visibility-meter");
+const defense = document.getElementById("defense-meter");
+const prediction = document.getElementById("prediction-label");
+const labOutput = document.getElementById("lab-output");
+
+function renderState(name) {
+  const state = states[name];
+  title.textContent = state.title;
+  copy.textContent = state.copy;
+  stability.style.setProperty("--value", state.stability);
+  visibility.style.setProperty("--value", state.visibility);
+  defense.style.setProperty("--value", state.defense);
+  prediction.textContent = state.prediction;
+  document.querySelectorAll(".flow").forEach(flow => {
+    flow.classList.toggle("flow-hot", state.hot.includes(flow.id));
+    flow.classList.toggle("flow-muted", !state.hot.includes(flow.id));
+  });
+  labOutput.innerHTML = state.logs.map(line => {
+    const klass = line.includes("secure") || line.includes("control") || line.includes("d8") || line.includes("stable") ? "log-ok" : line.includes("risk") || line.includes("flipped") ? "log-bad" : "log-warn";
+    return `<div class="${klass}">${line}</div>`;
+  }).join("");
+  buttons.forEach(button => button.classList.toggle("is-active", button.dataset.state === name));
+}
+
+buttons.forEach(button => button.addEventListener("click", () => renderState(button.dataset.state)));
+renderState("perturbed");
+
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", async () => {
+    const target = document.getElementById(button.dataset.copy);
+    if (!target) return;
+    try {
+      await navigator.clipboard.writeText(target.innerText);
+      const old = button.textContent;
+      button.textContent = "Copied";
+      setTimeout(() => { button.textContent = old; }, 900);
+    } catch (error) {
+      button.textContent = "Select code";
+    }
+  });
+});
+
+const fullscreenToggle = document.getElementById("fullscreen-toggle");
+
+function syncFullscreenLabel() {
+  const active = Boolean(document.fullscreenElement);
+  fullscreenToggle.textContent = active ? "exit fullscreen" : "full screen";
+  fullscreenToggle.setAttribute("aria-pressed", String(active));
+}
+
+fullscreenToggle.addEventListener("click", async () => {
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch (error) {
+    fullscreenToggle.textContent = "fullscreen unavailable";
+    setTimeout(syncFullscreenLabel, 1200);
+  }
+});
+
+document.addEventListener("fullscreenchange", syncFullscreenLabel);
+syncFullscreenLabel();
+</script>
+</body>
+</html>
