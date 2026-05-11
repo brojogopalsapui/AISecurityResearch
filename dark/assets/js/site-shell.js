@@ -185,14 +185,12 @@
       headerMount.innerHTML = `
         <header class="site-shell-header">
           <div class="container shell-header__inner">
-            <a class="shell-brand" href="${base}index.html" aria-label="Brojogopal Sapui AI Security home">
-              <span class="shell-brand__mark">BS</span>
-              <span class="shell-brand__copy">
-                <strong>AI Security</strong>
-                <small>Brojogopal Sapui</small>
-              </span>
-            </a>
-            <a class="shell-theme-switch shell-theme-switch--header" href="${lightHref}">Light Version</a>
+            <div class="shell-brand-group">
+              <a class="shell-brand shell-brand--mark-only" href="${base}index.html" aria-label="Home">
+                <span class="shell-brand__mark">BS</span>
+              </a>
+              <a class="shell-theme-switch shell-theme-switch--header" href="${lightHref}">Light Version</a>
+            </div>
             <button class="shell-menu-btn" id="shellMenuBtn" aria-label="Open navigation" aria-controls="shellNav" aria-expanded="false">
               <span></span><span></span><span></span>
             </button>

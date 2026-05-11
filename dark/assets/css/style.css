@@ -1589,12 +1589,22 @@ a{text-decoration:none}
 .portal-orb--a{top:-1rem;left:10%;width:8rem;height:8rem;background:rgba(83,229,246,.24);animation:orbPulse 9s ease-in-out infinite}
 .portal-orb--b{right:4%;top:-2rem;width:9rem;height:9rem;background:rgba(255,106,183,.18);animation:orbPulse 12s ease-in-out infinite reverse}
 
+.shell-brand-group{
+  display:flex;
+  align-items:center;
+  gap:.8rem;
+  flex-wrap:wrap;
+  min-width:0;
+}
 .shell-brand{
   display:flex;
   align-items:center;
   gap:.75rem;
   min-width:0;
   color:var(--portal-text);
+}
+.shell-brand--mark-only{
+  flex:0 0 auto;
 }
 .shell-brand__mark{
   width:46px;height:46px;border-radius:16px;display:grid;place-items:center;
@@ -2139,7 +2149,7 @@ body.portal-page .btn-row .btn{flex:1 1 220px}
 @media (min-width: 920px){
   .container{width:min(1240px, calc(100% - 2rem))}
   .shell-menu-btn{display:none}
-  .shell-theme-switch{order:3}
+  .shell-brand-group{order:0}
   .shell-nav{position:static;display:flex!important;flex-direction:row;gap:.35rem;width:auto;padding:0;background:transparent;border:none;box-shadow:none}
   .shell-nav a{padding:.82rem 1rem;border-radius:999px}
   .portal-topline__inner{padding:.8rem 1rem}
@@ -5364,10 +5374,9 @@ body.portal-page[data-page="trending"] .accordion.is-open{
 }
 
 @media (min-width:920px){
-  .site-shell-header .shell-brand{order:0}
+  .site-shell-header .shell-brand-group{order:0}
   .site-shell-header .shell-nav{order:1}
   .site-shell-header .global-fullscreen-toggle{order:2}
-  .site-shell-header .shell-theme-switch{order:3}
 }
 
 .tv-fullscreen-link{
