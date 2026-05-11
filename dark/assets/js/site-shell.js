@@ -61,7 +61,7 @@
 
     const syncLabels = () => {
       document.querySelectorAll('[data-subcontent-fullscreen]').forEach((button) => {
-        button.textContent = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+        button.textContent = document.fullscreenElement ? 'exit full screen' : 'full screen';
       });
     };
 
@@ -113,7 +113,7 @@
 
     const syncLabel = () => {
       const isFullscreen = Boolean(document.fullscreenElement);
-      button.textContent = isFullscreen ? 'exit fullscreen' : 'fullscreen';
+      button.textContent = isFullscreen ? 'exit full screen' : 'full screen';
       button.setAttribute('aria-label', isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
       button.setAttribute('aria-pressed', String(isFullscreen));
     };
@@ -139,7 +139,7 @@
       document.addEventListener('fullscreenchange', () => {
         document.querySelectorAll('[data-global-fullscreen]').forEach((fullscreenButton) => {
           const isFullscreen = Boolean(document.fullscreenElement);
-          fullscreenButton.textContent = isFullscreen ? 'exit fullscreen' : 'fullscreen';
+          fullscreenButton.textContent = isFullscreen ? 'exit full screen' : 'full screen';
           fullscreenButton.setAttribute('aria-label', isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
           fullscreenButton.setAttribute('aria-pressed', String(isFullscreen));
         });

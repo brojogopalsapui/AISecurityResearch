@@ -24,7 +24,7 @@ function initGlobalFullscreenToggle() {
 
   const syncLabel = () => {
     const isFullscreen = Boolean(document.fullscreenElement);
-    button.textContent = isFullscreen ? "exit fullscreen" : "fullscreen";
+    button.textContent = isFullscreen ? "exit full screen" : "full screen";
     button.setAttribute("aria-label", isFullscreen ? "Exit fullscreen" : "Enter fullscreen");
     button.setAttribute("aria-pressed", String(isFullscreen));
   };
@@ -50,7 +50,7 @@ function initGlobalFullscreenToggle() {
     document.addEventListener("fullscreenchange", () => {
       document.querySelectorAll("[data-global-fullscreen]").forEach((fullscreenButton) => {
         const isFullscreen = Boolean(document.fullscreenElement);
-        fullscreenButton.textContent = isFullscreen ? "exit fullscreen" : "fullscreen";
+        fullscreenButton.textContent = isFullscreen ? "exit full screen" : "full screen";
         fullscreenButton.setAttribute("aria-label", isFullscreen ? "Exit fullscreen" : "Enter fullscreen");
         fullscreenButton.setAttribute("aria-pressed", String(isFullscreen));
       });
