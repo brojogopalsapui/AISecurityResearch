@@ -231,6 +231,25 @@
   .placeholder { color: var(--text-3); font-style: italic; padding: 32px 12px; text-align: center; font-size: 13px; line-height: 1.7; border: 1px dashed var(--line-strong); border-radius: 4px; }
   .placeholder strong { color: var(--text-1); font-style: normal; }
 
+  .catalog-section { margin-top: 34px; }
+  .catalog-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .catalog-kicker { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--cyan); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 6px; }
+  .catalog-header h2 { font-size: 24px; line-height: 1.15; margin: 0; color: var(--text-0); letter-spacing: 0; }
+  .catalog-header p { max-width: 620px; margin: 0; color: var(--text-2); font-size: 14px; line-height: 1.65; }
+  .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 12px; margin-top: 16px; }
+  .catalog-card { appearance: none; -webkit-appearance: none; width: 100%; min-height: 178px; display: flex; flex-direction: column; gap: 9px; padding: 15px; border: 1px solid var(--line); border-top: 3px solid var(--red); border-radius: 6px; background: var(--bg-1); color: var(--text-0); text-align: left; text-decoration: none; cursor: pointer; transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease; font: inherit; }
+  .catalog-card:hover { transform: translateY(-2px); background: var(--bg-2); border-color: var(--line-strong); }
+  .catalog-card:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+  .catalog-card.hardware { border-top-color: var(--hw-orange); }
+  .catalog-card.defense { border-top-color: var(--green); }
+  .catalog-id-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .catalog-id { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-0); border: 1px solid var(--line-strong); border-radius: 3px; padding: 4px 7px; letter-spacing: 0.08em; }
+  .catalog-status { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-2); border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+  .catalog-status.linked { color: var(--cyan); border-color: rgba(77, 208, 225, 0.35); background: rgba(77, 208, 225, 0.07); }
+  .catalog-card h3 { font-size: 17px; line-height: 1.25; margin: 0; color: var(--text-0); letter-spacing: 0; }
+  .catalog-card p { margin: 0; color: var(--text-2); font-size: 13px; line-height: 1.55; flex: 1; }
+  .catalog-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; line-height: 1.45; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; }
+
   .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 24px; padding: 16px 20px; background: var(--bg-1); border: 1px solid var(--line); border-radius: 6px; }
   .legend-item { display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-1); text-transform: uppercase; letter-spacing: 0.08em; }
   .legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
@@ -267,6 +286,9 @@
     .detail-drawer { grid-template-columns: 1fr; }
     .detail-drawer .panel-header { border-right: 0; border-bottom: 1px solid var(--line); }
     .detail-drawer .panel-body { max-height: none; }
+    .catalog-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .catalog-grid { grid-template-columns: 1fr; }
+    .catalog-card { min-height: auto; }
     h1 { font-size: 26px; }
   }
 </style>
@@ -614,6 +636,204 @@
     <div class="legend-item"><div class="legend-swatch" style="background:#00ffa3"></div>Defense</div>
     <div class="legend-item"><div class="legend-swatch" style="background:rgba(249,117,131,0.3); border:1px dashed #f97583"></div>Physical zone</div>
   </div>
+
+  <section class="catalog-section" id="threat-library-index" aria-labelledby="threat-library-title">
+    <div class="catalog-header">
+      <div>
+        <div class="catalog-kicker">// Threat Library</div>
+        <h2 id="threat-library-title">Attack Deep-Dive Index</h2>
+      </div>
+      <p>Completed attack pages open in the local Threat_library folder. Upcoming entries open the live inspector until their full technical articles are generated.</p>
+    </div>
+    <div class="catalog-grid">
+      <a class="catalog-card attack" href="Threat_library/A1_unauthenticated_inference_endpoint.html" aria-label="Open A1 unauthenticated inference endpoint deep dive">
+        <div class="catalog-id-row"><span class="catalog-id">A1</span><span class="catalog-status linked">Deep dive</span></div>
+        <h3>Unauthenticated Inference Endpoint</h3>
+        <p>Public inference route accepts requests without an identity boundary at the Raspberry Pi gateway.</p>
+        <div class="catalog-meta">Pi gateway / public API / CIA</div>
+      </a>
+      <a class="catalog-card attack" href="Threat_library/A2_resource_exhaustion_dos.html" aria-label="Open A2 resource exhaustion DoS deep dive">
+        <div class="catalog-id-row"><span class="catalog-id">A2</span><span class="catalog-status linked">Deep dive</span></div>
+        <h3>Resource Exhaustion / DoS</h3>
+        <p>Request bursts, oversized payloads, or slow clients saturate the gateway queue and accelerator path.</p>
+        <div class="catalog-meta">Ingress queue / rate limit / availability</div>
+      </a>
+      <a class="catalog-card attack" href="Threat_library/A3_broken_object_authorization.html" aria-label="Open A3 broken object authorization deep dive">
+        <div class="catalog-id-row"><span class="catalog-id">A3</span><span class="catalog-status linked">Deep dive</span></div>
+        <h3>Broken Object Authorization</h3>
+        <p>Prediction records, jobs, or model artifacts are accessed by ID without tenant ownership checks.</p>
+        <div class="catalog-meta">API object IDs / result store / STRIDE</div>
+      </a>
+      <a class="catalog-card attack" href="Threat_library/A4_model_update_tampering.html" aria-label="Open A4 model update tampering deep dive">
+        <div class="catalog-id-row"><span class="catalog-id">A4</span><span class="catalog-status linked">Deep dive</span></div>
+        <h3>Model Update Tampering</h3>
+        <p>Unsigned or weakly verified model transfers allow a poisoned artifact to reach Jetson or FPGA flows.</p>
+        <div class="catalog-meta">GPU factory / artifact signing / integrity</div>
+      </a>
+      <a class="catalog-card attack" href="Threat_library/A5_direct_backend_exposure.html" aria-label="Open A5 direct backend exposure deep dive">
+        <div class="catalog-id-row"><span class="catalog-id">A5</span><span class="catalog-status linked">Deep dive</span></div>
+        <h3>Direct Backend Exposure</h3>
+        <p>Jetson or Zynq backend services become reachable from paths that should only reach the Pi gateway.</p>
+        <div class="catalog-meta">LAN2 / firewall / backend isolation</div>
+      </a>
+      <button class="catalog-card attack" type="button" data-inspect="A6" aria-label="Inspect A6 model extraction">
+        <div class="catalog-id-row"><span class="catalog-id">A6</span><span class="catalog-status">Inspector</span></div>
+        <h3>Model Extraction by Querying</h3>
+        <p>Repeated black-box queries approximate decision boundaries or recover sensitive model behavior.</p>
+        <div class="catalog-meta">Query telemetry / anomaly detection / D5</div>
+      </button>
+      <button class="catalog-card attack" type="button" data-inspect="A7" aria-label="Inspect A7 adversarial input perturbation">
+        <div class="catalog-id-row"><span class="catalog-id">A7</span><span class="catalog-status">Inspector</span></div>
+        <h3>Adversarial Input Perturbation</h3>
+        <p>Small input changes manipulate model output while preserving plausible human-level appearance.</p>
+        <div class="catalog-meta">Client input / validation / robustness</div>
+      </button>
+      <button class="catalog-card attack" type="button" data-inspect="A8" aria-label="Inspect A8 unsafe sensitive logging">
+        <div class="catalog-id-row"><span class="catalog-id">A8</span><span class="catalog-status">Inspector</span></div>
+        <h3>Unsafe / Sensitive Logging</h3>
+        <p>Prompts, frames, tokens, or labels leak into logs that are easier to copy than the protected service.</p>
+        <div class="catalog-meta">Jetson logs / privacy / evidence trails</div>
+      </button>
+      <button class="catalog-card attack" type="button" data-inspect="A9" aria-label="Inspect A9 weak TLS plaintext internal traffic">
+        <div class="catalog-id-row"><span class="catalog-id">A9</span><span class="catalog-status">Inspector</span></div>
+        <h3>Weak TLS / Plaintext Traffic</h3>
+        <p>Internal traffic between gateway, switch, Jetson, and Zynq exposes payloads or credentials.</p>
+        <div class="catalog-meta">LAN links / TLS / confidentiality</div>
+      </button>
+      <button class="catalog-card attack" type="button" data-inspect="A10" aria-label="Inspect A10 SSH admin surface exposure">
+        <div class="catalog-id-row"><span class="catalog-id">A10</span><span class="catalog-status">Inspector</span></div>
+        <h3>SSH / Admin Surface Exposure</h3>
+        <p>Management interfaces drift into reachable network zones with weak policy or stale credentials.</p>
+        <div class="catalog-meta">Admin plane / hardening / least privilege</div>
+      </button>
+      <button class="catalog-card attack" type="button" data-inspect="A11" aria-label="Inspect A11 supply chain container CVE">
+        <div class="catalog-id-row"><span class="catalog-id">A11</span><span class="catalog-status">Inspector</span></div>
+        <h3>Supply Chain / Container CVE</h3>
+        <p>Runtime images, Python wheels, or build dependencies introduce vulnerable code into the lab stack.</p>
+        <div class="catalog-meta">Build chain / SBOM / patch cadence</div>
+      </button>
+      <button class="catalog-card attack" type="button" data-inspect="A12" aria-label="Inspect A12 switch VLAN misconfiguration">
+        <div class="catalog-id-row"><span class="catalog-id">A12</span><span class="catalog-status">Inspector</span></div>
+        <h3>Switch / VLAN Misconfiguration</h3>
+        <p>Routing or VLAN mistakes collapse the public, DMZ, and private backend trust boundaries.</p>
+        <div class="catalog-meta">Switch policy / LAN2 / segmentation</div>
+      </button>
+      <button class="catalog-card hardware" type="button" data-inspect="A13" aria-label="Inspect A13 power side channel">
+        <div class="catalog-id-row"><span class="catalog-id">A13</span><span class="catalog-status">Inspector</span></div>
+        <h3>Power Side-Channel</h3>
+        <p>Power traces from FPGA inference reveal correlations with computation, data, or key-dependent paths.</p>
+        <div class="catalog-meta">Zynq board / measurement / leakage</div>
+      </button>
+      <button class="catalog-card hardware" type="button" data-inspect="A14" aria-label="Inspect A14 EM side channel">
+        <div class="catalog-id-row"><span class="catalog-id">A14</span><span class="catalog-status">Inspector</span></div>
+        <h3>EM Side-Channel</h3>
+        <p>Near-field electromagnetic probes expose localized activity from FPGA fabric or board traces.</p>
+        <div class="catalog-meta">Physical lab / EM probe / leakage</div>
+      </button>
+      <button class="catalog-card hardware" type="button" data-inspect="A15" aria-label="Inspect A15 fault injection glitch">
+        <div class="catalog-id-row"><span class="catalog-id">A15</span><span class="catalog-status">Inspector</span></div>
+        <h3>Fault Injection / Glitch</h3>
+        <p>Clock, voltage, or reset disturbance creates incorrect state transitions in the silicon path.</p>
+        <div class="catalog-meta">XADC / timing / availability-integrity</div>
+      </button>
+      <button class="catalog-card hardware" type="button" data-inspect="A16" aria-label="Inspect A16 bitstream tampering">
+        <div class="catalog-id-row"><span class="catalog-id">A16</span><span class="catalog-status">Inspector</span></div>
+        <h3>Bitstream Tampering</h3>
+        <p>FPGA configuration content is modified or replayed without strong provenance checks.</p>
+        <div class="catalog-meta">Bitstream build / D9 / integrity</div>
+      </button>
+      <button class="catalog-card hardware" type="button" data-inspect="A17" aria-label="Inspect A17 PS PL trust boundary violation">
+        <div class="catalog-id-row"><span class="catalog-id">A17</span><span class="catalog-status">Inspector</span></div>
+        <h3>PS/PL Trust Boundary Violation</h3>
+        <p>Processor-system software and programmable-logic interfaces disagree about ownership or memory trust.</p>
+        <div class="catalog-meta">AXI / DMA / hardware isolation</div>
+      </button>
+      <button class="catalog-card hardware" type="button" data-inspect="A18" aria-label="Inspect A18 timing side channel via dispatch">
+        <div class="catalog-id-row"><span class="catalog-id">A18</span><span class="catalog-status">Inspector</span></div>
+        <h3>Timing Side-Channel via Dispatch</h3>
+        <p>Latency differences across Jetson and Zynq execution paths leak model, load, or input structure.</p>
+        <div class="catalog-meta">Dispatch timing / queue traces / leakage</div>
+      </button>
+    </div>
+  </section>
+
+  <section class="catalog-section" id="defense-matrix-index" aria-labelledby="defense-matrix-title">
+    <div class="catalog-header">
+      <div>
+        <div class="catalog-kicker">// Defense Matrix</div>
+        <h2 id="defense-matrix-title">Control Index</h2>
+      </div>
+      <p>Defense cards open the atlas inspector for now. Their dedicated Defense_matrix articles can be linked here after the attack pages are completed.</p>
+    </div>
+    <div class="catalog-grid">
+      <button class="catalog-card defense" type="button" data-inspect="D1" aria-label="Inspect D1 JWT authentication and object level checks">
+        <div class="catalog-id-row"><span class="catalog-id">D1</span><span class="catalog-status">Inspector</span></div>
+        <h3>JWT Auth + Object-Level Checks</h3>
+        <p>Authenticate every request and verify that each job, result, or artifact belongs to the caller.</p>
+        <div class="catalog-meta">Mitigates A1 / A3</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D2" aria-label="Inspect D2 rate limit and body cap">
+        <div class="catalog-id-row"><span class="catalog-id">D2</span><span class="catalog-status">Inspector</span></div>
+        <h3>Rate Limit + Body Cap</h3>
+        <p>Bound request frequency, payload size, and queue admission before accelerator resources are consumed.</p>
+        <div class="catalog-meta">Mitigates A2 / A6</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D3" aria-label="Inspect D3 TLS everywhere">
+        <div class="catalog-id-row"><span class="catalog-id">D3</span><span class="catalog-status">Inspector</span></div>
+        <h3>TLS Everywhere</h3>
+        <p>Encrypt and authenticate traffic between client, gateway, Jetson, and FPGA service endpoints.</p>
+        <div class="catalog-meta">Mitigates A9 / credential leakage</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D4" aria-label="Inspect D4 private backend subnet">
+        <div class="catalog-id-row"><span class="catalog-id">D4</span><span class="catalog-status">Inspector</span></div>
+        <h3>Private Backend Subnet</h3>
+        <p>Keep Jetson and Zynq services reachable only through the gateway-mediated private LAN path.</p>
+        <div class="catalog-meta">Mitigates A5 / A12</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D5" aria-label="Inspect D5 query anomaly detection">
+        <div class="catalog-id-row"><span class="catalog-id">D5</span><span class="catalog-status">Inspector</span></div>
+        <h3>Query Anomaly Detection</h3>
+        <p>Measure repeated, boundary-seeking, or high-entropy query behavior that suggests extraction attempts.</p>
+        <div class="catalog-meta">Mitigates A6 / A2</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D6" aria-label="Inspect D6 sanitized logging">
+        <div class="catalog-id-row"><span class="catalog-id">D6</span><span class="catalog-status">Inspector</span></div>
+        <h3>Sanitized Logging</h3>
+        <p>Record observability signals without storing secrets, raw private inputs, or sensitive model outputs.</p>
+        <div class="catalog-meta">Mitigates A8</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D7" aria-label="Inspect D7 signed model artifacts">
+        <div class="catalog-id-row"><span class="catalog-id">D7</span><span class="catalog-status">Inspector</span></div>
+        <h3>Signed Model Artifacts</h3>
+        <p>Verify model provenance and integrity before deployment from the GPU workstation to edge devices.</p>
+        <div class="catalog-meta">Mitigates A4 / A11</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D8" aria-label="Inspect D8 input validation">
+        <div class="catalog-id-row"><span class="catalog-id">D8</span><span class="catalog-status">Inspector</span></div>
+        <h3>Input Validation</h3>
+        <p>Constrain schema, dimensions, file types, and inference pre-processing before model execution.</p>
+        <div class="catalog-meta">Mitigates A2 / A7</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D9" aria-label="Inspect D9 signed bitstream and PS trust boundary">
+        <div class="catalog-id-row"><span class="catalog-id">D9</span><span class="catalog-status">Inspector</span></div>
+        <h3>Signed Bitstream + PS Trust Boundary</h3>
+        <p>Protect FPGA configuration and enforce clear boundaries between processor and programmable logic domains.</p>
+        <div class="catalog-meta">Mitigates A16 / A17</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D10" aria-label="Inspect D10 side channel countermeasures">
+        <div class="catalog-id-row"><span class="catalog-id">D10</span><span class="catalog-status">Inspector</span></div>
+        <h3>Side-Channel Countermeasures</h3>
+        <p>Reduce exploitable leakage through masking, scheduling regularity, noise, and measurement-aware design.</p>
+        <div class="catalog-meta">Mitigates A13 / A14 / A18</div>
+      </button>
+      <button class="catalog-card defense" type="button" data-inspect="D11" aria-label="Inspect D11 XADC glitch detection">
+        <div class="catalog-id-row"><span class="catalog-id">D11</span><span class="catalog-status">Inspector</span></div>
+        <h3>XADC Glitch Detection</h3>
+        <p>Use on-chip voltage and temperature telemetry to detect fault-injection conditions around the FPGA.</p>
+        <div class="catalog-meta">Mitigates A15</div>
+      </button>
+    </div>
+  </section>
 
   <div class="ticker">
     <div class="ticker-track">
@@ -1217,6 +1437,22 @@ document.querySelectorAll('.node-card').forEach(c => {
       activateNode(c);
     }
   });
+});
+
+function activateCatalogItem(id) {
+  if (!id) return;
+  const marker = document.querySelector(`.attack-marker[data-id="${id}"]`);
+  if (marker) {
+    activateMarker(marker);
+    return;
+  }
+  if (id.startsWith('A')) showThreat(id);
+  else if (id.startsWith('D')) showDefense(id);
+  openDetailDrawer(null, id.startsWith('D') ? `${id} defense control` : `${id} attack marker`);
+}
+
+document.querySelectorAll('[data-inspect]').forEach(card => {
+  card.addEventListener('click', () => activateCatalogItem(card.dataset.inspect));
 });
 
 if (drawerClose) drawerClose.addEventListener('click', closeDetailDrawer);
