@@ -4600,3 +4600,62 @@ body.subpage::before{
 .toc:hover{
   transform:none !important;
 }
+
+/* Light subpage surface pass: calm grey page stage with clean white cards */
+body{
+  background:
+    radial-gradient(circle at 6% 10%, rgba(45,103,246,.07), transparent 24%),
+    radial-gradient(circle at 92% 8%, rgba(240,178,77,.07), transparent 21%),
+    linear-gradient(180deg,#e8eef5 0%,#eef2f6 44%,#f6f8fb 100%)!important;
+}
+
+body.subpage::before{
+  background:
+    radial-gradient(circle at 14% 12%, rgba(45,103,246,.055), transparent 22%),
+    radial-gradient(circle at 84% 18%, rgba(240,178,77,.045), transparent 24%)!important;
+}
+
+.hero-visual,
+.content-card,
+.post-card,
+.topic-card,
+.section-card,
+.cta,
+.resource-card,
+.watch-note,
+.watch-block,
+.resource-mini,
+.toc,
+.page-figure,
+.lifecycle-fig,
+.landscape-card,
+.compact-figure,
+.accordion,
+.foundational-figure,
+.stat-card,
+.snapshot-box,
+.mini-card{
+  background:#ffffff!important;
+  border:1.6px solid rgba(18,36,58,.16)!important;
+  box-shadow:
+    0 24px 58px rgba(23,53,87,.105),
+    0 0 0 1px rgba(255,255,255,.86) inset!important;
+  backdrop-filter:none!important;
+}
+
+.content-card:hover,
+.post-card:hover,
+.topic-card:hover,
+.section-card:hover,
+.cta:hover,
+.resource-card:hover,
+.watch-note:hover,
+.accordion:hover,
+.foundational-figure:hover,
+.stat-card:hover,
+.hero-visual:hover{
+  border-color:rgba(33,87,213,.26)!important;
+  box-shadow:
+    0 30px 68px rgba(23,53,87,.15),
+    0 0 0 1px rgba(33,87,213,.07)!important;
+}

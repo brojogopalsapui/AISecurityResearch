@@ -5400,6 +5400,83 @@ body.portal-page[data-page="trending"] .accordion.is-open{
   box-shadow:0 18px 34px rgba(0,0,0,.32);
 }
 
+/* Dark portal surface pass: darker technical panels against the blue page stage */
+body.portal-page{
+  background:
+    radial-gradient(circle at 6% 10%, rgba(140,196,255,.18), transparent 24%),
+    radial-gradient(circle at 92% 8%, rgba(155,140,255,.12), transparent 22%),
+    radial-gradient(circle at 48% 96%, rgba(78,216,201,.10), transparent 24%),
+    linear-gradient(135deg, #1d2f4a 0%, #263f63 36%, #304c72 68%, #1c2d46 100%)!important;
+}
+
+body.portal-page .content-card,
+body.portal-page .panel,
+body.portal-page .post-card,
+body.portal-page .quick-card,
+body.portal-page .feature-card,
+body.portal-page .topic-card,
+body.portal-page .foundation-card,
+body.portal-page .section-card,
+body.portal-page .info-card,
+body.portal-page .watch-card,
+body.portal-page .profile-card,
+body.portal-page .faq-card,
+body.portal-page .toc,
+body.portal-page .cta,
+body.portal-page .portal-visual,
+body.portal-page .pulse-card,
+body.portal-page .metric-card,
+body.portal-page .resource-card,
+body.portal-page .watch-note,
+body.portal-page .watch-block,
+body.portal-page .resource-mini,
+body.portal-page .accordion,
+body.portal-page .page-figure,
+body.portal-page .lifecycle-fig,
+body.portal-page .landscape-card,
+body.portal-page .compact-figure,
+body.portal-page .foundational-figure,
+body.portal-page .stat-card,
+body.portal-page .mini-link,
+body.portal-page .hero-search,
+body.portal-page .foundation-figure{
+  background:
+    linear-gradient(180deg, rgba(17,31,52,.985), rgba(7,17,31,.99))!important;
+  border-color:rgba(151,190,255,.22)!important;
+  box-shadow:
+    0 28px 70px rgba(0,0,0,.34),
+    0 0 0 1px rgba(83,229,246,.055),
+    inset 0 1px 0 rgba(255,255,255,.075)!important;
+}
+
+body.portal-page .content-card:hover,
+body.portal-page .panel:hover,
+body.portal-page .post-card:hover,
+body.portal-page .quick-card:hover,
+body.portal-page .feature-card:hover,
+body.portal-page .topic-card:hover,
+body.portal-page .foundation-card:hover,
+body.portal-page .section-card:hover,
+body.portal-page .watch-card:hover,
+body.portal-page .profile-card:hover,
+body.portal-page .pulse-card:hover,
+body.portal-page .resource-card:hover,
+body.portal-page .watch-note:hover,
+body.portal-page .accordion:hover,
+body.portal-page .mini-link:hover{
+  border-color:rgba(83,229,246,.34)!important;
+  box-shadow:
+    0 34px 78px rgba(0,0,0,.42),
+    0 0 0 1px rgba(83,229,246,.09),
+    inset 0 1px 0 rgba(255,255,255,.09)!important;
+}
+
+body.portal-page .lab-teaser-panel{
+  background:
+    linear-gradient(180deg, rgba(14,26,45,.99), rgba(5,13,25,.995))!important;
+  border-color:rgba(151,190,255,.26)!important;
+}
+
 @media (max-width: 760px){
   .archive-year-summary{
     grid-template-columns:auto 1fr;
