@@ -43,15 +43,7 @@
   }
 
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(42, 52, 69, 0.15) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(42, 52, 69, 0.15) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+    content: none;
   }
 
   .container { position: relative; z-index: 1; width: min(100% - 32px, 1920px); max-width: none; margin: 0 auto; padding: 28px 0 80px; }
@@ -106,7 +98,7 @@
   .stage { display: grid; grid-template-columns: 1fr; gap: 18px; }
 
   .canvas-wrap { position: relative; background: var(--bg-1); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; min-height: 0; }
-  .canvas-wrap::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(42, 52, 69, 0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(42, 52, 69, 0.25) 1px, transparent 1px); background-size: 24px 24px; pointer-events: none; }
+  .canvas-wrap::before { content: none; }
   svg.architecture { width: 100%; display: block; }
 
   .zone-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; fill: var(--text-2); }
