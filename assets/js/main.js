@@ -88,12 +88,74 @@ function enhanceSubcontentActionRows() {
   syncLabels();
 }
 
+function initGlobalFullscreenToggle() {
+  const target = document.fullscreenEnabled === false ? null : document.documentElement;
+  if (!target?.requestFullscreen) return;
+
+  const mount =
+    document.querySelector(".site-shell-header .shell-header__inner") ||
+    document.querySelector(".site-header .nav-wrap");
+
+  if (!mount) return;
+
+  let button = document.querySelector("[data-global-fullscreen]");
+
+  if (!button) {
+    button = document.createElement("button");
+    button.type = "button";
+    button.className = "global-fullscreen-toggle";
+    button.dataset.globalFullscreen = "true";
+    button.setAttribute("aria-label", "Enter fullscreen");
+
+    const menuButton = mount.querySelector(".shell-menu-btn, .menu-btn");
+    mount.insertBefore(button, menuButton || null);
+  }
+
+  const syncLabel = () => {
+    const isFullscreen = Boolean(document.fullscreenElement);
+    button.textContent = isFullscreen ? "exit fullscreen" : "fullscreen";
+    button.setAttribute("aria-label", isFullscreen ? "Exit fullscreen" : "Enter fullscreen");
+    button.setAttribute("aria-pressed", String(isFullscreen));
+  };
+
+  if (!button.dataset.globalFullscreenReady) {
+    button.dataset.globalFullscreenReady = "true";
+    button.addEventListener("click", async () => {
+      try {
+        if (!document.fullscreenElement) {
+          await target.requestFullscreen?.();
+        } else {
+          await document.exitFullscreen?.();
+        }
+      } catch (error) {
+        // Some embedded browsers block fullscreen; leave the page usable.
+      }
+      syncLabel();
+    });
+  }
+
+  if (!window.__globalFullscreenToggleBound) {
+    window.__globalFullscreenToggleBound = true;
+    document.addEventListener("fullscreenchange", () => {
+      document.querySelectorAll("[data-global-fullscreen]").forEach((fullscreenButton) => {
+        const isFullscreen = Boolean(document.fullscreenElement);
+        fullscreenButton.textContent = isFullscreen ? "exit fullscreen" : "fullscreen";
+        fullscreenButton.setAttribute("aria-label", isFullscreen ? "Exit fullscreen" : "Enter fullscreen");
+        fullscreenButton.setAttribute("aria-pressed", String(isFullscreen));
+      });
+    });
+  }
+
+  syncLabel();
+}
+
 syncLightModePreference();
 
 document.addEventListener("DOMContentLoaded", () => {
   markDarkVersionLinks();
   preserveLightHomeLinks();
   enhanceSubcontentActionRows();
+  initGlobalFullscreenToggle();
 
   const menuButtons = document.querySelectorAll(".menu-btn");
 
