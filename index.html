@@ -132,7 +132,7 @@
 </section>
 
 
-<section class="section">
+<section class="section" id="lab-setup-tour">
   <div class="container">
     <div class="panel lab-teaser-panel">
       <div class="lab-teaser-grid">
@@ -149,8 +149,24 @@
           </div>
         </div>
         <a class="lab-teaser-visual" href="lab_setup/edge_ai_attack_theater.html" rel="noopener noreferrer" target="_blank" aria-label="Open detailed AI security lab setup map">
-          <img alt="Compact visual map of the in-house AI security lab with GPU workstation, Jetson Orin Nano, Raspberry Pi gateway, Zynq FPGA board, and isolated lab network" decoding="async" loading="lazy" src="assets/img/lab-setup-preview.svg"/>
-          <span class="lab-teaser-status">interactive attack map</span>
+          <span class="lab-composite-visual" aria-hidden="true">
+            <span class="lab-photo lab-photo-gpu">
+              <img alt="" decoding="async" loading="lazy" src="assets/img/lab-gpu-workstation.jpg"/>
+            </span>
+            <span class="lab-photo lab-photo-edge">
+              <img alt="" decoding="async" loading="lazy" src="assets/img/lab-edge-platforms.jpg"/>
+            </span>
+            <span class="lab-title-chip">In-house AI security lab</span>
+            <span class="lab-wire lab-wire-main"></span>
+            <span class="lab-wire lab-wire-edge"></span>
+            <span class="lab-hardware-chip lab-chip-gpu">RTX GPU workstation</span>
+            <span class="lab-hardware-chip lab-chip-pi">Raspberry Pi 4</span>
+            <span class="lab-hardware-chip lab-chip-z7">Zynq Z7 FPGA</span>
+            <span class="lab-hardware-chip lab-chip-orin">Orin Nano</span>
+            <span class="lab-flow-chip lab-flow-train">model training</span>
+            <span class="lab-flow-chip lab-flow-test">edge attack testbed</span>
+          </span>
+          <span class="lab-teaser-status">real lab tour</span>
         </a>
       </div>
     </div>
